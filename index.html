@@ -31,7 +31,6 @@
         .btn-black { background: #1D1D1F; color: white; }
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
 
-        /* 看板 Grid (RWD) */
         .kanban-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
         
@@ -54,7 +53,6 @@
         .k-client { font-size: 13px; color: #666; margin-bottom: 8px; }
         .k-date { font-size: 12px; color: #888; font-weight: 600; display: flex; align-items: center; gap: 4px; }
 
-        /* ★★★ 看板折疊動畫 (Tailwind Group) ★★★ */
         details > summary { list-style: none; outline: none; }
         details > summary::-webkit-details-marker { display: none; }
         details > summary i.fa-caret-right {
@@ -63,25 +61,10 @@
             width: 20px;
             text-align: center;
         }
-        /* 當 details 擁有 group-open 狀態時旋轉 */
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* ★★★ 甘特圖 RWD 設定 ★★★ */
-        .gantt-wrapper { 
-            overflow-x: auto; 
-            background: white; 
-            border-radius: 12px; 
-            padding: 15px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            width: 100%;
-            -webkit-overflow-scrolling: touch; 
-        }
-        .gantt-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            table-layout: fixed; 
-            min-width: 800px; 
-        }
+        .gantt-wrapper { overflow-x: auto; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; -webkit-overflow-scrolling: touch; }
+        .gantt-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 800px; }
         .gantt-header-cell { text-align: center; font-size: 10px; color: #888; border-right: 1px solid #f0f0f0; padding: 8px 0; width: 28px; }
         .gantt-today { background-color: #FFF9C4; color: #000; font-weight: 900; border-bottom: 3px solid #FFD700; }
         .gantt-today-cell { background-color: #FFF9C4; } 
@@ -96,7 +79,6 @@
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* Modal & FAB */
         .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 100; }
         .modal-body { background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; }
         .hidden { display: none; }
@@ -140,12 +122,10 @@
         .setting-actions i { cursor: pointer; padding: 5px; margin-left: 5px; color: #999; }
         .setting-actions i:hover { color: #333; }
 
-        /* FullCalendar TimeTree 風格設定 */
         #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); min-height: 600px; }
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
         .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; }
-        /* 今天：黑色粗框正方形 */
         .fc-day-today { background-color: transparent !important; }
         .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
         .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
@@ -441,21 +421,15 @@
     </div>
 
     <script>
-        // ★★★ 已經自動幫您填入正確的 API 網址 ★★★
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
 
         let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
         let curTab = 'add';
         let curCat = 'video';
         let modalMode = 'new';
-        let isDbEditing = false;
-        let dbChanges = [];
-        let currentDBType = ''; 
-        let expandedSections = new Set(); 
         let calendar = null; 
         let calendarFilter = 'all'; 
         let currentGanttDate = new Date(); 
-        
         let editingMemoIdx = null;
         let editingLinkIdx = null;
 
@@ -464,64 +438,55 @@
         const fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d" }); 
         const fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d" }); 
 
-        // ★★★ 核心通訊函式 (支援 GitHub 與 Google 雙模式) ★★★
-        // 如果 GAS_API_URL 有填值，代表在 GitHub，走 fetch
-        // 如果沒填值，代表在 Google，走 google.script.run
         function callAPI(action, payload, onSuccess) {
             if (GAS_API_URL) {
-                // GitHub 模式 (Fetch)
                 if (['initAllData', 'getHistory', 'getLeaves', 'getMemos', 'getLinks'].includes(action)) {
                     let params = `?action=${action}`;
                     if(payload.cat) params += `&cat=${payload.cat}`;
                     if(payload.zone) params += `&zone=${payload.zone}`;
-                    fetch(GAS_API_URL + params).then(res => res.json()).then(data => onSuccess(data)).catch(e => console.error(e));
+                    
+                    fetch(GAS_API_URL + params)
+                    .then(res => res.json())
+                    .then(data => onSuccess(data))
+                    .catch(e => console.error("API Error:", e));
                 } else {
                     const postData = { action: action, ...payload };
                     fetch(GAS_API_URL, { method: "POST", body: JSON.stringify(postData) })
-                    .then(res => res.json()).then(data => onSuccess(data.data)).catch(e => { alert("連線錯誤"); document.getElementById('loader').style.display = 'none'; });
+                    .then(res => res.json())
+                    .then(data => onSuccess(data.data))
+                    .catch(e => { alert("連線錯誤，請檢查網路"); document.getElementById('loader').style.display = 'none'; });
                 }
             } else {
-                // Google 模式 (Script Run)
-                // 這裡是一個簡單的轉接器，把字串 action 對應到後端的函式
                 const handler = google.script.run.withSuccessHandler(onSuccess);
                 if (action === 'initAllData') handler.initAllData();
-                else if (action === 'getHistory') handler.getZoneHistory(payload.cat, payload.zone);
-                else if (action === 'getLeaves') handler.getLeaves();
-                else if (action === 'getMemos') handler.getMemos();
-                else if (action === 'getLinks') handler.getLinks();
-                else if (action === 'addProject') handler.addProjectToSheet(payload.payload);
-                else if (action === 'deleteProject') handler.deleteProjectFromSheet(payload.cat, payload.zone, payload.id);
-                else if (action === 'updateProject') handler.updateProjectData(payload.payload, payload.originId, payload.originZone);
-                else if (action === 'updateStatus') handler.updateStatusWithHours(payload.cat, payload.zone, payload.id, payload.status, payload.hours);
-                else if (action === 'assignProject') handler.assignProject(payload.cat, payload.zone, payload.id, payload.maker, payload.date);
-                else if (action === 'createClient') handler.createClientSheet(payload.cat, payload.code, payload.name);
-                else if (action === 'renameClient') handler.renameClientSheet(payload.cat, payload.oldName, payload.newFullName);
-                else if (action === 'manageConfig') handler.manageConfig(payload.act, payload.cat, payload.type, payload.val, payload.oldVal);
-                else if (action === 'addLeave') handler.addLeave(payload.item);
-                else if (action === 'addMemo') handler.addMemo(payload.item);
-                else if (action === 'editMemo') handler.editMemo(payload.idx, payload.item);
-                else if (action === 'completeMemo') handler.completeMemo(payload.idx);
-                else if (action === 'deleteMemo') handler.deleteMemo(payload.idx);
-                else if (action === 'addLink') handler.addLink(payload.client, payload.url);
-                else if (action === 'editLink') handler.editLink(payload.idx, payload.client, payload.url);
-                else if (action === 'deleteLink') handler.deleteLink(payload.idx);
             }
         }
 
         window.onload = function() {
+            const cachedData = localStorage.getItem('JAYRAN_SYSTEM_DATA');
+            if (cachedData) {
+                console.log("🚀 Loaded from Cache (Fast Mode)");
+                try {
+                    const parsedData = JSON.parse(cachedData);
+                    processDataUpdate(parsedData, true); 
+                    document.getElementById('loader-msg').innerText = "背景同步最新資料中...";
+                } catch(e) { console.error("Cache Parse Error", e); }
+            }
+
             callAPI('initAllData', {}, (res) => {
                 if(res.error) {
                     document.getElementById('loader-msg').innerHTML = `<span class="text-red-500">${res.error}</span>`;
                 } else {
-                    processDataUpdate(res);
-                    document.getElementById('loader').style.display = 'none';
-                    setProjectType('video'); 
+                    console.log("✅ Synced with Server");
+                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(res));
+                    processDataUpdate(res, false);
                 }
             });
         };
 
-        function processDataUpdate(res) {
+        function processDataUpdate(res, isCache) {
             DATA = res;
+            
             renderZoneOptions();
             loadMemos();
             loadLinks();
@@ -536,247 +501,15 @@
             else if (curTab === 'calendar') {
                 renderCalendar();
             }
-        }
-        
-        // ★★★ 請假功能 JS ★★★
-        function openLeaveModal() {
-            document.getElementById('leave-reason').value = '';
-            fpLeave.clear();
-            document.getElementById('modal-leave').style.display = 'flex';
-        }
-        function confirmLeave() {
-            const name = document.getElementById('leave-name').value;
-            const dates = document.getElementById('leave-date').value.split(' to ');
-            const reason = document.getElementById('leave-reason').value;
-            if(!name || !dates[0]) return alert("請填寫完整資訊");
-            
-            const leaveData = { name: name, start: dates[0], end: dates[1] || dates[0], reason: reason };
-            
-            document.getElementById('loader').style.display = 'flex';
-            closeModal('leave');
-            callAPI('addLeave', { item: leaveData }, (res) => {
-                callAPI('initAllData', {}, (data) => processDataUpdate(data));
-                alert("請假成功");
+
+            if (!isCache) {
                 document.getElementById('loader').style.display = 'none';
-            });
-        }
-
-        // --- 甘特圖月份切換邏輯 ---
-        function changeGanttMonth(offset) {
-            currentGanttDate.setMonth(currentGanttDate.getMonth() + offset);
-            
-            if(document.getElementById('btn-gan-wei').classList.contains('active')) renderGantt('魏敏軒');
-            else renderGantt('邱仁杰');
-        }
-
-        function renderGantt(producer) {
-            document.querySelectorAll('.gan-btn').forEach(b => b.classList.remove('active'));
-            if(producer === '魏敏軒') document.getElementById('btn-gan-wei').classList.add('active');
-            if(producer === '邱仁杰') document.getElementById('btn-gan-chiu').classList.add('active');
-            
-            const container = document.getElementById('gantt-chart');
-            const year = currentGanttDate.getFullYear();
-            const month = currentGanttDate.getMonth(); // 0-indexed
-            
-            document.getElementById('gan-title').innerText = `甘特圖 (${year}年${month + 1}月)`;
-
-            let tasks = DATA.projects.filter(p => p.producer === producer && p.start && p.end);
-            const monthStart = new Date(year, month, 1);
-            const monthEnd = new Date(year, month + 1, 0, 23, 59, 59);
-
-            tasks = tasks.filter(p => {
-                const pStart = new Date(p.start);
-                const pEnd = new Date(p.end);
-                return pStart <= monthEnd && pEnd >= monthStart;
-            }).sort((a, b) => new Date(a.start) - new Date(b.start));
-
-            if (tasks.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 py-10">本月無排程</div>'; return; }
-
-            const daysInMonth = monthEnd.getDate(); 
-            const today = new Date();
-            const isCurrentMonth = (today.getFullYear() === year && today.getMonth() === month);
-            const todayDay = isCurrentMonth ? today.getDate() : -1;
-
-            let header = '<tr class="gantt-row"><th class="gantt-label-cell" style="padding-left:10px;">ID / 專案</th>';
-            for (let i = 1; i <= daysInMonth; i++) {
-                let bg = (i === todayDay) ? 'gantt-today' : '';
-                header += `<th class="gantt-header-cell ${bg}">${i}</th>`;
+                setProjectType('video'); 
+            } else {
+                document.getElementById('loader').style.display = 'none';
             }
-            header += '</tr>';
-
-            let body = '';
-            tasks.forEach(p => {
-                const pStartObj = new Date(p.start);
-                const pEndObj = new Date(p.end);
-
-                let color = '#8E8E93'; 
-                if (p.status === '製作中') color = '#007AFF';
-                else if (p.status.includes('審')) color = '#FF9500';
-                else if (p.status === '已完成') color = '#34C759';
-
-                let gridStartDay = (pStartObj < monthStart) ? 1 : pStartObj.getDate();
-                let gridEndDay = (pEndObj > monthEnd) ? daysInMonth : pEndObj.getDate();
-
-                let bars = '';
-                for (let i = 1; i <= daysInMonth; i++) {
-                    let bg = (i === todayDay) ? 'gantt-today-cell' : '';
-                    let content = '';
-
-                    if (i === gridStartDay) {
-                        let span = (gridEndDay - gridStartDay) + 1;
-                        if (span < 1) span = 1;
-                        let prefix = (pStartObj < monthStart) ? '← ' : '';
-                        let suffix = (pEndObj > monthEnd) ? ' →' : '';
-                        content = `<div class="gantt-bar" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
-                    }
-                    bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible; z-index:10;"' : ''}>${content}</td>`;
-                }
-                body += `<tr class="gantt-row"><td class="gantt-label-cell" title="${p.name} (${p.status})"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
-            });
-            container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
         }
 
-        function filterCalendar(filter) {
-            calendarFilter = filter;
-            document.querySelectorAll('.cal-filter-btn').forEach(btn => btn.classList.remove('active'));
-            if(filter === 'all') document.getElementById('btn-cal-all').classList.add('active');
-            if(filter === '魏敏軒') document.getElementById('btn-cal-wei').classList.add('active');
-            if(filter === '邱仁杰') document.getElementById('btn-cal-chiu').classList.add('active');
-            renderCalendar();
-        }
-
-        function renderCalendar() {
-            const calendarEl = document.getElementById('calendar');
-            let filteredProjects = DATA.projects.filter(p => p.start && p.end);
-            if (calendarFilter !== 'all') {
-                filteredProjects = filteredProjects.filter(p => p.producer === calendarFilter);
-            }
-
-            const events = filteredProjects.map(p => {
-                let color = '#8E8E93'; 
-                if (p.status === '製作中') color = '#007AFF';
-                else if (p.status.includes('審')) color = '#FF9500';
-                else if (p.status === '已完成') color = '#34C759';
-                
-                let endDate = new Date(p.end);
-                endDate.setDate(endDate.getDate() + 1);
-                let endStr = endDate.toISOString().split('T')[0];
-
-                return {
-                    title: `${p.name} (${p.producer})`,
-                    start: p.start,
-                    end: endStr,
-                    backgroundColor: color,
-                    borderColor: color,
-                    extendedProps: { project: p } 
-                };
-            });
-            
-            // ★★★ 新增：請假事件 (紫色) ★★★
-            if (DATA.leaves) {
-                DATA.leaves.forEach(l => {
-                    // 如果有篩選，只顯示該人的請假
-                    if (calendarFilter !== 'all' && l.name !== calendarFilter) return;
-                    
-                    let endDate = new Date(l.end);
-                    endDate.setDate(endDate.getDate() + 1);
-                    let endStr = endDate.toISOString().split('T')[0];
-                    events.push({
-                        title: `🏖️ ${l.name}: ${l.reason}`,
-                        start: l.start,
-                        end: endStr,
-                        backgroundColor: '#8B5CF6', // 紫色
-                        borderColor: '#8B5CF6',
-                        allDay: true,
-                        display: 'block'
-                    });
-                });
-            }
-
-            if (calendar) {
-                calendar.destroy();
-            }
-
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'zh-tw', 
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,dayGridWeek'
-                },
-                buttonText: {
-                    today: '今天',
-                    month: '月',
-                    week: '週'
-                },
-                events: events,
-                eventClick: function(info) {
-                    if (info.event.extendedProps.project) {
-                        openEditProject(info.event.extendedProps.project);
-                    } else {
-                        // 點擊請假事件暫不處理 (可擴充為刪除)
-                        alert(info.event.title); 
-                    }
-                },
-                height: 'auto', 
-                contentHeight: 600
-            });
-            calendar.render();
-        }
-
-        // --- Edit Project (With Hours) ---
-        function openEditProject(p) {
-            document.getElementById('ep-cat').value = p.category;
-            document.getElementById('ep-origin-id').value = p.id; 
-            document.getElementById('ep-origin-zone').value = p.zone; 
-            const prefix = p.zone.split('_')[0]; 
-            const numPart = p.id.replace(prefix, ''); 
-            const epCodeSel = document.getElementById('ep-code');
-            epCodeSel.innerHTML = '';
-            const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
-            epCodeSel.value = prefix;
-            document.getElementById('ep-num').value = numPart;
-            updateEditClientInfo(); 
-            document.getElementById('ep-producer').value = p.producer;
-            document.getElementById('ep-name').value = p.name;
-            document.getElementById('ep-type').value = p.type;
-            document.getElementById('ep-hours').value = p.hours || 0; // 填入工時
-            if (p.start && p.end) fpEdit.setDate([p.start, p.end]); else fpEdit.clear();
-            document.getElementById('ep-note').value = p.note;
-            document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
-            document.getElementById('modal-edit-project').style.display = 'flex';
-        }
-
-        function confirmEditProject() {
-            const dateVal = document.getElementById('ep-date').value;
-            const dates = dateVal.split(' to ');
-            const p = {
-                category: document.getElementById('ep-cat').value,
-                zone: document.getElementById('ep-zone').value, 
-                id: document.getElementById('ep-num').value, 
-                client: document.getElementById('ep-client-display').value,
-                name: document.getElementById('ep-name').value,
-                producer: document.getElementById('ep-producer').value,
-                type: document.getElementById('ep-type').value,
-                hours: document.getElementById('ep-hours').value, // 讀取工時
-                start: dates[0] || "",
-                end: dates[1] || dates[0] || "",
-                note: document.getElementById('ep-note').value,
-                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : ''
-            };
-            closeModal('edit-project');
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('updateProject', { payload: p, originId: document.getElementById('ep-origin-id').value, originZone: document.getElementById('ep-origin-zone').value }, (res) => {
-                if (res === "OK") {
-                    alert("✅ 修改成功");
-                    callAPI('initAllData', {}, (data) => processDataUpdate(data));
-                } else { alert("修改失敗：" + res); document.getElementById('loader').style.display = 'none'; }
-            }).updateProjectData(p, document.getElementById('ep-origin-id').value, document.getElementById('ep-origin-zone').value);
-        }
-
-        // ... (以下維持既有函式不變) ...
         function setProjectType(type) {
             curCat = type;
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
@@ -789,11 +522,12 @@
         }
 
         function renderDynamicOptions() {
+            if (!DATA.config) return;
             const types = (curCat === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
             const producers = (curCat === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
             const fillSelect = (id, list) => {
                 const el = document.getElementById(id);
-                if(el) {
+                if(el && list) {
                     const currentVal = el.value;
                     el.innerHTML = '';
                     list.forEach(item => el.add(new Option(item, item)));
@@ -807,18 +541,11 @@
         }
 
         function switchTab(tab) {
-            if (curTab === tab) {
-                document.getElementById('loader').style.display = 'flex';
-                callAPI('initAllData', {}, (data) => {
-                    processDataUpdate(data);
-                    document.getElementById('loader').style.display = 'none';
-                });
-                return;
-            }
             curTab = tab;
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById('nav-' + tab).classList.add('active');
             ['p-add', 'p-kanban', 'p-gantt', 'p-calendar'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            
             if (tab === 'add') document.getElementById('p-add').classList.remove('hidden');
             else if (tab === 'wei') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('魏敏軒'); }
             else if (tab === 'chiu') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('邱仁杰'); }
@@ -833,10 +560,12 @@
             const sel = document.getElementById('i-zone'); 
             sel.innerHTML = '<option value="">請選擇</option>';
             const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            Object.keys(settings).sort().forEach(k => {
-                const op = document.createElement('option');
-                op.value = k; op.text = k; sel.add(op);
-            });
+            if (settings) {
+                Object.keys(settings).sort().forEach(k => {
+                    const op = document.createElement('option');
+                    op.value = k; op.text = k; sel.add(op);
+                });
+            }
             updateClientName(); 
         }
 
@@ -855,7 +584,7 @@
                     document.getElementById('i-client').classList.add('bg-gray-100');
                     document.getElementById('i-client').classList.remove('bg-white');
                 }
-                let lastId = DATA.ids[z];
+                let lastId = (DATA.ids) ? DATA.ids[z] : "";
                 let displayId = "001"; 
                 if (lastId && lastId !== "無" && lastId !== "無紀錄") {
                     const match = lastId.match(/\d+$/); 
@@ -882,72 +611,6 @@
             }
         }
 
-        function openHistory() {
-            const z = document.getElementById('i-zone').value;
-            if(!z) return alert("請先選擇客戶");
-            document.getElementById('hist-title').innerText = z;
-            document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>';
-            document.getElementById('modal-preview').style.display = 'flex';
-            callAPI('getHistory', { cat: curCat, zone: z }, (list) => {
-                let html = list.length === 0 ? '<div class="text-center text-gray-400">尚無專案</div>' : '';
-                list.forEach(p => {
-                    let bg = '#888'; if(p.status === '製作中') bg = '#007AFF'; else if(p.status.includes('審')) bg = '#FF9500'; else if(p.status === '已完成') bg = '#34C759';
-                    html += `<div class="hist-item"><div class="font-bold text-gray-800 mr-2 w-16">${p.id}</div><div class="flex-1 truncate text-gray-600 mr-2">${p.name}</div><div class="hist-status" style="background:${bg}">${p.status}</div></div>`;
-                });
-                document.getElementById('hist-list').innerHTML = html;
-            });
-        }
-
-        function openZoneModal(mode) {
-            modalMode = mode;
-            const z = document.getElementById('i-zone').value;
-            if (mode === 'edit' && !z) return alert("請先選擇要編輯的客戶");
-            document.getElementById('modal-title').innerText = (mode==='new') ? "新增客戶" : "編輯客戶名稱";
-            const selCode = document.getElementById('modal-code');
-            selCode.innerHTML = '';
-            const raw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-            const alphabet = (curCat === 'image') ? raw.map(c=>c.toLowerCase()) : raw;
-            const used = (curCat === 'image') ? DATA.usedCodesImage : DATA.usedCodesVideo;
-            alphabet.forEach(c => { 
-                if(mode === 'new' && used.includes(c)) return; 
-                const op = document.createElement('option'); op.value = c; op.text = c; selCode.add(op); 
-            });
-            document.getElementById('div-code-select').classList.remove('hidden');
-            if (mode === 'new') {
-                document.getElementById('modal-name').value = '';
-            } else {
-                const prefix = z.split('_')[0];
-                const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z;
-                let found = false;
-                for(let i=0; i<selCode.options.length; i++) { if(selCode.options[i].value == prefix) found = true; }
-                if(!found) { const op = document.createElement('option'); op.value = prefix; op.text = prefix; selCode.add(op); }
-                selCode.value = prefix;
-                document.getElementById('modal-name').value = realName;
-            }
-            document.getElementById('modal-zone').style.display = 'flex';
-        }
-
-        function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
-
-        function confirmZoneModal() {
-            const name = document.getElementById('modal-name').value;
-            const code = document.getElementById('modal-code').value;
-            if(!name) return;
-            closeModal('zone');
-            document.getElementById('loader').style.display = 'flex';
-            if (modalMode === 'new') {
-                callAPI('createClient', { cat: curCat, code: code, name: name }, (res) => {
-                    callAPI('initAllData', {}, (data) => processDataUpdate(data));
-                });
-            } else {
-                const oldName = document.getElementById('i-zone').value;
-                const newFullName = code + "_" + name; 
-                callAPI('renameClient', { cat: curCat, oldName: oldName, newFullName: newFullName }, (res) => {
-                    callAPI('initAllData', {}, (data) => processDataUpdate(data));
-                });
-            }
-        }
-
         function saveProject() {
             const dr = document.getElementById('i-date').value.split(' to ');
             const prod = document.getElementById('i-producer').value;
@@ -960,8 +623,10 @@
             };
             if(!p.zone || !p.id || !p.name) return alert("請填寫完整資訊");
             if(prod !== '尚未暫定' && !p.start) return alert("請選擇日期範圍");
+            
             document.getElementById('btn-create').innerText = "處理中...";
             document.getElementById('btn-create').disabled = true;
+
             callAPI('addProject', { payload: p }, (res) => {
                 alert("✅ 建立成功");
                 document.getElementById('btn-create').innerText = "建立並同步";
@@ -970,22 +635,16 @@
                 document.getElementById('i-name').value = '';
                 document.getElementById('i-note').value = '';
                 document.getElementById('i-urgent').checked = false; 
-                callAPI('initAllData', {}, (data) => processDataUpdate(data));
-            });
-        }
-
-        function deleteProject(category, zone, id) {
-            if (!confirm(`確定要刪除專案 ${id} 嗎？\n這將無法復原！`)) return;
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => {
-                if (res === "OK") {
-                    callAPI('initAllData', {}, (data) => processDataUpdate(data));
-                } else { alert("刪除失敗"); document.getElementById('loader').style.display = 'none'; }
+                callAPI('initAllData', {}, (data) => {
+                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                    processDataUpdate(data, false);
+                });
             });
         }
 
         function renderKanban(producer) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
+            if (!DATA.projects) return;
             const tasks = DATA.projects.filter(p => p.producer === producer);
             const card = (p, color, bg) => {
                 const pStr = JSON.stringify(p).replace(/'/g, "&#39;");
@@ -1015,11 +674,75 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // 其餘函式 (deleteSettingItem, editSettingItem, openHoursModal, confirmSendReview, doUpdate, togglePanel, loadPending, enablePendingEdit, cancelPendingEdit, updatePendingEditClient, savePendingEdit, confirmAssign, loadMemos, deleteMemo, editMemoMode, updateMemoItem, addMemoItem, finishMemo, loadLinks, editLinkMode, updateLinkItem, addLinkItem, removeLink)
-        // 省略，因邏輯相同，請直接使用 Code.gs 提供的完整版，或上一篇 GitHub HTML 提供的完整版
-        // 為了確保運作，這裡不列出重複代碼，請直接複製上一篇 GitHub 版 HTML 中對應的函式即可
+        function deleteProject(category, zone, id) {
+            if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return;
+            document.getElementById('loader').style.display = 'flex';
+            callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => {
+                if (res === "OK") {
+                    callAPI('initAllData', {}, (data) => {
+                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                        processDataUpdate(data, false);
+                    });
+                } else { alert("刪除失敗"); document.getElementById('loader').style.display = 'none'; }
+            });
+        }
+
+        function confirmEditProject() {
+            const dateVal = document.getElementById('ep-date').value;
+            const dates = dateVal.split(' to ');
+            const p = {
+                category: document.getElementById('ep-cat').value,
+                zone: document.getElementById('ep-zone').value, 
+                id: document.getElementById('ep-num').value, 
+                client: document.getElementById('ep-client-display').value,
+                name: document.getElementById('ep-name').value,
+                producer: document.getElementById('ep-producer').value,
+                type: document.getElementById('ep-type').value,
+                hours: document.getElementById('ep-hours').value, 
+                start: dates[0] || "",
+                end: dates[1] || dates[0] || "",
+                note: document.getElementById('ep-note').value,
+                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : ''
+            };
+            closeModal('edit-project');
+            document.getElementById('loader').style.display = 'flex';
+            callAPI('updateProject', { payload: p, originId: document.getElementById('ep-origin-id').value, originZone: document.getElementById('ep-origin-zone').value }, (res) => {
+                if (res === "OK") {
+                    alert("✅ 修改成功");
+                    callAPI('initAllData', {}, (data) => {
+                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                        processDataUpdate(data, false);
+                    });
+                } else { alert("修改失敗"); document.getElementById('loader').style.display = 'none'; }
+            });
+        }
+
+        function openHistory() {
+            const z = document.getElementById('i-zone').value;
+            if(!z) return alert("請先選擇客戶");
+            document.getElementById('hist-title').innerText = z;
+            document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>';
+            document.getElementById('modal-preview').style.display = 'flex';
+            callAPI('getHistory', { cat: curCat, zone: z }, (list) => {
+                let html = list.length === 0 ? '<div class="text-center text-gray-400">尚無專案</div>' : '';
+                list.forEach(p => {
+                    let bg = '#888'; if(p.status === '製作中') bg = '#007AFF'; else if(p.status.includes('審')) bg = '#FF9500'; else if(p.status === '已完成') bg = '#34C759';
+                    html += `<div class="hist-item"><div class="font-bold text-gray-800 mr-2 w-16">${p.id}</div><div class="flex-1 truncate text-gray-600 mr-2">${p.name}</div><div class="hist-status" style="background:${bg}">${p.status}</div></div>`;
+                });
+                document.getElementById('hist-list').innerHTML = html;
+            });
+        }
         
-        // --- Setting Management ---
+        function doUpdate(cat, zone, id, status, hours=0) {
+            document.getElementById('loader').style.display = 'flex';
+            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {
+               callAPI('initAllData', {}, (data) => {
+                   localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                   processDataUpdate(data, false);
+               });
+            });
+        }
+        
         function openSettings(type) {
             document.getElementById('st-type').value = type;
             document.getElementById('setting-title').innerText = (type==='Type') ? "管理類型" : "管理製作人";
@@ -1103,12 +826,6 @@
             if(!h) return alert("請輸入工時");
             closeModal('hours');
             doUpdate(document.getElementById('hours-cat').value, document.getElementById('hours-zone').value, document.getElementById('hours-id').value, '客戶審核', h);
-        }
-        function doUpdate(cat, zone, id, status, hours=0) {
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {
-               callAPI('initAllData', {}, (data) => processDataUpdate(data));
-            });
         }
         function togglePanel(type) {
             const allPanels = ['panel-memo', 'panel-link', 'panel-pending'];
@@ -1213,7 +930,7 @@
             const originZone = document.getElementById(`pe-origin-zone-${idx}`).value;
             document.getElementById('loader').style.display = 'flex';
             callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
-                if (res === "OK") { callAPI('initAllData', {}, (data) => processDataUpdate(data)); } 
+                if (res === "OK") { callAPI('initAllData', {}, (data) => { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); }); } 
                 else { alert("保存失敗：" + res); document.getElementById('loader').style.display = 'none'; }
             });
         }
@@ -1355,6 +1072,94 @@
             if(!confirm("確定刪除此連結嗎？")) return;
             el.parentElement.parentElement.style.opacity = '0.5';
             callAPI('deleteLink', { idx:idx }, (res) => loadLinks());
+        }
+        
+        function openZoneModal(mode) {
+            modalMode = mode;
+            const z = document.getElementById('i-zone').value;
+            if (mode === 'edit' && !z) return alert("請先選擇要編輯的客戶");
+            document.getElementById('modal-title').innerText = (mode==='new') ? "新增客戶" : "編輯客戶名稱";
+            const selCode = document.getElementById('modal-code');
+            selCode.innerHTML = '';
+            const raw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+            const alphabet = (curCat === 'image') ? raw.map(c=>c.toLowerCase()) : raw;
+            const used = (curCat === 'image') ? DATA.usedCodesImage : DATA.usedCodesVideo;
+            alphabet.forEach(c => { 
+                if(mode === 'new' && used.includes(c)) return; 
+                const op = document.createElement('option'); op.value = c; op.text = c; selCode.add(op); 
+            });
+            document.getElementById('div-code-select').classList.remove('hidden');
+            if (mode === 'new') {
+                document.getElementById('modal-name').value = '';
+            } else {
+                const prefix = z.split('_')[0];
+                const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z;
+                let found = false;
+                for(let i=0; i<selCode.options.length; i++) { if(selCode.options[i].value == prefix) found = true; }
+                if(!found) { const op = document.createElement('option'); op.value = prefix; op.text = prefix; selCode.add(op); }
+                selCode.value = prefix;
+                document.getElementById('modal-name').value = realName;
+            }
+            document.getElementById('modal-zone').style.display = 'flex';
+        }
+
+        function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
+
+        function confirmZoneModal() {
+            const name = document.getElementById('modal-name').value;
+            const code = document.getElementById('modal-code').value;
+            if(!name) return;
+            closeModal('zone');
+            document.getElementById('loader').style.display = 'flex';
+            if (modalMode === 'new') {
+                callAPI('createClient', { cat: curCat, code: code, name: name }, (res) => {
+                    callAPI('initAllData', {}, (data) => processDataUpdate(data));
+                });
+            } else {
+                const oldName = document.getElementById('i-zone').value;
+                const newFullName = code + "_" + name; 
+                callAPI('renameClient', { cat: curCat, oldName: oldName, newFullName: newFullName }, (res) => {
+                    callAPI('initAllData', {}, (data) => processDataUpdate(data));
+                });
+            }
+        }
+        
+        function openEditProject(p) {
+            document.getElementById('ep-cat').value = p.category;
+            document.getElementById('ep-origin-id').value = p.id; 
+            document.getElementById('ep-origin-zone').value = p.zone; 
+            const prefix = p.zone.split('_')[0]; 
+            const numPart = p.id.replace(prefix, ''); 
+            const epCodeSel = document.getElementById('ep-code');
+            epCodeSel.innerHTML = '';
+            const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
+            Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
+            epCodeSel.value = prefix;
+            document.getElementById('ep-num').value = numPart;
+            updateEditClientInfo(); 
+            document.getElementById('ep-producer').value = p.producer;
+            document.getElementById('ep-name').value = p.name;
+            document.getElementById('ep-type').value = p.type;
+            document.getElementById('ep-hours').value = p.hours || 0; 
+            if (p.start && p.end) fpEdit.setDate([p.start, p.end]); else fpEdit.clear();
+            document.getElementById('ep-note').value = p.note;
+            document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
+            document.getElementById('modal-edit-project').style.display = 'flex';
+        }
+
+        function updateEditClientInfo() {
+            const selectedCode = document.getElementById('ep-code').value;
+            const settings = (document.getElementById('ep-cat').value === 'video') ? DATA.videoSettings : DATA.imageSettings;
+            let foundZone = "";
+            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
+            if (foundZone) {
+                const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone;
+                document.getElementById('ep-client-display').value = clientName;
+                document.getElementById('ep-zone').value = foundZone; 
+            } else {
+                document.getElementById('ep-client-display').value = "未知客戶";
+                document.getElementById('ep-zone').value = "";
+            }
         }
     </script>
 </body>

@@ -43,8 +43,8 @@
         .k-status-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; color: white; }
         .k-tag-urgent { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; color: white; background: #ff3b30; }
         
-        .k-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; }
-        .k-action-btn { width: 28px; height: 28px; border-radius: 6px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #999; transition: 0.2s; background: #f5f5f7; }
+        .k-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 20; }
+        .k-action-btn { width: 28px; height: 28px; border-radius: 6px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #999; transition: 0.2s; background: #f5f5f7; z-index: 30; }
         .k-action-btn:hover { background: #e5e5e5; color: #333; }
         .k-del:hover { background: #fee2e2; color: #ef4444; }
 
@@ -421,6 +421,7 @@
     </div>
 
     <script>
+        // ★★★ 您的 API 網址 (已自動填入) ★★★
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
 
         let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
@@ -486,7 +487,6 @@
 
         function processDataUpdate(res, isCache) {
             DATA = res;
-            
             renderZoneOptions();
             loadMemos();
             loadLinks();
@@ -647,12 +647,12 @@
             if (!DATA.projects) return;
             const tasks = DATA.projects.filter(p => p.producer === producer);
             const card = (p, color, bg) => {
-                const pStr = JSON.stringify(p).replace(/'/g, "&#39;");
+                // ★★★ 修復：改為傳遞 ID 而不是物件本身，避免特殊符號導致錯誤 ★★★
                 return `
                 <div class="kanban-item k-${color} ${p.tag === 'Urgent' ? 'k-red' : ''}">
                     <div class="k-header-badges"><span class="k-status-badge bg-${bg}">${p.status}</span>${ p.tag === 'Urgent' ? '<span class="k-tag-urgent">🔥 急件</span>' : '' }</div>
                     <div class="k-actions">
-                        <div onclick='openEditProject(${pStr})' class="k-action-btn"><i class="fas fa-pen text-xs"></i></div>
+                        <div onclick="triggerEdit('${p.id}', '${p.zone}')" class="k-action-btn"><i class="fas fa-pen text-xs"></i></div>
                         <div onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="k-action-btn k-del"><i class="fas fa-times text-xs"></i></div>
                     </div>
                     <div class="k-id">${p.id}</div><div class="k-name">${p.name}</div><div class="k-client">${p.client}</div>
@@ -672,6 +672,16 @@
             document.getElementById('kb-review').innerHTML = reviewHTML || '<div class="text-center text-gray-300 py-4">無</div>';
             document.getElementById('kb-todo').innerHTML = todoHTML || '<div class="text-center text-gray-300 py-4">無</div>';
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
+        }
+
+        // ★★★ 新增：透過 ID 查找專案並開啟編輯視窗 ★★★
+        function triggerEdit(id, zone) {
+            const p = DATA.projects.find(x => x.id === id && x.zone === zone);
+            if (p) {
+                openEditProject(p);
+            } else {
+                alert("無法讀取專案資料，請重新整理頁面");
+            }
         }
 
         function deleteProject(category, zone, id) {

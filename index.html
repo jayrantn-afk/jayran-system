@@ -421,7 +421,6 @@
     </div>
 
     <script>
-        // ★★★ 您的 API 網址 (已自動填入) ★★★
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
 
         let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
@@ -466,7 +465,6 @@
         window.onload = function() {
             const cachedData = localStorage.getItem('JAYRAN_SYSTEM_DATA');
             if (cachedData) {
-                console.log("🚀 Loaded from Cache (Fast Mode)");
                 try {
                     const parsedData = JSON.parse(cachedData);
                     processDataUpdate(parsedData, true); 
@@ -478,7 +476,6 @@
                 if(res.error) {
                     document.getElementById('loader-msg').innerHTML = `<span class="text-red-500">${res.error}</span>`;
                 } else {
-                    console.log("✅ Synced with Server");
                     localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(res));
                     processDataUpdate(res, false);
                 }
@@ -618,27 +615,28 @@
                 category: curCat, zone: document.getElementById('i-zone').value, id: document.getElementById('i-id').value,
                 client: document.getElementById('i-client').value, name: document.getElementById('i-name').value,
                 producer: prod, type: document.getElementById('i-type').value,
-                note: document.getElementById('i-note').value, start: dr[0], end: dr[1] || dr[0],
-                tag: document.getElementById('i-urgent').checked ? 'Urgent' : ''
+                note: document.getElementById('i-note').value, start: dr[0] || "", end: dr[1] || dr[0] || "",
+                tag: document.getElementById('i-urgent').checked ? 'Urgent' : '',
+                status: (prod !== '尚未暫定' && dr[0] && new Date(dr[0]) <= new Date()) ? '製作中' : '尚未進行'
             };
             if(!p.zone || !p.id || !p.name) return alert("請填寫完整資訊");
             if(prod !== '尚未暫定' && !p.start) return alert("請選擇日期範圍");
             
-            document.getElementById('btn-create').innerText = "處理中...";
-            document.getElementById('btn-create').disabled = true;
+            // ★ 樂觀更新：直接加到本地資料 ★
+            DATA.projects.push(p);
+            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
+            processDataUpdate(DATA, true); // 立即更新畫面
+            alert("✅ 建立成功 (背景同步中)");
 
+            // 清空輸入框
+            document.getElementById('i-id').value = '';
+            document.getElementById('i-name').value = '';
+            document.getElementById('i-note').value = '';
+            document.getElementById('i-urgent').checked = false; 
+
+            // 背景送出
             callAPI('addProject', { payload: p }, (res) => {
-                alert("✅ 建立成功");
-                document.getElementById('btn-create').innerText = "建立並同步";
-                document.getElementById('btn-create').disabled = false;
-                document.getElementById('i-id').value = '';
-                document.getElementById('i-name').value = '';
-                document.getElementById('i-note').value = '';
-                document.getElementById('i-urgent').checked = false; 
-                callAPI('initAllData', {}, (data) => {
-                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
-                    processDataUpdate(data, false);
-                });
+                console.log("Synced");
             });
         }
 
@@ -647,7 +645,7 @@
             if (!DATA.projects) return;
             const tasks = DATA.projects.filter(p => p.producer === producer);
             const card = (p, color, bg) => {
-                // ★★★ 修復：改為傳遞 ID 而不是物件本身，避免特殊符號導致錯誤 ★★★
+                // 使用 ID 傳遞
                 return `
                 <div class="kanban-item k-${color} ${p.tag === 'Urgent' ? 'k-red' : ''}">
                     <div class="k-header-badges"><span class="k-status-badge bg-${bg}">${p.status}</span>${ p.tag === 'Urgent' ? '<span class="k-tag-urgent">🔥 急件</span>' : '' }</div>
@@ -674,32 +672,31 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // ★★★ 新增：透過 ID 查找專案並開啟編輯視窗 ★★★
+        // 新增：透過 ID 觸發編輯
         function triggerEdit(id, zone) {
             const p = DATA.projects.find(x => x.id === id && x.zone === zone);
-            if (p) {
-                openEditProject(p);
-            } else {
-                alert("無法讀取專案資料，請重新整理頁面");
-            }
+            if(p) openEditProject(p);
         }
 
         function deleteProject(category, zone, id) {
             if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return;
-            document.getElementById('loader').style.display = 'flex';
+            
+            // ★ 樂觀更新：直接刪除本地資料 ★
+            DATA.projects = DATA.projects.filter(p => !(p.id === id && p.zone === zone));
+            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
+            processDataUpdate(DATA, true);
+
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => {
-                if (res === "OK") {
-                    callAPI('initAllData', {}, (data) => {
-                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
-                        processDataUpdate(data, false);
-                    });
-                } else { alert("刪除失敗"); document.getElementById('loader').style.display = 'none'; }
+               console.log("Deleted");
             });
         }
 
         function confirmEditProject() {
             const dateVal = document.getElementById('ep-date').value;
             const dates = dateVal.split(' to ');
+            const originId = document.getElementById('ep-origin-id').value;
+            const originZone = document.getElementById('ep-origin-zone').value;
+            
             const p = {
                 category: document.getElementById('ep-cat').value,
                 zone: document.getElementById('ep-zone').value, 
@@ -712,18 +709,28 @@
                 start: dates[0] || "",
                 end: dates[1] || dates[0] || "",
                 note: document.getElementById('ep-note').value,
-                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : ''
+                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',
+                // 這裡保留舊狀態，除非邏輯需要變更
+                status: '保持原樣' 
             };
+
+            // 尋找並更新本地資料
+            const targetIdx = DATA.projects.findIndex(x => x.id === originId && x.zone === originZone);
+            if (targetIdx !== -1) {
+                // 保留原本的 status，除非有特殊邏輯
+                p.status = DATA.projects[targetIdx].status;
+                DATA.projects[targetIdx] = p;
+            }
+
             closeModal('edit-project');
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('updateProject', { payload: p, originId: document.getElementById('ep-origin-id').value, originZone: document.getElementById('ep-origin-zone').value }, (res) => {
-                if (res === "OK") {
-                    alert("✅ 修改成功");
-                    callAPI('initAllData', {}, (data) => {
-                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
-                        processDataUpdate(data, false);
-                    });
-                } else { alert("修改失敗"); document.getElementById('loader').style.display = 'none'; }
+            
+            // ★ 樂觀更新：立即存檔並刷新 ★
+            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
+            processDataUpdate(DATA, true);
+            alert("✅ 修改成功 (背景同步中)");
+
+            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
+                console.log("Updated");
             });
         }
 
@@ -744,12 +751,17 @@
         }
         
         function doUpdate(cat, zone, id, status, hours=0) {
-            document.getElementById('loader').style.display = 'flex';
+            // ★ 樂觀更新：直接改狀態 ★
+            const p = DATA.projects.find(x => x.id === id && x.zone === zone);
+            if (p) {
+                p.status = status;
+                if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours);
+                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
+                processDataUpdate(DATA, true);
+            }
+
             callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {
-               callAPI('initAllData', {}, (data) => {
-                   localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
-                   processDataUpdate(data, false);
-               });
+               console.log("Status Updated");
             });
         }
         

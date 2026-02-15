@@ -9,23 +9,20 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
-        /* --- V5 設計語言 --- */
         :root { --bg: #F2F2F7; --surface: #FFFFFF; --primary: #000000; --secondary: #8E8E93; --radius: 16px; }
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--primary); padding-bottom: 80px; -webkit-tap-highlight-color: transparent; }
         
-        /* 導航 */
         .segmented-nav { background: #E5E5EA; padding: 4px; border-radius: 12px; display: flex; margin-bottom: 24px; overflow-x: auto; }
         .nav-item { flex: 1; min-width: 90px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 9px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         
-        /* 卡片 */
         .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .clean-input, .clean-select { width: 100%; padding: 14px; background: #F2F2F7; border: 1px solid transparent; border-radius: 10px; font-size: 15px; font-weight: 600; transition: 0.2s; appearance: none; }
         .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: #000; outline: none; box-shadow: 0 0 0 2px rgba(0,0,0,0.1); }
         
-        /* 類型切換 */
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; background: #E5E5EA; padding: 2px; }
         .type-btn { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: 700; color: #8E8E93; border-radius: 10px; transition: 0.2s; }
         .type-btn.active { background: #FFFFFF; color: #000; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
@@ -34,18 +31,13 @@
         .btn-black { background: #000; color: white; }
         .btn-gray { background: #E5E5EA; color: #000; }
 
-        /* 看板 */
         .kanban-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
         .kanban-item { background: white; border-radius: 16px; padding: 18px 20px 24px 20px; position: relative; transition: 0.2s; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); overflow: hidden; }
         .kanban-item:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
         
         .status-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; color: white; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .pill-blue { background: #007AFF; }
-        .pill-orange { background: #FF9500; }
-        .pill-green { background: #34C759; }
-        .pill-gray { background: #8E8E93; }
-        .pill-urgent { background: #FF3B30; margin-left: 6px; }
+        .pill-blue { background: #007AFF; } .pill-orange { background: #FF9500; } .pill-green { background: #34C759; } .pill-gray { background: #8E8E93; } .pill-urgent { background: #FF3B30; margin-left: 6px; }
 
         .k-id { font-size: 13px; font-weight: 700; color: #8E8E93; font-family: monospace; letter-spacing: 1px; }
         .k-name { font-size: 18px; font-weight: 800; color: #1C1C1E; margin: 4px 0 6px 0; line-height: 1.3; }
@@ -64,7 +56,6 @@
         details > summary i.fa-chevron-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; font-size: 12px; }
         details[open] > summary i.fa-chevron-right { transform: rotate(90deg); }
 
-        /* 甘特圖 */
         .gantt-wrapper { overflow-x: auto; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); width: 100%; border: 1px solid rgba(0,0,0,0.03); }
         .gantt-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 800px; }
         .gantt-header-cell { text-align: center; font-size: 11px; font-weight: 700; color: #8E8E93; padding: 10px 0; }
@@ -74,12 +65,10 @@
         .gan-btn { background: #E5E5EA; color: #8E8E93; transition: all 0.2s; font-weight: 700; }
         .gan-btn.active { background: #000; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
-        /* Modal */
         .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 100; }
         .modal-body { background: white; padding: 28px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; }
         .hidden { display: none; }
         
-        /* FAB */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 999; }
         .fab-btn { width: 56px; height: 56px; background: #000; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 22px; box-shadow: 0 8px 20px rgba(0,0,0,0.25); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
@@ -87,7 +76,6 @@
         .fab-left-container { position: fixed; bottom: 30px; left: 30px; z-index: 999; }
         .fab-btn-small { width: 44px; height: 44px; font-size: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: white; color: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; }
 
-        /* Panels */
         .float-panel { position: fixed; bottom: 30px; right: 100px; width: 360px; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); z-index: 998; display: none; border: 1px solid rgba(0,0,0,0.05); flex-direction: column; max-height: 70vh; padding: 0; overflow: hidden; }
         @media (max-width: 600px) { .float-panel { right: 20px; left: 20px; width: auto; bottom: 100px; } }
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
@@ -97,7 +85,6 @@
         .link-item { background: #1C1C1E; color: white; padding: 16px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #F2F2F7; }
 
-        /* Calendar */
         #calendar-container { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); min-height: 600px; }
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; }
         .fc-col-header-cell-cushion { color: #8E8E93; font-weight: 700; padding: 12px 0 !important; }
@@ -346,7 +333,7 @@
     </div>
 
     <script>
-        // ★★★ 您的 API 網址 (已自動填入) ★★★
+        // ★★★ 網址已幫您填好 (請勿修改，除非您換了部署) ★★★
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
 
         let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
@@ -356,7 +343,7 @@
         let calendar = null; 
         let calendarFilter = 'all'; 
         let currentGanttDate = new Date(); 
-        let ganttFilter = 'all'; // 新增甘特圖篩選變數
+        let ganttFilter = 'all';
         let editingMemoIdx = null;
         let editingLinkIdx = null;
 
@@ -371,15 +358,15 @@
                     let params = `?action=${action}`;
                     if(payload.cat) params += `&cat=${payload.cat}`;
                     if(payload.zone) params += `&zone=${payload.zone}`;
-                    fetch(GAS_API_URL + params).then(res => res.json()).then(data => onSuccess(data)).catch(e => console.error(e));
+                    fetch(GAS_API_URL + params).then(res => res.json()).then(data => onSuccess(data)).catch(e => { console.error(e); alert("無法連線，請檢查 API 網址"); document.getElementById('loader').style.display = 'none'; });
                 } else {
                     const postData = { action: action, ...payload };
                     fetch(GAS_API_URL, { method: "POST", body: JSON.stringify(postData) })
                     .then(res => res.json()).then(data => onSuccess(data.data)).catch(e => { alert("連線錯誤"); document.getElementById('loader').style.display = 'none'; });
                 }
             } else {
-                const handler = google.script.run.withSuccessHandler(onSuccess);
-                if (action === 'initAllData') handler.initAllData();
+                alert("錯誤：未設定 API 網址");
+                document.getElementById('loader').style.display = 'none';
             }
         }
 
@@ -453,7 +440,7 @@
             if (tab === 'add') document.getElementById('p-add').classList.remove('hidden');
             else if (tab === 'wei') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('魏敏軒'); }
             else if (tab === 'chiu') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('邱仁杰'); }
-            else if (tab === 'gan') { document.getElementById('p-gantt').classList.remove('hidden'); renderGantt('all'); } // 切換時預設顯示全部
+            else if (tab === 'gan') { document.getElementById('p-gantt').classList.remove('hidden'); renderGantt(ganttFilter); }
             else if (tab === 'calendar') { 
                 document.getElementById('p-calendar').classList.remove('hidden'); 
                 setTimeout(() => renderCalendar(), 100); 
@@ -515,13 +502,11 @@
             callAPI('addProject', { payload: p }, (res) => {});
         }
 
-        // ★★★ V5 看板渲染：含膠囊標籤與進度條 ★★★
         function renderKanban(producer) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
             const tasks = DATA.projects.filter(p => p.producer === producer);
-            const card = (p, colorClass) => {
-                // 計算進度條寬度
+            const card = (p) => {
                 let progress = 0;
                 if (p.status === '已完成' || p.status === '已結案') progress = 100;
                 else if (p.start && p.end) {
@@ -548,9 +533,7 @@
                     <div class="k-name">${p.name}</div>
                     <div class="k-client">${p.client}</div>
                     <div class="k-date"><i class="far fa-calendar-alt mr-1"></i> ${p.start} ~ ${p.end}</div>
-                    
                     <div class="progress-container"><div class="progress-bar" style="width:${progress}%; background:${progress===100 ? '#34C759' : '#007AFF'}"></div></div>
-
                     <div class="mt-4 flex gap-2">
                         ${ p.status==='製作中' ? `<button onclick="openHoursModal('${p.category}','${p.zone}','${p.id}')" class="flex-1 bg-gray-100 text-orange-600 text-xs font-bold py-2 rounded-lg hover:bg-orange-50">送審</button>` : '' }
                         ${ p.status.includes('審') ? `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="bg-gray-100 px-4 py-2 rounded-lg text-xs font-bold">退修</button><button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','已完成')" class="flex-1 bg-black text-white text-xs font-bold py-2 rounded-lg">完成</button>` : '' }
@@ -565,7 +548,6 @@
             document.getElementById('kb-done').innerHTML = tasks.filter(p => p.status === '已完成' || p.status === '已結案').map(p => card(p)).join('') || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // ★★★ V5 甘特圖邏輯：支援顯示全部、月份切換 ★★★
         function changeGanttMonth(offset) {
             currentGanttDate.setMonth(currentGanttDate.getMonth() + offset);
             renderGantt(ganttFilter);
@@ -815,10 +797,7 @@
             allPanels.forEach(id => { document.getElementById(id).style.display = 'none'; });
             if (!isVisible) { targetEl.style.display = 'flex'; if (type === 'memo') loadMemos(); if (type === 'link') loadLinks(); if (type === 'pending') loadPending(); }
         }
-        // ... (Memo, Link, Pending logic omitted for brevity, logic remains identical to previous working versions)
-        // 為了確保不被截斷，這裡的輔助功能邏輯保持不變，因為上面的核心 UI 已經是最重要的部分
-        // 若您發現便利貼功能失效，請告訴我，我會單獨提供那一段。但上面的甘特圖修復已經包含在內。
-        
+        // ... (Memo, Link, Pending, Modal logic retained for stability)
         function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
         function openLeaveModal() { document.getElementById('modal-leave').style.display = 'flex'; }
         function confirmLeave() {
@@ -834,7 +813,6 @@
         function openZoneModal(mode) {
             modalMode = mode;
             document.getElementById('modal-zone').style.display = 'flex';
-            // (Zone modal logic simplified for stability)
             const selCode = document.getElementById('modal-code');
             selCode.innerHTML = '';
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(c => selCode.add(new Option(c,c)));
@@ -844,11 +822,31 @@
             const code = document.getElementById('modal-code').value;
             if(!name) return;
             closeModal('zone');
-            callAPI('createClient', { cat: curCat, code: code, name: name }, (res) => {
-                alert("建立成功，請重新整理頁面以更新清單");
-            });
+            callAPI('createClient', { cat: curCat, code: code, name: name }, (res) => { alert("建立成功"); location.reload(); });
         }
         function openSettings(type) { document.getElementById('modal-settings').style.display = 'flex'; }
+        
+        function loadMemos() { callAPI('getMemos', {}, (list) => {
+            const c = document.getElementById('memo-list');
+            c.innerHTML = list.map(m => `<div class="memo-item"><div class="memo-content">${m.content}</div><div class="memo-meta"><span>${m.owner}</span><span>${m.date}</span></div></div>`).join('');
+            document.getElementById('memo-badge').innerText = list.length || 0;
+            document.getElementById('memo-badge').style.display = list.length ? 'flex' : 'none';
+        }); }
+        function addMemoItem() { callAPI('addMemo', { item: {content:document.getElementById('m-content').value, owner:document.getElementById('m-owner').value, date:document.getElementById('m-date').value} }, ()=>loadMemos()); document.getElementById('m-content').value=''; }
+        function loadLinks() { callAPI('getLinks', {}, (list) => {
+            document.getElementById('link-list').innerHTML = list.map(l => `<div class="link-item" onclick="window.open('${l.url}')"><span>${l.client}</span><i class="fas fa-external-link-alt"></i></div>`).join('');
+        }); }
+        function addLinkItem() { callAPI('addLink', { client:document.getElementById('l-client').value, url:document.getElementById('l-url').value }, ()=>loadLinks()); document.getElementById('l-client').value=''; document.getElementById('l-url').value=''; }
+        function loadPending() {
+             const list = DATA.projects.filter(p => p.producer === '尚未暫定');
+             document.getElementById('pending-list').innerHTML = list.map(p => `<div class="pending-item"><div class="pending-name">${p.name}</div></div>`).join('');
+             document.getElementById('pending-badge').innerText = list.length;
+             document.getElementById('pending-badge').style.display = list.length ? 'flex' : 'none';
+        }
+        function addSettingItem() { 
+            const val = document.getElementById('st-input').value; 
+            callAPI('manageConfig', {act:'add', cat:curCat, type:document.getElementById('st-type').value, val:val}, ()=>{ alert('新增成功'); location.reload(); }); 
+        }
     </script>
 </body>
 </html>

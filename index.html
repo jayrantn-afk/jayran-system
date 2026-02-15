@@ -395,8 +395,8 @@
     </div>
 
     <script>
-        // ★ 請將下方網址換成您第一部分部署後得到的網址 ★
-        const GAS_API_URL = ''; 
+        // ★★★ 網址已自動幫您填入 ★★★
+        const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
 
         let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
         let curTab = 'add';
@@ -667,6 +667,9 @@
         function confirmEditProject() {
             const dateVal = document.getElementById('ep-date').value;
             const dates = dateVal.split(' to ');
+            const originId = document.getElementById('ep-origin-id').value;
+            const originZone = document.getElementById('ep-origin-zone').value;
+            
             const p = {
                 category: document.getElementById('ep-cat').value,
                 zone: document.getElementById('ep-zone').value, 
@@ -679,18 +682,24 @@
                 start: dates[0] || "",
                 end: dates[1] || dates[0] || "",
                 note: document.getElementById('ep-note').value,
-                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : ''
+                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',
+                status: '保持原樣' 
             };
+
+            const targetIdx = DATA.projects.findIndex(x => x.id === originId && x.zone === originZone);
+            if (targetIdx !== -1) {
+                p.status = DATA.projects[targetIdx].status;
+                DATA.projects[targetIdx] = p;
+            }
+
             closeModal('edit-project');
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('updateProject', { payload: p, originId: document.getElementById('ep-origin-id').value, originZone: document.getElementById('ep-origin-zone').value }, (res) => {
-                if (res === "OK") {
-                    alert("✅ 修改成功");
-                    callAPI('initAllData', {}, (data) => {
-                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
-                        processDataUpdate(data, false);
-                    });
-                } else { alert("修改失敗"); document.getElementById('loader').style.display = 'none'; }
+            
+            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
+            processDataUpdate(DATA, true);
+            alert("✅ 修改成功 (背景同步中)");
+
+            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
+                console.log("Updated");
             });
         }
 
@@ -711,12 +720,16 @@
         }
         
         function doUpdate(cat, zone, id, status, hours=0) {
-            document.getElementById('loader').style.display = 'flex';
+            const p = DATA.projects.find(x => x.id === id && x.zone === zone);
+            if (p) {
+                p.status = status;
+                if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours);
+                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
+                processDataUpdate(DATA, true);
+            }
+
             callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {
-               callAPI('initAllData', {}, (data) => {
-                   localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
-                   processDataUpdate(data, false);
-               });
+               console.log("Status Updated");
             });
         }
         

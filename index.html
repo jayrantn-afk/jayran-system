@@ -14,55 +14,39 @@
     <style>
         :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--primary); padding-bottom: 60px; }
-        
         .segmented-nav { background: #E8E8ED; padding: 4px; border-radius: 10px; display: flex; margin-bottom: 24px; flex-wrap: wrap; }
         .nav-item { flex: 1; min-width: 80px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        
         .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
         .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; }
-        
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
         .type-btn.active { background: #1D1D1F; color: white; }
-        
         .icon-btn { width: 44px; height: 44px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; transition: 0.2s; }
         .btn-black { background: #1D1D1F; color: white; }
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
-
         .kanban-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
-        
         .kanban-item { background: white; border: 1px solid #E5E5E5; border-radius: 12px; padding: 16px 16px 16px 20px; position: relative; border-left: 5px solid #007AFF; transition: 0.2s; padding-top: 40px; }
         .kanban-item:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .k-blue { border-left-color: #007AFF; } .k-orange { border-left-color: #FF9500; } .k-green { border-left-color: #34C759; } .k-gray { border-left-color: #8E8E93; }
         .k-red { border-left-color: #ff3b30 !important; border: 1px solid #ffcccc; background: #fff5f5; }
-        
         .k-header-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; z-index: 2; }
         .k-status-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; color: white; }
         .k-tag-urgent { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; color: white; background: #ff3b30; }
-        
         .k-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 20; }
         .k-action-btn { width: 28px; height: 28px; border-radius: 6px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #999; transition: 0.2s; background: #f5f5f7; z-index: 30; }
         .k-action-btn:hover { background: #e5e5e5; color: #333; }
         .k-del:hover { background: #fee2e2; color: #ef4444; }
-
         .k-id { font-size: 13px; font-weight: 700; color: #86868B; margin-top: 0px; margin-bottom: 2px; }
         .k-name { font-size: 18px; font-weight: 800; color: #1D1D1F; margin-bottom: 4px; padding-right: 0px; line-height: 1.3; }
         .k-client { font-size: 13px; color: #666; margin-bottom: 8px; }
         .k-date { font-size: 12px; color: #888; font-weight: 600; display: flex; align-items: center; gap: 4px; }
-
         details > summary { list-style: none; outline: none; }
         details > summary::-webkit-details-marker { display: none; }
-        details > summary i.fa-caret-right {
-            transition: transform 0.2s ease;
-            display: inline-block;
-            width: 20px;
-            text-align: center;
-        }
+        details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
-
         .gantt-wrapper { overflow-x: auto; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; -webkit-overflow-scrolling: touch; }
         .gantt-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 800px; }
         .gantt-header-cell { text-align: center; font-size: 10px; color: #888; border-right: 1px solid #f0f0f0; padding: 8px 0; width: 28px; }
@@ -74,34 +58,27 @@
         .gantt-name { font-size: 12px; color: #444; font-weight: 500; }
         .gantt-grid-cell { border-right: 1px solid #f5f5f5; position: relative; padding: 0; }
         .gantt-bar { position: absolute; top: 10px; left: 1px; right: 1px; height: 20px; border-radius: 4px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 5px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
-
         .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 100; }
         .modal-body { background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; }
         .hidden { display: none; }
-        
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 999; }
         .fab-btn { width: 60px; height: 60px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
         .fab-btn.fab-link { background: #2D3748; } 
         .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; display: flex; justify-content: center; align-items: center; border: 2px solid white; font-weight: bold; display: none; }
-        
         .fab-left-container { position: fixed; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 999; }
         .fab-btn-small { width: 40px; height: 40px; font-size: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
         .fab-btn-small:hover { transform: scale(1.1); }
-
         .float-panel { position: fixed; bottom: 30px; right: 100px; width: 350px; background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 998; display: none; border: 1px solid #eee; flex-direction: column; max-height: 70vh; padding: 0; overflow: hidden; }
         @media (max-width: 600px) { .float-panel { right: 20px; left: 20px; width: auto; bottom: 100px; } }
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
-
         .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .memo-item.chiu { background: #E3F2FD; border-left-color: #2196F3; } 
         .pending-item { background: #f3f4f6; border-left: 6px solid #9CA3AF; }
-        
         .memo-content, .pending-name { font-weight: 800; color: #333; margin-bottom: 8px; font-size: 20px; line-height: 1.4; }
         .memo-meta, .pending-meta { font-size: 14px; color: #666; display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
         .memo-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
@@ -110,18 +87,15 @@
         .memo-del:hover { color: #ff3b30; }
         .memo-input { background: white; border: 2px solid #ddd; color: #333; }
         .memo-input:focus { border-color: #1D1D1F; }
-
         .link-item { background: #2D3748; color: white; padding: 12px 16px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; position: relative; }
         .link-item:hover { transform: translateX(5px); background: #1A202C; }
         .link-actions { display: flex; gap: 10px; margin-left: 10px; }
         .link-icon { color: #A0AEC0; font-size: 16px; cursor: pointer; padding: 5px; }
         .link-icon:hover { color: white; }
         .link-del:hover { color: #ff3b30; }
-        
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
         .setting-actions i { cursor: pointer; padding: 5px; margin-left: 5px; color: #999; }
         .setting-actions i:hover { color: #333; }
-
         #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); min-height: 600px; }
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
@@ -421,7 +395,8 @@
     </div>
 
     <script>
-        const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
+        // ★ 請將下方網址換成您第一部分部署後得到的網址 ★
+        const GAS_API_URL = ''; 
 
         let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
         let curTab = 'add';
@@ -622,21 +597,21 @@
             if(!p.zone || !p.id || !p.name) return alert("請填寫完整資訊");
             if(prod !== '尚未暫定' && !p.start) return alert("請選擇日期範圍");
             
-            // ★ 樂觀更新：直接加到本地資料 ★
-            DATA.projects.push(p);
-            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true); // 立即更新畫面
-            alert("✅ 建立成功 (背景同步中)");
+            document.getElementById('btn-create').innerText = "處理中...";
+            document.getElementById('btn-create').disabled = true;
 
-            // 清空輸入框
-            document.getElementById('i-id').value = '';
-            document.getElementById('i-name').value = '';
-            document.getElementById('i-note').value = '';
-            document.getElementById('i-urgent').checked = false; 
-
-            // 背景送出
             callAPI('addProject', { payload: p }, (res) => {
-                console.log("Synced");
+                alert("✅ 建立成功");
+                document.getElementById('btn-create').innerText = "建立並同步";
+                document.getElementById('btn-create').disabled = false;
+                document.getElementById('i-id').value = '';
+                document.getElementById('i-name').value = '';
+                document.getElementById('i-note').value = '';
+                document.getElementById('i-urgent').checked = false; 
+                callAPI('initAllData', {}, (data) => {
+                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                    processDataUpdate(data, false);
+                });
             });
         }
 
@@ -645,7 +620,6 @@
             if (!DATA.projects) return;
             const tasks = DATA.projects.filter(p => p.producer === producer);
             const card = (p, color, bg) => {
-                // 使用 ID 傳遞
                 return `
                 <div class="kanban-item k-${color} ${p.tag === 'Urgent' ? 'k-red' : ''}">
                     <div class="k-header-badges"><span class="k-status-badge bg-${bg}">${p.status}</span>${ p.tag === 'Urgent' ? '<span class="k-tag-urgent">🔥 急件</span>' : '' }</div>
@@ -672,7 +646,6 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // 新增：透過 ID 觸發編輯
         function triggerEdit(id, zone) {
             const p = DATA.projects.find(x => x.id === id && x.zone === zone);
             if(p) openEditProject(p);
@@ -680,23 +653,20 @@
 
         function deleteProject(category, zone, id) {
             if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return;
-            
-            // ★ 樂觀更新：直接刪除本地資料 ★
-            DATA.projects = DATA.projects.filter(p => !(p.id === id && p.zone === zone));
-            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true);
-
+            document.getElementById('loader').style.display = 'flex';
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => {
-               console.log("Deleted");
+                if (res === "OK") {
+                    callAPI('initAllData', {}, (data) => {
+                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                        processDataUpdate(data, false);
+                    });
+                } else { alert("刪除失敗"); document.getElementById('loader').style.display = 'none'; }
             });
         }
 
         function confirmEditProject() {
             const dateVal = document.getElementById('ep-date').value;
             const dates = dateVal.split(' to ');
-            const originId = document.getElementById('ep-origin-id').value;
-            const originZone = document.getElementById('ep-origin-zone').value;
-            
             const p = {
                 category: document.getElementById('ep-cat').value,
                 zone: document.getElementById('ep-zone').value, 
@@ -709,28 +679,18 @@
                 start: dates[0] || "",
                 end: dates[1] || dates[0] || "",
                 note: document.getElementById('ep-note').value,
-                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',
-                // 這裡保留舊狀態，除非邏輯需要變更
-                status: '保持原樣' 
+                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : ''
             };
-
-            // 尋找並更新本地資料
-            const targetIdx = DATA.projects.findIndex(x => x.id === originId && x.zone === originZone);
-            if (targetIdx !== -1) {
-                // 保留原本的 status，除非有特殊邏輯
-                p.status = DATA.projects[targetIdx].status;
-                DATA.projects[targetIdx] = p;
-            }
-
             closeModal('edit-project');
-            
-            // ★ 樂觀更新：立即存檔並刷新 ★
-            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true);
-            alert("✅ 修改成功 (背景同步中)");
-
-            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
-                console.log("Updated");
+            document.getElementById('loader').style.display = 'flex';
+            callAPI('updateProject', { payload: p, originId: document.getElementById('ep-origin-id').value, originZone: document.getElementById('ep-origin-zone').value }, (res) => {
+                if (res === "OK") {
+                    alert("✅ 修改成功");
+                    callAPI('initAllData', {}, (data) => {
+                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                        processDataUpdate(data, false);
+                    });
+                } else { alert("修改失敗"); document.getElementById('loader').style.display = 'none'; }
             });
         }
 
@@ -751,17 +711,12 @@
         }
         
         function doUpdate(cat, zone, id, status, hours=0) {
-            // ★ 樂觀更新：直接改狀態 ★
-            const p = DATA.projects.find(x => x.id === id && x.zone === zone);
-            if (p) {
-                p.status = status;
-                if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours);
-                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-                processDataUpdate(DATA, true);
-            }
-
+            document.getElementById('loader').style.display = 'flex';
             callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {
-               console.log("Status Updated");
+               callAPI('initAllData', {}, (data) => {
+                   localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                   processDataUpdate(data, false);
+               });
             });
         }
         

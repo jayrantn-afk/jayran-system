@@ -11,169 +11,143 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
     
     <style>
-        /* --- V9 Pro Design: 紮實字體、高質感陰影 --- */
-        :root { --bg: #F0F2F5; --card: #FFFFFF; --text: #111827; --primary: #1F2937; --accent: #2563EB; --radius: 16px; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 120px; font-weight: 500; -webkit-font-smoothing: antialiased; }
+        /* V10: 回歸穩定、快速、清晰 */
+        :root { --bg: #F3F4F6; --primary: #1F2937; }
+        body { font-family: "Microsoft JhengHei", -apple-system, sans-serif; background: var(--bg); color: var(--primary); padding-bottom: 100px; -webkit-tap-highlight-color: transparent; }
         
-        /* 導航 */
-        .nav-container { background: white; padding: 6px; border-radius: 14px; display: flex; gap: 4px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .nav-btn { flex: 1; padding: 12px; text-align: center; border-radius: 10px; font-weight: 700; color: #6B7280; cursor: pointer; transition: 0.2s; font-size: 15px; }
-        .nav-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transform: translateY(-1px); }
+        /* 導航列 */
+        .nav-container { background: white; padding: 10px; border-radius: 12px; display: flex; gap: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow-x: auto; }
+        .nav-btn { flex: 1; padding: 10px; text-align: center; border-radius: 8px; font-weight: bold; color: #6B7280; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .nav-btn.active { background: #2563EB; color: white; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
         
-        /* 類型切換 (大按鈕 - 修復點擊) */
-        .type-tabs { display: flex; gap: 12px; margin-bottom: 20px; }
-        .type-tab { flex: 1; padding: 16px; background: white; border-radius: 14px; text-align: center; font-weight: 800; color: #9CA3AF; cursor: pointer; border: 2px solid transparent; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.03); user-select: none; }
-        .type-tab.active { border-color: var(--primary); color: var(--primary); background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .type-tab:active { transform: scale(0.98); }
+        /* 內容卡片 */
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .inp-label { display: block; font-size: 13px; font-weight: 700; color: #4B5563; margin-bottom: 4px; }
+        .inp { width: 100%; padding: 10px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 15px; font-weight: 600; outline: none; }
+        .inp:focus { border-color: #2563EB; background: white; }
         
-        /* 卡片與輸入 (加粗字體) */
-        .card { background: var(--card); border-radius: 20px; padding: 28px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); margin-bottom: 24px; border: 1px solid #E5E7EB; }
-        .inp-label { display: block; font-size: 13px; font-weight: 800; color: #374151; margin-bottom: 6px; letter-spacing: 0.5px; }
-        .inp { width: 100%; padding: 14px; background: #F9FAFB; border: 2px solid #E5E7EB; border-radius: 12px; font-size: 16px; font-weight: 700; color: #111827; outline: none; transition: 0.2s; }
-        .inp:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1); }
-        
-        /* 按鈕 (更有質感) */
-        .btn-main { background: var(--primary); color: white; width: 100%; padding: 16px; border-radius: 14px; font-weight: 800; font-size: 16px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; }
-        .btn-main:hover { transform: translateY(-1px); box-shadow: 0 10px 15px rgba(0,0,0,0.15); }
-        .btn-main:active { transform: scale(0.98); }
-        .btn-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #F3F4F6; border-radius: 12px; cursor: pointer; color: #374151; transition: 0.2s; font-size: 18px; }
+        /* 類型切換 (修復點擊問題) */
+        .type-tabs { display: flex; gap: 0; background: #E5E7EB; border-radius: 8px; padding: 4px; margin-bottom: 20px; }
+        .type-tab { flex: 1; text-align: center; padding: 10px; font-weight: 700; color: #6B7280; cursor: pointer; border-radius: 6px; transition: 0.2s; user-select: none; }
+        .type-tab.active { background: white; color: #2563EB; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* 按鈕 */
+        .btn-black { background: #1F2937; color: white; padding: 12px; border-radius: 8px; font-weight: 700; width: 100%; transition: 0.2s; }
+        .btn-black:active { transform: scale(0.98); }
+        .btn-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #F3F4F6; border-radius: 8px; cursor: pointer; color: #4B5563; }
         .btn-icon:hover { background: #E5E7EB; color: black; }
 
-        /* 看板卡片 (更清晰) */
-        .kanban-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+        /* 看板卡片 */
+        .kanban-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
-        .k-card { background: white; border: 1px solid #E5E7EB; border-left-width: 6px; border-radius: 14px; padding: 18px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: 0.2s; }
-        .k-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-        .k-blue { border-left-color: #2563EB; } .k-orange { border-left-color: #F59E0B; } .k-green { border-left-color: #10B981; } .k-gray { border-left-color: #9CA3AF; }
-        .k-title { font-size: 18px; font-weight: 800; color: #111827; margin-bottom: 4px; line-height: 1.3; }
-        
-        /* 甘特圖 (自動高度) */
-        .gantt-box { overflow: auto; background: white; border-radius: 16px; border: 1px solid #E5E7EB; position: relative; min-height: 300px; max-height: 80vh; }
+        .k-card { background: white; border: 1px solid #E5E7EB; border-left: 5px solid #ccc; border-radius: 10px; padding: 16px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .k-blue { border-left-color: #2563EB; } .k-orange { border-left-color: #F59E0B; } .k-green { border-left-color: #10B981; }
+        .k-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; color: white; font-weight: 700; display: inline-block; margin-bottom: 8px; }
+        .bg-blue { background: #2563EB; } .bg-orange { background: #F59E0B; } .bg-green { background: #10B981; } .bg-gray { background: #9CA3AF; }
+
+        /* 甘特圖 (凍結標題) */
+        .gantt-box { overflow: auto; background: white; border-radius: 12px; border: 1px solid #E5E7EB; max-height: 500px; position: relative; }
         .gantt-table { border-collapse: separate; border-spacing: 0; min-width: 100%; }
-        .gantt-th { position: sticky; top: 0; background: #F9FAFB; z-index: 20; font-size: 12px; font-weight: 800; color: #4B5563; padding: 10px 0; border-bottom: 2px solid #E5E7EB; border-right: 1px solid #E5E7EB; min-width: 32px; }
-        .gantt-col-1 { position: sticky; left: 0; background: white; z-index: 30; border-right: 2px solid #E5E7EB; width: 140px; min-width: 140px; font-weight: 700; font-size: 13px; padding: 8px; color: #111827; }
-        .gantt-td { border-right: 1px solid #F3F4F6; border-bottom: 1px solid #F3F4F6; height: 44px; position: relative; padding: 0; }
-        .gantt-bar { position: absolute; top: 10px; height: 24px; border-radius: 6px; font-size: 11px; font-weight: 800; color: white; line-height: 24px; padding: 0 8px; overflow: hidden; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+        .gantt-th { position: sticky; top: 0; background: #F9FAFB; z-index: 20; font-size: 12px; font-weight: 700; color: #4B5563; padding: 8px 0; border-bottom: 2px solid #E5E7EB; border-right: 1px solid #E5E7EB; min-width: 30px; }
+        .gantt-col-1 { position: sticky; left: 0; background: white; z-index: 30; border-right: 2px solid #E5E7EB; width: 120px; min-width: 120px; font-size: 12px; font-weight: 700; padding: 4px; }
         .gantt-corner { position: sticky; top: 0; left: 0; z-index: 40; background: #F3F4F6; border-right: 2px solid #E5E7EB; border-bottom: 2px solid #E5E7EB; }
+        .gantt-bar { position: absolute; top: 10px; height: 20px; border-radius: 4px; color: white; font-size: 10px; line-height: 20px; padding: 0 4px; overflow: hidden; white-space: nowrap; }
 
-        /* 行事曆 (自動高度) */
-        #calendar-wrapper { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: auto; }
-        .fc-toolbar-title { font-weight: 900 !important; font-size: 1.6rem !important; color: #111827; }
-        .fc-button { background-color: #F3F4F6 !important; border: none !important; color: #374151 !important; font-weight: 800 !important; border-radius: 8px !important; padding: 8px 16px !important; }
-        .fc-button-active { background-color: #1F2937 !important; color: white !important; }
-        .fc-daygrid-day-number { color: #374151; font-weight: 800; text-decoration: none !important; padding: 8px !important; }
-        .fc-day-today .fc-daygrid-day-frame { border: 3px solid #111827 !important; border-radius: 12px; background: none !important; }
-        .fc-event { border: none !important; border-radius: 6px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important; font-weight: 700 !important; padding: 4px 6px !important; margin-bottom: 4px !important; }
-
-        /* 右下角面板 (回歸圖二、圖三的美學) */
+        /* 右下角浮動面板 (還原圖二圖三樣式) */
         .float-panel { 
-            position: fixed; bottom: 100px; right: 30px; width: 340px; 
-            background: white; border-radius: 20px; 
-            box-shadow: 0 20px 60px -10px rgba(0,0,0,0.3); 
-            z-index: 90; padding: 0; border: 1px solid #E5E7EB; 
-            display: none; animation: slideUp 0.2s ease-out;
-            max-height: 60vh; display: flex; flex-direction: column;
+            position: fixed; bottom: 100px; right: 30px; width: 320px; 
+            background: white; border-radius: 16px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+            z-index: 90; padding: 16px; border: 1px solid #E5E7EB; 
+            display: none; flex-direction: column; max-height: 60vh;
         }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .fp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+        .fp-title { font-size: 18px; font-weight: 800; color: #1F2937; }
         
-        .panel-head { padding: 20px 20px 10px 20px; border-bottom: 1px solid #F3F4F6; display: flex; justify-content: space-between; align-items: center; }
-        .panel-title { font-size: 18px; font-weight: 800; color: #111827; }
-        .panel-body { padding: 10px; overflow-y: auto; flex: 1; }
-        
-        /* 列表項目樣式 (仿圖二/圖三) */
-        .list-item { background: #F9FAFB; padding: 16px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #E5E7EB; position: relative; }
-        .list-title { font-weight: 800; font-size: 16px; color: #111827; margin-bottom: 4px; }
-        .list-sub { font-size: 13px; color: #6B7280; font-weight: 600; }
-        .list-icon { position: absolute; top: 16px; right: 16px; color: #9CA3AF; cursor: pointer; }
-        .list-icon:hover { color: #EF4444; }
+        .list-item { background: #F9FAFB; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #E5E7EB; position: relative; }
+        .list-icon-btn { position: absolute; top: 12px; right: 12px; color: #9CA3AF; cursor: pointer; }
+        .list-icon-btn:hover { color: #EF4444; }
 
-        /* Modal & Common */
-        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 100; }
-        .modal-box { background: white; padding: 28px; border-radius: 24px; width: 90%; max-width: 440px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-        .hidden { display: none; }
-        
         /* FAB */
-        .fab-stack { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 14px; z-index: 50; }
-        .fab { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; box-shadow: 0 8px 20px rgba(0,0,0,0.25); cursor: pointer; transition: transform 0.2s; border: 2px solid white; }
+        .fab-stack { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 12px; z-index: 80; }
+        .fab { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
         .fab:hover { transform: scale(1.1); }
-        
-        /* Loading & Login */
-        #loader { position: fixed; inset: 0; background: #F3F4F6; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
+
+        /* Modal */
+        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal-box { background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .hidden { display: none; }
+
+        /* 登入遮罩 */
         #login-overlay { position: fixed; inset: 0; background: #111827; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
-        <div class="text-5xl font-black mb-8 tracking-widest text-white">JAYRAN</div>
-        <input id="login-pass" type="password" class="p-4 text-center text-black text-2xl font-bold rounded-2xl w-72 mb-4 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="輸入密碼" maxlength="8">
-        <div id="login-msg" class="text-red-400 font-bold hidden mb-4">密碼錯誤，請重試</div>
-        <button onclick="checkLogin()" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-2xl font-bold text-lg transition shadow-lg">進入系統</button>
+        <div class="text-4xl font-black mb-6 tracking-widest text-white">JAYRAN</div>
+        <input id="login-pass" type="password" class="p-3 text-center text-black text-xl font-bold rounded-lg w-64 mb-4 outline-none" placeholder="輸入密碼" maxlength="8">
+        <button onclick="checkLogin()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg font-bold">進入系統</button>
     </div>
 
-    <div id="loader" class="hidden">
-        <div class="text-4xl font-black tracking-widest animate-pulse text-gray-800 mb-2">JAYRAN</div>
-        <div class="text-sm font-bold text-gray-400">系統載入中...</div>
+    <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F3F4F6] flex flex-col justify-center items-center z-[90] hidden">
+        <div class="text-2xl font-black animate-pulse text-gray-800">LOADING...</div>
     </div>
 
     <div class="fab-stack">
-        <div onclick="togglePanel('link')" class="fab bg-blue-600" title="連結"><i class="fas fa-link"></i></div>
-        <div onclick="togglePanel('pending')" class="fab bg-gray-700 relative" title="待分派">
+        <div onclick="togglePanel('link')" class="fab bg-blue-600"><i class="fas fa-link"></i></div>
+        <div onclick="togglePanel('pending')" class="fab bg-gray-600 relative">
             <i class="fas fa-user-clock"></i>
-            <span id="badge-pending" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full font-bold border-2 border-white hidden">0</span>
+            <span id="badge-pending" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold hidden">0</span>
         </div>
-        <div onclick="togglePanel('memo')" class="fab bg-black" title="便利貼"><i class="fas fa-sticky-note"></i></div>
+        <div onclick="togglePanel('memo')" class="fab bg-black"><i class="fas fa-sticky-note"></i></div>
     </div>
 
     <div id="panel-memo" class="float-panel">
-        <div class="panel-head">
-            <span class="panel-title"><i class="fas fa-sticky-note mr-2 text-yellow-500"></i>便利貼</span>
-            <i onclick="closePanel('memo')" class="fas fa-times text-gray-400 cursor-pointer text-xl hover:text-black"></i>
+        <div class="fp-header">
+            <span class="fp-title">便利貼</span>
+            <i onclick="closePanel('memo')" class="fas fa-times text-gray-400 cursor-pointer text-lg"></i>
         </div>
-        <div class="p-4 border-b border-gray-100 bg-gray-50">
-            <input id="m-content" class="inp mb-3 bg-white" placeholder="記事內容...">
-            <div class="flex gap-2">
-                <select id="m-owner" class="inp flex-1 bg-white cursor-pointer"><option>魏敏軒</option><option>邱仁杰</option></select>
-                <input id="m-date" class="inp w-32 text-center bg-white cursor-pointer" placeholder="日期">
-            </div>
-            <button onclick="addMemoItem()" class="btn-main mt-3 bg-black text-white py-3 rounded-xl">新增記事</button>
+        <input id="m-content" class="inp mb-2" placeholder="輸入記事...">
+        <div class="flex gap-2 mb-2">
+            <select id="m-owner" class="inp flex-1 cursor-pointer"><option>魏敏軒</option><option>邱仁杰</option></select>
+            <input id="m-date" class="inp w-32 text-center" placeholder="日期">
         </div>
-        <div id="memo-list" class="panel-body"></div>
+        <button onclick="addMemoItem()" class="btn-black py-2 text-sm">新增</button>
+        <div id="memo-list" class="mt-4 flex-1 overflow-y-auto"></div>
     </div>
     
     <div id="panel-pending" class="float-panel">
-        <div class="panel-head">
-            <span class="panel-title"><i class="fas fa-user-clock mr-2 text-gray-500"></i>待分派專案</span>
-            <i onclick="closePanel('pending')" class="fas fa-times text-gray-400 cursor-pointer text-xl hover:text-black"></i>
+        <div class="fp-header">
+            <span class="fp-title">待分派專案</span>
+            <i onclick="closePanel('pending')" class="fas fa-times text-gray-400 cursor-pointer text-lg"></i>
         </div>
-        <div id="pending-list" class="panel-body"></div>
+        <div id="pending-list" class="mt-2 flex-1 overflow-y-auto"></div>
     </div>
 
     <div id="panel-link" class="float-panel">
-        <div class="panel-head">
-            <span class="panel-title"><i class="fas fa-link mr-2 text-blue-500"></i>客戶連結庫</span>
-            <i onclick="closePanel('link')" class="fas fa-times text-gray-400 cursor-pointer text-xl hover:text-black"></i>
+        <div class="fp-header">
+            <span class="fp-title">客戶連結庫</span>
+            <i onclick="closePanel('link')" class="fas fa-times text-gray-400 cursor-pointer text-lg"></i>
         </div>
-        <div class="p-4 border-b border-gray-100 bg-gray-50">
-            <input id="l-name" class="inp mb-3 bg-white" placeholder="客戶名稱 (如: 台積電)">
-            <input id="l-url" class="inp mb-3 bg-white" placeholder="貼上網址 (https://...)">
-            <button onclick="addLinkItem()" class="btn-main mt-1 bg-blue-600 text-white py-3 rounded-xl">新增連結</button>
-        </div>
-        <div id="link-list" class="panel-body"></div>
+        <input id="l-name" class="inp mb-2" placeholder="名稱 (如: 台積電)">
+        <input id="l-url" class="inp mb-2" placeholder="網址 (https://...)">
+        <button onclick="addLinkItem()" class="btn-black py-2 text-sm bg-blue-600">新增連結</button>
+        <div id="link-list" class="mt-4 flex-1 overflow-y-auto"></div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-black tracking-tight text-gray-900">杰冉影像工作室</h1>
-            <div onclick="logout()" class="text-xs font-bold text-gray-400 cursor-pointer hover:text-red-500 bg-gray-100 px-3 py-1 rounded-full">登出系統</div>
+    <div class="max-w-5xl mx-auto px-4 py-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-black text-gray-900">杰冉影像工作室</h1>
+            <div onclick="logout()" class="text-xs font-bold text-gray-400 cursor-pointer hover:text-red-500">登出</div>
         </div>
         
         <div class="nav-container">
-            <div onclick="switchTab('add')" id="nav-add" class="nav-btn active"><i class="fas fa-plus mr-1"></i> 新增專案</div>
+            <div onclick="switchTab('add')" id="nav-add" class="nav-btn active">新增專案</div>
             <div onclick="switchTab('wei')" id="nav-wei" class="nav-btn">魏敏軒</div>
             <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-btn">邱仁杰</div>
-            <div onclick="switchTab('gan')" id="nav-gan" class="nav-btn"><i class="fas fa-chart-bar mr-1"></i> 甘特圖</div>
-            <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn"><i class="fas fa-calendar-alt mr-1"></i> 行事曆</div>
+            <div onclick="switchTab('gan')" id="nav-gan" class="nav-btn">甘特圖</div>
+            <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn">行事曆</div>
         </div>
 
         <div id="page-add" class="card">
@@ -182,172 +156,157 @@
                 <div onclick="setCat('image')" id="type-image" class="type-tab">🎨 圖文專案</div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="inp-label">選擇客戶</label>
+                    <label class="inp-label">客戶</label>
                     <div class="flex gap-2">
-                        <select id="add-zone" class="inp flex-1 cursor-pointer bg-white" onchange="updateClientInfo()"></select>
-                        <button onclick="openHistory()" class="btn-icon" title="查看紀錄"><i class="fas fa-eye"></i></button>
-                        <button onclick="openAddClientModal()" class="btn-icon bg-black text-white hover:bg-gray-800" title="新增客戶"><i class="fas fa-plus"></i></button>
+                        <select id="add-zone" class="inp flex-1 cursor-pointer" onchange="updateClientInfo()"></select>
+                        <button onclick="openAddClientModal()" class="btn-icon bg-black text-white"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
                 <div>
-                    <label class="inp-label">專案編號 <span id="next-id-hint" class="text-red-500 ml-2 bg-red-50 px-2 py-0.5 rounded text-xs"></span></label>
-                    <input id="add-id" class="inp font-mono tracking-widest text-center bg-gray-100" placeholder="001">
+                    <label class="inp-label">編號 <span id="next-id-hint" class="text-red-500 ml-2"></span></label>
+                    <input id="add-id" class="inp font-mono bg-gray-100" placeholder="001">
                 </div>
             </div>
 
-            <div class="mb-6">
+            <div class="mb-4">
                 <label class="inp-label">客戶全名 (可修改)</label>
-                <input id="add-client" class="inp bg-white">
+                <input id="add-client" class="inp">
+            </div>
+
+            <div class="mb-4">
+                <label class="inp-label">專案名稱</label>
+                <input id="add-name" class="inp" placeholder="輸入標題">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div><label class="inp-label">製作人</label><select id="add-producer" class="inp cursor-pointer"></select></div>
+                <div><label class="inp-label">類型</label><select id="add-type" class="inp cursor-pointer"></select></div>
+            </div>
+
+            <div class="flex items-center gap-2 mb-4 bg-red-50 p-3 rounded-lg border border-red-100">
+                <input type="checkbox" id="add-urgent" class="w-5 h-5 accent-red-600 cursor-pointer">
+                <label for="add-urgent" class="font-bold text-red-600 cursor-pointer select-none">🔥 標記為急件</label>
             </div>
 
             <div class="mb-6">
-                <label class="inp-label">專案名稱</label>
-                <input id="add-name" class="inp bg-white" placeholder="輸入標題...">
-            </div>
-
-            <div class="grid grid-cols-2 gap-6 mb-6">
-                <div><label class="inp-label">製作人</label><select id="add-producer" class="inp cursor-pointer bg-white"></select></div>
-                <div><label class="inp-label">類型</label><select id="add-type" class="inp cursor-pointer bg-white"></select></div>
-            </div>
-
-            <div class="flex items-center gap-3 mb-6 bg-red-50 p-4 rounded-xl border border-red-100 cursor-pointer" onclick="document.getElementById('add-urgent').click()">
-                <input type="checkbox" id="add-urgent" class="w-6 h-6 accent-red-600 cursor-pointer">
-                <label class="font-bold text-red-600 cursor-pointer select-none text-lg">🔥 標記為急件</label>
-            </div>
-
-            <div class="mb-8">
                 <label class="inp-label">日期範圍</label>
-                <input id="add-date" class="inp text-center cursor-pointer bg-white" placeholder="點擊選擇日期">
+                <input id="add-date" class="inp text-center cursor-pointer" placeholder="點擊選擇日期">
             </div>
 
-            <div class="mb-8">
-                <label class="inp-label">備註事項</label>
-                <textarea id="add-note" class="inp h-24 text-sm bg-white" placeholder="選填..."></textarea>
+            <div class="mb-6">
+                <label class="inp-label">備註</label>
+                <textarea id="add-note" class="inp h-20 text-sm"></textarea>
             </div>
 
-            <button onclick="submitProject()" class="btn-main text-lg py-4 shadow-lg hover:shadow-xl">建立專案</button>
+            <button onclick="submitProject()" class="btn-black py-3 text-lg shadow-lg">建立專案</button>
         </div>
 
         <div id="page-kanban" class="hidden">
-            <h2 id="kb-title" class="text-2xl font-black mb-8 pl-1 text-gray-800 border-l-8 border-black pl-4"></h2>
+            <h2 id="kb-title" class="text-xl font-black mb-6 border-l-4 border-black pl-3"></h2>
             
-            <div class="mb-12">
-                <h3 class="text-xl font-black text-blue-600 mb-4 flex items-center"><span class="bg-blue-100 p-2 rounded-lg mr-2">🔥</span> 製作中</h3>
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-blue-600 mb-3">🔥 製作中</h3>
                 <div id="kb-process" class="kanban-grid"></div>
             </div>
-
-            <details class="mb-8" open>
-                <summary class="font-bold text-orange-500 cursor-pointer mb-4 text-lg select-none hover:opacity-80"><i class="fas fa-eye mr-2"></i> 審核中</summary>
-                <div id="kb-review" class="kanban-grid pl-2"></div>
+            <details class="mb-6" open>
+                <summary class="font-bold text-orange-500 cursor-pointer mb-3 select-none">👀 審核中</summary>
+                <div id="kb-review" class="kanban-grid"></div>
             </details>
-
-            <details class="mb-8">
-                <summary class="font-bold text-gray-500 cursor-pointer mb-4 text-lg select-none hover:opacity-80"><i class="fas fa-hourglass-half mr-2"></i> 尚未進行</summary>
-                <div id="kb-todo" class="kanban-grid pl-2"></div>
+            <details class="mb-6">
+                <summary class="font-bold text-gray-500 cursor-pointer mb-3 select-none">⏳ 尚未進行</summary>
+                <div id="kb-todo" class="kanban-grid"></div>
             </details>
-
-            <details class="mb-8">
-                <summary class="font-bold text-green-600 cursor-pointer mb-4 text-lg select-none hover:opacity-80"><i class="fas fa-check-circle mr-2"></i> 已完成</summary>
-                <div id="kb-done" class="kanban-grid pl-2"></div>
+            <details class="mb-6">
+                <summary class="font-bold text-green-600 cursor-pointer mb-3 select-none">✅ 已完成</summary>
+                <div id="kb-done" class="kanban-grid"></div>
             </details>
         </div>
 
         <div id="page-gantt" class="hidden">
-            <div class="card p-0 overflow-hidden border-0 shadow-none bg-transparent">
-                <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                    <h2 id="gantt-month-title" class="text-xl font-black pl-2"></h2>
+            <div class="card p-0 overflow-hidden bg-white">
+                <div class="flex justify-between items-center p-4 border-b">
+                    <h2 id="gantt-month-title" class="text-lg font-bold pl-2"></h2>
                     <div class="flex gap-2">
                         <button onclick="moveGantt(-1)" class="btn-icon"><i class="fas fa-chevron-left"></i></button>
                         <button onclick="moveGantt(1)" class="btn-icon"><i class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
-                <div id="gantt-area" class="gantt-box shadow-md"></div>
+                <div id="gantt-area" class="gantt-box"></div>
             </div>
         </div>
 
         <div id="page-calendar" class="hidden">
-            <div class="flex justify-between items-center mb-6 px-2">
-                <h2 class="text-2xl font-black">工作行事曆</h2>
-                <button onclick="openLeaveModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-indigo-700 transition transform hover:-translate-y-1"><i class="fas fa-umbrella-beach mr-2"></i>我要請假</button>
+            <div class="flex justify-between items-center mb-4 px-2">
+                <h2 class="text-xl font-black">行事曆</h2>
+                <button onclick="openLeaveModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow">我要請假</button>
             </div>
-            <div id="calendar-wrapper">
+            <div class="card p-4">
                 <div id="calendar"></div>
             </div>
         </div>
     </div>
 
-    <div id="modal-history" class="modal-mask">
-        <div class="modal-box">
-            <h3 id="hist-client-title" class="text-2xl font-black mb-6 border-b pb-4"></h3>
-            <div id="hist-content" class="max-h-60 overflow-y-auto mb-6 space-y-3">載入中...</div>
-            <button onclick="closeModal('history')" class="btn-main bg-gray-200 text-gray-800">關閉</button>
-        </div>
-    </div>
-
     <div id="modal-client" class="modal-mask">
         <div class="modal-box">
-            <h3 class="text-2xl font-black mb-6">新增客戶</h3>
-            <label class="inp-label">選擇代號</label>
-            <select id="new-client-code" class="inp mb-4 cursor-pointer bg-white"></select>
-            <label class="inp-label">客戶名稱</label>
-            <input id="new-client-name" class="inp mb-8 bg-white" placeholder="例如：台積電">
+            <h3 class="text-xl font-bold mb-4">新增客戶</h3>
+            <label class="inp-label">代號</label>
+            <select id="new-client-code" class="inp mb-4 cursor-pointer"></select>
+            <label class="inp-label">名稱</label>
+            <input id="new-client-name" class="inp mb-6" placeholder="例如：台積電">
             <div class="flex gap-3">
-                <button onclick="closeModal('client')" class="btn-main bg-gray-200 text-gray-600 flex-1">取消</button>
-                <button onclick="submitNewClient()" class="btn-main flex-1">確認新增</button>
+                <button onclick="closeModal('client')" class="btn-black bg-gray-200 text-gray-600">取消</button>
+                <button onclick="submitNewClient()" class="btn-black">確認</button>
             </div>
         </div>
     </div>
 
     <div id="modal-leave" class="modal-mask">
         <div class="modal-box">
-            <h3 class="text-2xl font-black mb-6 text-indigo-600">請假申請</h3>
-            <label class="inp-label">申請人</label>
-            <select id="leave-name" class="inp mb-4 cursor-pointer bg-white"><option>魏敏軒</option><option>邱仁杰</option></select>
-            <label class="inp-label">日期範圍</label>
-            <input id="leave-date" class="inp mb-4 text-center cursor-pointer bg-white" placeholder="選擇日期">
-            <label class="inp-label">事由</label>
-            <input id="leave-reason" class="inp mb-8 bg-white" placeholder="例如：出國、生病">
+            <h3 class="text-xl font-bold mb-4 text-indigo-600">請假申請</h3>
+            <select id="leave-name" class="inp mb-3 cursor-pointer"><option>魏敏軒</option><option>邱仁杰</option></select>
+            <input id="leave-date" class="inp mb-3 text-center cursor-pointer" placeholder="日期範圍">
+            <input id="leave-reason" class="inp mb-6" placeholder="事由">
             <div class="flex gap-3">
-                <button onclick="closeModal('leave')" class="btn-main bg-gray-200 text-gray-600 flex-1">取消</button>
-                <button onclick="submitLeave()" class="btn-main bg-indigo-600 flex-1">送出申請</button>
+                <button onclick="closeModal('leave')" class="btn-black bg-gray-200 text-gray-600">取消</button>
+                <button onclick="submitLeave()" class="btn-black bg-indigo-600">送出</button>
             </div>
         </div>
     </div>
 
     <div id="modal-edit" class="modal-mask"><div class="modal-box">
-        <h3 class="text-2xl font-black mb-6">編輯專案</h3>
+        <h3 class="text-xl font-bold mb-4">編輯專案</h3>
         <input type="hidden" id="e-oid"><input type="hidden" id="e-ozone">
-        <input id="e-name" class="inp mb-4 font-bold text-lg bg-white border-2 border-black">
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <select id="e-prod" class="inp cursor-pointer bg-white"></select>
-            <select id="e-type" class="inp cursor-pointer bg-white"></select>
+        <input id="e-name" class="inp mb-3 font-bold text-lg bg-white border-2 border-black">
+        <div class="grid grid-cols-2 gap-3 mb-3">
+            <select id="e-prod" class="inp cursor-pointer"></select>
+            <select id="e-type" class="inp cursor-pointer"></select>
         </div>
-        <input id="e-date" class="inp text-center mb-4 cursor-pointer bg-white">
-        <textarea id="e-note" class="inp h-24 mb-8 text-sm bg-white"></textarea>
+        <input id="e-date" class="inp text-center mb-3 cursor-pointer">
+        <textarea id="e-note" class="inp h-24 mb-6 text-sm"></textarea>
         <div class="flex gap-3">
-            <button onclick="deleteProject()" class="btn-main bg-red-50 text-red-500 w-1/3 hover:bg-red-100">刪除</button>
-            <button onclick="saveEdit()" class="btn-main w-2/3">儲存變更</button>
+            <button onclick="deleteProject()" class="btn-black bg-red-50 text-red-500 w-1/3">刪除</button>
+            <button onclick="saveEdit()" class="btn-black w-2/3">儲存</button>
         </div>
-        <div onclick="closeModal('edit')" class="text-center mt-6 text-gray-400 text-sm font-bold cursor-pointer hover:text-black">取消</div>
+        <div onclick="closeModal('edit')" class="text-center mt-4 text-gray-400 text-sm font-bold cursor-pointer">取消</div>
     </div></div>
 
     <div id="modal-status" class="modal-mask"><div class="modal-box text-center">
-        <h3 class="text-2xl font-black mb-2">更新進度</h3>
-        <p class="text-gray-500 text-sm font-bold mb-6">本次工時 (hr)</p>
+        <h3 class="text-xl font-bold mb-2">更新進度</h3>
+        <p class="text-gray-500 text-sm font-bold mb-4">本次工時 (hr)</p>
         <input type="hidden" id="s-id"><input type="hidden" id="s-zone">
-        <input id="s-hours" type="number" class="inp text-center text-4xl font-black mb-8 border-b-4 border-t-0 border-x-0 rounded-none bg-transparent focus:ring-0" placeholder="0.0">
-        <div class="flex gap-3">
-            <button onclick="submitStatus('製作中')" class="btn-main bg-gray-100 text-black flex-1 hover:bg-gray-200">退修/製作</button>
-            <button onclick="submitStatus('客戶審核')" class="btn-main bg-orange-500 flex-1 hover:bg-orange-600">送審</button>
-            <button onclick="submitStatus('已完成')" class="btn-main bg-green-600 flex-1 hover:bg-green-700">完成</button>
+        <input id="s-hours" type="number" class="inp text-center text-3xl font-black mb-6" placeholder="0.0">
+        <div class="flex gap-2">
+            <button onclick="submitStatus('製作中')" class="btn-black bg-gray-100 text-black">退修/製作</button>
+            <button onclick="submitStatus('客戶審核')" class="btn-black bg-orange-500">送審</button>
+            <button onclick="submitStatus('已完成')" class="btn-black bg-green-600">完成</button>
         </div>
-        <div onclick="closeModal('status')" class="text-center mt-6 text-gray-400 text-sm font-bold cursor-pointer hover:text-black">取消</div>
+        <div onclick="closeModal('status')" class="text-center mt-4 text-gray-400 text-sm font-bold cursor-pointer">取消</div>
     </div></div>
 
     <script>
-        // ★★★ 網址已寫死 ★★★
+        // ★ 核心邏輯 (URL 寫死) ★
         const API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec';
         
         let DATA = { projects: [], config: {}, leaves: [] };
@@ -360,10 +319,10 @@
         const fpMemo = flatpickr("#m-date", { dateFormat: "Y-m-d" });
         let calendar = null;
 
-        // --- 登入系統 ---
+        // 登入檢查
         window.onload = function() {
             const loginTime = localStorage.getItem('JAYRAN_LOGIN');
-            if(loginTime && (new Date().getTime() - loginTime < 43200000)) {
+            if(loginTime && (new Date().getTime() - loginTime < 43200000)) { // 12hr
                 document.getElementById('login-overlay').style.display = 'none';
                 loadData();
             }
@@ -376,18 +335,17 @@
                 document.getElementById('login-overlay').style.display = 'none';
                 loadData();
             } else {
-                document.getElementById('login-msg').classList.remove('hidden');
+                alert("密碼錯誤");
                 document.getElementById('login-pass').value = '';
-                document.getElementById('login-pass').focus();
             }
         }
-
         function logout() { localStorage.removeItem('JAYRAN_LOGIN'); location.reload(); }
 
+        // 載入資料 (移除超時錯誤，改用簡單 fetch)
         function loadData() {
             document.getElementById('loader').style.display = 'flex';
             const cache = localStorage.getItem('JAYRAN_CACHE');
-            if (cache) { try{renderApp(JSON.parse(cache));}catch(e){} }
+            if (cache) { try { renderApp(JSON.parse(cache)); } catch(e){} }
             
             fetch(API_URL + '?action=initAllData')
             .then(r => r.json())
@@ -396,7 +354,10 @@
                 renderApp(d);
                 document.getElementById('loader').style.display = 'none';
             })
-            .catch(e => { alert("連線錯誤"); document.getElementById('loader').style.display = 'none'; });
+            .catch(e => {
+                console.error(e); // 靜默失敗，依然顯示快取
+                document.getElementById('loader').style.display = 'none';
+            });
         }
 
         function renderApp(d) {
@@ -406,6 +367,8 @@
             else if (curTab === 'chiu') renderKanban('邱仁杰');
             else if (curTab === 'gan') renderGantt();
             else if (curTab === 'calendar') renderCalendar();
+            
+            // 載入側邊欄資料但不顯示面板
             loadMemos(); loadLinks(); loadPending();
         }
 
@@ -425,11 +388,11 @@
                 document.getElementById('page-calendar').classList.remove('hidden'); 
                 setTimeout(renderCalendar, 100); 
             }
-            // 關閉所有浮動面板
-            document.querySelectorAll('.float-panel').forEach(p=>p.style.display='none');
+            // 確保面板關閉
+            document.querySelectorAll('.float-panel').forEach(p => p.style.display = 'none');
         }
 
-        function setCategory(c) {
+        function setCat(c) {
             curCat = c;
             document.getElementById('type-video').className = c === 'video' ? 'type-tab active' : 'type-tab';
             document.getElementById('type-image').className = c === 'image' ? 'type-tab active' : 'type-tab';
@@ -459,7 +422,6 @@
             if (z) {
                 const name = z.includes('_') ? z.split('_')[1] : z;
                 document.getElementById('add-client').value = name;
-                
                 let max = 0;
                 DATA.projects.forEach(p => {
                     if (p.zone === z) {
@@ -494,7 +456,7 @@
 
             DATA.projects.push(p);
             saveData();
-            alert("✅ 專案已建立");
+            alert("✅ 建立成功");
             
             document.getElementById('add-name').value = '';
             document.getElementById('add-note').value = '';
@@ -515,27 +477,29 @@
 
             const draw = (arr, elId) => {
                 const el = document.getElementById(elId);
-                if (arr.length === 0) { el.innerHTML = '<div class="text-gray-300 text-center py-4 font-bold text-sm">目前無項目</div>'; return; }
+                if (arr.length === 0) { el.innerHTML = '<div class="text-gray-300 text-center py-4 text-sm font-bold">無項目</div>'; return; }
                 el.innerHTML = arr.map(p => {
                     let bc = 'k-border-gray';
-                    if (p.status === '製作中') bc = 'k-blue';
-                    else if (p.status.includes('審')) bc = 'k-orange';
-                    else if (p.status.includes('完成')) bc = 'k-green';
+                    let badge = 'bg-gray';
+                    if (p.status === '製作中') { bc = 'k-blue'; badge = 'bg-blue'; }
+                    else if (p.status.includes('審')) { bc = 'k-orange'; badge = 'bg-orange'; }
+                    else if (p.status.includes('完成')) { bc = 'k-green'; badge = 'bg-green'; }
 
                     return `
                     <div class="k-card ${bc}">
                         <div class="flex justify-between items-start mb-2">
-                            <span class="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded">${p.id}</span>
+                            <span class="k-tag ${badge}">${p.status}</span>
                             <div onclick="openEdit('${p.id}','${p.zone}')" class="text-gray-400 cursor-pointer hover:text-black"><i class="fas fa-pen"></i></div>
                         </div>
+                        <div class="font-bold text-gray-500 text-xs mb-1">${p.id} · ${p.client}</div>
                         <div class="k-title">${p.name}</div>
-                        <div class="text-sm font-bold text-gray-500">${p.client} ${p.tag === 'Urgent' ? '<span class="text-red-500 ml-1">🔥</span>' : ''}</div>
-                        <div class="text-xs font-bold text-gray-400 mt-2 flex items-center gap-1"><i class="far fa-clock"></i> ${p.start ? `${p.start.slice(5)}~${p.end.slice(5)}` : '--'}</div>
+                        ${ p.start ? `<div class="text-xs text-gray-400 font-bold mt-2"><i class="far fa-clock"></i> ${p.start.slice(5)}~${p.end.slice(5)}</div>` : '' }
+                        ${ p.tag==='Urgent' ? `<div class="mt-2 text-red-500 text-xs font-black">🔥 急件</div>` : '' }
                         
-                        <div class="k-actions justify-end">
-                            ${ p.status === '製作中' ? `<div onclick="openStatus('${p.id}','${p.zone}')" class="k-btn bg-orange-100 text-orange-600 hover:bg-orange-200">送審</div>` : '' }
-                            ${ p.status.includes('審') ? `<div onclick="quickUpdate('${p.id}','${p.zone}','製作中')" class="k-btn bg-gray-100 text-gray-600 mr-2 hover:bg-gray-200">退修</div><div onclick="quickUpdate('${p.id}','${p.zone}','已完成')" class="k-btn bg-green-100 text-green-600 hover:bg-green-200">完成</div>` : '' }
-                            ${ p.status === '尚未進行' ? `<div onclick="quickUpdate('${p.id}','${p.zone}','製作中')" class="k-btn bg-blue-100 text-blue-600 hover:bg-blue-200">開始</div>` : '' }
+                        <div class="k-actions">
+                            ${ p.status === '製作中' ? `<div onclick="openStatus('${p.id}','${p.zone}')" class="btn-icon bg-orange-100 text-orange-600 flex-1 h-8 text-sm font-bold">送審</div>` : '' }
+                            ${ p.status.includes('審') ? `<div onclick="quickUpdate('${p.id}','${p.zone}','製作中')" class="btn-icon bg-gray-100 flex-1 h-8 text-sm font-bold mr-2">退修</div><div onclick="quickUpdate('${p.id}','${p.zone}','已完成')" class="btn-icon bg-green-100 text-green-600 flex-1 h-8 text-sm font-bold">完成</div>` : '' }
+                            ${ p.status === '尚未進行' ? `<div onclick="quickUpdate('${p.id}','${p.zone}','製作中')" class="btn-icon bg-blue-100 text-blue-600 flex-1 h-8 text-sm font-bold">開始</div>` : '' }
                         </div>
                     </div>`;
                 }).join('');
@@ -543,7 +507,7 @@
             draw(buckets['製作中'], 'kb-process'); draw(buckets['審'], 'kb-review'); draw(buckets['尚未'], 'kb-todo'); draw(buckets['完成'], 'kb-done');
         }
 
-        // --- 甘特圖 (雙向凍結) ---
+        // --- 甘特圖 ---
         function renderGantt() {
             const container = document.getElementById('gantt-area');
             const y = ganttDate.getFullYear(), m = ganttDate.getMonth();
@@ -557,7 +521,6 @@
             }
             html += `</tr></thead><tbody>`;
             
-            // 排序: 先開始的在上面
             const tasks = DATA.projects.filter(p=>p.start && p.end).sort((a,b)=>new Date(a.start)-new Date(b.start));
 
             tasks.forEach(p => {
@@ -566,13 +529,13 @@
                 
                 let startDay = s < new Date(y, m, 1) ? 1 : s.getDate();
                 let endDay = e > new Date(y, m+1, 0) ? daysInMonth : e.getDate();
-                let width = (endDay - startDay + 1) * 32; // 32px per day
-                let left = (startDay - 1) * 32;
+                let width = (endDay - startDay + 1) * 31; 
+                let left = (startDay - 1) * 31;
                 let bg = p.status==='製作中'?'#2563EB':(p.status.includes('審')?'#F59E0B':'#10B981');
 
-                html += `<tr><td class="gantt-td gantt-col-1 px-2 border-b truncate" title="${p.client}-${p.name}">${p.name}<br><span class="text-gray-400 text-xs">${p.client}</span></td>
+                html += `<tr><td class="gantt-td gantt-col-1 px-2 border-b truncate" title="${p.name}">${p.name}<br><span class="text-gray-400 text-xs">${p.client}</span></td>
                          <td class="gantt-td" colspan="${daysInMonth}">
-                            <div class="gantt-bar" style="left:${left}px; width:${width}px; background:${bg};" title="${p.start}~${p.end}">${p.producer[0]}</div>
+                            <div class="gantt-bar" style="left:${left}px; width:${width}px; background:${bg};">${p.producer[0]}</div>
                          </td></tr>`;
             });
             html += `</tbody></table>`;
@@ -599,7 +562,7 @@
             calendar.render();
         }
 
-        // --- 輔助功能 ---
+        // --- 功能 ---
         function openAddClientModal() {
             const codeSel = document.getElementById('new-client-code'); codeSel.innerHTML = '';
             const allCodes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -613,17 +576,6 @@
             document.getElementById('modal-client').style.display = 'none';
             alert("建立中，請稍後重整");
             fetch(API_URL, { method:'POST', body:JSON.stringify({action:'createClient', cat:curCat, code:code, name:name}) });
-        }
-        function openHistory() {
-            const z = document.getElementById('add-zone').value; if(!z) return alert("請選客戶");
-            document.getElementById('hist-client-title').innerText = z.split('_')[1] + " 紀錄";
-            document.getElementById('modal-history').style.display = 'flex';
-            fetch(API_URL + `?action=getHistory&zone=${z}&cat=${curCat}`).then(r=>r.json()).then(list=>{
-                document.getElementById('hist-content').innerHTML = list.map(h => {
-                    let c = 'bg-gray-400'; if(h.status==='製作中')c='bg-blue-600'; if(h.status.includes('審'))c='bg-orange-500'; if(h.status.includes('完成'))c='bg-green-600';
-                    return `<div class="list-item flex justify-between items-center"><div class="flex-1"><span class="font-bold text-gray-400 mr-2 font-mono">${h.id}</span><span class="font-bold text-gray-800">${h.name}</span></div><span class="hist-tag ${c}">${h.status}</span></div>`;
-                }).join('') || '<div class="text-center text-gray-400 font-bold">無紀錄</div>';
-            });
         }
         function openEdit(id, zone) {
             const p = DATA.projects.find(x => x.id === id && x.zone === zone); if(!p) return;
@@ -670,18 +622,18 @@
         function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
         function closePanel(id) { document.getElementById('panel-'+id).style.display = 'none'; }
         function saveData() { localStorage.setItem('JAYRAN_CACHE', JSON.stringify(DATA)); renderApp(DATA); }
+        
+        // 面板與列表
         function togglePanel(id) { 
             const el = document.getElementById('panel-'+id); const v = el.style.display!=='none';
             document.querySelectorAll('.float-panel').forEach(p=>p.style.display='none');
             if(!v) { el.style.display='flex'; if(id==='memo')loadMemos(); if(id==='link')loadLinks(); if(id==='pending')loadPending(); }
         }
-        
-        // 面板載入邏輯
-        function loadMemos(){ fetch(API_URL + '?action=getMemos').then(r=>r.json()).then(l => { document.getElementById('memo-list').innerHTML = l.map(m=>`<div class="list-item"><div class="list-title">${m.content}</div><div class="list-sub flex justify-between"><span>${m.owner}</span><span>${m.date}</span></div></div>`).join(''); }); }
+        function loadMemos(){ fetch(API_URL + '?action=getMemos').then(r=>r.json()).then(l => { document.getElementById('memo-list').innerHTML = l.map(m=>`<div class="list-item"><div class="font-bold">${m.content}</div><div class="text-xs text-gray-500 mt-1">${m.owner} · ${m.date}</div></div>`).join(''); }); }
         function addMemoItem(){ const c=document.getElementById('m-content').value, o=document.getElementById('m-owner').value, d=document.getElementById('m-date').value; if(c) fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addMemo',item:{content:c,owner:o,date:d}})}).then(loadMemos); document.getElementById('m-content').value=''; }
-        function loadLinks(){ fetch(API_URL + '?action=getLinks').then(r=>r.json()).then(l => { document.getElementById('link-list').innerHTML = l.map(k=>`<div class="list-item flex justify-between items-center" onclick="window.open('${k.url}')"><span class="list-title mb-0">${k.client}</span><i class="fas fa-external-link-alt text-gray-400"></i></div>`).join(''); }); }
+        function loadLinks(){ fetch(API_URL + '?action=getLinks').then(r=>r.json()).then(l => { document.getElementById('link-list').innerHTML = l.map(k=>`<div class="list-item flex justify-between items-center" onclick="window.open('${k.url}')"><span class="font-bold text-gray-700">${k.client}</span><i class="fas fa-external-link-alt text-gray-400"></i></div>`).join(''); }); }
         function addLinkItem(){ const n=document.getElementById('l-name').value, u=document.getElementById('l-url').value; if(n&&u) fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addLink',client:n,url:u})}).then(loadLinks); document.getElementById('l-name').value=''; document.getElementById('l-url').value=''; }
-        function loadPending(){ const l=DATA.projects.filter(p=>p.producer==='尚未暫定'); document.getElementById('pending-list').innerHTML=l.map(p=>`<div class="list-item"><div class="list-title">${p.name}</div><div class="list-sub">${p.client}</div></div>`).join(''); document.getElementById('badge-pending').innerText=l.length; document.getElementById('badge-pending').style.display=l.length?'flex':'none'; }
+        function loadPending(){ const l=DATA.projects.filter(p=>p.producer==='尚未暫定'); document.getElementById('pending-list').innerHTML=l.map(p=>`<div class="list-item"><div class="font-bold text-lg">${p.name}</div><div class="text-sm text-gray-500">${p.client}</div></div>`).join(''); document.getElementById('badge-pending').innerText=l.length; document.getElementById('badge-pending').style.display=l.length?'flex':'none'; }
     </script>
 </body>
 </html>

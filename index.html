@@ -45,21 +45,41 @@
         .k-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; color: white; font-weight: 700; display: inline-block; margin-bottom: 8px; }
         .bg-blue { background: #2563EB; } .bg-orange { background: #F59E0B; } .bg-green { background: #10B981; } .bg-gray { background: #9CA3AF; }
 
-        /* 右下角浮動面板 (側邊滑出) */
+      /* --- 修復：右下角浮動面板 (側邊滑出、高質感陰影) --- */
         .float-panel { 
-            position: fixed; bottom: 100px; right: 30px; width: 320px; 
+            position: fixed; bottom: 100px; right: 30px; width: 340px; 
             background: white; border-radius: 16px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
-            z-index: 90; padding: 16px; border: 1px solid #E5E7EB; 
-            display: none; flex-direction: column; max-height: 60vh;
+            box-shadow: 0 20px 50px -12px rgba(0,0,0,0.25); /* 加深陰影，增加立體感 */
+            z-index: 200; padding: 0; border: 1px solid #E5E7EB; 
+            display: none; /* 預設隱藏 */
+            flex-direction: column; max-height: 60vh;
+            animation: slideIn 0.2s ease-out; /* 滑入動畫 */
         }
-        .fp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
-        .fp-title { font-size: 18px; font-weight: 800; color: #1F2937; }
         
-        .list-item { background: #F9FAFB; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #E5E7EB; position: relative; }
-        .list-icon-btn { position: absolute; top: 12px; right: 12px; color: #9CA3AF; cursor: pointer; }
-        .list-icon-btn:hover { color: #EF4444; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
+        .fp-header { 
+            padding: 16px; border-bottom: 1px solid #F3F4F6; 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #FAFAFA; border-radius: 16px 16px 0 0;
+        }
+        .fp-title { font-size: 16px; font-weight: 800; color: #111827; }
+        
+        /* 讓內容區可以捲動 */
+        .fp-body { padding: 0; overflow-y: auto; flex: 1; background: white; border-radius: 0 0 16px 16px; }
+        
+        /* 列表樣式優化 */
+        .list-item { 
+            padding: 14px; border-bottom: 1px solid #F3F4F6; 
+            display: flex; justify-content: space-between; align-items: center;
+            transition: 0.1s;
+        }
+        .list-item:hover { background: #F9FAFB; }
+        .list-item:last-child { border-bottom: none; }
+        
         /* FAB */
         .fab-stack { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 12px; z-index: 80; }
         .fab { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
@@ -477,9 +497,30 @@
         function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
         function closePanel(id) { document.getElementById('panel-'+id).style.display = 'none'; }
         function togglePanel(id) { 
-            const el = document.getElementById('panel-'+id); const v = el.style.display!=='none';
-            document.querySelectorAll('.float-panel').forEach(p=>p.style.display='none');
-            if(!v) el.style.display='flex'; 
+          // --- 修復：面板開關邏輯 (互斥開關，點擊切換) ---
+        function togglePanel(id) { 
+            const target = document.getElementById('panel-' + id);
+            
+            // 檢查目前是否已經打開 (如果是 flex 就代表開著)
+            const isVisible = target.style.display === 'flex';
+            
+            // 1. 先強制關閉所有面板 (避免重疊)
+            document.querySelectorAll('.float-panel').forEach(p => p.style.display = 'none');
+            
+            // 2. 如果原本沒開，現在就打開
+            if (!isVisible) {
+                target.style.display = 'flex';
+                // 順便重新讀取該區塊的資料，確保最新
+                if (id === 'memo') renderMemos();
+                if (id === 'link') renderLinks();
+                if (id === 'pending') renderPending();
+            }
+        }
+        
+        // 關閉面板的 X 按鈕功能
+        function closePanel(id) {
+            document.getElementById('panel-' + id).style.display = 'none';
+        }
         }
 
         // 面板渲染

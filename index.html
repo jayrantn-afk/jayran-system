@@ -12,12 +12,12 @@
     <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
-        /* --- 核心樣式 --- */
+        /* --- V20: 完美適配與視覺優化 --- */
         :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--primary); padding-bottom: 60px; }
         
         /* 導航列 */
-        .segmented-nav { background: #E8E8ED; padding: 4px; border-radius: 10px; display: flex; margin-bottom: 24px; flex-wrap: wrap; }
+        .segmented-nav { background: #E8E8ED; padding: 4px; border-radius: 10px; display: flex; margin-bottom: 24px; flex-wrap: wrap; position: sticky; top: 10px; z-index: 40; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .nav-item { flex: 1; min-width: 80px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
@@ -63,7 +63,7 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* --- V19 甘特圖優化：凍結 + 高度限制 + 黃色光柱 --- */
+        /* --- 甘特圖凍結與光柱 --- */
         .gantt-wrapper { 
             overflow: auto; 
             background: white; 
@@ -72,7 +72,9 @@
             width: 100%; 
             border: 1px solid #E5E5E5; 
             position: relative; 
-            max-height: 65vh; /* 限制高度，超出捲動 */
+            /* V20: 改為 min-height，讓它自動適應但不小於螢幕 70% */
+            min-height: 70vh;
+            max-height: 85vh;
         }
         .gantt-table { 
             width: 100%; 
@@ -80,7 +82,6 @@
             border-spacing: 0; 
             min-width: 800px; 
         }
-        /* 凍結上方日期 */
         .gantt-header-cell { 
             position: sticky; top: 0; 
             background: #FAFAFA; z-index: 30; 
@@ -90,7 +91,6 @@
         }
         .gantt-today-text { color: #D97706; font-weight: 900; font-size: 13px; }
         
-        /* 凍結左側專案名 */
         .gantt-col-fixed { 
             position: sticky; left: 0; 
             background: white; z-index: 40; 
@@ -100,7 +100,6 @@
             box-shadow: 2px 0 5px rgba(0,0,0,0.02);
         }
         
-        /* 左上角全凍結區塊 */
         .gantt-corner { 
             position: sticky; top: 0; left: 0; 
             z-index: 50; 
@@ -128,13 +127,16 @@
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* 行事曆容器限制 */
+        /* --- V20 行事曆：完美適配螢幕 --- */
         #calendar-container { 
             background: white; border-radius: 16px; padding: 16px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            height: 70vh; overflow-y: auto; 
+            /* 讓它自動撐開，不縮小，但也不會無限長 */
+            min-height: 80vh; 
+            display: flex; flex-direction: column;
         }
-        .fc { height: 100%; }
+        /* 讓 FullCalendar 填滿容器 */
+        .fc { flex: 1; height: 100%; } 
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
         .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; }
@@ -410,10 +412,12 @@
 
         <div id="p-kanban" class="hidden">
             <h2 id="kb-title" class="text-2xl font-black mb-6 px-2"></h2>
+            
             <div class="mb-8">
                 <h3 class="text-lg font-bold text-blue-600 mb-3 px-2">🔥 製作中</h3>
                 <div id="kb-process" class="kanban-grid"></div>
             </div>
+            
             <details class="mb-6 group">
                 <summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80">
                     <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
@@ -421,6 +425,7 @@
                 </summary>
                 <div id="kb-review" class="kanban-grid pl-2"></div>
             </details>
+            
             <details class="mb-4 group">
                 <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
                     <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
@@ -428,6 +433,7 @@
                 </summary>
                 <div id="kb-todo" class="kanban-grid pl-2"></div>
             </details>
+            
             <details class="mb-4 group">
                 <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
                     <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
@@ -490,6 +496,7 @@
                     let params = `?action=${action}`;
                     if(payload.cat) params += `&cat=${payload.cat}`;
                     if(payload.zone) params += `&zone=${payload.zone}`;
+                    
                     fetch(GAS_API_URL + params)
                     .then(res => res.json())
                     .then(data => onSuccess(data))
@@ -501,8 +508,6 @@
                     .then(data => onSuccess(data.data))
                     .catch(e => { alert("連線錯誤，請檢查網路"); document.getElementById('loader').style.display = 'none'; });
                 }
-            } else {
-                // 本地開發用
             }
         }
 
@@ -710,7 +715,7 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // --- V19 甘特圖邏輯：整條黃色 + 凍結定位 ---
+        // --- V20 甘特圖：整條黃色光柱 + 凍結窗格 ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -727,8 +732,8 @@
             const todayDate = today.getDate();
             const isCurrentMonth = (today.getMonth() === m && today.getFullYear() === y);
 
-            // 背景漸層魔法：當天日期整條黃色
-            const cellW = 34; // 必須對應 CSS
+            // CSS 漸層：當天日期整條黃色，背景寬度對應 CSS 設定
+            const cellW = 34; 
             let bgStyle = '';
             if (isCurrentMonth) {
                 const startX = (todayDate - 1) * cellW;
@@ -788,7 +793,7 @@
             renderGantt(who);
         }
 
-        // --- V19 行事曆修復：適配螢幕高度 + 請假功能 ---
+        // --- V20 行事曆修復：請假功能 + 填滿螢幕 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -815,7 +820,9 @@
             });
 
             calendar = new FullCalendar.Calendar(el, {
-                initialView: 'dayGridMonth', locale: 'zh-tw', height: '100%', 
+                initialView: 'dayGridMonth', 
+                locale: 'zh-tw', 
+                height: 'auto', // 自動適應容器高度，不縮小
                 headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
                 buttonText: { today: '今天' },
                 events: events,
@@ -1294,29 +1301,36 @@
                 document.getElementById('ep-zone').value = "";
             }
         }
-        
-        // V19 請假修復：先本地更新 + 背景送出
         function confirmLeave() {
             const name = document.getElementById('leave-name').value;
             const date = document.getElementById('leave-date').value;
             const reason = document.getElementById('leave-reason').value;
-            if(!date || !reason) return alert("請填寫完整");
+            
+            if(!date || !reason) return alert("請填寫完整資訊 (日期與事由)");
             
             const dates = date.split(' to ');
-            const item = { name:name, start:dates[0], end:dates[1]||dates[0], reason:reason };
+            const item = { 
+                name: name, 
+                start: dates[0], 
+                end: dates[1] || dates[0], 
+                reason: reason 
+            };
             
-            // 本地直接推入，讓畫面秒更新
+            // 1. 本地更新
             if(!DATA.leaves) DATA.leaves = [];
             DATA.leaves.push(item);
             
+            // 2. 關閉視窗並重繪
             closeModal('leave');
             renderCalendar(); 
             alert("✅ 請假申請已送出");
             
-            // 背景同步
-            callAPI('addLeave', { item: item }, (res) => {});
+            // 3. 背景同步
+            callAPI('addLeave', { item: item }, (res) => {
+                console.log("Leave synced");
+            });
             
-            // 清空
+            // 4. 清空欄位
             document.getElementById('leave-date').value = '';
             document.getElementById('leave-reason').value = '';
         }

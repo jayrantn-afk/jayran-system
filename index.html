@@ -12,17 +12,21 @@
     <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
+        /* --- 核心樣式 --- */
         :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--primary); padding-bottom: 60px; }
         
+        /* 導航列 */
         .segmented-nav { background: #E8E8ED; padding: 4px; border-radius: 10px; display: flex; margin-bottom: 24px; flex-wrap: wrap; }
         .nav-item { flex: 1; min-width: 80px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
+        /* 卡片與輸入 */
         .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
         .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; }
         
+        /* 開關與按鈕 */
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
         .type-btn.active { background: #1D1D1F; color: white; }
@@ -31,6 +35,7 @@
         .btn-black { background: #1D1D1F; color: white; }
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
 
+        /* 看板樣式 */
         .kanban-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
         
@@ -58,20 +63,94 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* 甘特圖專用樣式 (修復版) */
-        .gantt-wrapper { overflow-x: auto; background: white; border-radius: 12px; padding: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; border: 1px solid #E5E5E5; position: relative; max-height: 600px; overflow-y: auto; }
-        .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
-        .gantt-header-cell { position: sticky; top: 0; background: #FAFAFA; z-index: 20; text-align: center; font-size: 11px; color: #555; border-bottom: 1px solid #E5E5E5; border-right: 1px solid #f0f0f0; padding: 8px 0; width: 32px; font-weight: 700; }
-        .gantt-today-cell { background-color: #FFF9C4 !important; color: black; border-bottom: 2px solid #FFD700; } 
-        .gantt-col-fixed { position: sticky; left: 0; background: white; z-index: 30; width: 160px; min-width: 160px; padding: 10px; border-right: 2px solid #E5E5E5; border-bottom: 1px solid #f0f0f0; }
-        .gantt-corner { position: sticky; top: 0; left: 0; z-index: 40; background: #FAFAFA; border-right: 2px solid #E5E5E5; border-bottom: 1px solid #E5E5E5; padding: 10px; font-weight: 800; font-size: 13px; color: #1D1D1F; }
-        .gantt-cell { border-right: 1px solid #f5f5f5; border-bottom: 1px solid #f5f5f5; height: 44px; position: relative; padding: 0; }
-        .gantt-bar { position: absolute; top: 10px; height: 24px; border-radius: 6px; color: white; font-size: 11px; line-height: 24px; padding: 0 8px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: 700; }
+        /* --- V19 甘特圖優化：凍結 + 高度限制 + 黃色光柱 --- */
+        .gantt-wrapper { 
+            overflow: auto; 
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
+            width: 100%; 
+            border: 1px solid #E5E5E5; 
+            position: relative; 
+            max-height: 65vh; /* 限制高度，超出捲動 */
+        }
+        .gantt-table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            min-width: 800px; 
+        }
+        /* 凍結上方日期 */
+        .gantt-header-cell { 
+            position: sticky; top: 0; 
+            background: #FAFAFA; z-index: 30; 
+            text-align: center; font-size: 11px; color: #555; 
+            border-bottom: 1px solid #E5E5E5; border-right: 1px solid #f0f0f0; 
+            padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; 
+        }
+        .gantt-today-text { color: #D97706; font-weight: 900; font-size: 13px; }
+        
+        /* 凍結左側專案名 */
+        .gantt-col-fixed { 
+            position: sticky; left: 0; 
+            background: white; z-index: 40; 
+            width: 160px; min-width: 160px; 
+            padding: 8px 12px; 
+            border-right: 2px solid #E5E5E5; border-bottom: 1px solid #f5f5f5; 
+            box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+        }
+        
+        /* 左上角全凍結區塊 */
+        .gantt-corner { 
+            position: sticky; top: 0; left: 0; 
+            z-index: 50; 
+            background: #FAFAFA; 
+            border-right: 2px solid #E5E5E5; border-bottom: 1px solid #E5E5E5; 
+            padding: 10px; font-weight: 800; font-size: 13px; color: #1D1D1F; 
+        }
+        
+        .gantt-cell { 
+            border-bottom: 1px solid #f5f5f5; 
+            height: 44px; position: relative; padding: 0; 
+            background-size: 34px 100%;
+            background-image: linear-gradient(to right, transparent 33px, #f5f5f5 33px);
+        }
+        .gantt-bar { 
+            position: absolute; top: 10px; height: 24px; 
+            border-radius: 6px; color: white; font-size: 11px; 
+            line-height: 24px; padding: 0 8px; 
+            white-space: nowrap; overflow: hidden; z-index: 5; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-weight: 700; cursor: pointer; transition: 0.1s;
+        }
+        .gantt-bar:hover { transform: scaleY(1.1); z-index: 10; }
         
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
+        /* 行事曆容器限制 */
+        #calendar-container { 
+            background: white; border-radius: 16px; padding: 16px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
+            height: 70vh; overflow-y: auto; 
+        }
+        .fc { height: 100%; }
+        .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
+        .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
+        .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; }
+        .fc-day-today { background-color: transparent !important; }
+        .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
+        .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
+        .fc-event { border: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 3px !important; border-radius: 6px !important; }
+        .fc-event-main { padding: 4px 8px; font-weight: 600; font-size: 11px; color: white !important; display: flex; align-items: center; gap: 4px; }
+        .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
+        .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
+        .fc-button:hover { background-color: #d1d5db !important; }
+        .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
+        .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
+        .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        /* Modal & Panels */
         .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 100; }
         .modal-body { background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; }
         .hidden { display: none; }
@@ -114,22 +193,6 @@
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
         .setting-actions i { cursor: pointer; padding: 5px; margin-left: 5px; color: #999; }
         .setting-actions i:hover { color: #333; }
-
-        #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); min-height: 600px; }
-        .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
-        .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
-        .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; }
-        .fc-day-today { background-color: transparent !important; }
-        .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
-        .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
-        .fc-event { border: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 3px !important; border-radius: 6px !important; }
-        .fc-event-main { padding: 4px 8px; font-weight: 600; font-size: 11px; color: white !important; display: flex; align-items: center; gap: 4px; }
-        .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
-        .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
-        .fc-button:hover { background-color: #d1d5db !important; }
-        .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
-        .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
-        .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -171,9 +234,7 @@
                 <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-base py-3 rounded-lg font-bold hover:bg-gray-800">新增貼文</button>
             </div>
         </div>
-        <div id="memo-list" class="panel-scroll-area">
-            <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
-        </div>
+        <div id="memo-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
     </div>
 
     <div id="panel-pending" class="float-panel">
@@ -183,9 +244,7 @@
                 <span onclick="togglePanel('pending')" class="cursor-pointer text-gray-400 hover:text-black text-xl"><i class="fas fa-times"></i></span>
             </div>
         </div>
-        <div id="pending-list" class="panel-scroll-area">
-            <div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div>
-        </div>
+        <div id="pending-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div></div>
     </div>
 
     <div id="panel-link" class="float-panel">
@@ -200,9 +259,7 @@
                 <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-base py-3 rounded-lg font-bold hover:bg-blue-800">新增連結</button>
             </div>
         </div>
-        <div id="link-list" class="panel-scroll-area">
-            <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
-        </div>
+        <div id="link-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
     </div>
 
     <div id="modal-preview" class="modal-mask"><div class="modal-body">
@@ -353,12 +410,10 @@
 
         <div id="p-kanban" class="hidden">
             <h2 id="kb-title" class="text-2xl font-black mb-6 px-2"></h2>
-            
             <div class="mb-8">
                 <h3 class="text-lg font-bold text-blue-600 mb-3 px-2">🔥 製作中</h3>
                 <div id="kb-process" class="kanban-grid"></div>
             </div>
-            
             <details class="mb-6 group">
                 <summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80">
                     <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
@@ -366,7 +421,6 @@
                 </summary>
                 <div id="kb-review" class="kanban-grid pl-2"></div>
             </details>
-            
             <details class="mb-4 group">
                 <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
                     <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
@@ -374,7 +428,6 @@
                 </summary>
                 <div id="kb-todo" class="kanban-grid pl-2"></div>
             </details>
-            
             <details class="mb-4 group">
                 <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
                     <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
@@ -437,7 +490,6 @@
                     let params = `?action=${action}`;
                     if(payload.cat) params += `&cat=${payload.cat}`;
                     if(payload.zone) params += `&zone=${payload.zone}`;
-                    
                     fetch(GAS_API_URL + params)
                     .then(res => res.json())
                     .then(data => onSuccess(data))
@@ -450,7 +502,7 @@
                     .catch(e => { alert("連線錯誤，請檢查網路"); document.getElementById('loader').style.display = 'none'; });
                 }
             } else {
-                // 如果在本地測試，可忽略
+                // 本地開發用
             }
         }
 
@@ -614,22 +666,17 @@
             if(!p.zone || !p.id || !p.name) return alert("請填寫完整資訊");
             if(prod !== '尚未暫定' && !p.start) return alert("請選擇日期範圍");
             
-            // ★ 樂觀更新：直接加到本地資料 ★
             DATA.projects.push(p);
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true); // 立即更新畫面
+            processDataUpdate(DATA, true); 
             alert("✅ 建立成功 (背景同步中)");
 
-            // 清空輸入框
             document.getElementById('i-id').value = '';
             document.getElementById('i-name').value = '';
             document.getElementById('i-note').value = '';
             document.getElementById('i-urgent').checked = false; 
 
-            // 背景送出
-            callAPI('addProject', { payload: p }, (res) => {
-                console.log("Synced");
-            });
+            callAPI('addProject', { payload: p }, (res) => { console.log("Synced"); });
         }
 
         function renderKanban(producer) {
@@ -663,9 +710,8 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // --- 核心修復：甘特圖邏輯 ---
+        // --- V19 甘特圖邏輯：整條黃色 + 凍結定位 ---
         function renderGantt(who) {
-            // 切換按鈕狀態
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
             if (who === '魏敏軒') document.getElementById('btn-gan-wei').classList.add('active');
@@ -677,64 +723,61 @@
             document.getElementById('gan-title').innerText = `${who} - ${y}年${m+1}月`;
 
             const daysInMonth = new Date(y, m+1, 0).getDate();
-            const todayDate = new Date().getDate();
-            const isCurrentMonth = (new Date().getMonth() === m && new Date().getFullYear() === y);
+            const today = new Date();
+            const todayDate = today.getDate();
+            const isCurrentMonth = (today.getMonth() === m && today.getFullYear() === y);
 
-            // 表頭
-            let html = `<table class="gantt-table"><thead><tr><th class="gantt-corner z-[50]">專案名稱</th>`;
+            // 背景漸層魔法：當天日期整條黃色
+            const cellW = 34; // 必須對應 CSS
+            let bgStyle = '';
+            if (isCurrentMonth) {
+                const startX = (todayDate - 1) * cellW;
+                const endX = todayDate * cellW;
+                bgStyle = `background: linear-gradient(to right, transparent ${startX}px, #FFF9C4 ${startX}px, #FFF9C4 ${endX}px, transparent ${endX}px), linear-gradient(to right, transparent 33px, #f5f5f5 33px); background-size: 100% 100%, 34px 100%;`;
+            }
+
+            let html = `<table class="gantt-table"><thead><tr><th class="gantt-corner">專案名稱</th>`;
             for(let i=1; i<=daysInMonth; i++) {
                 const isToday = (isCurrentMonth && i === todayDate);
-                html += `<th class="gantt-header-cell ${isToday?'gantt-today-cell':''}">${i}</th>`;
+                html += `<th class="gantt-header-cell ${isToday?'gantt-today-text':''}" style="${isToday?'background:#FFF9C4; border-bottom:2px solid #F59E0B;':''}">${i}</th>`;
             }
             html += `</tr></thead><tbody>`;
 
-            // 內容
             const tasks = DATA.projects.filter(p => p.producer === who && p.start).sort((a,b)=> new Date(a.start) - new Date(b.start));
             
             if (tasks.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center text-gray-400 font-bold">本月無任務</div>`;
+                container.innerHTML = `<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl">本月無任務 🏖️</div>`;
                 return;
             }
 
             tasks.forEach(p => {
                 const s = new Date(p.start);
                 const e = new Date(p.end);
-                // 檢查是否在當月範圍內
                 if (e < new Date(y, m, 1) || s > new Date(y, m+1, 0)) return;
 
                 let startDay = (s < new Date(y, m, 1)) ? 1 : s.getDate();
                 let endDay = (e > new Date(y, m+1, 0)) ? daysInMonth : e.getDate();
                 
-                // 計算位置 (每個格子寬 32px + border) -> 約 33px
-                // 這裡使用絕對定位，left = (startDay - 1) * 100% / daysInMonth ? 不，用 px 比較準
-                // 因為 table layout fixed，每格寬度由 CSS 控制。
-                // CSS 中 width: 32px padding 0.
-                
-                // 為了簡單準確，我們直接在對應的 TD 裡面放 DIV (如果不跨格)
-                // 但跨格最好用 colspan 或 absolute。這裡沿用原本的 absolute 邏輯。
-                // 左邊寬度固定 160px。每格寬度 33px (32+1border)
-                
-                let left = (startDay - 1) * 33; 
-                let width = (endDay - startDay + 1) * 33 - 6; // -6 for spacing
+                let left = (startDay - 1) * cellW + 2; 
+                let width = (endDay - startDay + 1) * cellW - 5; 
 
-                let barColor = '#888';
-                if(p.status === '製作中') barColor = '#007AFF';
-                else if(p.status.includes('審')) barColor = '#FF9500';
-                else if(p.status.includes('完成')) barColor = '#34C759';
+                let barColor = '#9CA3AF';
+                if(p.status === '製作中') barColor = '#2563EB';
+                else if(p.status.includes('審')) barColor = '#F59E0B';
+                else if(p.status.includes('完成')) barColor = '#10B981';
 
-                html += `<tr class="gantt-row">
-                    <td class="gantt-col-fixed" title="${p.name}">
-                        <div class="truncate text-xs font-bold text-gray-800">${p.id}</div>
-                        <div class="truncate text-xs text-gray-500">${p.client}</div>
+                html += `<tr>
+                    <td class="gantt-col-fixed" onclick="triggerEdit('${p.id}', '${p.zone}')">
+                        <div class="truncate text-xs font-black text-gray-800 cursor-pointer hover:text-blue-600">${p.id}</div>
+                        <div class="truncate text-xs text-gray-500 font-bold">${p.client}</div>
                     </td>
-                    <td colspan="${daysInMonth}" class="gantt-cell">
-                        <div class="gantt-bar" style="left:${left}px; width:${width}px; background:${barColor};">
+                    <td colspan="${daysInMonth}" class="gantt-cell" style="${bgStyle}">
+                        <div class="gantt-bar" onclick="triggerEdit('${p.id}', '${p.zone}')" title="${p.name}" style="left:${left}px; width:${width}px; background:${barColor};">
                             ${p.name}
                         </div>
                     </td>
                 </tr>`;
             });
-
             html += `</tbody></table>`;
             container.innerHTML = html;
         }
@@ -745,63 +788,38 @@
             renderGantt(who);
         }
 
-        // --- 核心修復：行事曆邏輯 ---
+        // --- V19 行事曆修復：適配螢幕高度 + 請假功能 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
-            if (calendar) { calendar.destroy(); } // 重置
+            if (calendar) { calendar.destroy(); }
 
-            // 準備事件
             let events = [];
-            
-            // 1. 專案事件
-            const tasks = (calendarFilter === 'all') 
-                ? DATA.projects 
-                : DATA.projects.filter(p => p.producer === calendarFilter);
-
+            const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
             tasks.forEach(p => {
                 if (p.start && p.end) {
                     let color = '#9CA3AF';
                     if (p.status === '製作中') color = '#2563EB';
                     else if (p.status.includes('審')) color = '#F59E0B';
                     else if (p.status === '已完成') color = '#10B981';
-                    
-                    // FullCalendar end date is exclusive, so add 1 day
                     const endDate = new Date(new Date(p.end).getTime() + 86400000).toISOString().slice(0,10);
-                    
-                    events.push({
-                        title: `${p.name} (${p.producer})`,
-                        start: p.start,
-                        end: endDate,
-                        color: color,
-                        extendedProps: { zone: p.zone, id: p.id } // 點擊可用
-                    });
+                    events.push({ title: `${p.name} (${p.producer})`, start: p.start, end: endDate, color: color, extendedProps: { zone: p.zone, id: p.id } });
                 }
             });
 
-            // 2. 請假事件
+            if(!DATA.leaves) DATA.leaves = [];
             DATA.leaves.forEach(l => {
                 if (calendarFilter === 'all' || l.name === calendarFilter) {
                     const endDate = new Date(new Date(l.end).getTime() + 86400000).toISOString().slice(0,10);
-                    events.push({
-                        title: `🏖️ ${l.name}: ${l.reason}`,
-                        start: l.start,
-                        end: endDate,
-                        color: '#7C3AED' // 紫色
-                    });
+                    events.push({ title: `🏖️ ${l.name}: ${l.reason}`, start: l.start, end: endDate, color: '#7C3AED' });
                 }
             });
 
             calendar = new FullCalendar.Calendar(el, {
-                initialView: 'dayGridMonth',
-                locale: 'zh-tw',
-                height: 'auto',
+                initialView: 'dayGridMonth', locale: 'zh-tw', height: '100%', 
                 headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
                 buttonText: { today: '今天' },
                 events: events,
-                eventClick: function(info) {
-                    const props = info.event.extendedProps;
-                    if (props.id) triggerEdit(props.id, props.zone);
-                }
+                eventClick: function(info) { const props = info.event.extendedProps; if (props.id) triggerEdit(props.id, props.zone); }
             });
             calendar.render();
         }
@@ -812,11 +830,9 @@
             if(who==='all') document.getElementById('btn-cal-all').classList.add('active');
             else if(who==='魏敏軒') document.getElementById('btn-cal-wei').classList.add('active');
             else document.getElementById('btn-cal-chiu').classList.add('active');
-            
             renderCalendar();
         }
 
-        // 新增：透過 ID 觸發編輯
         function triggerEdit(id, zone) {
             const p = DATA.projects.find(x => x.id === id && x.zone === zone);
             if(p) openEditProject(p);
@@ -824,15 +840,10 @@
 
         function deleteProject(category, zone, id) {
             if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return;
-            
-            // ★ 樂觀更新：直接刪除本地資料 ★
             DATA.projects = DATA.projects.filter(p => !(p.id === id && p.zone === zone));
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true);
-
-            callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => {
-               console.log("Deleted");
-            });
+            callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
         }
 
         function confirmEditProject() {
@@ -850,32 +861,20 @@
                 producer: document.getElementById('ep-producer').value,
                 type: document.getElementById('ep-type').value,
                 hours: document.getElementById('ep-hours').value, 
-                start: dates[0] || "",
-                end: dates[1] || dates[0] || "",
+                start: dates[0] || "", end: dates[1] || dates[0] || "",
                 note: document.getElementById('ep-note').value,
                 tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',
-                // 這裡保留舊狀態，除非邏輯需要變更
                 status: '保持原樣' 
             };
 
-            // 尋找並更新本地資料
             const targetIdx = DATA.projects.findIndex(x => x.id === originId && x.zone === originZone);
-            if (targetIdx !== -1) {
-                // 保留原本的 status
-                p.status = DATA.projects[targetIdx].status;
-                DATA.projects[targetIdx] = p;
-            }
+            if (targetIdx !== -1) { p.status = DATA.projects[targetIdx].status; DATA.projects[targetIdx] = p; }
 
             closeModal('edit-project');
-            
-            // ★ 樂觀更新：立即存檔並刷新 ★
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true);
             alert("✅ 修改成功 (背景同步中)");
-
-            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
-                console.log("Updated");
-            });
+            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => { console.log("Updated"); });
         }
 
         function openHistory() {
@@ -895,7 +894,6 @@
         }
         
         function doUpdate(cat, zone, id, status, hours=0) {
-            // ★ 樂觀更新：直接改狀態 ★
             const p = DATA.projects.find(x => x.id === id && x.zone === zone);
             if (p) {
                 p.status = status;
@@ -903,10 +901,7 @@
                 localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
                 processDataUpdate(DATA, true);
             }
-
-            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {
-               console.log("Status Updated");
-            });
+            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => { console.log("Status Updated"); });
         }
         
         function openSettings(type) {
@@ -919,13 +914,9 @@
 
         function renderSettingList() {
             const type = document.getElementById('st-type').value;
-            const list = (curCat==='video') 
-                ? (type==='Type' ? DATA.config.videoTypes : DATA.config.videoProducers)
-                : (type==='Type' ? DATA.config.imageTypes : DATA.config.imageProducers);
+            const list = (curCat==='video') ? (type==='Type' ? DATA.config.videoTypes : DATA.config.videoProducers) : (type==='Type' ? DATA.config.imageTypes : DATA.config.imageProducers);
             let html = '';
-            list.forEach(item => {
-                html += `<div class="setting-item"><span>${item}</span><div class="setting-actions"><i onclick="editSettingItem('${item}')" class="fas fa-pen text-sm"></i><i onclick="deleteSettingItem('${item}')" class="fas fa-trash-alt text-sm"></i></div></div>`;
-            });
+            list.forEach(item => { html += `<div class="setting-item"><span>${item}</span><div class="setting-actions"><i onclick="editSettingItem('${item}')" class="fas fa-pen text-sm"></i><i onclick="deleteSettingItem('${item}')" class="fas fa-trash-alt text-sm"></i></div></div>`; });
             document.getElementById('st-list').innerHTML = html;
         }
 
@@ -935,14 +926,8 @@
             if(!val) return;
             document.getElementById('loader').style.display = 'flex';
             callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => {
-                if(res === 'OK') {
-                    callAPI('initAllData', {}, (data) => {
-                        DATA = data;
-                        document.getElementById('loader').style.display = 'none';
-                        renderSettingList();
-                        renderDynamicOptions();
-                    });
-                } else { alert(res); document.getElementById('loader').style.display = 'none'; }
+                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
+                else { alert(res); document.getElementById('loader').style.display = 'none'; }
             });
             document.getElementById('st-input').value = '';
         }
@@ -952,14 +937,8 @@
             const type = document.getElementById('st-type').value;
             document.getElementById('loader').style.display = 'flex';
             callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => {
-                if(res === 'OK') {
-                    callAPI('initAllData', {}, (data) => {
-                        DATA = data;
-                        document.getElementById('loader').style.display = 'none';
-                        renderSettingList();
-                        renderDynamicOptions();
-                    });
-                } else { alert(res); document.getElementById('loader').style.display = 'none'; }
+                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
+                else { alert(res); document.getElementById('loader').style.display = 'none'; }
             });
         }
 
@@ -969,14 +948,8 @@
             const type = document.getElementById('st-type').value;
             document.getElementById('loader').style.display = 'flex';
             callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => {
-                if(res === 'OK') {
-                    callAPI('initAllData', {}, (data) => {
-                        DATA = data;
-                        document.getElementById('loader').style.display = 'none';
-                        renderSettingList();
-                        renderDynamicOptions();
-                    });
-                } else { alert("編輯失敗：" + res); document.getElementById('loader').style.display = 'none'; }
+                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
+                else { alert("編輯失敗：" + res); document.getElementById('loader').style.display = 'none'; }
             });
         }
 
@@ -1011,7 +984,6 @@
             pendingList.forEach((p, idx) => {
                 const prefix = p.zone.split('_')[0]; 
                 const numPart = p.id.replace(prefix, '');
-                const pStr = JSON.stringify(p).replace(/'/g, "&#39;");
                 html += `
                 <div id="p-item-${idx}" class="pending-item">
                     <div id="p-display-${idx}">
@@ -1322,19 +1294,31 @@
                 document.getElementById('ep-zone').value = "";
             }
         }
+        
+        // V19 請假修復：先本地更新 + 背景送出
         function confirmLeave() {
             const name = document.getElementById('leave-name').value;
             const date = document.getElementById('leave-date').value;
             const reason = document.getElementById('leave-reason').value;
             if(!date || !reason) return alert("請填寫完整");
-            const dates = date.split(' to ');
             
+            const dates = date.split(' to ');
             const item = { name:name, start:dates[0], end:dates[1]||dates[0], reason:reason };
+            
+            // 本地直接推入，讓畫面秒更新
+            if(!DATA.leaves) DATA.leaves = [];
             DATA.leaves.push(item);
+            
             closeModal('leave');
             renderCalendar(); 
-            alert("請假申請已送出");
+            alert("✅ 請假申請已送出");
+            
+            // 背景同步
             callAPI('addLeave', { item: item }, (res) => {});
+            
+            // 清空
+            document.getElementById('leave-date').value = '';
+            document.getElementById('leave-reason').value = '';
         }
     </script>
 </body>

@@ -12,21 +12,43 @@
     <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
-        /* --- V21: 視覺除錯 & 智慧高度適配 --- */
+        /* --- V22: 滾動邏輯全面修復版 --- */
         :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--primary); padding-bottom: 60px; overflow: hidden; /* 防止整頁捲動 */ }
         
+        /* 鎖定 Body，防止雙重捲動 */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); color: var(--primary); 
+            height: 100vh; overflow: hidden; /* 關鍵：鎖住外層 */
+            display: flex; flex-direction: column;
+        }
+        
+        /* 頂部固定區 (標題+導航) */
+        .header-fixed-area {
+            flex-shrink: 0;
+            padding: 20px 20px 0 20px;
+            background: var(--bg);
+            z-index: 50;
+        }
+
         /* 導航列 */
-        .segmented-nav { background: #E8E8ED; padding: 4px; border-radius: 10px; display: flex; margin-bottom: 16px; flex-wrap: wrap; }
+        .segmented-nav { background: #E8E8ED; padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; flex-wrap: wrap; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .nav-item { flex: 1; min-width: 80px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
-        /* 容器通用設定 */
-        .page-container { 
-            height: calc(100vh - 100px); /* 扣掉標題與導航的高度 */
-            overflow-y: auto; 
-            padding-bottom: 40px;
+        /* --- 核心修復：所有頁面的滾動容器 --- */
+        .page-scroll-container { 
+            flex-grow: 1; /* 自動填滿剩餘高度 */
+            overflow-y: auto; /* 內容過長時出現捲軸 */
+            padding: 10px 20px 80px 20px; /* 底部留白給 FAB */
+            position: relative;
         }
+
+        /* 美化捲軸 (Chrome/Safari) */
+        .page-scroll-container::-webkit-scrollbar, .gantt-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
+        .page-scroll-container::-webkit-scrollbar-track, .gantt-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: #D1D5DB; border-radius: 4px; }
+        .page-scroll-container::-webkit-scrollbar-thumb:hover, .gantt-wrapper::-webkit-scrollbar-thumb:hover { background-color: #9CA3AF; }
 
         /* 卡片與輸入 */
         .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
@@ -70,7 +92,7 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* --- V21 甘特圖修復：移除雜訊背景，使用 calc 自動填滿 --- */
+        /* --- 甘特圖：凍結 + 光柱 --- */
         .gantt-wrapper { 
             overflow: auto; 
             background: white; 
@@ -79,15 +101,11 @@
             width: 100%; 
             border: 1px solid #E5E5E5; 
             position: relative; 
-            /* 智慧高度：螢幕總高 - 上方保留區(約220px) = 剩餘空間全給它 */
-            height: calc(100vh - 220px); 
+            /* V22: 讓甘特圖填滿容器，但如果內容太多，自己內部也會有捲軸 */
+            height: 100%; 
+            min-height: 500px;
         }
-        .gantt-table { 
-            width: 100%; 
-            border-collapse: separate; 
-            border-spacing: 0; 
-            min-width: 800px; 
-        }
+        .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
         .gantt-header-cell { 
             position: sticky; top: 0; 
             background: #FAFAFA; z-index: 30; 
@@ -114,20 +132,10 @@
             padding: 10px; font-weight: 800; font-size: 13px; color: #1D1D1F; 
         }
         
-        /* 移除 linear-gradient，改用乾淨的背景色，解決黑點問題 */
         .gantt-cell { 
-            border-bottom: 1px solid #f5f5f5; 
-            border-right: 1px solid #f9f9f9; /* 淡淡的垂直線 */
-            height: 44px; position: relative; padding: 0; 
+            border-bottom: 1px solid #f5f5f5; height: 44px; position: relative; padding: 0; 
             background-color: white;
         }
-        /* 當天日期的整條黃色背景 */
-        .gantt-cell-today {
-            background-color: #FFF9C4 !important;
-            border-left: 1px solid #FCD34D;
-            border-right: 1px solid #FCD34D;
-        }
-
         .gantt-bar { 
             position: absolute; top: 10px; height: 24px; 
             border-radius: 6px; color: white; font-size: 11px; 
@@ -141,12 +149,12 @@
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* --- V21 行事曆：智慧填滿螢幕 --- */
+        /* --- 行事曆：填滿 --- */
         #calendar-container { 
             background: white; border-radius: 16px; padding: 16px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            /* 自動填滿剩餘空間 */
-            height: calc(100vh - 220px); 
+            height: 100%; /* 跟隨父層高度 */
+            min-height: 600px;
             display: flex; flex-direction: column;
         }
         .fc { flex: 1; height: 100%; } 
@@ -166,7 +174,7 @@
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
         /* Modal & Panels */
-        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 9999; /* 層級最高，解決不能點的問題 */ }
+        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 9999; }
         .modal-body { background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; }
         .hidden { display: none; }
         
@@ -361,11 +369,10 @@
         <button onclick="closeModal('settings')" class="w-full bg-gray-200 py-3 rounded-lg font-bold mt-4">關閉</button>
     </div></div>
 
-    <div class="max-w-5xl mx-auto px-4 py-8">
-        <div class="mb-6 px-1 flex items-center gap-3">
+    <div class="header-fixed-area">
+        <div class="mb-4 flex items-center gap-3">
             <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
         </div>
-        
         <div class="segmented-nav">
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active" title="點擊刷新"><i class="fas fa-plus mr-2"></i> 新增</div>
             <div onclick="switchTab('wei')" id="nav-wei" class="nav-item" title="點擊刷新"><i class="fas fa-user mr-2"></i> 魏敏軒</div>
@@ -373,57 +380,63 @@
             <div onclick="switchTab('gan')" id="nav-gan" class="nav-item" title="點擊刷新"><i class="fas fa-chart-bar mr-2"></i> 甘特圖</div>
             <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item" title="點擊刷新"><i class="fas fa-calendar-alt mr-2"></i> 行事曆</div>
         </div>
+    </div>
 
-        <div id="p-add" class="clean-card">
-            <div class="type-switch">
-                <div onclick="setProjectType('video')" id="btn-type-video" class="type-btn active">🎬 剪輯專案</div>
-                <div onclick="setProjectType('image')" id="btn-type-image" class="type-btn">🎨 圖文專案</div>
-            </div>
+    <div id="p-add" class="page-scroll-container">
+        <div class="max-w-5xl mx-auto">
+            <div class="clean-card">
+                <div class="type-switch">
+                    <div onclick="setProjectType('video')" id="btn-type-video" class="type-btn active">🎬 剪輯專案</div>
+                    <div onclick="setProjectType('image')" id="btn-type-image" class="type-btn">🎨 圖文專案</div>
+                </div>
 
-            <h2 class="text-xl font-bold mb-4">建立新專案</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1">區域 / 客戶</label>
-                    <div class="flex gap-2">
-                        <select id="i-zone" onchange="updateClientName()" class="clean-select font-bold flex-grow"></select>
-                        <div onclick="openHistory()" class="icon-btn btn-gray" title="預覽"><i class="fas fa-eye"></i></div>
-                        <div onclick="openZoneModal('new')" class="icon-btn btn-black" title="新增"><i class="fas fa-plus"></i></div>
-                        <div onclick="openZoneModal('edit')" class="icon-btn btn-gray" title="編輯"><i class="fas fa-pen"></i></div>
+                <h2 class="text-xl font-bold mb-4">建立新專案</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">區域 / 客戶</label>
+                        <div class="flex gap-2">
+                            <select id="i-zone" onchange="updateClientName()" class="clean-select font-bold flex-grow"></select>
+                            <div onclick="openHistory()" class="icon-btn btn-gray" title="預覽"><i class="fas fa-eye"></i></div>
+                            <div onclick="openZoneModal('new')" class="icon-btn btn-black" title="新增"><i class="fas fa-plus"></i></div>
+                            <div onclick="openZoneModal('edit')" class="icon-btn btn-gray" title="編輯"><i class="fas fa-pen"></i></div>
+                        </div>
+                    </div>
+                    <div><label class="block text-xs font-bold text-gray-500 mb-1">編號</label><input id="i-id" class="clean-input font-mono font-bold" placeholder=""></div>
+                </div>
+                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱 (顯示用)</label><input id="i-client" class="clean-input bg-gray-100 text-black font-bold"></div>
+                <div class="mb-4"><label id="lbl-name" class="block text-xs font-bold text-gray-500 mb-1">專案名稱</label><input id="i-name" class="clean-input" placeholder="輸入標題"></div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">製作人</label>
+                        <div class="flex gap-1">
+                            <select id="i-producer" class="clean-select" onchange="checkProducer()"></select>
+                            <div onclick="openSettings('Producer')" class="icon-btn btn-gray w-10 h-[46px]" title="管理製作人"><i class="fas fa-cog"></i></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">類型</label>
+                        <div class="flex gap-1">
+                            <select id="i-type" class="clean-select"></select>
+                            <div onclick="openSettings('Type')" class="icon-btn btn-gray w-10 h-[46px]" title="管理類型"><i class="fas fa-cog"></i></div>
+                        </div>
                     </div>
                 </div>
-                <div><label class="block text-xs font-bold text-gray-500 mb-1">編號</label><input id="i-id" class="clean-input font-mono font-bold" placeholder=""></div>
-            </div>
-            <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱 (顯示用)</label><input id="i-client" class="clean-input bg-gray-100 text-black font-bold"></div>
-            <div class="mb-4"><label id="lbl-name" class="block text-xs font-bold text-gray-500 mb-1">專案名稱</label><input id="i-name" class="clean-input" placeholder="輸入標題"></div>
-            
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1">製作人</label>
-                    <div class="flex gap-1">
-                        <select id="i-producer" class="clean-select" onchange="checkProducer()"></select>
-                        <div onclick="openSettings('Producer')" class="icon-btn btn-gray w-10 h-[46px]" title="管理製作人"><i class="fas fa-cog"></i></div>
-                    </div>
+                
+                <div class="mb-4 flex items-center gap-2">
+                    <input type="checkbox" id="i-urgent" class="w-5 h-5 text-red-600 rounded focus:ring-red-500">
+                    <label for="i-urgent" class="text-base font-bold text-red-600">🔥 標記為急件</label>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1">類型</label>
-                    <div class="flex gap-1">
-                        <select id="i-type" class="clean-select"></select>
-                        <div onclick="openSettings('Type')" class="icon-btn btn-gray w-10 h-[46px]" title="管理類型"><i class="fas fa-cog"></i></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mb-4 flex items-center gap-2">
-                <input type="checkbox" id="i-urgent" class="w-5 h-5 text-red-600 rounded focus:ring-red-500">
-                <label for="i-urgent" class="text-base font-bold text-red-600">🔥 標記為急件</label>
-            </div>
 
-            <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label><input id="i-date" class="clean-input text-center" placeholder="點擊選擇"></div>
-            <div class="mb-6"><label class="block text-xs font-bold text-gray-500 mb-1">備註</label><textarea id="i-note" class="clean-input h-20"></textarea></div>
-            <button onclick="saveProject()" id="btn-create" class="w-full bg-black text-white py-3 rounded-lg font-bold shadow-md hover:bg-gray-800 transition">建立並同步</button>
+                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label><input id="i-date" class="clean-input text-center" placeholder="點擊選擇"></div>
+                <div class="mb-6"><label class="block text-xs font-bold text-gray-500 mb-1">備註</label><textarea id="i-note" class="clean-input h-20"></textarea></div>
+                <button onclick="saveProject()" id="btn-create" class="w-full bg-black text-white py-3 rounded-lg font-bold shadow-md hover:bg-gray-800 transition">建立並同步</button>
+            </div>
         </div>
+    </div>
 
-        <div id="p-kanban" class="hidden">
+    <div id="p-kanban" class="hidden page-scroll-container">
+        <div class="max-w-5xl mx-auto">
             <h2 id="kb-title" class="text-2xl font-black mb-6 px-2"></h2>
             
             <div class="mb-8">
@@ -455,29 +468,33 @@
                 <div id="kb-done" class="kanban-grid pl-2"></div>
             </details>
         </div>
+    </div>
 
-        <div id="p-gantt" class="hidden page-container">
-            <h2 id="gan-title" class="text-2xl font-black mb-6 px-2">甘特圖</h2>
-            <div class="flex gap-2 mb-4 px-2 items-center">
-                <button id="btn-gan-wei" onclick="renderGantt('魏敏軒')" class="gan-btn px-4 py-2 rounded-lg font-bold">魏敏軒</button>
-                <button id="btn-gan-chiu" onclick="renderGantt('邱仁杰')" class="gan-btn px-4 py-2 rounded-lg font-bold">邱仁杰</button>
-                
-                <div class="flex-1"></div>
-                <button class="icon-btn btn-gray" onclick="changeGanttMonth(-1)"><i class="fas fa-chevron-left"></i></button>
-                <button class="icon-btn btn-gray" onclick="changeGanttMonth(1)"><i class="fas fa-chevron-right"></i></button>
+    <div id="p-gantt" class="hidden page-scroll-container">
+        <div class="max-w-full">
+            <div class="flex gap-2 mb-4 px-2 items-center justify-between">
+                <h2 id="gan-title" class="text-2xl font-black">甘特圖</h2>
+                <div class="flex gap-2">
+                    <button id="btn-gan-wei" onclick="renderGantt('魏敏軒')" class="gan-btn px-4 py-2 rounded-lg font-bold">魏敏軒</button>
+                    <button id="btn-gan-chiu" onclick="renderGantt('邱仁杰')" class="gan-btn px-4 py-2 rounded-lg font-bold">邱仁杰</button>
+                    <button class="icon-btn btn-gray" onclick="changeGanttMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <button class="icon-btn btn-gray" onclick="changeGanttMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
             </div>
             <div id="gantt-chart" class="gantt-wrapper"></div>
         </div>
+    </div>
 
-        <div id="p-calendar" class="hidden page-container">
+    <div id="p-calendar" class="hidden page-scroll-container">
+        <div class="max-w-full h-full flex flex-col">
             <div class="flex justify-between items-center mb-4 px-2">
                 <h2 class="text-2xl font-black">行事曆</h2>
-                <button onclick="openLeaveModal()" class="bg-black text-white px-3 py-1 rounded-lg text-sm font-bold"><i class="fas fa-coffee mr-1"></i> 請假</button>
-            </div>
-            <div class="flex gap-2 mb-4 px-2">
-                <button id="btn-cal-all" onclick="filterCalendar('all')" class="cal-filter-btn active">全部</button>
-                <button id="btn-cal-wei" onclick="filterCalendar('魏敏軒')" class="cal-filter-btn">魏敏軒</button>
-                <button id="btn-cal-chiu" onclick="filterCalendar('邱仁杰')" class="cal-filter-btn">邱仁杰</button>
+                <div class="flex gap-2">
+                    <button id="btn-cal-all" onclick="filterCalendar('all')" class="cal-filter-btn active">全部</button>
+                    <button id="btn-cal-wei" onclick="filterCalendar('魏敏軒')" class="cal-filter-btn">魏敏軒</button>
+                    <button id="btn-cal-chiu" onclick="filterCalendar('邱仁杰')" class="cal-filter-btn">邱仁杰</button>
+                    <button onclick="openLeaveModal()" class="bg-black text-white px-3 py-1 rounded-lg text-sm font-bold"><i class="fas fa-coffee mr-1"></i> 請假</button>
+                </div>
             </div>
             <div id="calendar-container">
                 <div id="calendar"></div>
@@ -683,19 +700,16 @@
             if(!p.zone || !p.id || !p.name) return alert("請填寫完整資訊");
             if(prod !== '尚未暫定' && !p.start) return alert("請選擇日期範圍");
             
-            // ★ 樂觀更新：直接加到本地資料 ★
             DATA.projects.push(p);
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true); // 立即更新畫面
+            processDataUpdate(DATA, true); 
             alert("✅ 建立成功 (背景同步中)");
 
-            // 清空輸入框
             document.getElementById('i-id').value = '';
             document.getElementById('i-name').value = '';
             document.getElementById('i-note').value = '';
             document.getElementById('i-urgent').checked = false; 
 
-            // 背景送出
             callAPI('addProject', { payload: p }, (res) => {
                 console.log("Synced");
             });
@@ -732,7 +746,7 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // --- V21: 修正甘特圖顯示與高度 ---
+        // --- 甘特圖：實體 DIV 光柱 (避免黑點) ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -752,7 +766,6 @@
             let html = `<table class="gantt-table"><thead><tr><th class="gantt-corner">專案名稱</th>`;
             for(let i=1; i<=daysInMonth; i++) {
                 const isToday = (isCurrentMonth && i === todayDate);
-                // V21: 移除漸層背景，只用文字顏色與底線標示當天
                 html += `<th class="gantt-header-cell ${isToday?'gantt-today-text':''}" style="${isToday?'background:#FFF9C4; border-bottom:2px solid #F59E0B;':''}">${i}</th>`;
             }
             html += `</tr></thead><tbody>`;
@@ -764,7 +777,7 @@
                 return;
             }
 
-            const cellW = 34; // 配合 CSS
+            const cellW = 34; 
             tasks.forEach(p => {
                 const s = new Date(p.start);
                 const e = new Date(p.end);
@@ -787,24 +800,26 @@
                         <div class="truncate text-xs text-gray-500 font-bold">${p.client}</div>
                     </td>
                     `;
-                    for(let d=1; d<=daysInMonth; d++) {
-                        const isTodayCell = (isCurrentMonth && d === todayDate);
-                        // 第一個 cell 負責畫 bar
-                        if (d === 1) {
-                            html += `<td colspan="${daysInMonth}" class="gantt-cell relative p-0">`;
-                            // 畫背景網格與當天高亮
-                            html += `<div class="absolute inset-0 flex">`;
-                            for(let k=1; k<=daysInMonth; k++) {
-                                html += `<div style="width:34px; height:100%; border-right:1px solid #f9f9f9; ${(isCurrentMonth && k === todayDate)?'background:#FFF9C4; border-left:1px solid #FCD34D; border-right:1px solid #FCD34D;':''}"></div>`;
-                            }
-                            html += `</div>`;
-                            
-                            // 畫 Bar
-                            html += `<div class="gantt-bar" onclick="triggerEdit('${p.id}', '${p.zone}')" title="${p.name}" style="left:${left}px; width:${width}px; background:${barColor};">
-                                        ${p.name}
-                                     </div>`;
-                            html += `</td>`;
+                    // 實體 DIV 畫法：避免漸層黑點
+                    if(isCurrentMonth) {
+                        // 如果是當月，我們需要一個特殊的背景層
+                        html += `<td colspan="${daysInMonth}" class="gantt-cell relative p-0">`;
+                        html += `<div class="absolute inset-0 flex pointer-events-none">`;
+                        for(let k=1; k<=daysInMonth; k++) {
+                            html += `<div style="width:34px; height:100%; border-right:1px solid #f9f9f9; box-sizing:border-box; ${k===todayDate?'background:#FFF9C4; border-left:1px solid #FCD34D; border-right:1px solid #FCD34D;':''}"></div>`;
                         }
+                        html += `</div>`;
+                        html += `<div class="gantt-bar" onclick="triggerEdit('${p.id}', '${p.zone}')" title="${p.name}" style="left:${left}px; width:${width}px; background:${barColor};">
+                                    ${p.name}
+                                 </div>`;
+                        html += `</td>`;
+                    } else {
+                        // 非當月，用簡單背景
+                        html += `<td colspan="${daysInMonth}" class="gantt-cell relative p-0" style="background-size:34px 100%; background-image:linear-gradient(to right, transparent 33px, #f9f9f9 33px);">
+                                    <div class="gantt-bar" onclick="triggerEdit('${p.id}', '${p.zone}')" title="${p.name}" style="left:${left}px; width:${width}px; background:${barColor};">
+                                        ${p.name}
+                                    </div>
+                                 </td>`;
                     }
                 html += `</tr>`;
             });
@@ -818,7 +833,14 @@
             renderGantt(who);
         }
 
-        // --- V21 行事曆：智慧填滿 + 請假修復 ---
+        // --- V22 請假修復：綁定正確 ---
+        function openLeaveModal() {
+            document.getElementById('leave-name').value = '魏敏軒'; 
+            document.getElementById('leave-date').value = '';
+            document.getElementById('leave-reason').value = '';
+            document.getElementById('modal-leave').style.display = 'flex';
+        }
+
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -1327,27 +1349,15 @@
             }
         }
         
-        // V21 修正：補回 openLeaveModal 函式
-        function openLeaveModal() {
-            document.getElementById('leave-name').value = '魏敏軒'; // 預設值
-            document.getElementById('leave-date').value = '';
-            document.getElementById('leave-reason').value = '';
-            document.getElementById('modal-leave').style.display = 'flex';
-        }
-
+        // V22 請假修復
         function confirmLeave() {
             const name = document.getElementById('leave-name').value;
             const date = document.getElementById('leave-date').value;
             const reason = document.getElementById('leave-reason').value;
-            if(!date || !reason) return alert("請填寫完整資訊 (日期與事由)");
+            if(!date || !reason) return alert("請填寫完整");
             
             const dates = date.split(' to ');
-            const item = { 
-                name: name, 
-                start: dates[0], 
-                end: dates[1] || dates[0], 
-                reason: reason 
-            };
+            const item = { name:name, start:dates[0], end:dates[1]||dates[0], reason:reason };
             
             // 本地直接推入，讓畫面秒更新
             if(!DATA.leaves) DATA.leaves = [];
@@ -1359,6 +1369,10 @@
             
             // 背景同步
             callAPI('addLeave', { item: item }, (res) => {});
+            
+            // 清空
+            document.getElementById('leave-date').value = '';
+            document.getElementById('leave-reason').value = '';
         }
     </script>
 </body>

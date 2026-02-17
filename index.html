@@ -55,25 +55,18 @@
 
         details > summary { list-style: none; outline: none; }
         details > summary::-webkit-details-marker { display: none; }
-        details > summary i.fa-caret-right {
-            transition: transform 0.2s ease;
-            display: inline-block;
-            width: 20px;
-            text-align: center;
-        }
+        details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        .gantt-wrapper { overflow-x: auto; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; -webkit-overflow-scrolling: touch; }
-        .gantt-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 800px; }
-        .gantt-header-cell { text-align: center; font-size: 10px; color: #888; border-right: 1px solid #f0f0f0; padding: 8px 0; width: 28px; }
-        .gantt-today { background-color: #FFF9C4; color: #000; font-weight: 900; border-bottom: 3px solid #FFD700; }
-        .gantt-today-cell { background-color: #FFF9C4; } 
-        .gantt-row { height: 40px; border-bottom: 1px solid #f9f9f9; }
-        .gantt-label-cell { width: 220px; padding-right: 10px; background: white; z-index: 10; position: sticky; left: 0; border-right: 2px solid #eee; padding-left: 10px; white-space: nowrap; overflow: hidden; }
-        .gantt-id { font-weight: 900; font-size: 12px; color: #333; margin-right: 6px; }
-        .gantt-name { font-size: 12px; color: #444; font-weight: 500; }
-        .gantt-grid-cell { border-right: 1px solid #f5f5f5; position: relative; padding: 0; }
-        .gantt-bar { position: absolute; top: 10px; left: 1px; right: 1px; height: 20px; border-radius: 4px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 5px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        /* 甘特圖專用樣式 (修復版) */
+        .gantt-wrapper { overflow-x: auto; background: white; border-radius: 12px; padding: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; border: 1px solid #E5E5E5; position: relative; max-height: 600px; overflow-y: auto; }
+        .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
+        .gantt-header-cell { position: sticky; top: 0; background: #FAFAFA; z-index: 20; text-align: center; font-size: 11px; color: #555; border-bottom: 1px solid #E5E5E5; border-right: 1px solid #f0f0f0; padding: 8px 0; width: 32px; font-weight: 700; }
+        .gantt-today-cell { background-color: #FFF9C4 !important; color: black; border-bottom: 2px solid #FFD700; } 
+        .gantt-col-fixed { position: sticky; left: 0; background: white; z-index: 30; width: 160px; min-width: 160px; padding: 10px; border-right: 2px solid #E5E5E5; border-bottom: 1px solid #f0f0f0; }
+        .gantt-corner { position: sticky; top: 0; left: 0; z-index: 40; background: #FAFAFA; border-right: 2px solid #E5E5E5; border-bottom: 1px solid #E5E5E5; padding: 10px; font-weight: 800; font-size: 13px; color: #1D1D1F; }
+        .gantt-cell { border-right: 1px solid #f5f5f5; border-bottom: 1px solid #f5f5f5; height: 44px; position: relative; padding: 0; }
+        .gantt-bar { position: absolute; top: 10px; height: 24px; border-radius: 6px; color: white; font-size: 11px; line-height: 24px; padding: 0 8px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: 700; }
         
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
@@ -457,8 +450,7 @@
                     .catch(e => { alert("連線錯誤，請檢查網路"); document.getElementById('loader').style.display = 'none'; });
                 }
             } else {
-                const handler = google.script.run.withSuccessHandler(onSuccess);
-                if (action === 'initAllData') handler.initAllData();
+                // 如果在本地測試，可忽略
             }
         }
 
@@ -495,13 +487,13 @@
                 if(document.getElementById('btn-gan-wei').classList.contains('active')) renderGantt('魏敏軒');
                 else renderGantt('邱仁杰');
             }
-            else if (curTab === 'calendar') {
-                renderCalendar();
+            else if (curTab === 'calendar') { 
+                renderCalendar(); 
             }
 
             if (!isCache) {
                 document.getElementById('loader').style.display = 'none';
-                setProjectType('video'); 
+                if(!localStorage.getItem('JAYRAN_INIT_DONE')){ setProjectType('video'); localStorage.setItem('JAYRAN_INIT_DONE', '1'); }
             } else {
                 document.getElementById('loader').style.display = 'none';
             }
@@ -645,7 +637,6 @@
             if (!DATA.projects) return;
             const tasks = DATA.projects.filter(p => p.producer === producer);
             const card = (p, color, bg) => {
-                // 使用 ID 傳遞
                 return `
                 <div class="kanban-item k-${color} ${p.tag === 'Urgent' ? 'k-red' : ''}">
                     <div class="k-header-badges"><span class="k-status-badge bg-${bg}">${p.status}</span>${ p.tag === 'Urgent' ? '<span class="k-tag-urgent">🔥 急件</span>' : '' }</div>
@@ -670,6 +661,159 @@
             document.getElementById('kb-review').innerHTML = reviewHTML || '<div class="text-center text-gray-300 py-4">無</div>';
             document.getElementById('kb-todo').innerHTML = todoHTML || '<div class="text-center text-gray-300 py-4">無</div>';
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
+        }
+
+        // --- 核心修復：甘特圖邏輯 ---
+        function renderGantt(who) {
+            // 切換按鈕狀態
+            document.getElementById('btn-gan-wei').classList.remove('active');
+            document.getElementById('btn-gan-chiu').classList.remove('active');
+            if (who === '魏敏軒') document.getElementById('btn-gan-wei').classList.add('active');
+            else document.getElementById('btn-gan-chiu').classList.add('active');
+
+            const container = document.getElementById('gantt-chart');
+            const y = currentGanttDate.getFullYear();
+            const m = currentGanttDate.getMonth();
+            document.getElementById('gan-title').innerText = `${who} - ${y}年${m+1}月`;
+
+            const daysInMonth = new Date(y, m+1, 0).getDate();
+            const todayDate = new Date().getDate();
+            const isCurrentMonth = (new Date().getMonth() === m && new Date().getFullYear() === y);
+
+            // 表頭
+            let html = `<table class="gantt-table"><thead><tr><th class="gantt-corner z-[50]">專案名稱</th>`;
+            for(let i=1; i<=daysInMonth; i++) {
+                const isToday = (isCurrentMonth && i === todayDate);
+                html += `<th class="gantt-header-cell ${isToday?'gantt-today-cell':''}">${i}</th>`;
+            }
+            html += `</tr></thead><tbody>`;
+
+            // 內容
+            const tasks = DATA.projects.filter(p => p.producer === who && p.start).sort((a,b)=> new Date(a.start) - new Date(b.start));
+            
+            if (tasks.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-gray-400 font-bold">本月無任務</div>`;
+                return;
+            }
+
+            tasks.forEach(p => {
+                const s = new Date(p.start);
+                const e = new Date(p.end);
+                // 檢查是否在當月範圍內
+                if (e < new Date(y, m, 1) || s > new Date(y, m+1, 0)) return;
+
+                let startDay = (s < new Date(y, m, 1)) ? 1 : s.getDate();
+                let endDay = (e > new Date(y, m+1, 0)) ? daysInMonth : e.getDate();
+                
+                // 計算位置 (每個格子寬 32px + border) -> 約 33px
+                // 這裡使用絕對定位，left = (startDay - 1) * 100% / daysInMonth ? 不，用 px 比較準
+                // 因為 table layout fixed，每格寬度由 CSS 控制。
+                // CSS 中 width: 32px padding 0.
+                
+                // 為了簡單準確，我們直接在對應的 TD 裡面放 DIV (如果不跨格)
+                // 但跨格最好用 colspan 或 absolute。這裡沿用原本的 absolute 邏輯。
+                // 左邊寬度固定 160px。每格寬度 33px (32+1border)
+                
+                let left = (startDay - 1) * 33; 
+                let width = (endDay - startDay + 1) * 33 - 6; // -6 for spacing
+
+                let barColor = '#888';
+                if(p.status === '製作中') barColor = '#007AFF';
+                else if(p.status.includes('審')) barColor = '#FF9500';
+                else if(p.status.includes('完成')) barColor = '#34C759';
+
+                html += `<tr class="gantt-row">
+                    <td class="gantt-col-fixed" title="${p.name}">
+                        <div class="truncate text-xs font-bold text-gray-800">${p.id}</div>
+                        <div class="truncate text-xs text-gray-500">${p.client}</div>
+                    </td>
+                    <td colspan="${daysInMonth}" class="gantt-cell">
+                        <div class="gantt-bar" style="left:${left}px; width:${width}px; background:${barColor};">
+                            ${p.name}
+                        </div>
+                    </td>
+                </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function changeGanttMonth(delta) {
+            currentGanttDate.setMonth(currentGanttDate.getMonth() + delta);
+            const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
+            renderGantt(who);
+        }
+
+        // --- 核心修復：行事曆邏輯 ---
+        function renderCalendar() {
+            const el = document.getElementById('calendar');
+            if (calendar) { calendar.destroy(); } // 重置
+
+            // 準備事件
+            let events = [];
+            
+            // 1. 專案事件
+            const tasks = (calendarFilter === 'all') 
+                ? DATA.projects 
+                : DATA.projects.filter(p => p.producer === calendarFilter);
+
+            tasks.forEach(p => {
+                if (p.start && p.end) {
+                    let color = '#9CA3AF';
+                    if (p.status === '製作中') color = '#2563EB';
+                    else if (p.status.includes('審')) color = '#F59E0B';
+                    else if (p.status === '已完成') color = '#10B981';
+                    
+                    // FullCalendar end date is exclusive, so add 1 day
+                    const endDate = new Date(new Date(p.end).getTime() + 86400000).toISOString().slice(0,10);
+                    
+                    events.push({
+                        title: `${p.name} (${p.producer})`,
+                        start: p.start,
+                        end: endDate,
+                        color: color,
+                        extendedProps: { zone: p.zone, id: p.id } // 點擊可用
+                    });
+                }
+            });
+
+            // 2. 請假事件
+            DATA.leaves.forEach(l => {
+                if (calendarFilter === 'all' || l.name === calendarFilter) {
+                    const endDate = new Date(new Date(l.end).getTime() + 86400000).toISOString().slice(0,10);
+                    events.push({
+                        title: `🏖️ ${l.name}: ${l.reason}`,
+                        start: l.start,
+                        end: endDate,
+                        color: '#7C3AED' // 紫色
+                    });
+                }
+            });
+
+            calendar = new FullCalendar.Calendar(el, {
+                initialView: 'dayGridMonth',
+                locale: 'zh-tw',
+                height: 'auto',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+                buttonText: { today: '今天' },
+                events: events,
+                eventClick: function(info) {
+                    const props = info.event.extendedProps;
+                    if (props.id) triggerEdit(props.id, props.zone);
+                }
+            });
+            calendar.render();
+        }
+
+        function filterCalendar(who) {
+            calendarFilter = who;
+            document.querySelectorAll('.cal-filter-btn').forEach(b => b.classList.remove('active'));
+            if(who==='all') document.getElementById('btn-cal-all').classList.add('active');
+            else if(who==='魏敏軒') document.getElementById('btn-cal-wei').classList.add('active');
+            else document.getElementById('btn-cal-chiu').classList.add('active');
+            
+            renderCalendar();
         }
 
         // 新增：透過 ID 觸發編輯
@@ -717,7 +861,7 @@
             // 尋找並更新本地資料
             const targetIdx = DATA.projects.findIndex(x => x.id === originId && x.zone === originZone);
             if (targetIdx !== -1) {
-                // 保留原本的 status，除非有特殊邏輯
+                // 保留原本的 status
                 p.status = DATA.projects[targetIdx].status;
                 DATA.projects[targetIdx] = p;
             }
@@ -744,7 +888,7 @@
                 let html = list.length === 0 ? '<div class="text-center text-gray-400">尚無專案</div>' : '';
                 list.forEach(p => {
                     let bg = '#888'; if(p.status === '製作中') bg = '#007AFF'; else if(p.status.includes('審')) bg = '#FF9500'; else if(p.status === '已完成') bg = '#34C759';
-                    html += `<div class="hist-item"><div class="font-bold text-gray-800 mr-2 w-16">${p.id}</div><div class="flex-1 truncate text-gray-600 mr-2">${p.name}</div><div class="hist-status" style="background:${bg}">${p.status}</div></div>`;
+                    html += `<div class="mb-2 flex items-center justify-between border-b pb-2"><div class="flex items-center"><span class="font-bold text-gray-800 mr-2 w-16">${p.id}</span><span class="text-gray-600 mr-2 truncate w-32">${p.name}</span></div><span class="text-white text-xs px-2 py-1 rounded" style="background:${bg}">${p.status}</span></div>`;
                 });
                 document.getElementById('hist-list').innerHTML = html;
             });
@@ -1095,7 +1239,6 @@
             el.parentElement.parentElement.style.opacity = '0.5';
             callAPI('deleteLink', { idx:idx }, (res) => loadLinks());
         }
-        
         function openZoneModal(mode) {
             modalMode = mode;
             const z = document.getElementById('i-zone').value;
@@ -1124,9 +1267,7 @@
             }
             document.getElementById('modal-zone').style.display = 'flex';
         }
-
         function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
-
         function confirmZoneModal() {
             const name = document.getElementById('modal-name').value;
             const code = document.getElementById('modal-code').value;
@@ -1145,7 +1286,6 @@
                 });
             }
         }
-        
         function openEditProject(p) {
             document.getElementById('ep-cat').value = p.category;
             document.getElementById('ep-origin-id').value = p.id; 
@@ -1168,7 +1308,6 @@
             document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
             document.getElementById('modal-edit-project').style.display = 'flex';
         }
-
         function updateEditClientInfo() {
             const selectedCode = document.getElementById('ep-code').value;
             const settings = (document.getElementById('ep-cat').value === 'video') ? DATA.videoSettings : DATA.imageSettings;
@@ -1182,6 +1321,20 @@
                 document.getElementById('ep-client-display').value = "未知客戶";
                 document.getElementById('ep-zone').value = "";
             }
+        }
+        function confirmLeave() {
+            const name = document.getElementById('leave-name').value;
+            const date = document.getElementById('leave-date').value;
+            const reason = document.getElementById('leave-reason').value;
+            if(!date || !reason) return alert("請填寫完整");
+            const dates = date.split(' to ');
+            
+            const item = { name:name, start:dates[0], end:dates[1]||dates[0], reason:reason };
+            DATA.leaves.push(item);
+            closeModal('leave');
+            renderCalendar(); 
+            alert("請假申請已送出");
+            callAPI('addLeave', { item: item }, (res) => {});
         }
     </script>
 </body>

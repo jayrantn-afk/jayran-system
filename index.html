@@ -228,10 +228,13 @@
                     <h3 class="font-black text-2xl">🔗 客戶連結庫</h3>
                     <span onclick="document.getElementById('panel-link').style.display='none'" class="cursor-pointer text-gray-400 hover:text-black text-2xl"><i class="fas fa-times"></i></span>
                 </div>
-                <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <input id="l-client" class="w-full clean-input text-lg font-bold mb-3 border border-gray-200 bg-white" placeholder="客戶名稱 (如: 台積電)">
-                    <input id="l-url" class="w-full clean-input text-base font-bold mb-3 border border-gray-200 bg-white" placeholder="貼上網址 (https://...)">
-                    <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md">新增連結</button>
+                <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
+                    <div class="flex gap-2 mb-3">
+                        <input id="l-folder" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="資料夾 (如: 小花)">
+                        <input id="l-name" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="名稱 (如: 形象照)">
+                    </div>
+                    <input id="l-url" class="w-full clean-input text-base font-bold mb-4 border border-gray-200 bg-white" placeholder="貼上完整網址 (https://...)">
+                    <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md transition">新增連結</button>
                 </div>
             </div>
             <div id="link-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>

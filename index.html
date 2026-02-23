@@ -616,7 +616,6 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // --- 甘特圖 (移植自 3-4 網格版) ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -690,7 +689,6 @@
             renderGantt(who);
         }
 
-        // --- 行事曆 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -750,19 +748,15 @@
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
         }
 
-        // ★★★ 核心修復：防止修改資料時丟失狀態 ★★★
         function confirmEditProject() {
             const dateVal = document.getElementById('ep-date').value;
             const dates = dateVal.split(' to ');
             const originId = document.getElementById('ep-origin-id').value;
             const originZone = document.getElementById('ep-origin-zone').value;
             
-            // 尋找舊資料，確保狀態不會變成「保持原樣」這種系統看不懂的值
             const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone));
             let inheritedStatus = '尚未進行';
-            if (targetIdx !== -1) {
-                inheritedStatus = DATA.projects[targetIdx].status;
-            }
+            if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; }
 
             const p = {
                 category: document.getElementById('ep-cat').value,
@@ -776,11 +770,10 @@
                 start: dates[0] || "", end: dates[1] || dates[0] || "",
                 note: document.getElementById('ep-note').value,
                 tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',
-                status: inheritedStatus // 保留舊狀態
+                status: inheritedStatus 
             };
 
-            if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } 
-            else { DATA.projects.push(p); }
+            if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } else { DATA.projects.push(p); }
 
             closeModal('edit-project');
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
@@ -790,10 +783,7 @@
                 if(res !== "OK") {
                     alert("⚠️ 系統警告：" + res + "。將為您重新同步資料庫。");
                     document.getElementById('loader').style.display = 'flex';
-                    callAPI('initAllData', {}, (data) => {
-                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
-                        processDataUpdate(data, false);
-                    });
+                    callAPI('initAllData', {}, (data) => { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); });
                 }
             });
         }
@@ -904,7 +894,7 @@
             let html = '';
             pendingList.forEach((p, idx) => {
                 const prefix = p.zone.split('_')[0]; 
-                const numPart = p.id.replace(prefix, '');
+                const numPart = String(p.id).replace(prefix, '');
                 html += `
                 <div id="p-item-${idx}" class="pending-item">
                     <div id="p-display-${idx}">
@@ -1179,12 +1169,14 @@
                 });
             }
         }
+        
+        // 編輯專案功能
         function openEditProject(p) {
             document.getElementById('ep-cat').value = p.category;
             document.getElementById('ep-origin-id').value = p.id; 
             document.getElementById('ep-origin-zone').value = p.zone; 
             const prefix = p.zone.split('_')[0]; 
-            const numPart = p.id.replace(prefix, ''); 
+            const numPart = String(p.id).replace(prefix, ''); 
             const epCodeSel = document.getElementById('ep-code');
             epCodeSel.innerHTML = '';
             const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
@@ -1201,8 +1193,7 @@
             document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
             document.getElementById('modal-edit-project').style.display = 'flex';
         }
-
-        // ★強化：防呆同步修改區域名稱
+        
         function updateEditClientInfo() {
             const selectedCode = document.getElementById('ep-code').value;
             const settings = (document.getElementById('ep-cat').value === 'video') ? DATA.videoSettings : DATA.imageSettings;
@@ -1218,20 +1209,33 @@
                 document.getElementById('ep-zone').value = selectedCode + "_" + currentClient;
             }
         }
+        
         function updateZoneFromClientName() {
             const code = document.getElementById('ep-code').value;
             const client = document.getElementById('ep-client-display').value;
             document.getElementById('ep-zone').value = code + "_" + client;
         }
         
+        function openLeaveModal() {
+            document.getElementById('leave-name').value = '魏敏軒'; 
+            document.getElementById('leave-date').value = '';
+            document.getElementById('leave-reason').value = '';
+            document.getElementById('modal-leave').style.display = 'flex';
+        }
+
         function confirmLeave() {
             const name = document.getElementById('leave-name').value;
             const date = document.getElementById('leave-date').value;
             const reason = document.getElementById('leave-reason').value;
-            if(!date || !reason) return alert("請填寫完整");
+            if(!date || !reason) return alert("請填寫完整資訊 (日期與事由)");
             
             const dates = date.split(' to ');
-            const item = { name:name, start:dates[0], end:dates[1]||dates[0], reason:reason };
+            const item = { 
+                name: name, 
+                start: dates[0], 
+                end: dates[1] || dates[0], 
+                reason: reason 
+            };
             
             if(!DATA.leaves) DATA.leaves = [];
             DATA.leaves.push(item);

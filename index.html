@@ -118,7 +118,7 @@
         .btn-black { background: #1D1D1F; color: white; }
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
 
-        /* --- 看板卡片全新設計 (圖三修正) --- */
+        /* --- 看板卡片全新設計 --- */
         .kanban-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
         
@@ -126,36 +126,29 @@
             background: white; 
             border: 1px solid #E5E5E5; 
             border-radius: 12px; 
-            padding: 24px 16px 16px 20px; /* 增加上方留白給膠囊 */
+            padding: 24px 16px 16px 20px; 
             position: relative; 
-            border-left: 5px solid transparent; /* 由 JS 賦予顏色 */
+            border-left: 5px solid transparent; 
             transition: 0.2s; 
-            margin-top: 14px; /* 為了突出的膠囊留空間 */
+            margin-top: 14px; 
         }
         .kanban-item:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
         
-        /* 狀態顏色定義 */
         .k-blue { border-left-color: #007AFF; }
         .bg-blue { background-color: #007AFF !important; }
-        
         .k-orange { border-left-color: #FF9500; }
         .bg-orange { background-color: #FF9500 !important; }
-        
         .k-green { border-left-color: #34C759; }
         .bg-green { background-color: #34C759 !important; }
-        
         .k-gray { border-left-color: #8E8E93; }
         .bg-gray { background-color: #8E8E93 !important; }
-        
         .k-red { border-left-color: #ff3b30 !important; border: 1px solid #ffcccc; background: #fff5f5; }
         
-        /* 操作按鈕 (右上角) */
         .k-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 20; }
         .k-action-btn { width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #999; transition: 0.2s; background: #f5f5f7; }
         .k-action-btn:hover { background: #e5e5e5; color: #333; }
         .k-del:hover { background: #fee2e2; color: #ef4444; }
 
-        /* 文字排版 */
         .k-name { font-size: 18px; font-weight: 800; color: #1D1D1F; margin-bottom: 6px; padding-right: 60px; line-height: 1.3; }
         .k-client { font-size: 13px; color: #666; margin-bottom: 10px; font-weight: bold; }
         .k-date { font-size: 12px; color: #888; font-weight: 600; display: flex; align-items: center; gap: 4px; }
@@ -165,55 +158,82 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* --- 甘特圖 --- */
+        /* --- 甘特圖 (修正標題重疊與黑點問題) --- */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: 100%; min-height: 500px; position: relative; }
         .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; table-layout: fixed; }
-        .gantt-header-cell { position: sticky; top: 0; background: #FAFAFA; z-index: 30; text-align: center; font-size: 10px; color: #888; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #E5E5E5; padding: 8px 0; width: 28px; }
-        .gantt-today { background-color: #FFF9C4 !important; color: #000; font-weight: 900; border-bottom: 3px solid #FFD700 !important; }
-        .gantt-today-cell { background-color: #FFF9C4; } 
-        .gantt-row { height: 40px; border-bottom: 1px solid #f9f9f9; }
-        .gantt-label-cell { position: sticky; left: 0; background: white; z-index: 40; width: 220px; padding-right: 10px; border-right: 2px solid #eee; border-bottom: 1px solid #f5f5f5; padding-left: 10px; white-space: nowrap; overflow: hidden; }
-        .gantt-corner { position: sticky; top: 0; left: 0; z-index: 50; background: #FAFAFA; border-right: 2px solid #E5E5E5; border-bottom: 1px solid #E5E5E5; padding-left: 10px; text-align: left; font-weight: bold; font-size: 12px; }
+        
+        /* 提升標題列層級與強制白底，防止被蓋住 */
+        .gantt-header-cell { 
+            position: sticky; top: 0; 
+            background: #FFFFFF; /* 強制白底 */
+            z-index: 100; /* 最高層級 */
+            background-clip: padding-box; /* 防止邊框穿透 */
+            text-align: center; font-size: 11px; color: #555; 
+            border-bottom: 2px solid #E5E5E5; border-right: 1px solid #f0f0f0; 
+            padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; 
+        }
+        .gantt-corner { 
+            position: sticky; top: 0; left: 0; 
+            z-index: 110; /* 最最最高層級 */
+            background: #FFFFFF; background-clip: padding-box;
+            border-right: 2px solid #E5E5E5; border-bottom: 2px solid #E5E5E5; 
+            padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1D1D1F; 
+        }
+        .gantt-col-fixed { 
+            position: sticky; left: 0; 
+            background: #FFFFFF; z-index: 50; background-clip: padding-box;
+            width: 160px; min-width: 160px; 
+            padding: 8px 12px; 
+            border-right: 2px solid #E5E5E5; border-bottom: 1px solid #f5f5f5; 
+            box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+        }
+        
+        .gantt-today-text { color: #D97706; font-weight: 900; font-size: 13px; }
+        .gantt-row { height: 40px; }
+        
         .gantt-id { font-weight: 900; font-size: 12px; color: #333; margin-right: 6px; }
         .gantt-name { font-size: 12px; color: #444; font-weight: 500; }
-        .gantt-grid-cell { border-right: 1px solid #f5f5f5; border-bottom: 1px solid #f5f5f5; position: relative; padding: 0; }
-        .gantt-bar { position: absolute; top: 10px; left: 1px; height: 20px; border-radius: 4px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 5px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.1s; }
+        
+        .gantt-grid-cell { border-right: 1px solid #f9f9f9; border-bottom: 1px solid #f5f5f5; position: relative; padding: 0; }
+        .gantt-bar { position: absolute; top: 10px; left: 1px; height: 24px; border-radius: 6px; color: white; font-size: 11px; line-height: 24px; padding: 0 8px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.15); cursor: pointer; transition: 0.1s; font-weight: bold;}
         .gantt-bar:hover { transform: scaleY(1.1); z-index: 10; }
         
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* --- 行事曆 (自動適配高度，響應式優化) --- */
+        /* --- 行事曆 (響應式優化與文字不截斷) --- */
         #calendar-container { 
             background: white; 
             border-radius: 16px; 
             padding: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            height: 100%; 
-            min-height: 500px; 
-            display: flex; 
-            flex-direction: column; 
+            height: auto; /* 讓它自動延伸高度 */
         }
-        .fc { flex: 1; height: 100%; } 
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
         .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; }
         .fc-day-today { background-color: transparent !important; }
         .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
         .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
-        .fc-event { border: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 3px !important; border-radius: 6px !important; }
-        .fc-event-main { padding: 4px 8px; font-weight: 600; font-size: 11px; color: white !important; display: flex; align-items: center; gap: 4px; }
+        
+        /* 事件膠囊美化 */
+        .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 4px !important; border-radius: 4px !important; }
+        .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 12px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        
         .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
         .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
         
-        /* 手機版行事曆標題區響應式 */
+        /* 手機版排版調整 */
         @media (max-width: 768px) {
-            .fc .fc-toolbar { flex-direction: column; gap: 12px; }
-            .fc .fc-toolbar-title { font-size: 1.25rem !important; }
-            .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
+            .page-scroll-container { padding: 10px 10px 80px 10px; }
+            #calendar-container { padding: 10px; }
+            .fc-header-toolbar { flex-direction: column; gap: 10px; }
+            .fc-toolbar-chunk { display: flex; justify-content: center; width: 100%; }
+            .fc-toolbar-title { font-size: 1.2rem !important; }
+            .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
         }
 
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
@@ -436,7 +456,9 @@
             
             <div class="mb-4">
                 <label class="text-xs text-gray-500 font-bold">製作人</label>
-                <select id="ep-producer" class="clean-select font-bold border border-gray-200"></select>
+                <select id="ep-producer" class="clean-select font-bold border border-gray-200">
+                    <option value="">載入中...</option>
+                </select>
             </div>
             <div class="mb-4">
                 <label class="text-xs text-gray-500 font-bold">專案名稱</label>
@@ -445,7 +467,9 @@
             <div class="grid grid-cols-2 gap-3 mb-4">
                  <div>
                      <label class="text-xs text-gray-500 font-bold">類型</label>
-                     <select id="ep-type" class="clean-select border border-gray-200"></select>
+                     <select id="ep-type" class="clean-select border border-gray-200">
+                         <option value="">載入中...</option>
+                     </select>
                  </div>
                  <div>
                      <label class="text-xs text-gray-500 font-bold">日期範圍</label>
@@ -723,6 +747,9 @@
             loadLinks();
             loadPending();
             
+            // 強制重新載入一次下拉選單，避免卡空
+            renderDynamicOptions();
+            
             if (curTab === 'wei') renderKanban('魏敏軒');
             else if (curTab === 'chiu') renderKanban('邱仁杰');
             else if (curTab === 'gan') {
@@ -755,17 +782,30 @@
             renderDynamicOptions();
         }
 
+        // ★★★ 修正製作人與類型選單不出現的問題 ★★★
         function renderDynamicOptions() {
-            if (!DATA.config) return;
-            const types = (curCat === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
-            const producers = (curCat === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
+            // 防呆：如果沒有抓到 config (舊版快取)，給個預設空陣列避免報錯
+            if (!DATA || !DATA.config) {
+                ['i-producer', 'i-type', 'ep-producer', 'ep-type'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.innerHTML = '<option value="">載入中...</option>';
+                });
+                return;
+            }
+
+            const types = (curCat === 'video') ? (DATA.config.videoTypes || []) : (DATA.config.imageTypes || []);
+            const producers = (curCat === 'video') ? (DATA.config.videoProducers || []) : (DATA.config.imageProducers || []);
             
             const fillSelect = (id, list) => {
                 const el = document.getElementById(id);
-                if(el && list) {
+                if(el) {
                     const currentVal = el.value;
                     el.innerHTML = '';
-                    list.forEach(item => el.add(new Option(item, item)));
+                    if(list.length === 0) el.add(new Option("無資料", ""));
+                    list.forEach(item => {
+                        if(item) el.add(new Option(item, item));
+                    });
+                    // 如果原本選的值還在清單裡，就維持原樣
                     if(list.includes(currentVal)) el.value = currentVal;
                 }
             };
@@ -782,7 +822,10 @@
             document.getElementById('nav-' + tab).classList.add('active');
             ['p-add', 'p-kanban', 'p-gantt', 'p-calendar'].forEach(id => document.getElementById(id).classList.add('hidden'));
             
-            if (tab === 'add') { document.getElementById('p-add').classList.remove('hidden'); }
+            if (tab === 'add') { 
+                document.getElementById('p-add').classList.remove('hidden'); 
+                renderDynamicOptions(); // 切換回來確保選單都在
+            }
             else if (tab === 'wei') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('魏敏軒'); }
             else if (tab === 'chiu') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('邱仁杰'); }
             else if (tab === 'gan') { document.getElementById('p-gantt').classList.remove('hidden'); renderGantt('魏敏軒'); }
@@ -854,23 +897,24 @@
             const dr = document.getElementById('i-date').value.split(' to ');
             const prod = document.getElementById('i-producer').value;
             
-            // ★ 核心修復：在前端儲存時，自動為純數字的 ID 補上前綴
-            let rawId = document.getElementById('i-id').value.trim();
-            const zoneValue = document.getElementById('i-zone').value;
-            const prefix = zoneValue.split('_')[0]; // 例如 "A"
+            // ★ 核心修復：自動補上前綴，解決新建只有數字的問題 ★
+            const rawId = document.getElementById('i-id').value.trim();
+            const zoneVal = document.getElementById('i-zone').value;
+            const prefix = zoneVal.split('_')[0]; 
             
-            let fullId = rawId;
-            if (!isNaN(rawId) && rawId !== "") {
-                fullId = prefix + String(rawId).padStart(3, '0');
-            } else if (rawId.toUpperCase().indexOf(prefix.toUpperCase()) === -1) {
-                // 如果使用者輸入了怪異編號且沒有包含區域名稱
-                fullId = prefix + rawId;
+            let finalId = rawId;
+            if (rawId !== "") {
+                if (!isNaN(rawId)) {
+                    finalId = prefix + String(rawId).padStart(3, '0');
+                } else if (!rawId.toUpperCase().startsWith(prefix.toUpperCase())) {
+                    finalId = prefix + rawId;
+                }
             }
 
             const p = {
                 category: curCat, 
-                zone: zoneValue, 
-                id: fullId, // 使用補上前綴的 ID
+                zone: zoneVal, 
+                id: finalId, // 儲存包含前綴的完整 ID
                 client: document.getElementById('i-client').value, 
                 name: document.getElementById('i-name').value,
                 producer: prod, 
@@ -882,8 +926,8 @@
                 status: (prod !== '尚未暫定' && dr[0] && new Date(dr[0]) <= new Date()) ? '製作中' : '尚未進行'
             };
             
-            if(!p.zone || !rawId || !p.name) return alert("請填寫完整資訊");
-            if(prod !== '尚未暫定' && !p.start) return alert("請選擇日期範圍");
+            if(!p.zone || !rawId || !p.name) return alert("請填寫完整資訊 (區域、編號、名稱)");
+            if(prod !== '尚未暫定' && !p.start) return alert("有指定製作人時，請選擇日期範圍");
             
             DATA.projects.push(p);
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
@@ -900,7 +944,7 @@
             });
         }
 
-        // --- 看板：卡片設計升級 (左上角膠囊) ---
+        // --- 看板：全新膠囊視覺設計 ---
         function renderKanban(producer) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
@@ -917,8 +961,8 @@
                     </div>
 
                     <div class="k-actions">
-                        <div onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="k-action-btn"><i class="fas fa-pen text-xs"></i></div>
-                        <div onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="k-action-btn k-del"><i class="fas fa-times text-xs"></i></div>
+                        <div onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="k-action-btn" title="編輯"><i class="fas fa-pen text-xs"></i></div>
+                        <div onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="k-action-btn k-del" title="刪除"><i class="fas fa-times text-xs"></i></div>
                     </div>
                     
                     <div class="k-name pt-2">${p.name}</div>
@@ -1008,9 +1052,9 @@
                         let suffix = (pEndObj > monthEnd) ? ' →' : '';
                         content = `<div class="gantt-bar" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
                     }
-                    bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible; z-index:10;"' : ''}>${content}</td>`;
+                    bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible;"' : ''}>${content}</td>`;
                 }
-                body += `<tr class="gantt-row"><td class="gantt-label-cell" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
+                body += `<tr class="gantt-row"><td class="gantt-col-fixed" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
             });
             container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
         }
@@ -1021,7 +1065,7 @@
             renderGantt(who);
         }
 
-        // --- 行事曆：優化 RWD 高度顯示 ---
+        // --- 行事曆 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -1063,7 +1107,7 @@
             calendar = new FullCalendar.Calendar(el, {
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
-                height: 'auto', // ★ 改為 auto 解決擠壓變形的問題
+                height: 'auto', // 讓 FullCalendar 自動適應內容高度，不出現內部雙捲軸
                 contentHeight: 'auto',
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
@@ -1093,7 +1137,7 @@
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
         }
 
-        // ★★★ 核心修復：編輯專案時強制載入最新選項 ★★★
+        // ★★★ 編輯專案核心修復：強制載入選項清單 ★★★
         function openEditProject(p) {
             document.getElementById('ep-cat').value = p.category;
             document.getElementById('ep-origin-id').value = p.id; 
@@ -1108,19 +1152,14 @@
             Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
             epCodeSel.value = prefix;
             
-            // ★ 強制載入並設定下拉選單的值，避免空白 ★
-            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
-            const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
-            
-            const prodSel = document.getElementById('ep-producer');
-            prodSel.innerHTML = '';
-            producers.forEach(x => prodSel.add(new Option(x, x)));
-            prodSel.value = p.producer; // 重新選中原本的製作人
+            // 強制重新載入製作人與類型
+            renderDynamicOptions(); 
 
-            const typeSel = document.getElementById('ep-type');
-            typeSel.innerHTML = '';
-            types.forEach(x => typeSel.add(new Option(x, x)));
-            typeSel.value = p.type; // 重新選中原本的類型
+            // 延遲一點點確保 DOM 選單已經畫好，再設定選中的值
+            setTimeout(() => {
+                document.getElementById('ep-producer').value = p.producer;
+                document.getElementById('ep-type').value = p.type;
+            }, 50);
 
             document.getElementById('ep-num').value = numPart;
             updateEditClientInfo(); 
@@ -1155,7 +1194,7 @@
             const p = {
                 category: document.getElementById('ep-cat').value,
                 zone: document.getElementById('ep-zone').value, 
-                id: document.getElementById('ep-num').value, 
+                id: document.getElementById('ep-num').value, // 暫時只取數字，後面更新
                 client: document.getElementById('ep-client-display').value,
                 name: document.getElementById('ep-name').value,
                 producer: document.getElementById('ep-producer').value,
@@ -1167,6 +1206,14 @@
                 tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',
                 status: inheritedStatus 
             };
+
+            // 確保 ID 前綴是正確的
+            const prefix = p.zone.split('_')[0];
+            if (!isNaN(p.id) && p.id !== "") {
+                p.id = prefix + String(p.id).padStart(3, '0');
+            } else if (!p.id.toUpperCase().startsWith(prefix.toUpperCase())) {
+                p.id = prefix + p.id;
+            }
 
             if (targetIdx !== -1) { 
                 DATA.projects[targetIdx] = p; 
@@ -1396,10 +1443,7 @@
             const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings;
             let foundZone = "";
             for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
-            if (foundZone) { 
-                const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; 
-                document.getElementById(`pe-client-${idx}`).value = clientName; 
-            }
+            if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById(`pe-client-${idx}`).value = clientName; }
         }
 
         function savePendingEdit(idx) {
@@ -1413,10 +1457,18 @@
             for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { newZone = key; break; } }
             if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
             
+            // 確保 ID 包含前綴
+            let rawId = document.getElementById(`pe-num-${idx}`).value;
+            if (!isNaN(rawId) && rawId !== "") {
+                rawId = selectedCode + String(rawId).padStart(3, '0');
+            } else if (!rawId.toUpperCase().startsWith(selectedCode.toUpperCase())) {
+                rawId = selectedCode + rawId;
+            }
+            
             const p = {
                 category: cat, 
                 zone: newZone, 
-                id: document.getElementById(`pe-num-${idx}`).value, 
+                id: rawId, 
                 client: document.getElementById(`pe-client-${idx}`).value, 
                 name: document.getElementById(`pe-name-${idx}`).value,
                 producer: document.getElementById(`pe-producer-${idx}`).value, 
@@ -1461,7 +1513,6 @@
                 DATA.projects[targetIdx].start = startDate;
                 DATA.projects[targetIdx].end = endDate;
                 
-                // 判斷狀態
                 let newStatus = '尚未進行';
                 try {
                     let d = new Date(startDate);
@@ -1598,7 +1649,7 @@
                     }
 
                     html += `
-                    <details class="mb-3 group link-folder" open>
+                    <details class="mb-3 group link-folder">
                         <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">
                             <div class="flex items-center gap-3">
                                 <i class="fas fa-folder-open text-blue-500"></i> ${folder} 
@@ -1772,33 +1823,6 @@
                     callAPI('initAllData', {}, (data) => processDataUpdate(data));
                 });
             }
-        }
-        
-        function updateEditClientInfo() {
-            const selectedCode = document.getElementById('ep-code').value;
-            const settings = (document.getElementById('ep-cat').value === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            let foundZone = "";
-            for (let key in settings) { 
-                if (key.startsWith(selectedCode + "_") || key === selectedCode) { 
-                    foundZone = key; 
-                    break; 
-                } 
-            }
-            if (foundZone) {
-                const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone;
-                document.getElementById('ep-client-display').value = clientName;
-                document.getElementById('ep-zone').value = foundZone; 
-            } else {
-                const currentClient = document.getElementById('ep-client-display').value || "未知客戶";
-                document.getElementById('ep-client-display').value = currentClient;
-                document.getElementById('ep-zone').value = selectedCode + "_" + currentClient;
-            }
-        }
-        
-        function updateZoneFromClientName() {
-            const code = document.getElementById('ep-code').value;
-            const client = document.getElementById('ep-client-display').value;
-            document.getElementById('ep-zone').value = code + "_" + client;
         }
         
         function openLeaveModal() {

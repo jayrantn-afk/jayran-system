@@ -12,13 +12,13 @@
     <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
-        /* --- 基礎架構 (結合1-2的流暢滾動) --- */
+        /* --- 基礎架構 --- */
         :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; 
             background: var(--bg); color: var(--primary); 
-            height: 100vh; overflow: hidden; /* 防止整頁連同頂部選單一起捲走 */
+            height: 100vh; overflow: hidden; 
             display: flex; flex-direction: column;
         }
         
@@ -27,17 +27,12 @@
         .nav-item { flex: 1; min-width: 80px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
-        .page-scroll-container { 
-            flex-grow: 1; overflow-y: auto; padding: 10px 20px 80px 20px; position: relative;
-        }
-
-        /* 美化捲軸 */
+        .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 80px 20px; position: relative; }
         .page-scroll-container::-webkit-scrollbar, .gantt-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
         .page-scroll-container::-webkit-scrollbar-track, .gantt-wrapper::-webkit-scrollbar-track { background: transparent; }
         .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: #D1D5DB; border-radius: 4px; }
         .page-scroll-container::-webkit-scrollbar-thumb:hover, .gantt-wrapper::-webkit-scrollbar-thumb:hover { background-color: #9CA3AF; }
 
-        /* 元件樣式 */
         .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
         .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; }
@@ -78,7 +73,7 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* --- 甘特圖 (移植自 3-4 版本網格邏輯) --- */
+        /* 甘特圖 */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: 100%; min-height: 500px; position: relative; }
         .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; table-layout: fixed; }
         .gantt-header-cell { position: sticky; top: 0; background: #FAFAFA; z-index: 30; text-align: center; font-size: 10px; color: #888; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #E5E5E5; padding: 8px 0; width: 28px; }
@@ -92,12 +87,11 @@
         .gantt-grid-cell { border-right: 1px solid #f5f5f5; border-bottom: 1px solid #f5f5f5; position: relative; padding: 0; }
         .gantt-bar { position: absolute; top: 10px; left: 1px; height: 20px; border-radius: 4px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 5px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.1s; }
         .gantt-bar:hover { transform: scaleY(1.1); z-index: 10; }
-        
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* --- 行事曆 (適配與樣式移植自3-4) --- */
+        /* 行事曆 */
         #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); height: 100%; min-height: 600px; display: flex; flex-direction: column; }
         .fc { flex: 1; height: 100%; } 
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
@@ -115,7 +109,7 @@
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* --- 懸浮按鈕與面板 (大尺寸，移植自3-4) --- */
+        /* 浮動按鈕與面板 */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 999; }
         .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
@@ -127,31 +121,27 @@
         .fab-btn-small:hover { transform: scale(1.1); }
 
         .float-panel { position: fixed; bottom: 30px; right: 120px; width: 450px; background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 998; display: none; border: 1px solid #eee; flex-direction: column; max-height: 85vh; padding: 0; overflow: hidden; }
-        @media (max-width: 600px) { .float-panel { right: 20px; left: 20px; width: auto; bottom: 100px; } }
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
 
         .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .memo-item.chiu { background: #E3F2FD; border-left-color: #2196F3; } 
         .pending-item { background: #f3f4f6; border-left: 6px solid #9CA3AF; }
-        
         .memo-content, .pending-name { font-weight: 800; color: #333; margin-bottom: 8px; font-size: 20px; line-height: 1.4; }
         .memo-meta, .pending-meta { font-size: 14px; color: #666; display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
         .memo-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
         .memo-icon { font-size: 16px; color: #aaa; cursor: pointer; padding: 2px; }
         .memo-icon:hover { color: #555; }
         .memo-del:hover { color: #ff3b30; }
-        .memo-input { background: white; border: 2px solid #ddd; color: #333; }
-        .memo-input:focus { border-color: #1D1D1F; }
-
+        
         .link-item { background: #2D3748; color: white; padding: 12px 16px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; position: relative; }
         .link-item:hover { transform: translateX(5px); background: #1A202C; }
         .link-actions { display: flex; gap: 10px; margin-left: 10px; }
         .link-icon { color: #A0AEC0; font-size: 16px; cursor: pointer; padding: 5px; }
         .link-icon:hover { color: white; }
         .link-del:hover { color: #ff3b30; }
-        
-        /* Modal 通用 */
+
+        /* Modal */
         .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 9999; }
         .modal-body { background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; }
         .hidden { display: none; }
@@ -177,7 +167,6 @@
             <span id="memo-badge" class="badge">0</span>
         </div>
     </div>
-
     <div class="fab-left-container">
         <div onclick="window.open('https://script.google.com/macros/s/AKfycbzpYIM8Pw-ASL_M_cVIJl-H_AXMZWcADv6qmxmo7cvxidEib74mXmP_sQJatY1MM30R0g/exec', '_blank')" class="fab-btn-small bg-white text-gray-800" title="前往心智圖系統">
             <i class="fas fa-project-diagram"></i>
@@ -191,12 +180,12 @@
                 <span onclick="togglePanel('memo')" class="cursor-pointer text-gray-400 hover:text-black text-xl"><i class="fas fa-times"></i></span>
             </div>
             <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <input id="m-content" class="w-full memo-input text-lg font-bold mb-3 outline-none p-3 rounded-lg" placeholder="輸入待辦事項...">
+                <input id="m-content" class="w-full clean-input text-lg font-bold mb-3" placeholder="輸入待辦事項...">
                 <div class="flex gap-3 mb-3">
-                    <select id="m-owner" class="text-base p-2 rounded bg-white border border-gray-300 font-bold"><option>魏敏軒</option><option>邱仁杰</option></select>
-                    <input id="m-date" class="text-base p-2 rounded bg-white border border-gray-300 w-48 text-center font-bold" placeholder="起訖日期">
+                    <select id="m-owner" class="clean-select font-bold"><option>魏敏軒</option><option>邱仁杰</option></select>
+                    <input id="m-date" class="clean-input w-48 text-center font-bold" placeholder="起訖日期">
                 </div>
-                <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-base py-3 rounded-lg font-bold hover:bg-gray-800">新增貼文</button>
+                <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-gray-800">新增貼文</button>
             </div>
         </div>
         <div id="memo-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
@@ -219,9 +208,9 @@
                 <span onclick="togglePanel('link')" class="cursor-pointer text-gray-400 hover:text-black text-xl"><i class="fas fa-times"></i></span>
             </div>
             <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <input id="l-client" class="w-full memo-input text-lg font-bold mb-3 outline-none p-3 rounded-lg" placeholder="客戶名稱 (如: 台積電)">
-                <input id="l-url" class="w-full memo-input text-base font-bold mb-3 outline-none p-3 rounded-lg" placeholder="貼上網址 (https://...)">
-                <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-base py-3 rounded-lg font-bold hover:bg-blue-800">新增連結</button>
+                <input id="l-client" class="w-full clean-input text-lg font-bold mb-3" placeholder="客戶名稱 (如: 台積電)">
+                <input id="l-url" class="w-full clean-input text-base font-bold mb-3" placeholder="貼上網址 (https://...)">
+                <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-800">新增連結</button>
             </div>
         </div>
         <div id="link-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
@@ -265,7 +254,10 @@
         <input type="hidden" id="ep-cat"><input type="hidden" id="ep-zone"><input type="hidden" id="ep-origin-id"><input type="hidden" id="ep-origin-zone"> 
         <div class="grid grid-cols-4 gap-2 mb-3 items-end">
             <div><label class="text-xs text-gray-500 font-bold block mb-1">代號</label><select id="ep-code" class="clean-select font-bold text-center px-1" onchange="updateEditClientInfo()"></select></div>
-            <div class="col-span-2"><label class="text-xs text-gray-500 font-bold block mb-1">客戶 (可編輯)</label><input id="ep-client-display" class="clean-input bg-white text-black font-bold text-sm"></div>
+            <div class="col-span-2">
+                <label class="text-xs text-gray-500 font-bold block mb-1">客戶 (可編輯)</label>
+                <input id="ep-client-display" class="clean-input bg-white text-black font-bold text-sm" oninput="updateZoneFromClientName()">
+            </div>
             <div><label class="text-xs text-gray-500 font-bold block mb-1">數字</label><input id="ep-num" class="clean-input font-bold text-center px-1" placeholder="001"></div>
         </div>
         <div class="mb-3"><label class="text-xs text-gray-500 font-bold">製作人</label><select id="ep-producer" class="clean-select font-bold"></select></div>
@@ -377,9 +369,8 @@
     <div id="p-kanban" class="hidden page-scroll-container">
         <div class="max-w-5xl mx-auto">
             <h2 id="kb-title" class="text-2xl font-black mb-6 px-2"></h2>
-            
             <div class="mb-8"><h3 class="text-lg font-bold text-blue-600 mb-3 px-2">🔥 製作中</h3><div id="kb-process" class="kanban-grid"></div></div>
-            <details class="mb-6 group"><summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80"><i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i><span>👀 審核中</span></summary><div id="kb-review" class="kanban-grid pl-2"></div></details>
+            <details class="mb-6 group" open><summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80"><i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i><span>👀 審核中</span></summary><div id="kb-review" class="kanban-grid pl-2"></div></details>
             <details class="mb-4 group"><summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700"><i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i><span>⏳ 尚未進行</span></summary><div id="kb-todo" class="kanban-grid pl-2"></div></details>
             <details class="mb-4 group"><summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700"><i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i><span>✅ 已完成</span></summary><div id="kb-done" class="kanban-grid pl-2"></div></details>
         </div>
@@ -408,7 +399,6 @@
                     <button id="btn-cal-all" onclick="filterCalendar('all')" class="cal-filter-btn active">全部</button>
                     <button id="btn-cal-wei" onclick="filterCalendar('魏敏軒')" class="cal-filter-btn">魏敏軒</button>
                     <button id="btn-cal-chiu" onclick="filterCalendar('邱仁杰')" class="cal-filter-btn">邱仁杰</button>
-                    <button onclick="openLeaveModal()" class="bg-black text-white px-3 py-1 rounded-lg text-sm font-bold"><i class="fas fa-coffee mr-1"></i> 請假</button>
                 </div>
             </div>
             <div id="calendar-container">
@@ -586,7 +576,6 @@
             if(!p.zone || !p.id || !p.name) return alert("請填寫完整資訊");
             if(prod !== '尚未暫定' && !p.start) return alert("請選擇日期範圍");
             
-            // 樂觀更新
             DATA.projects.push(p);
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true); 
@@ -627,7 +616,7 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // --- V23 甘特圖：移植自 3-4 網格版 (含左右箭頭與跨月顯示) ---
+        // --- 甘特圖 (移植自 3-4 網格版) ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -649,7 +638,7 @@
             tasks = tasks.filter(p => {
                 const pStart = new Date(p.start);
                 const pEnd = new Date(p.end);
-                return pStart <= monthEnd && pEnd >= monthStart; // 取有重疊的
+                return pStart <= monthEnd && pEnd >= monthStart; 
             }).sort((a, b) => new Date(a.start) - new Date(b.start));
 
             if (tasks.length === 0) { container.innerHTML = '<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl">本月無排程</div>'; return; }
@@ -749,24 +738,32 @@
         }
 
         function triggerEdit(id, zone) {
-            const p = DATA.projects.find(x => x.id === id && x.zone === zone);
+            const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone);
             if(p) openEditProject(p);
         }
 
         function deleteProject(category, zone, id) {
             if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return;
-            DATA.projects = DATA.projects.filter(p => !(p.id === id && p.zone === zone));
+            DATA.projects = DATA.projects.filter(p => !(String(p.id) === String(id) && p.zone === zone));
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true);
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
         }
 
+        // ★★★ 核心修復：防止修改資料時丟失狀態 ★★★
         function confirmEditProject() {
             const dateVal = document.getElementById('ep-date').value;
             const dates = dateVal.split(' to ');
             const originId = document.getElementById('ep-origin-id').value;
             const originZone = document.getElementById('ep-origin-zone').value;
             
+            // 尋找舊資料，確保狀態不會變成「保持原樣」這種系統看不懂的值
+            const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone));
+            let inheritedStatus = '尚未進行';
+            if (targetIdx !== -1) {
+                inheritedStatus = DATA.projects[targetIdx].status;
+            }
+
             const p = {
                 category: document.getElementById('ep-cat').value,
                 zone: document.getElementById('ep-zone').value, 
@@ -779,17 +776,26 @@
                 start: dates[0] || "", end: dates[1] || dates[0] || "",
                 note: document.getElementById('ep-note').value,
                 tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',
-                status: '保持原樣' 
+                status: inheritedStatus // 保留舊狀態
             };
 
-            const targetIdx = DATA.projects.findIndex(x => x.id === originId && x.zone === originZone);
-            if (targetIdx !== -1) { p.status = DATA.projects[targetIdx].status; DATA.projects[targetIdx] = p; }
+            if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } 
+            else { DATA.projects.push(p); }
 
             closeModal('edit-project');
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true);
-            alert("✅ 修改成功 (背景同步中)");
-            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => { console.log("Updated"); });
+            
+            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
+                if(res !== "OK") {
+                    alert("⚠️ 系統警告：" + res + "。將為您重新同步資料庫。");
+                    document.getElementById('loader').style.display = 'flex';
+                    callAPI('initAllData', {}, (data) => {
+                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                        processDataUpdate(data, false);
+                    });
+                }
+            });
         }
 
         function openHistory() {
@@ -809,7 +815,7 @@
         }
         
         function doUpdate(cat, zone, id, status, hours=0) {
-            const p = DATA.projects.find(x => x.id === id && x.zone === zone);
+            const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone);
             if (p) {
                 p.status = status;
                 if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours);
@@ -1195,6 +1201,8 @@
             document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
             document.getElementById('modal-edit-project').style.display = 'flex';
         }
+
+        // ★強化：防呆同步修改區域名稱
         function updateEditClientInfo() {
             const selectedCode = document.getElementById('ep-code').value;
             const settings = (document.getElementById('ep-cat').value === 'video') ? DATA.videoSettings : DATA.imageSettings;
@@ -1205,42 +1213,32 @@
                 document.getElementById('ep-client-display').value = clientName;
                 document.getElementById('ep-zone').value = foundZone; 
             } else {
-                document.getElementById('ep-client-display').value = "未知客戶";
-                document.getElementById('ep-zone').value = "";
+                const currentClient = document.getElementById('ep-client-display').value || "未知客戶";
+                document.getElementById('ep-client-display').value = currentClient;
+                document.getElementById('ep-zone').value = selectedCode + "_" + currentClient;
             }
         }
-        
-        // V23 請假修復
-        function openLeaveModal() {
-            document.getElementById('leave-name').value = '魏敏軒'; 
-            document.getElementById('leave-date').value = '';
-            document.getElementById('leave-reason').value = '';
-            document.getElementById('modal-leave').style.display = 'flex';
+        function updateZoneFromClientName() {
+            const code = document.getElementById('ep-code').value;
+            const client = document.getElementById('ep-client-display').value;
+            document.getElementById('ep-zone').value = code + "_" + client;
         }
-
+        
         function confirmLeave() {
             const name = document.getElementById('leave-name').value;
             const date = document.getElementById('leave-date').value;
             const reason = document.getElementById('leave-reason').value;
-            if(!date || !reason) return alert("請填寫完整資訊 (日期與事由)");
+            if(!date || !reason) return alert("請填寫完整");
             
             const dates = date.split(' to ');
-            const item = { 
-                name: name, 
-                start: dates[0], 
-                end: dates[1] || dates[0], 
-                reason: reason 
-            };
+            const item = { name:name, start:dates[0], end:dates[1]||dates[0], reason:reason };
             
-            // 本地直接推入，讓畫面秒更新
             if(!DATA.leaves) DATA.leaves = [];
             DATA.leaves.push(item);
             
             closeModal('leave');
             renderCalendar(); 
             alert("✅ 請假申請已送出");
-            
-            // 背景同步
             callAPI('addLeave', { item: item }, (res) => {});
         }
     </script>

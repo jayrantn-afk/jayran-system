@@ -12,107 +12,59 @@
     <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
-        /* --- 基礎架構 --- */
-        :root { 
-            --bg: #F5F5F7; 
-            --surface: #FFFFFF; 
-            --primary: #1D1D1F; 
-            --secondary: #86868B; 
-            --accent: #007AFF; 
-            --radius: 12px; 
-        }
+        /* --- V29 登入系統與優化樣式 --- */
+        :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg); 
-            color: var(--primary); 
-            height: 100vh; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
+            background: var(--bg); color: var(--primary); 
+            height: 100vh; overflow: hidden; 
+            display: flex; flex-direction: column;
+        }
+
+        /* 登入遮罩層 */
+        #login-overlay {
+            position: fixed; inset: 0; 
+            background: #111827; /* 深色背景 */
+            z-index: 99999; 
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            color: white;
+            transition: opacity 0.5s ease;
         }
         
-        .header-fixed-area { 
-            flex-shrink: 0; 
-            padding: 20px 20px 0 20px; 
-            background: var(--bg); 
-            z-index: 50; 
-        }
-
-        .segmented-nav { 
-            background: #E8E8ED; 
-            padding: 4px; 
-            border-radius: 10px; 
-            display: flex; 
-            margin-bottom: 10px; 
-            flex-wrap: wrap; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
-        }
-
-        .nav-item { 
-            flex: 1; 
-            min-width: 80px; 
-            text-align: center; 
-            padding: 10px; 
-            font-size: 14px; 
-            font-weight: 700; 
-            color: var(--secondary); 
-            cursor: pointer; 
-            border-radius: 7px; 
-            transition: all 0.2s; 
-            white-space: nowrap; 
-        }
-
-        .nav-item.active { 
-            background: var(--surface); 
-            color: var(--primary); 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-        }
+        .header-fixed-area { flex-shrink: 0; padding: 20px 20px 0 20px; background: var(--bg); z-index: 50; }
+        .segmented-nav { background: #E8E8ED; padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; flex-wrap: wrap; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .nav-item { flex: 1; min-width: 80px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
+        .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
-        .page-scroll-container { 
-            flex-grow: 1; 
-            overflow-y: auto; 
-            padding: 10px 20px 80px 20px; 
-            position: relative; 
-        }
-
-        /* 捲軸美化 */
+        .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 80px 20px; position: relative; }
         .page-scroll-container::-webkit-scrollbar, .gantt-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
         .page-scroll-container::-webkit-scrollbar-track, .gantt-wrapper::-webkit-scrollbar-track { background: transparent; }
         .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: #D1D5DB; border-radius: 4px; }
         .page-scroll-container::-webkit-scrollbar-thumb:hover, .gantt-wrapper::-webkit-scrollbar-thumb:hover { background-color: #9CA3AF; }
 
-        /* 卡片與輸入框 */
         .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
         .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; }
+        
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
         .type-btn.active { background: #1D1D1F; color: white; }
+        
         .icon-btn { width: 44px; height: 44px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; transition: 0.2s; }
         .btn-black { background: #1D1D1F; color: white; }
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
 
-        /* --- 看板卡片全新設計 (膠囊標籤) --- */
         .kanban-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
         
-        .kanban-item { 
-            background: white; border: 1px solid #E5E5E5; border-radius: 12px; 
-            padding: 24px 16px 16px 20px; /* 增加上方 Padding 讓膠囊有空間 */
-            position: relative; border-left: 5px solid transparent; 
-            transition: 0.2s; margin-top: 14px; 
-        }
+        .kanban-item { background: white; border: 1px solid #E5E5E5; border-radius: 12px; padding: 24px 16px 16px 20px; position: relative; border-left: 5px solid transparent; transition: 0.2s; margin-top: 14px; }
         .kanban-item:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
-        
-        .k-blue { border-left-color: #007AFF; }
-        .bg-blue { background-color: #007AFF !important; }
-        .k-orange { border-left-color: #FF9500; }
-        .bg-orange { background-color: #FF9500 !important; }
-        .k-green { border-left-color: #34C759; }
-        .bg-green { background-color: #34C759 !important; }
-        .k-gray { border-left-color: #8E8E93; }
-        .bg-gray { background-color: #8E8E93 !important; }
+        .k-blue { border-left-color: #007AFF; } .bg-blue { background-color: #007AFF !important; }
+        .k-orange { border-left-color: #FF9500; } .bg-orange { background-color: #FF9500 !important; }
+        .k-green { border-left-color: #34C759; } .bg-green { background-color: #34C759 !important; }
+        .k-gray { border-left-color: #8E8E93; } .bg-gray { background-color: #8E8E93 !important; }
         .k-red { border-left-color: #ff3b30 !important; border: 1px solid #ffcccc; background: #fff5f5; }
         
         .k-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 20; }
@@ -129,33 +81,11 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* --- 甘特圖 (修正重疊穿透問題) --- */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: 100%; min-height: 500px; position: relative; }
         .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; table-layout: fixed; }
-        
-        /* 表頭：純白底色，Z-index拉高，避免滾動時任務穿透 */
-        .gantt-header-cell { 
-            position: sticky; top: 0; 
-            background: #FFFFFF; z-index: 100; background-clip: padding-box;
-            text-align: center; font-size: 11px; color: #555; 
-            border-bottom: 2px solid #E5E5E5; border-right: 1px solid #f0f0f0; 
-            padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; 
-        }
-        .gantt-corner { 
-            position: sticky; top: 0; left: 0; 
-            z-index: 110; background: #FFFFFF; background-clip: padding-box;
-            border-right: 2px solid #E5E5E5; border-bottom: 2px solid #E5E5E5; 
-            padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1D1D1F; 
-        }
-        .gantt-col-fixed { 
-            position: sticky; left: 0; 
-            background: #FFFFFF; z-index: 50; background-clip: padding-box;
-            width: 160px; min-width: 160px; 
-            padding: 8px 12px; 
-            border-right: 2px solid #E5E5E5; border-bottom: 1px solid #f5f5f5; 
-            box-shadow: 2px 0 5px rgba(0,0,0,0.02);
-        }
-        
+        .gantt-header-cell { position: sticky; top: 0; background: #FFFFFF; z-index: 100; background-clip: padding-box; text-align: center; font-size: 11px; color: #555; border-bottom: 2px solid #E5E5E5; border-right: 1px solid #f0f0f0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
+        .gantt-corner { position: sticky; top: 0; left: 0; z-index: 110; background: #FFFFFF; background-clip: padding-box; border-right: 2px solid #E5E5E5; border-bottom: 2px solid #E5E5E5; padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1D1D1F; }
+        .gantt-col-fixed { position: sticky; left: 0; background: #FFFFFF; z-index: 50; background-clip: padding-box; width: 160px; min-width: 160px; padding: 8px 12px; border-right: 2px solid #E5E5E5; border-bottom: 1px solid #f5f5f5; box-shadow: 2px 0 5px rgba(0,0,0,0.02); }
         .gantt-today-text { color: #D97706; font-weight: 900; font-size: 13px; }
         .gantt-row { height: 40px; }
         .gantt-id { font-weight: 900; font-size: 12px; color: #333; margin-right: 6px; }
@@ -163,33 +93,23 @@
         .gantt-grid-cell { border-right: 1px solid #f9f9f9; border-bottom: 1px solid #f5f5f5; position: relative; padding: 0; }
         .gantt-bar { position: absolute; top: 10px; left: 1px; height: 24px; border-radius: 6px; color: white; font-size: 11px; line-height: 24px; padding: 0 8px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.15); cursor: pointer; transition: 0.1s; font-weight: bold;}
         .gantt-bar:hover { transform: scaleY(1.1); z-index: 10; }
-        
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* --- 行事曆 (響應式自動高度) --- */
-        #calendar-container { 
-            background: white; border-radius: 16px; padding: 20px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            height: auto; /* 取消 100%，改為自動適應內容 */
-        }
+        #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); height: auto; }
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
         .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; }
         .fc-day-today { background-color: transparent !important; }
         .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
         .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
-        
         .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 4px !important; border-radius: 4px !important; }
         .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 12px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        
         .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
         .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
-        
-        /* 手機版排版調整 */
         @media (max-width: 768px) {
             .page-scroll-container { padding: 10px 10px 80px 10px; }
             #calendar-container { padding: 10px; }
@@ -197,35 +117,23 @@
             .fc .fc-toolbar-title { font-size: 1.25rem !important; }
             .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
         }
-
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* --- 浮動按鈕與彈窗 (置中樣式) --- */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
         .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
         .fab-btn.fab-link { background: #2D3748; } 
         .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: white; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 2px solid white; font-weight: bold; display: none; }
-        
         .fab-left-container { position: fixed; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
         .fab-btn-small { width: 40px; height: 40px; font-size: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
         .fab-btn-small:hover { transform: scale(1.1); }
 
         .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; }
-        
-        .float-panel { 
-            width: 90%; max-width: 600px; 
-            background: white; border-radius: 20px; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); 
-            display: flex; flex-direction: column; max-height: 85vh; padding: 0; overflow: hidden; 
-            animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
+        .float-panel { width: 90%; max-width: 600px; background: white; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; max-height: 85vh; padding: 0; overflow: hidden; animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
-        
         .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.2s; }
         .hidden { display: none; }
 
@@ -239,7 +147,6 @@
         .memo-icon:hover { color: #555; }
         .memo-del:hover { color: #ff3b30; }
         
-        /* 連結庫資料夾樣式 */
         .link-folder summary { list-style: none; outline: none; }
         .link-folder summary::-webkit-details-marker { display: none; }
         .link-item { background: #2D3748; color: white; padding: 16px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; position: relative; font-size: 15px; }
@@ -255,7 +162,13 @@
     </style>
 </head>
 <body>
-    <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[99999]">
+    <div id="login-overlay">
+        <div class="text-6xl font-black mb-8 tracking-widest text-white">JAYRAN</div>
+        <input id="login-pass" type="password" class="p-4 text-center text-black text-2xl font-bold rounded-2xl w-72 mb-6 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="輸入密碼" maxlength="8">
+        <button onclick="checkLogin()" class="bg-blue-600 hover:bg-blue-500 text-white px-12 py-4 rounded-2xl font-bold text-xl shadow-lg cursor-pointer transition">進入系統</button>
+    </div>
+
+    <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[999]" style="display:none;">
         <div class="text-2xl font-black tracking-widest animate-pulse">JAYRAN STUDIO</div>
         <div id="loader-msg" class="mt-4 text-gray-500 font-bold">資料讀取中...</div>
     </div>
@@ -517,19 +430,10 @@
                             <div onclick="openZoneModal('edit')" class="icon-btn btn-gray" title="編輯"><i class="fas fa-pen"></i></div>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">編號</label>
-                        <input id="i-id" class="clean-input font-mono font-bold" placeholder="">
-                    </div>
+                    <div><label class="block text-xs font-bold text-gray-500 mb-1">編號</label><input id="i-id" class="clean-input font-mono font-bold" placeholder=""></div>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱 (顯示用)</label>
-                    <input id="i-client" class="clean-input bg-gray-100 text-black font-bold">
-                </div>
-                <div class="mb-4">
-                    <label id="lbl-name" class="block text-xs font-bold text-gray-500 mb-1">專案名稱</label>
-                    <input id="i-name" class="clean-input" placeholder="輸入標題">
-                </div>
+                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱 (顯示用)</label><input id="i-client" class="clean-input bg-gray-100 text-black font-bold"></div>
+                <div class="mb-4"><label id="lbl-name" class="block text-xs font-bold text-gray-500 mb-1">專案名稱</label><input id="i-name" class="clean-input" placeholder="輸入標題"></div>
                 
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
@@ -553,14 +457,8 @@
                     <label for="i-urgent" class="text-base font-bold text-red-600 cursor-pointer select-none">🔥 標記為急件</label>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label>
-                    <input id="i-date" class="clean-input text-center" placeholder="點擊選擇">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-xs font-bold text-gray-500 mb-1">備註</label>
-                    <textarea id="i-note" class="clean-input h-20"></textarea>
-                </div>
+                <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label><input id="i-date" class="clean-input text-center" placeholder="點擊選擇"></div>
+                <div class="mb-6"><label class="block text-xs font-bold text-gray-500 mb-1">備註</label><textarea id="i-note" class="clean-input h-20"></textarea></div>
                 <button onclick="saveProject()" id="btn-create" class="w-full bg-black text-white py-4 rounded-lg font-bold text-lg shadow-xl hover:shadow-2xl transition hover:bg-gray-800">建立並同步</button>
             </div>
         </div>
@@ -635,6 +533,8 @@
 
     <script>
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
+        const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
+        const SESSION_HOURS = 12;
 
         let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
         let curTab = 'add';
@@ -651,38 +551,53 @@
         const fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d" }); 
         const fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d" }); 
 
-        // ★ 全局 ESC 鍵關閉所有彈出視窗 ★
+        // ★ 登入檢查 + ESC 關閉 ★
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") {
                 document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none');
             }
+            if (event.key === "Enter" && document.getElementById('login-overlay').style.display !== 'none') {
+                checkLogin();
+            }
         });
 
-        function callAPI(action, payload, onSuccess) {
-            if (GAS_API_URL) {
-                if (['initAllData', 'getHistory', 'getLeaves', 'getMemos', 'getLinks'].includes(action)) {
-                    let params = `?action=${action}`;
-                    if(payload.cat) params += `&cat=${payload.cat}`;
-                    if(payload.zone) params += `&zone=${payload.zone}`;
-                    
-                    fetch(GAS_API_URL + params)
-                        .then(res => res.json())
-                        .then(data => onSuccess(data))
-                        .catch(e => console.error("API Error:", e));
-                } else {
-                    const postData = { action: action, ...payload };
-                    fetch(GAS_API_URL, { method: "POST", body: JSON.stringify(postData) })
-                        .then(res => res.json())
-                        .then(data => onSuccess(data.data))
-                        .catch(e => { 
-                            alert("連線錯誤，請檢查網路"); 
-                            document.getElementById('loader').style.display = 'none'; 
-                        });
-                }
+        // 登入邏輯
+        function checkLogin() {
+            const pass = document.getElementById('login-pass').value;
+            if (pass === '00430552') {
+                localStorage.setItem(LOGIN_KEY, new Date().getTime());
+                document.getElementById('login-overlay').style.opacity = '0';
+                setTimeout(() => { 
+                    document.getElementById('login-overlay').style.display = 'none'; 
+                    startApp(); // 登入成功才開始載入資料
+                }, 500);
+            } else {
+                alert("密碼錯誤");
+                document.getElementById('login-pass').value = '';
             }
         }
 
+        function isLoggedIn() {
+            const savedTime = localStorage.getItem(LOGIN_KEY);
+            if (!savedTime) return false;
+            const now = new Date().getTime();
+            if (now - savedTime > SESSION_HOURS * 60 * 60 * 1000) {
+                return false; // 超時
+            }
+            return true;
+        }
+
         window.onload = function() {
+            if (isLoggedIn()) {
+                document.getElementById('login-overlay').style.display = 'none';
+                startApp();
+            } else {
+                document.getElementById('loader').style.display = 'none'; // 登入前先不顯示 loader
+            }
+        };
+
+        function startApp() {
+            document.getElementById('loader').style.display = 'flex';
             const cachedData = localStorage.getItem('JAYRAN_SYSTEM_DATA');
             if (cachedData) {
                 try {
@@ -700,18 +615,37 @@
                     processDataUpdate(res, false);
                 }
             });
-        };
+        }
+
+        function callAPI(action, payload, onSuccess) {
+            if (GAS_API_URL) {
+                if (['initAllData', 'getHistory', 'getLeaves', 'getMemos', 'getLinks'].includes(action)) {
+                    let params = `?action=${action}`;
+                    if(payload.cat) params += `&cat=${payload.cat}`;
+                    if(payload.zone) params += `&zone=${payload.zone}`;
+                    fetch(GAS_API_URL + params).then(res => res.json()).then(data => onSuccess(data)).catch(e => console.error("API Error:", e));
+                } else {
+                    const postData = { action: action, ...payload };
+                    fetch(GAS_API_URL, { method: "POST", body: JSON.stringify(postData) })
+                        .then(res => res.json())
+                        .then(data => onSuccess(data.data))
+                        .catch(e => { 
+                            alert("連線錯誤，請檢查網路"); 
+                            document.getElementById('loader').style.display = 'none'; 
+                        });
+                }
+            }
+        }
 
         function processDataUpdate(res, isCache) {
             DATA = res;
             renderZoneOptions();
-            
-            // ★ 核心修復：不管快取還是API，每次更新資料都要重刷選單，避免空白 ★
-            renderDynamicOptions(); 
-            
             loadMemos();
             loadLinks();
             loadPending();
+            
+            // 強制重新載入一次下拉選單，避免卡空
+            renderDynamicOptions();
             
             if (curTab === 'wei') renderKanban('魏敏軒');
             else if (curTab === 'chiu') renderKanban('邱仁杰');
@@ -745,7 +679,6 @@
             renderDynamicOptions();
         }
 
-        // ★★★ 修正製作人與類型選單不出現的問題 ★★★
         function renderDynamicOptions() {
             if (!DATA || !DATA.config) {
                 ['i-producer', 'i-type', 'ep-producer', 'ep-type'].forEach(id => {
@@ -858,7 +791,7 @@
             const dr = document.getElementById('i-date').value.split(' to ');
             const prod = document.getElementById('i-producer').value;
             
-            // ★ 核心修復：自動補上前綴 ★
+            // ★ 核心修復：自動補上前綴，解決新建只有數字的問題 ★
             const rawId = document.getElementById('i-id').value.trim();
             const zoneVal = document.getElementById('i-zone').value;
             const prefix = zoneVal.split('_')[0]; 
@@ -1015,7 +948,7 @@
                     }
                     bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible;"' : ''}>${content}</td>`;
                 }
-                body += `<tr class="gantt-row"><td class="gantt-col-fixed" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
+                body += `<tr class="gantt-row"><td class="gantt-label-cell" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
             });
             container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
         }
@@ -1026,7 +959,6 @@
             renderGantt(who);
         }
 
-        // --- 行事曆：自適應高度 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -1068,7 +1000,7 @@
             calendar = new FullCalendar.Calendar(el, {
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
-                height: 'auto', // 取消強制高度，讓它自動適應內容
+                height: 'auto', 
                 contentHeight: 'auto',
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
@@ -1113,14 +1045,19 @@
             Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
             epCodeSel.value = prefix;
             
-            // 強制重新載入製作人與類型
-            renderDynamicOptions(); 
+            // 強制載入並設定下拉選單的值，避免空白
+            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
+            const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
+            
+            const prodSel = document.getElementById('ep-producer');
+            prodSel.innerHTML = '';
+            producers.forEach(x => prodSel.add(new Option(x, x)));
+            prodSel.value = p.producer; // 重新選中原本的製作人
 
-            // 延遲一點點確保 DOM 選單已經畫好，再設定選中的值
-            setTimeout(() => {
-                document.getElementById('ep-producer').value = p.producer;
-                document.getElementById('ep-type').value = p.type;
-            }, 50);
+            const typeSel = document.getElementById('ep-type');
+            typeSel.innerHTML = '';
+            types.forEach(x => typeSel.add(new Option(x, x)));
+            typeSel.value = p.type; // 重新選中原本的類型
 
             document.getElementById('ep-num').value = numPart;
             updateEditClientInfo(); 
@@ -1155,7 +1092,7 @@
             const p = {
                 category: document.getElementById('ep-cat').value,
                 zone: document.getElementById('ep-zone').value, 
-                id: document.getElementById('ep-num').value, // 暫時只取數字，後面更新
+                id: document.getElementById('ep-num').value, 
                 client: document.getElementById('ep-client-display').value,
                 name: document.getElementById('ep-name').value,
                 producer: document.getElementById('ep-producer').value,
@@ -1609,7 +1546,7 @@
                         folderDatalist.appendChild(new Option(folder)); 
                     }
 
-                    // 移除了 open 屬性，預設關閉
+                    // 預設關閉資料夾 (移除了 open)
                     html += `
                     <details class="mb-3 group link-folder">
                         <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">

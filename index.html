@@ -76,11 +76,13 @@
             position: relative; 
         }
 
+        /* 捲軸美化 */
         .page-scroll-container::-webkit-scrollbar, .gantt-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
         .page-scroll-container::-webkit-scrollbar-track, .gantt-wrapper::-webkit-scrollbar-track { background: transparent; }
         .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: #D1D5DB; border-radius: 4px; }
         .page-scroll-container::-webkit-scrollbar-thumb:hover, .gantt-wrapper::-webkit-scrollbar-thumb:hover { background-color: #9CA3AF; }
 
+        /* 卡片與輸入框 */
         .clean-card { 
             background: var(--surface); 
             border-radius: var(--radius); 
@@ -116,27 +118,46 @@
         .btn-black { background: #1D1D1F; color: white; }
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
 
-        /* 看板樣式 */
-        .kanban-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
+        /* --- 看板卡片全新設計 (圖三修正) --- */
+        .kanban-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
         
-        .kanban-item { background: white; border: 1px solid #E5E5E5; border-radius: 12px; padding: 16px 16px 16px 20px; position: relative; border-left: 5px solid #007AFF; transition: 0.2s; padding-top: 40px; }
-        .kanban-item:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .k-blue { border-left-color: #007AFF; } .k-orange { border-left-color: #FF9500; } .k-green { border-left-color: #34C759; } .k-gray { border-left-color: #8E8E93; }
+        .kanban-item { 
+            background: white; 
+            border: 1px solid #E5E5E5; 
+            border-radius: 12px; 
+            padding: 24px 16px 16px 20px; /* 增加上方留白給膠囊 */
+            position: relative; 
+            border-left: 5px solid transparent; /* 由 JS 賦予顏色 */
+            transition: 0.2s; 
+            margin-top: 14px; /* 為了突出的膠囊留空間 */
+        }
+        .kanban-item:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+        
+        /* 狀態顏色定義 */
+        .k-blue { border-left-color: #007AFF; }
+        .bg-blue { background-color: #007AFF !important; }
+        
+        .k-orange { border-left-color: #FF9500; }
+        .bg-orange { background-color: #FF9500 !important; }
+        
+        .k-green { border-left-color: #34C759; }
+        .bg-green { background-color: #34C759 !important; }
+        
+        .k-gray { border-left-color: #8E8E93; }
+        .bg-gray { background-color: #8E8E93 !important; }
+        
         .k-red { border-left-color: #ff3b30 !important; border: 1px solid #ffcccc; background: #fff5f5; }
         
-        .k-header-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; z-index: 2; }
-        .k-status-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; color: white; }
-        .k-tag-urgent { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; color: white; background: #ff3b30; }
-        
-        .k-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 20; }
-        .k-action-btn { width: 28px; height: 28px; border-radius: 6px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #999; transition: 0.2s; background: #f5f5f7; z-index: 30; }
+        /* 操作按鈕 (右上角) */
+        .k-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 20; }
+        .k-action-btn { width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #999; transition: 0.2s; background: #f5f5f7; }
         .k-action-btn:hover { background: #e5e5e5; color: #333; }
         .k-del:hover { background: #fee2e2; color: #ef4444; }
 
-        .k-id { font-size: 13px; font-weight: 700; color: #86868B; margin-top: 0px; margin-bottom: 2px; }
-        .k-name { font-size: 18px; font-weight: 800; color: #1D1D1F; margin-bottom: 4px; padding-right: 0px; line-height: 1.3; }
-        .k-client { font-size: 13px; color: #666; margin-bottom: 8px; }
+        /* 文字排版 */
+        .k-name { font-size: 18px; font-weight: 800; color: #1D1D1F; margin-bottom: 6px; padding-right: 60px; line-height: 1.3; }
+        .k-client { font-size: 13px; color: #666; margin-bottom: 10px; font-weight: bold; }
         .k-date { font-size: 12px; color: #888; font-weight: 600; display: flex; align-items: center; gap: 4px; }
 
         details > summary { list-style: none; outline: none; }
@@ -144,7 +165,7 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* 甘特圖 */
+        /* --- 甘特圖 --- */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: 100%; min-height: 500px; position: relative; }
         .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; table-layout: fixed; }
         .gantt-header-cell { position: sticky; top: 0; background: #FAFAFA; z-index: 30; text-align: center; font-size: 10px; color: #888; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #E5E5E5; padding: 8px 0; width: 28px; }
@@ -158,12 +179,22 @@
         .gantt-grid-cell { border-right: 1px solid #f5f5f5; border-bottom: 1px solid #f5f5f5; position: relative; padding: 0; }
         .gantt-bar { position: absolute; top: 10px; left: 1px; height: 20px; border-radius: 4px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 5px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.1s; }
         .gantt-bar:hover { transform: scaleY(1.1); z-index: 10; }
+        
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* 行事曆 */
-        #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); height: 100%; min-height: 600px; display: flex; flex-direction: column; }
+        /* --- 行事曆 (自動適配高度，響應式優化) --- */
+        #calendar-container { 
+            background: white; 
+            border-radius: 16px; 
+            padding: 20px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
+            height: 100%; 
+            min-height: 500px; 
+            display: flex; 
+            flex-direction: column; 
+        }
         .fc { flex: 1; height: 100%; } 
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
@@ -177,10 +208,18 @@
         .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
+        
+        /* 手機版行事曆標題區響應式 */
+        @media (max-width: 768px) {
+            .fc .fc-toolbar { flex-direction: column; gap: 12px; }
+            .fc .fc-toolbar-title { font-size: 1.25rem !important; }
+            .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
+        }
+
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* 浮動按鈕與面板 */
+        /* --- 浮動按鈕與彈窗 (置中樣式) --- */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
         .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
@@ -191,56 +230,23 @@
         .fab-btn-small { width: 40px; height: 40px; font-size: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
         .fab-btn-small:hover { transform: scale(1.1); }
 
-        /* Modal 彈窗置中樣式 */
-        .modal-mask { 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.6); 
-            backdrop-filter: blur(4px); 
-            display: none; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 9999; 
-        }
+        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; }
         
         .float-panel { 
-            width: 90%; 
-            max-width: 600px; 
-            background: white; 
-            border-radius: 20px; 
+            width: 90%; max-width: 600px; 
+            background: white; border-radius: 20px; 
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); 
-            display: flex; 
-            flex-direction: column; 
-            max-height: 85vh; 
-            padding: 0; 
-            overflow: hidden; 
+            display: flex; flex-direction: column; max-height: 85vh; padding: 0; overflow: hidden; 
             animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
         }
-        
-        @keyframes popIn { 
-            from { transform: scale(0.95); opacity: 0; } 
-            to { transform: scale(1); opacity: 1; } 
-        }
+        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
         
-        .modal-body { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 20px; 
-            width: 90%; 
-            max-width: 450px; 
-            box-shadow: 0 25px 50px rgba(0,0,0,0.2); 
-            max-height: 90vh; 
-            overflow-y: auto; 
-            margin: 20px; 
-            animation: popIn 0.2s; 
-        }
-        
+        .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.2s; }
         .hidden { display: none; }
 
-        /* 面板內容與資料夾樣式 */
         .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .memo-item.chiu { background: #E3F2FD; border-left-color: #2196F3; } 
         .pending-item { background: #f3f4f6; border-left: 6px solid #9CA3AF; }
@@ -251,7 +257,7 @@
         .memo-icon:hover { color: #555; }
         .memo-del:hover { color: #ff3b30; }
         
-        /* 連結庫資料夾 */
+        /* 連結庫資料夾樣式 */
         .link-folder summary { list-style: none; outline: none; }
         .link-folder summary::-webkit-details-marker { display: none; }
         .link-item { background: #2D3748; color: white; padding: 16px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; position: relative; font-size: 15px; }
@@ -847,10 +853,24 @@
         function saveProject() {
             const dr = document.getElementById('i-date').value.split(' to ');
             const prod = document.getElementById('i-producer').value;
+            
+            // ★ 核心修復：在前端儲存時，自動為純數字的 ID 補上前綴
+            let rawId = document.getElementById('i-id').value.trim();
+            const zoneValue = document.getElementById('i-zone').value;
+            const prefix = zoneValue.split('_')[0]; // 例如 "A"
+            
+            let fullId = rawId;
+            if (!isNaN(rawId) && rawId !== "") {
+                fullId = prefix + String(rawId).padStart(3, '0');
+            } else if (rawId.toUpperCase().indexOf(prefix.toUpperCase()) === -1) {
+                // 如果使用者輸入了怪異編號且沒有包含區域名稱
+                fullId = prefix + rawId;
+            }
+
             const p = {
                 category: curCat, 
-                zone: document.getElementById('i-zone').value, 
-                id: document.getElementById('i-id').value,
+                zone: zoneValue, 
+                id: fullId, // 使用補上前綴的 ID
                 client: document.getElementById('i-client').value, 
                 name: document.getElementById('i-name').value,
                 producer: prod, 
@@ -862,7 +882,7 @@
                 status: (prod !== '尚未暫定' && dr[0] && new Date(dr[0]) <= new Date()) ? '製作中' : '尚未進行'
             };
             
-            if(!p.zone || !p.id || !p.name) return alert("請填寫完整資訊");
+            if(!p.zone || !rawId || !p.name) return alert("請填寫完整資訊");
             if(prod !== '尚未暫定' && !p.start) return alert("請選擇日期範圍");
             
             DATA.projects.push(p);
@@ -880,6 +900,7 @@
             });
         }
 
+        // --- 看板：卡片設計升級 (左上角膠囊) ---
         function renderKanban(producer) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
@@ -888,16 +909,19 @@
                 const pStr = encodeURIComponent(JSON.stringify(p));
                 return `
                 <div class="kanban-item k-${color} ${p.tag === 'Urgent' ? 'k-red' : ''}">
-                    <div class="k-header-badges">
-                        <span class="k-status-badge bg-${bg}">${p.status}</span>
-                        ${ p.tag === 'Urgent' ? '<span class="k-tag-urgent">🔥 急件</span>' : '' }
+                    
+                    <div class="absolute -top-3 left-4 flex gap-2 z-10">
+                        <span class="bg-${bg} text-white px-3 py-1 rounded-full text-xs font-black shadow-md border-2 border-white tracking-wider">${p.id}</span>
+                        <span class="bg-${bg} text-white px-3 py-1 rounded-full text-xs font-bold shadow-md border-2 border-white">${p.status}</span>
+                        ${ p.tag === 'Urgent' ? '<span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md border-2 border-white">🔥 急件</span>' : '' }
                     </div>
+
                     <div class="k-actions">
                         <div onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="k-action-btn"><i class="fas fa-pen text-xs"></i></div>
                         <div onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="k-action-btn k-del"><i class="fas fa-times text-xs"></i></div>
                     </div>
-                    <div class="k-id">${p.id}</div>
-                    <div class="k-name">${p.name}</div>
+                    
+                    <div class="k-name pt-2">${p.name}</div>
                     <div class="k-client">${p.client}</div>
                     <div class="k-date"><i class="far fa-calendar-alt"></i> ${p.start} ~ ${p.end}</div>
                     <div class="mt-3 flex gap-2">
@@ -997,7 +1021,7 @@
             renderGantt(who);
         }
 
-        // --- 行事曆 ---
+        // --- 行事曆：優化 RWD 高度顯示 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -1039,7 +1063,8 @@
             calendar = new FullCalendar.Calendar(el, {
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
-                height: '100%', 
+                height: 'auto', // ★ 改為 auto 解決擠壓變形的問題
+                contentHeight: 'auto',
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
                 events: events,
@@ -1068,7 +1093,7 @@
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
         }
 
-        // ★★★ 編輯專案核心邏輯 ★★★
+        // ★★★ 核心修復：編輯專案時強制載入最新選項 ★★★
         function openEditProject(p) {
             document.getElementById('ep-cat').value = p.category;
             document.getElementById('ep-origin-id').value = p.id; 
@@ -1083,19 +1108,19 @@
             Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
             epCodeSel.value = prefix;
             
-            // 強制載入下拉選單選項
+            // ★ 強制載入並設定下拉選單的值，避免空白 ★
             const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
             const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
             
             const prodSel = document.getElementById('ep-producer');
             prodSel.innerHTML = '';
             producers.forEach(x => prodSel.add(new Option(x, x)));
-            prodSel.value = p.producer;
+            prodSel.value = p.producer; // 重新選中原本的製作人
 
             const typeSel = document.getElementById('ep-type');
             typeSel.innerHTML = '';
             types.forEach(x => typeSel.add(new Option(x, x)));
-            typeSel.value = p.type;
+            typeSel.value = p.type; // 重新選中原本的類型
 
             document.getElementById('ep-num').value = numPart;
             updateEditClientInfo(); 
@@ -1273,7 +1298,7 @@
             if (type === 'pending') loadPending();
         }
 
-        // --- 待分派專案 (前端直接移動卡片) ---
+        // --- 待分派專案 ---
         function loadPending() {
             const pendingList = DATA.projects.filter(p => p.producer === '尚未暫定');
             const container = document.getElementById('pending-list');
@@ -1679,7 +1704,8 @@
             el.parentElement.parentElement.style.opacity = '0.5';
             callAPI('deleteLink', { idx:idx }, (res) => loadLinks());
         }
-        
+
+        // --- 其他 Modal 控制 ---
         function openZoneModal(mode) {
             modalMode = mode;
             const z = document.getElementById('i-zone').value;

@@ -12,50 +12,36 @@
     <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
-        /* --- V22: 滾動邏輯全面修復版 --- */
+        /* --- 基礎架構 (結合1-2的流暢滾動) --- */
         :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
         
-        /* 鎖定 Body，防止雙重捲動 */
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; 
             background: var(--bg); color: var(--primary); 
-            height: 100vh; overflow: hidden; /* 關鍵：鎖住外層 */
+            height: 100vh; overflow: hidden; /* 防止整頁連同頂部選單一起捲走 */
             display: flex; flex-direction: column;
         }
         
-        /* 頂部固定區 (標題+導航) */
-        .header-fixed-area {
-            flex-shrink: 0;
-            padding: 20px 20px 0 20px;
-            background: var(--bg);
-            z-index: 50;
-        }
-
-        /* 導航列 */
+        .header-fixed-area { flex-shrink: 0; padding: 20px 20px 0 20px; background: var(--bg); z-index: 50; }
         .segmented-nav { background: #E8E8ED; padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; flex-wrap: wrap; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .nav-item { flex: 1; min-width: 80px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
-        /* --- 核心修復：所有頁面的滾動容器 --- */
         .page-scroll-container { 
-            flex-grow: 1; /* 自動填滿剩餘高度 */
-            overflow-y: auto; /* 內容過長時出現捲軸 */
-            padding: 10px 20px 80px 20px; /* 底部留白給 FAB */
-            position: relative;
+            flex-grow: 1; overflow-y: auto; padding: 10px 20px 80px 20px; position: relative;
         }
 
-        /* 美化捲軸 (Chrome/Safari) */
+        /* 美化捲軸 */
         .page-scroll-container::-webkit-scrollbar, .gantt-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
         .page-scroll-container::-webkit-scrollbar-track, .gantt-wrapper::-webkit-scrollbar-track { background: transparent; }
         .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: #D1D5DB; border-radius: 4px; }
         .page-scroll-container::-webkit-scrollbar-thumb:hover, .gantt-wrapper::-webkit-scrollbar-thumb:hover { background-color: #9CA3AF; }
 
-        /* 卡片與輸入 */
+        /* 元件樣式 */
         .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
         .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; }
         
-        /* 開關與按鈕 */
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
         .type-btn.active { background: #1D1D1F; color: white; }
@@ -92,71 +78,27 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* --- 甘特圖：凍結 + 光柱 --- */
-        .gantt-wrapper { 
-            overflow: auto; 
-            background: white; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            width: 100%; 
-            border: 1px solid #E5E5E5; 
-            position: relative; 
-            /* V22: 讓甘特圖填滿容器，但如果內容太多，自己內部也會有捲軸 */
-            height: 100%; 
-            min-height: 500px;
-        }
-        .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
-        .gantt-header-cell { 
-            position: sticky; top: 0; 
-            background: #FAFAFA; z-index: 30; 
-            text-align: center; font-size: 11px; color: #555; 
-            border-bottom: 1px solid #E5E5E5; border-right: 1px solid #f0f0f0; 
-            padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; 
-        }
-        .gantt-today-text { color: #D97706; font-weight: 900; font-size: 13px; }
-        
-        .gantt-col-fixed { 
-            position: sticky; left: 0; 
-            background: white; z-index: 40; 
-            width: 160px; min-width: 160px; 
-            padding: 8px 12px; 
-            border-right: 2px solid #E5E5E5; border-bottom: 1px solid #f5f5f5; 
-            box-shadow: 2px 0 5px rgba(0,0,0,0.02);
-        }
-        
-        .gantt-corner { 
-            position: sticky; top: 0; left: 0; 
-            z-index: 50; 
-            background: #FAFAFA; 
-            border-right: 2px solid #E5E5E5; border-bottom: 1px solid #E5E5E5; 
-            padding: 10px; font-weight: 800; font-size: 13px; color: #1D1D1F; 
-        }
-        
-        .gantt-cell { 
-            border-bottom: 1px solid #f5f5f5; height: 44px; position: relative; padding: 0; 
-            background-color: white;
-        }
-        .gantt-bar { 
-            position: absolute; top: 10px; height: 24px; 
-            border-radius: 6px; color: white; font-size: 11px; 
-            line-height: 24px; padding: 0 8px; 
-            white-space: nowrap; overflow: hidden; z-index: 5; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-weight: 700; cursor: pointer; transition: 0.1s;
-        }
+        /* --- 甘特圖 (移植自 3-4 版本網格邏輯) --- */
+        .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: 100%; min-height: 500px; position: relative; }
+        .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; table-layout: fixed; }
+        .gantt-header-cell { position: sticky; top: 0; background: #FAFAFA; z-index: 30; text-align: center; font-size: 10px; color: #888; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #E5E5E5; padding: 8px 0; width: 28px; }
+        .gantt-today { background-color: #FFF9C4 !important; color: #000; font-weight: 900; border-bottom: 3px solid #FFD700 !important; }
+        .gantt-today-cell { background-color: #FFF9C4; } 
+        .gantt-row { height: 40px; border-bottom: 1px solid #f9f9f9; }
+        .gantt-label-cell { position: sticky; left: 0; background: white; z-index: 40; width: 220px; padding-right: 10px; border-right: 2px solid #eee; border-bottom: 1px solid #f5f5f5; padding-left: 10px; white-space: nowrap; overflow: hidden; }
+        .gantt-corner { position: sticky; top: 0; left: 0; z-index: 50; background: #FAFAFA; border-right: 2px solid #E5E5E5; border-bottom: 1px solid #E5E5E5; padding-left: 10px; text-align: left; font-weight: bold; font-size: 12px; }
+        .gantt-id { font-weight: 900; font-size: 12px; color: #333; margin-right: 6px; }
+        .gantt-name { font-size: 12px; color: #444; font-weight: 500; }
+        .gantt-grid-cell { border-right: 1px solid #f5f5f5; border-bottom: 1px solid #f5f5f5; position: relative; padding: 0; }
+        .gantt-bar { position: absolute; top: 10px; left: 1px; height: 20px; border-radius: 4px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 5px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.1s; }
         .gantt-bar:hover { transform: scaleY(1.1); z-index: 10; }
         
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* --- 行事曆：填滿 --- */
-        #calendar-container { 
-            background: white; border-radius: 16px; padding: 16px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            height: 100%; /* 跟隨父層高度 */
-            min-height: 600px;
-            display: flex; flex-direction: column;
-        }
+        /* --- 行事曆 (適配與樣式移植自3-4) --- */
+        #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); height: 100%; min-height: 600px; display: flex; flex-direction: column; }
         .fc { flex: 1; height: 100%; } 
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
@@ -173,22 +115,18 @@
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* Modal & Panels */
-        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 9999; }
-        .modal-body { background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; }
-        .hidden { display: none; }
-        
+        /* --- 懸浮按鈕與面板 (大尺寸，移植自3-4) --- */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 999; }
-        .fab-btn { width: 60px; height: 60px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
+        .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
         .fab-btn.fab-link { background: #2D3748; } 
-        .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; display: flex; justify-content: center; align-items: center; border: 2px solid white; font-weight: bold; display: none; }
+        .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: white; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 2px solid white; font-weight: bold; display: none; }
         
         .fab-left-container { position: fixed; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 999; }
         .fab-btn-small { width: 40px; height: 40px; font-size: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
         .fab-btn-small:hover { transform: scale(1.1); }
 
-        .float-panel { position: fixed; bottom: 30px; right: 100px; width: 350px; background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 998; display: none; border: 1px solid #eee; flex-direction: column; max-height: 70vh; padding: 0; overflow: hidden; }
+        .float-panel { position: fixed; bottom: 30px; right: 120px; width: 450px; background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 998; display: none; border: 1px solid #eee; flex-direction: column; max-height: 85vh; padding: 0; overflow: hidden; }
         @media (max-width: 600px) { .float-panel { right: 20px; left: 20px; width: auto; bottom: 100px; } }
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
@@ -213,13 +151,17 @@
         .link-icon:hover { color: white; }
         .link-del:hover { color: #ff3b30; }
         
+        /* Modal 通用 */
+        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .modal-body { background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; }
+        .hidden { display: none; }
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
         .setting-actions i { cursor: pointer; padding: 5px; margin-left: 5px; color: #999; }
         .setting-actions i:hover { color: #333; }
     </style>
 </head>
 <body>
-    <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[999]">
+    <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[9999]">
         <div class="text-2xl font-black tracking-widest animate-pulse">JAYRAN STUDIO</div>
         <div id="loader-msg" class="mt-4 text-gray-500 font-bold">資料讀取中...</div>
     </div>
@@ -320,10 +262,7 @@
 
     <div id="modal-edit-project" class="modal-mask"><div class="modal-body w-[400px]">
         <h3 class="text-xl font-black mb-4">編輯專案內容</h3>
-        <input type="hidden" id="ep-cat">
-        <input type="hidden" id="ep-zone">
-        <input type="hidden" id="ep-origin-id">
-        <input type="hidden" id="ep-origin-zone"> 
+        <input type="hidden" id="ep-cat"><input type="hidden" id="ep-zone"><input type="hidden" id="ep-origin-id"><input type="hidden" id="ep-origin-zone"> 
         <div class="grid grid-cols-4 gap-2 mb-3 items-end">
             <div><label class="text-xs text-gray-500 font-bold block mb-1">代號</label><select id="ep-code" class="clean-select font-bold text-center px-1" onchange="updateEditClientInfo()"></select></div>
             <div class="col-span-2"><label class="text-xs text-gray-500 font-bold block mb-1">客戶 (可編輯)</label><input id="ep-client-display" class="clean-input bg-white text-black font-bold text-sm"></div>
@@ -374,11 +313,11 @@
             <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
         </div>
         <div class="segmented-nav">
-            <div onclick="switchTab('add')" id="nav-add" class="nav-item active" title="點擊刷新"><i class="fas fa-plus mr-2"></i> 新增</div>
-            <div onclick="switchTab('wei')" id="nav-wei" class="nav-item" title="點擊刷新"><i class="fas fa-user mr-2"></i> 魏敏軒</div>
-            <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item" title="點擊刷新"><i class="fas fa-user mr-2"></i> 邱仁杰</div>
-            <div onclick="switchTab('gan')" id="nav-gan" class="nav-item" title="點擊刷新"><i class="fas fa-chart-bar mr-2"></i> 甘特圖</div>
-            <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item" title="點擊刷新"><i class="fas fa-calendar-alt mr-2"></i> 行事曆</div>
+            <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-plus mr-2"></i> 新增</div>
+            <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user mr-2"></i> 魏敏軒</div>
+            <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user mr-2"></i> 邱仁杰</div>
+            <div onclick="switchTab('gan')" id="nav-gan" class="nav-item"><i class="fas fa-chart-bar mr-2"></i> 甘特圖</div>
+            <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item"><i class="fas fa-calendar-alt mr-2"></i> 行事曆</div>
         </div>
     </div>
 
@@ -439,40 +378,16 @@
         <div class="max-w-5xl mx-auto">
             <h2 id="kb-title" class="text-2xl font-black mb-6 px-2"></h2>
             
-            <div class="mb-8">
-                <h3 class="text-lg font-bold text-blue-600 mb-3 px-2">🔥 製作中</h3>
-                <div id="kb-process" class="kanban-grid"></div>
-            </div>
-            
-            <details class="mb-6 group">
-                <summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80">
-                    <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
-                    <span>👀 審核中</span>
-                </summary>
-                <div id="kb-review" class="kanban-grid pl-2"></div>
-            </details>
-            
-            <details class="mb-4 group">
-                <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
-                    <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
-                    <span>⏳ 尚未進行</span>
-                </summary>
-                <div id="kb-todo" class="kanban-grid pl-2"></div>
-            </details>
-            
-            <details class="mb-4 group">
-                <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
-                    <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
-                    <span>✅ 已完成</span>
-                </summary>
-                <div id="kb-done" class="kanban-grid pl-2"></div>
-            </details>
+            <div class="mb-8"><h3 class="text-lg font-bold text-blue-600 mb-3 px-2">🔥 製作中</h3><div id="kb-process" class="kanban-grid"></div></div>
+            <details class="mb-6 group"><summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80"><i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i><span>👀 審核中</span></summary><div id="kb-review" class="kanban-grid pl-2"></div></details>
+            <details class="mb-4 group"><summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700"><i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i><span>⏳ 尚未進行</span></summary><div id="kb-todo" class="kanban-grid pl-2"></div></details>
+            <details class="mb-4 group"><summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700"><i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i><span>✅ 已完成</span></summary><div id="kb-done" class="kanban-grid pl-2"></div></details>
         </div>
     </div>
 
     <div id="p-gantt" class="hidden page-scroll-container">
-        <div class="max-w-full">
-            <div class="flex gap-2 mb-4 px-2 items-center justify-between">
+        <div class="max-w-full h-full flex flex-col">
+            <div class="flex gap-2 mb-4 px-2 items-center justify-between shrink-0">
                 <h2 id="gan-title" class="text-2xl font-black">甘特圖</h2>
                 <div class="flex gap-2">
                     <button id="btn-gan-wei" onclick="renderGantt('魏敏軒')" class="gan-btn px-4 py-2 rounded-lg font-bold">魏敏軒</button>
@@ -487,7 +402,7 @@
 
     <div id="p-calendar" class="hidden page-scroll-container">
         <div class="max-w-full h-full flex flex-col">
-            <div class="flex justify-between items-center mb-4 px-2">
+            <div class="flex justify-between items-center mb-4 px-2 shrink-0">
                 <h2 class="text-2xl font-black">行事曆</h2>
                 <div class="flex gap-2">
                     <button id="btn-cal-all" onclick="filterCalendar('all')" class="cal-filter-btn active">全部</button>
@@ -526,16 +441,11 @@
                     let params = `?action=${action}`;
                     if(payload.cat) params += `&cat=${payload.cat}`;
                     if(payload.zone) params += `&zone=${payload.zone}`;
-                    fetch(GAS_API_URL + params)
-                    .then(res => res.json())
-                    .then(data => onSuccess(data))
-                    .catch(e => console.error("API Error:", e));
+                    fetch(GAS_API_URL + params).then(res => res.json()).then(data => onSuccess(data)).catch(e => console.error("API Error:", e));
                 } else {
                     const postData = { action: action, ...payload };
                     fetch(GAS_API_URL, { method: "POST", body: JSON.stringify(postData) })
-                    .then(res => res.json())
-                    .then(data => onSuccess(data.data))
-                    .catch(e => { alert("連線錯誤，請檢查網路"); document.getElementById('loader').style.display = 'none'; });
+                    .then(res => res.json()).then(data => onSuccess(data.data)).catch(e => { alert("連線錯誤，請檢查網路"); document.getElementById('loader').style.display = 'none'; });
                 }
             }
         }
@@ -573,9 +483,7 @@
                 if(document.getElementById('btn-gan-wei').classList.contains('active')) renderGantt('魏敏軒');
                 else renderGantt('邱仁杰');
             }
-            else if (curTab === 'calendar') { 
-                renderCalendar(); 
-            }
+            else if (curTab === 'calendar') { renderCalendar(); }
 
             if (!isCache) {
                 document.getElementById('loader').style.display = 'none';
@@ -625,22 +533,14 @@
             else if (tab === 'wei') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('魏敏軒'); }
             else if (tab === 'chiu') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('邱仁杰'); }
             else if (tab === 'gan') { document.getElementById('p-gantt').classList.remove('hidden'); renderGantt('魏敏軒'); }
-            else if (tab === 'calendar') { 
-                document.getElementById('p-calendar').classList.remove('hidden'); 
-                setTimeout(() => renderCalendar(), 100); 
-            }
+            else if (tab === 'calendar') { document.getElementById('p-calendar').classList.remove('hidden'); setTimeout(() => renderCalendar(), 100); }
         }
 
         function renderZoneOptions() {
             const sel = document.getElementById('i-zone'); 
             sel.innerHTML = '<option value="">請選擇</option>';
             const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            if (settings) {
-                Object.keys(settings).sort().forEach(k => {
-                    const op = document.createElement('option');
-                    op.value = k; op.text = k; sel.add(op);
-                });
-            }
+            if (settings) { Object.keys(settings).sort().forEach(k => { const op = document.createElement('option'); op.value = k; op.text = k; sel.add(op); }); }
             updateClientName(); 
         }
 
@@ -649,15 +549,11 @@
             if (z) { 
                 const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z;
                 if (z.toUpperCase().startsWith('Z')) {
-                    document.getElementById('i-client').value = ''; 
-                    document.getElementById('i-client').readOnly = false; 
-                    document.getElementById('i-client').classList.remove('bg-gray-100'); 
-                    document.getElementById('i-client').classList.add('bg-white'); 
+                    document.getElementById('i-client').value = ''; document.getElementById('i-client').readOnly = false; 
+                    document.getElementById('i-client').classList.remove('bg-gray-100'); document.getElementById('i-client').classList.add('bg-white'); 
                 } else {
-                    document.getElementById('i-client').value = realName; 
-                    document.getElementById('i-client').readOnly = true; 
-                    document.getElementById('i-client').classList.add('bg-gray-100');
-                    document.getElementById('i-client').classList.remove('bg-white');
+                    document.getElementById('i-client').value = realName; document.getElementById('i-client').readOnly = true; 
+                    document.getElementById('i-client').classList.add('bg-gray-100'); document.getElementById('i-client').classList.remove('bg-white');
                 }
                 let lastId = (DATA.ids) ? DATA.ids[z] : "";
                 let displayId = "001"; 
@@ -665,25 +561,15 @@
                     const match = lastId.match(/\d+$/); 
                     if (match) displayId = match[0];
                     document.getElementById('i-id').placeholder = `最後編號: ${displayId}`;
-                } else {
-                    document.getElementById('i-id').placeholder = `建議編號: 001`;
-                }
-            } else {
-                document.getElementById('i-client').value = '';
-                document.getElementById('i-id').placeholder = ''; 
-            }
+                } else { document.getElementById('i-id').placeholder = `建議編號: 001`; }
+            } else { document.getElementById('i-client').value = ''; document.getElementById('i-id').placeholder = ''; }
         }
 
         function checkProducer() {
             const prod = document.getElementById('i-producer').value;
             const dateInput = document.getElementById('i-date');
-            if (prod === '尚未暫定') {
-                dateInput.placeholder = "日期可留空";
-                dateInput.style.background = "#eef";
-            } else {
-                dateInput.placeholder = "點擊選擇";
-                dateInput.style.background = "#F5F5F7";
-            }
+            if (prod === '尚未暫定') { dateInput.placeholder = "日期可留空"; dateInput.style.background = "#eef"; } 
+            else { dateInput.placeholder = "點擊選擇"; dateInput.style.background = "#F5F5F7"; }
         }
 
         function saveProject() {
@@ -700,19 +586,14 @@
             if(!p.zone || !p.id || !p.name) return alert("請填寫完整資訊");
             if(prod !== '尚未暫定' && !p.start) return alert("請選擇日期範圍");
             
+            // 樂觀更新
             DATA.projects.push(p);
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true); 
             alert("✅ 建立成功 (背景同步中)");
 
-            document.getElementById('i-id').value = '';
-            document.getElementById('i-name').value = '';
-            document.getElementById('i-note').value = '';
-            document.getElementById('i-urgent').checked = false; 
-
-            callAPI('addProject', { payload: p }, (res) => {
-                console.log("Synced");
-            });
+            document.getElementById('i-id').value = ''; document.getElementById('i-name').value = ''; document.getElementById('i-note').value = ''; document.getElementById('i-urgent').checked = false; 
+            callAPI('addProject', { payload: p }, (res) => { console.log("Synced"); });
         }
 
         function renderKanban(producer) {
@@ -746,7 +627,7 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4">無</div>';
         }
 
-        // --- 甘特圖：實體 DIV 光柱 (避免黑點) ---
+        // --- V23 甘特圖：移植自 3-4 網格版 (含左右箭頭與跨月顯示) ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -754,77 +635,64 @@
             else document.getElementById('btn-gan-chiu').classList.add('active');
 
             const container = document.getElementById('gantt-chart');
-            const y = currentGanttDate.getFullYear();
-            const m = currentGanttDate.getMonth();
-            document.getElementById('gan-title').innerText = `${who} - ${y}年${m+1}月`;
+            const now = new Date();
+            const curYear = currentGanttDate.getFullYear();
+            const curMonth = currentGanttDate.getMonth();
+            document.getElementById('gan-title').innerText = `甘特圖 (${curYear}年${curMonth + 1}月)`;
 
-            const daysInMonth = new Date(y, m+1, 0).getDate();
-            const today = new Date();
-            const todayDate = today.getDate();
-            const isCurrentMonth = (today.getMonth() === m && today.getFullYear() === y);
+            const monthStart = new Date(curYear, curMonth, 1);
+            const monthEnd = new Date(curYear, curMonth + 1, 0, 23, 59, 59);
+            const todayDay = now.getDate();
+            const isCurrentMonth = (now.getMonth() === curMonth && now.getFullYear() === curYear);
 
-            let html = `<table class="gantt-table"><thead><tr><th class="gantt-corner">專案名稱</th>`;
-            for(let i=1; i<=daysInMonth; i++) {
-                const isToday = (isCurrentMonth && i === todayDate);
-                html += `<th class="gantt-header-cell ${isToday?'gantt-today-text':''}" style="${isToday?'background:#FFF9C4; border-bottom:2px solid #F59E0B;':''}">${i}</th>`;
+            let tasks = DATA.projects.filter(p => p.producer === who && p.start && p.end);
+            tasks = tasks.filter(p => {
+                const pStart = new Date(p.start);
+                const pEnd = new Date(p.end);
+                return pStart <= monthEnd && pEnd >= monthStart; // 取有重疊的
+            }).sort((a, b) => new Date(a.start) - new Date(b.start));
+
+            if (tasks.length === 0) { container.innerHTML = '<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl">本月無排程</div>'; return; }
+
+            const daysInMonth = monthEnd.getDate();
+
+            let header = '<tr class="gantt-row"><th class="gantt-corner">ID / 專案</th>';
+            for (let i = 1; i <= daysInMonth; i++) {
+                let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today' : '';
+                header += `<th class="gantt-header-cell ${bg}">${i}</th>`;
             }
-            html += `</tr></thead><tbody>`;
+            header += '</tr>';
 
-            const tasks = DATA.projects.filter(p => p.producer === who && p.start).sort((a,b)=> new Date(a.start) - new Date(b.start));
-            
-            if (tasks.length === 0) {
-                container.innerHTML = `<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl">本月無任務 🏖️</div>`;
-                return;
-            }
-
-            const cellW = 34; 
+            let body = '';
             tasks.forEach(p => {
-                const s = new Date(p.start);
-                const e = new Date(p.end);
-                if (e < new Date(y, m, 1) || s > new Date(y, m+1, 0)) return;
+                const pStartObj = new Date(p.start);
+                const pEndObj = new Date(p.end);
 
-                let startDay = (s < new Date(y, m, 1)) ? 1 : s.getDate();
-                let endDay = (e > new Date(y, m+1, 0)) ? daysInMonth : e.getDate();
-                
-                let left = (startDay - 1) * cellW + 2; 
-                let width = (endDay - startDay + 1) * cellW - 5; 
+                let color = '#8E8E93'; 
+                if (p.status === '製作中') color = '#007AFF';
+                else if (p.status.includes('審')) color = '#FF9500';
+                else if (p.status === '已完成' || p.status === '已結案') color = '#34C759';
 
-                let barColor = '#9CA3AF';
-                if(p.status === '製作中') barColor = '#2563EB';
-                else if(p.status.includes('審')) barColor = '#F59E0B';
-                else if(p.status.includes('完成')) barColor = '#10B981';
+                let gridStartDay = (pStartObj < monthStart) ? 1 : pStartObj.getDate();
+                let gridEndDay = (pEndObj > monthEnd) ? daysInMonth : pEndObj.getDate();
 
-                html += `<tr>
-                    <td class="gantt-col-fixed" onclick="triggerEdit('${p.id}', '${p.zone}')">
-                        <div class="truncate text-xs font-black text-gray-800 cursor-pointer hover:text-blue-600">${p.id}</div>
-                        <div class="truncate text-xs text-gray-500 font-bold">${p.client}</div>
-                    </td>
-                    `;
-                    // 實體 DIV 畫法：避免漸層黑點
-                    if(isCurrentMonth) {
-                        // 如果是當月，我們需要一個特殊的背景層
-                        html += `<td colspan="${daysInMonth}" class="gantt-cell relative p-0">`;
-                        html += `<div class="absolute inset-0 flex pointer-events-none">`;
-                        for(let k=1; k<=daysInMonth; k++) {
-                            html += `<div style="width:34px; height:100%; border-right:1px solid #f9f9f9; box-sizing:border-box; ${k===todayDate?'background:#FFF9C4; border-left:1px solid #FCD34D; border-right:1px solid #FCD34D;':''}"></div>`;
-                        }
-                        html += `</div>`;
-                        html += `<div class="gantt-bar" onclick="triggerEdit('${p.id}', '${p.zone}')" title="${p.name}" style="left:${left}px; width:${width}px; background:${barColor};">
-                                    ${p.name}
-                                 </div>`;
-                        html += `</td>`;
-                    } else {
-                        // 非當月，用簡單背景
-                        html += `<td colspan="${daysInMonth}" class="gantt-cell relative p-0" style="background-size:34px 100%; background-image:linear-gradient(to right, transparent 33px, #f9f9f9 33px);">
-                                    <div class="gantt-bar" onclick="triggerEdit('${p.id}', '${p.zone}')" title="${p.name}" style="left:${left}px; width:${width}px; background:${barColor};">
-                                        ${p.name}
-                                    </div>
-                                 </td>`;
+                let bars = '';
+                for (let i = 1; i <= daysInMonth; i++) {
+                    let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today-cell' : '';
+                    let content = '';
+
+                    if (i === gridStartDay) {
+                        let span = (gridEndDay - gridStartDay) + 1;
+                        if (span < 1) span = 1;
+                        let prefix = (pStartObj < monthStart) ? '← ' : '';
+                        let suffix = (pEndObj > monthEnd) ? ' →' : '';
+                        content = `<div class="gantt-bar" onclick="triggerEdit('${p.id}', '${p.zone}')" title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
                     }
-                html += `</tr>`;
+                    bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible; z-index:10;"' : ''}>${content}</td>`;
+                }
+                body += `<tr class="gantt-row"><td class="gantt-label-cell" title="${p.name} (${p.status})" onclick="triggerEdit('${p.id}', '${p.zone}')" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
             });
-            html += `</tbody></table>`;
-            container.innerHTML = html;
+            container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
         }
 
         function changeGanttMonth(delta) {
@@ -833,14 +701,7 @@
             renderGantt(who);
         }
 
-        // --- V22 請假修復：綁定正確 ---
-        function openLeaveModal() {
-            document.getElementById('leave-name').value = '魏敏軒'; 
-            document.getElementById('leave-date').value = '';
-            document.getElementById('leave-reason').value = '';
-            document.getElementById('modal-leave').style.display = 'flex';
-        }
-
+        // --- 行事曆 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -849,20 +710,20 @@
             const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
             tasks.forEach(p => {
                 if (p.start && p.end) {
-                    let color = '#9CA3AF';
-                    if (p.status === '製作中') color = '#2563EB';
-                    else if (p.status.includes('審')) color = '#F59E0B';
-                    else if (p.status === '已完成') color = '#10B981';
-                    const endDate = new Date(new Date(p.end).getTime() + 86400000).toISOString().slice(0,10);
-                    events.push({ title: `${p.name} (${p.producer})`, start: p.start, end: endDate, color: color, extendedProps: { zone: p.zone, id: p.id } });
+                    let color = '#8E8E93';
+                    if (p.status === '製作中') color = '#007AFF';
+                    else if (p.status.includes('審')) color = '#FF9500';
+                    else if (p.status === '已完成' || p.status === '已結案') color = '#34C759';
+                    const endDate = new Date(new Date(p.end).getTime() + 86400000).toISOString().split('T')[0];
+                    events.push({ title: `${p.name} (${p.producer})`, start: p.start, end: endDate, backgroundColor: color, borderColor: color, extendedProps: { zone: p.zone, id: p.id } });
                 }
             });
 
             if(!DATA.leaves) DATA.leaves = [];
             DATA.leaves.forEach(l => {
                 if (calendarFilter === 'all' || l.name === calendarFilter) {
-                    const endDate = new Date(new Date(l.end).getTime() + 86400000).toISOString().slice(0,10);
-                    events.push({ title: `🏖️ ${l.name}: ${l.reason}`, start: l.start, end: endDate, color: '#7C3AED' });
+                    const endDate = new Date(new Date(l.end).getTime() + 86400000).toISOString().split('T')[0];
+                    events.push({ title: `🏖️ ${l.name}: ${l.reason}`, start: l.start, end: endDate, backgroundColor: '#7C3AED', borderColor: '#7C3AED' });
                 }
             });
 
@@ -870,8 +731,8 @@
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
                 height: '100%', 
-                headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
-                buttonText: { today: '今天' },
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
+                buttonText: { today: '今天', month: '月', week: '週' },
                 events: events,
                 eventClick: function(info) { const props = info.event.extendedProps; if (props.id) triggerEdit(props.id, props.zone); }
             });
@@ -1349,15 +1210,27 @@
             }
         }
         
-        // V22 請假修復
+        // V23 請假修復
+        function openLeaveModal() {
+            document.getElementById('leave-name').value = '魏敏軒'; 
+            document.getElementById('leave-date').value = '';
+            document.getElementById('leave-reason').value = '';
+            document.getElementById('modal-leave').style.display = 'flex';
+        }
+
         function confirmLeave() {
             const name = document.getElementById('leave-name').value;
             const date = document.getElementById('leave-date').value;
             const reason = document.getElementById('leave-reason').value;
-            if(!date || !reason) return alert("請填寫完整");
+            if(!date || !reason) return alert("請填寫完整資訊 (日期與事由)");
             
             const dates = date.split(' to ');
-            const item = { name:name, start:dates[0], end:dates[1]||dates[0], reason:reason };
+            const item = { 
+                name: name, 
+                start: dates[0], 
+                end: dates[1] || dates[0], 
+                reason: reason 
+            };
             
             // 本地直接推入，讓畫面秒更新
             if(!DATA.leaves) DATA.leaves = [];
@@ -1369,10 +1242,6 @@
             
             // 背景同步
             callAPI('addLeave', { item: item }, (res) => {});
-            
-            // 清空
-            document.getElementById('leave-date').value = '';
-            document.getElementById('leave-reason').value = '';
         }
     </script>
 </body>

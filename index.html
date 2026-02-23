@@ -12,7 +12,6 @@
     <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
-        /* --- 基礎架構 --- */
         :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
         
         body { 
@@ -109,7 +108,7 @@
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* 浮動按鈕 */
+        /* 浮動按鈕與面板 */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
         .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
@@ -120,28 +119,17 @@
         .fab-btn-small { width: 40px; height: 40px; font-size: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
         .fab-btn-small:hover { transform: scale(1.1); }
 
-        /* --- 核心修改：浮動面板全面升級為置中 Modal 樣式 --- */
-        .modal-mask { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); 
-            display: none; justify-content: center; align-items: center; z-index: 9999; 
-        }
-        .float-panel { 
-            width: 90%; max-width: 600px; /* 大大的置中 */
-            background: white; border-radius: 20px; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); 
-            display: flex; flex-direction: column; max-height: 85vh; padding: 0; overflow: hidden; 
-            animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        /* Modal / 彈窗置中樣式 */
+        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .float-panel { width: 90%; max-width: 600px; background: white; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; max-height: 85vh; padding: 0; overflow: hidden; animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
-
-        /* 一般 Modal Body */
+        
         .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.2s; }
         .hidden { display: none; }
 
-        /* 內容樣式 */
+        /* 面板內容與資料夾樣式 */
         .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .memo-item.chiu { background: #E3F2FD; border-left-color: #2196F3; } 
         .pending-item { background: #f3f4f6; border-left: 6px solid #9CA3AF; }
@@ -152,8 +140,10 @@
         .memo-icon:hover { color: #555; }
         .memo-del:hover { color: #ff3b30; }
         
-        /* 連結庫資料夾樣式 */
-        .link-item { background: #2D3748; color: white; padding: 12px 16px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; position: relative; font-size: 15px; }
+        /* 連結庫資料夾 */
+        .link-folder summary { list-style: none; }
+        .link-folder summary::-webkit-details-marker { display: none; }
+        .link-item { background: #2D3748; color: white; padding: 16px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; position: relative; font-size: 15px; }
         .link-item:hover { transform: translateX(5px); background: #1A202C; }
         .link-actions { display: flex; gap: 12px; margin-left: 10px; }
         .link-icon { color: #A0AEC0; font-size: 16px; cursor: pointer; padding: 4px; transition: 0.2s; }
@@ -230,8 +220,9 @@
                 </div>
                 <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
                     <div class="flex gap-2 mb-3">
-                        <input id="l-folder" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="資料夾 (如: 小花)">
-                        <input id="l-name" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="名稱 (如: 形象照)">
+                        <input id="l-folder" list="folder-options" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="資料夾分類 (可選填)">
+                        <datalist id="folder-options"></datalist>
+                        <input id="l-name" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="連結名稱 (如: 形象照)">
                     </div>
                     <input id="l-url" class="w-full clean-input text-base font-bold mb-4 border border-gray-200 bg-white" placeholder="貼上完整網址 (https://...)">
                     <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md transition">新增連結</button>
@@ -542,7 +533,7 @@
             };
             fillSelect('i-type', types);
             fillSelect('i-producer', producers);
-            fillSelect('ep-type', types);
+            fillSelect('ep-type', types); // 這行在初始化時雖然會跑，但編輯視窗打開時需要強制重刷
             fillSelect('ep-producer', producers);
         }
 
@@ -623,7 +614,6 @@
             if (!DATA.projects) return;
             const tasks = DATA.projects.filter(p => p.producer === producer);
             const card = (p, color, bg) => {
-                // 將物件轉成字串傳遞，特別處理單引號以防出錯
                 const pStr = encodeURIComponent(JSON.stringify(p));
                 return `
                 <div class="kanban-item k-${color} ${p.tag === 'Urgent' ? 'k-red' : ''}">
@@ -651,7 +641,7 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
         }
 
-        // --- 甘特圖 (移植自 3-4 網格版) ---
+        // --- 甘特圖 ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -783,6 +773,48 @@
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true);
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
+        }
+
+        // ★★★ 核心修復：打開編輯視窗時，強制載入選項 ★★★
+        function openEditProject(p) {
+            document.getElementById('ep-cat').value = p.category;
+            document.getElementById('ep-origin-id').value = p.id; 
+            document.getElementById('ep-origin-zone').value = p.zone; 
+            
+            const prefix = p.zone.split('_')[0]; 
+            const numPart = String(p.id).replace(prefix, ''); 
+            
+            const epCodeSel = document.getElementById('ep-code');
+            epCodeSel.innerHTML = '';
+            const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
+            Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
+            epCodeSel.value = prefix;
+            
+            document.getElementById('ep-num').value = numPart;
+            updateEditClientInfo(); 
+
+            // -- 強制為下拉選單載入選項 --
+            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
+            const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
+            
+            const prodSel = document.getElementById('ep-producer');
+            prodSel.innerHTML = '';
+            producers.forEach(x => prodSel.add(new Option(x, x)));
+            
+            const typeSel = document.getElementById('ep-type');
+            typeSel.innerHTML = '';
+            types.forEach(x => typeSel.add(new Option(x, x)));
+
+            // -- 賦值 --
+            document.getElementById('ep-producer').value = p.producer;
+            document.getElementById('ep-name').value = p.name;
+            document.getElementById('ep-type').value = p.type;
+            document.getElementById('ep-hours').value = p.hours || 0; 
+            if (p.start && p.end) fpEdit.setDate([p.start, p.end]); else fpEdit.clear();
+            document.getElementById('ep-note').value = p.note;
+            document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
+            
+            document.getElementById('modal-edit-project').style.display = 'flex';
         }
 
         function confirmEditProject() {
@@ -1090,15 +1122,16 @@
             callAPI('completeMemo', { idx:idx }, (res) => loadMemos());
         }
 
-        // ==========================================
-        // V26 升級版：支援資料夾分類的連結庫邏輯 (修復鉛筆)
-        // ==========================================
+        // ★★★ 連結庫：支援資料夾分類 ★★★
         function loadLinks() {
             callAPI('getLinks', {}, (list) => {
                 const container = document.getElementById('link-list');
                 if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; return; }
                 
                 const groups = {};
+                const folderDatalist = document.getElementById('folder-options');
+                folderDatalist.innerHTML = ''; // 清空選項
+
                 list.forEach(l => {
                     let folder = "未分類 (舊資料)";
                     let displayName = l.client;
@@ -1108,13 +1141,18 @@
                         displayName = parts[1];
                     }
                     if (!groups[folder]) groups[folder] = [];
-                    groups[folder].push({...l, displayName: displayName, originalClient: l.client});
+                    groups[folder].push({...l, displayName: displayName, originalClient: l.client, folder: folder});
                 });
 
                 let html = '';
                 for (let folder in groups) {
+                    // 加入下拉選單記憶
+                    if (folder !== "未分類 (舊資料)") {
+                        folderDatalist.appendChild(new Option(folder));
+                    }
+
                     html += `
-                    <details class="mb-3 group link-folder">
+                    <details class="mb-3 group link-folder" open>
                         <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">
                             <div class="flex items-center gap-3">
                                 <i class="fas fa-folder-open text-blue-500"></i> ${folder} <span class="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded-full">${groups[folder].length}</span>
@@ -1124,8 +1162,7 @@
                         <div class="pt-3 pl-2 pr-2">`;
                     
                     groups[folder].forEach(l => {
-                        // 使用 encodeURIComponent 防止單雙引號讓 HTML 崩潰
-                        const lData = {idx: l.idx, folder: folder, name: l.displayName, url: l.url, original: l.originalClient};
+                        const lData = {idx: l.idx, folder: l.folder, name: l.displayName, url: l.url, original: l.originalClient};
                         const lStr = encodeURIComponent(JSON.stringify(lData));
                         
                         html += `
@@ -1195,6 +1232,7 @@
                 btn.disabled = false;
                 if (res !== "OK") { alert(res); } 
                 else { 
+                    // 故意保留 l-folder 的值，讓使用者可以快速連續新增同資料夾的連結
                     document.getElementById('l-name').value = ''; 
                     document.getElementById('l-url').value = ''; 
                     loadLinks(); 
@@ -1255,29 +1293,6 @@
                     callAPI('initAllData', {}, (data) => processDataUpdate(data));
                 });
             }
-        }
-        
-        function openEditProject(p) {
-            document.getElementById('ep-cat').value = p.category;
-            document.getElementById('ep-origin-id').value = p.id; 
-            document.getElementById('ep-origin-zone').value = p.zone; 
-            const prefix = p.zone.split('_')[0]; 
-            const numPart = String(p.id).replace(prefix, ''); 
-            const epCodeSel = document.getElementById('ep-code');
-            epCodeSel.innerHTML = '';
-            const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
-            epCodeSel.value = prefix;
-            document.getElementById('ep-num').value = numPart;
-            updateEditClientInfo(); 
-            document.getElementById('ep-producer').value = p.producer;
-            document.getElementById('ep-name').value = p.name;
-            document.getElementById('ep-type').value = p.type;
-            document.getElementById('ep-hours').value = p.hours || 0; 
-            if (p.start && p.end) fpEdit.setDate([p.start, p.end]); else fpEdit.clear();
-            document.getElementById('ep-note').value = p.note;
-            document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
-            document.getElementById('modal-edit-project').style.display = 'flex';
         }
         
         function updateEditClientInfo() {

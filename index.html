@@ -125,7 +125,6 @@
             position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); 
             display: none; justify-content: center; align-items: center; z-index: 9999; 
         }
-        /* 原本的浮動面板改為置中彈窗 */
         .float-panel { 
             width: 90%; max-width: 600px; /* 大大的置中 */
             background: white; border-radius: 20px; 
@@ -138,7 +137,7 @@
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
 
-        /* 一般 Modal Body (沿用既有) */
+        /* 一般 Modal Body */
         .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.2s; }
         .hidden { display: none; }
 
@@ -153,10 +152,11 @@
         .memo-icon:hover { color: #555; }
         .memo-del:hover { color: #ff3b30; }
         
-        .link-item { background: #2D3748; color: white; padding: 16px; border-radius: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; position: relative; font-size: 16px; }
+        /* 連結庫資料夾樣式 */
+        .link-item { background: #2D3748; color: white; padding: 12px 16px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; position: relative; font-size: 15px; }
         .link-item:hover { transform: translateX(5px); background: #1A202C; }
-        .link-actions { display: flex; gap: 15px; margin-left: 10px; }
-        .link-icon { color: #A0AEC0; font-size: 18px; cursor: pointer; padding: 5px; }
+        .link-actions { display: flex; gap: 12px; margin-left: 10px; }
+        .link-icon { color: #A0AEC0; font-size: 16px; cursor: pointer; padding: 4px; transition: 0.2s; }
         .link-icon:hover { color: white; }
         .link-del:hover { color: #ff3b30; }
         
@@ -623,12 +623,13 @@
             if (!DATA.projects) return;
             const tasks = DATA.projects.filter(p => p.producer === producer);
             const card = (p, color, bg) => {
-                const pStr = JSON.stringify(p).replace(/'/g, "&#39;");
+                // 將物件轉成字串傳遞，特別處理單引號以防出錯
+                const pStr = encodeURIComponent(JSON.stringify(p));
                 return `
                 <div class="kanban-item k-${color} ${p.tag === 'Urgent' ? 'k-red' : ''}">
                     <div class="k-header-badges"><span class="k-status-badge bg-${bg}">${p.status}</span>${ p.tag === 'Urgent' ? '<span class="k-tag-urgent">🔥 急件</span>' : '' }</div>
                     <div class="k-actions">
-                        <div onclick='openEditProject(${pStr})' class="k-action-btn"><i class="fas fa-pen text-xs"></i></div>
+                        <div onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="k-action-btn"><i class="fas fa-pen text-xs"></i></div>
                         <div onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="k-action-btn k-del"><i class="fas fa-times text-xs"></i></div>
                     </div>
                     <div class="k-id">${p.id}</div><div class="k-name">${p.name}</div><div class="k-client">${p.client}</div>
@@ -650,7 +651,7 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
         }
 
-        // --- 甘特圖 (3-4版表格邏輯) ---
+        // --- 甘特圖 (移植自 3-4 網格版) ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -690,7 +691,7 @@
             tasks.forEach(p => {
                 const pStartObj = new Date(p.start);
                 const pEndObj = new Date(p.end);
-                const pStr = JSON.stringify(p).replace(/'/g, "&#39;");
+                const pStr = encodeURIComponent(JSON.stringify(p));
 
                 let color = '#8E8E93'; 
                 if (p.status === '製作中') color = '#007AFF';
@@ -710,11 +711,11 @@
                         if (span < 1) span = 1;
                         let prefix = (pStartObj < monthStart) ? '← ' : '';
                         let suffix = (pEndObj > monthEnd) ? ' →' : '';
-                        content = `<div class="gantt-bar" onclick='openEditProject(${pStr})' title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
+                        content = `<div class="gantt-bar" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
                     }
                     bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible; z-index:10;"' : ''}>${content}</td>`;
                 }
-                body += `<tr class="gantt-row"><td class="gantt-label-cell" title="${p.name} (${p.status})" onclick='openEditProject(${pStr})' style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
+                body += `<tr class="gantt-row"><td class="gantt-label-cell" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
             });
             container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
         }
@@ -769,6 +770,11 @@
             else if(who==='魏敏軒') document.getElementById('btn-cal-wei').classList.add('active');
             else document.getElementById('btn-cal-chiu').classList.add('active');
             renderCalendar();
+        }
+
+        function triggerEdit(id, zone) {
+            const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone);
+            if(p) openEditProject(p);
         }
 
         function deleteProject(category, zone, id) {
@@ -1024,7 +1030,7 @@
                 let html = '';
                 list.forEach(m => {
                     const colorClass = (m.owner === '邱仁杰') ? 'chiu' : ''; 
-                    const mStr = JSON.stringify(m).replace(/'/g, "&#39;");
+                    const mStr = encodeURIComponent(JSON.stringify(m));
                     html += `<div class="memo-item ${colorClass}">
                         <div class="memo-content">${m.content}</div>
                         <div class="memo-meta">
@@ -1032,7 +1038,7 @@
                             <span><i class="far fa-clock"></i> ${m.date}</span>
                         </div>
                         <div class="memo-actions text-lg">
-                            <i onclick='editMemoMode(${mStr})' class="memo-icon fas fa-pen"></i>
+                            <i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i>
                             <i onclick="finishMemo(${m.idx}, this)" class="memo-icon far fa-check-circle text-green-500" title="完成"></i>
                             <i onclick="deleteMemo(${m.idx}, this)" class="memo-icon fas fa-trash-alt memo-del" title="刪除"></i>
                         </div>
@@ -1083,68 +1089,126 @@
             el.parentElement.parentElement.style.opacity = '0.5'; 
             callAPI('completeMemo', { idx:idx }, (res) => loadMemos());
         }
+
+        // ==========================================
+        // V26 升級版：支援資料夾分類的連結庫邏輯 (修復鉛筆)
+        // ==========================================
         function loadLinks() {
             callAPI('getLinks', {}, (list) => {
                 const container = document.getElementById('link-list');
                 if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; return; }
-                let html = '';
+                
+                const groups = {};
                 list.forEach(l => {
-                    const lStr = JSON.stringify(l).replace(/'/g, "&#39;");
-                    html += `<div class="link-item shadow-sm">
-                        <div onclick="window.open('${l.url}','_blank')" class="flex-1 truncate"><i class="fas fa-link mr-3 text-gray-400"></i> ${l.client}</div>
-                        <div class="link-actions">
-                            <i onclick='editLinkMode(${lStr})' class="link-icon fas fa-pen"></i>
-                            <i onclick="removeLink(${l.idx}, this)" class="link-icon fas fa-trash-alt link-del"></i>
-                        </div>
-                    </div>`;
+                    let folder = "未分類 (舊資料)";
+                    let displayName = l.client;
+                    if (l.client.includes('::')) {
+                        const parts = l.client.split('::');
+                        folder = parts[0];
+                        displayName = parts[1];
+                    }
+                    if (!groups[folder]) groups[folder] = [];
+                    groups[folder].push({...l, displayName: displayName, originalClient: l.client});
                 });
+
+                let html = '';
+                for (let folder in groups) {
+                    html += `
+                    <details class="mb-3 group link-folder">
+                        <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-folder-open text-blue-500"></i> ${folder} <span class="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded-full">${groups[folder].length}</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 group-open:rotate-180"></i>
+                        </summary>
+                        <div class="pt-3 pl-2 pr-2">`;
+                    
+                    groups[folder].forEach(l => {
+                        // 使用 encodeURIComponent 防止單雙引號讓 HTML 崩潰
+                        const lData = {idx: l.idx, folder: folder, name: l.displayName, url: l.url, original: l.originalClient};
+                        const lStr = encodeURIComponent(JSON.stringify(lData));
+                        
+                        html += `
+                        <div class="bg-[#2D3748] text-white p-3 rounded-lg mb-2 flex justify-between items-center cursor-pointer hover:bg-[#1A202C] transition shadow-sm" onclick="window.open('${l.url}','_blank')">
+                            <div class="flex-1 truncate flex items-center gap-3"><i class="fas fa-link text-gray-400"></i> ${l.displayName}</div>
+                            <div class="flex gap-4 ml-2" onclick="event.stopPropagation()">
+                                <i onclick="editLinkMode(JSON.parse(decodeURIComponent('${lStr}')))" class="fas fa-pen text-gray-400 hover:text-white transition" title="編輯"></i>
+                                <i onclick="removeLink(${l.idx}, this)" class="fas fa-trash-alt text-gray-400 hover:text-red-400 transition" title="刪除"></i>
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div></details>`;
+                }
                 container.innerHTML = html;
             });
         }
+
         function editLinkMode(l) {
             editingLinkIdx = l.idx;
-            document.getElementById('l-client').value = l.client;
+            document.getElementById('l-folder').value = (l.folder === "未分類 (舊資料)") ? "" : l.folder;
+            document.getElementById('l-name').value = l.name;
             document.getElementById('l-url').value = l.url;
             const btn = document.getElementById('btn-link-add');
             btn.innerText = "更新連結";
             btn.onclick = updateLinkItem;
         }
+
         function updateLinkItem() {
-            const client = document.getElementById('l-client').value;
-            const url = document.getElementById('l-url').value;
-            if(!client || !url) return alert("請輸入完整資訊");
+            const folder = document.getElementById('l-folder').value.trim();
+            const name = document.getElementById('l-name').value.trim();
+            const url = document.getElementById('l-url').value.trim();
+            
+            if(!name || !url) return alert("請至少輸入「名稱」與「網址」");
+            
+            const clientString = folder ? `${folder}::${name}` : name;
+            
             const btn = document.getElementById('btn-link-add');
             btn.innerText = "更新中...";
             btn.disabled = true;
-            callAPI('editLink', { idx: editingLinkIdx, client: client, url: url }, (res) => {
+            callAPI('editLink', { idx: editingLinkIdx, client: clientString, url: url }, (res) => {
                 btn.innerText = "新增連結";
                 btn.disabled = false;
                 btn.onclick = addLinkItem;
                 editingLinkIdx = null;
-                document.getElementById('l-client').value = '';
+                document.getElementById('l-folder').value = '';
+                document.getElementById('l-name').value = '';
                 document.getElementById('l-url').value = '';
                 loadLinks();
             });
         }
+
         function addLinkItem() {
-            const client = document.getElementById('l-client').value;
-            const url = document.getElementById('l-url').value;
-            if(!client || !url) return alert("請輸入客戶名稱與網址");
+            const folder = document.getElementById('l-folder').value.trim();
+            const name = document.getElementById('l-name').value.trim();
+            const url = document.getElementById('l-url').value.trim();
+            
+            if(!name || !url) return alert("請至少輸入「名稱」與「網址」");
+            
+            const clientString = folder ? `${folder}::${name}` : name;
+
             const btn = document.getElementById('btn-link-add');
             const originalText = btn.innerText;
             btn.innerText = "儲存中...";
             btn.disabled = true;
-            callAPI('addLink', { client: client, url: url }, (res) => {
+            callAPI('addLink', { client: clientString, url: url }, (res) => {
                 btn.innerText = originalText;
                 btn.disabled = false;
-                if (res !== "OK") { alert(res); } else { document.getElementById('l-client').value = ''; document.getElementById('l-url').value = ''; loadLinks(); }
+                if (res !== "OK") { alert(res); } 
+                else { 
+                    document.getElementById('l-name').value = ''; 
+                    document.getElementById('l-url').value = ''; 
+                    loadLinks(); 
+                }
             });
         }
+
         function removeLink(idx, el) {
             if(!confirm("確定刪除此連結嗎？")) return;
             el.parentElement.parentElement.style.opacity = '0.5';
             callAPI('deleteLink', { idx:idx }, (res) => loadLinks());
         }
+
+        // --- 其他 Modal 控制 ---
         function openZoneModal(mode) {
             modalMode = mode;
             const z = document.getElementById('i-zone').value;
@@ -1192,6 +1256,7 @@
                 });
             }
         }
+        
         function openEditProject(p) {
             document.getElementById('ep-cat').value = p.category;
             document.getElementById('ep-origin-id').value = p.id; 

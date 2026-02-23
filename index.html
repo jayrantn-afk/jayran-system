@@ -13,13 +13,23 @@
     
     <style>
         /* --- 基礎架構 --- */
-        :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
+        :root { 
+            --bg: #F5F5F7; 
+            --surface: #FFFFFF; 
+            --primary: #1D1D1F; 
+            --secondary: #86868B; 
+            --accent: #007AFF; 
+            --radius: 12px; 
+        }
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg); color: var(--primary); 
-            height: 100vh; overflow: hidden; /* 鎖死外層，內部獨立捲動 */
-            display: flex; flex-direction: column;
+            background: var(--bg); 
+            color: var(--primary); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
         }
 
         /* 登入遮罩層 */
@@ -77,42 +87,12 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* --- ★ 終極修復 2：甘特圖防穿透與完美捲動 --- */
-        .gantt-wrapper { 
-            overflow: auto; background: white; border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; 
-            height: calc(100vh - 180px); /* 精準對齊螢幕 */
-            position: relative; 
-        }
+        /* 甘特圖 (防穿透與完美捲動) */
+        .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; }
         .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; table-layout: fixed; }
-        
-        /* 標題列：強制白底色 + z-index 高層級，解決滾動透明問題 */
-        .gantt-header-cell { 
-            position: sticky; top: 0; 
-            background-color: #FAFAFA !important; /* 強制不透明 */
-            z-index: 100; /* 拉高層級 */
-            text-align: center; font-size: 11px; color: #555; 
-            box-shadow: inset 0 -1px 0 #E5E5E5, inset -1px 0 0 #f0f0f0; /* 使用陰影代替邊框，防漏縫 */
-            padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; 
-        }
-        
-        .gantt-corner { 
-            position: sticky; top: 0; left: 0; 
-            background-color: #FAFAFA !important; /* 強制不透明 */
-            z-index: 110; /* 最最最高，壓住所有東西 */
-            padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1D1D1F; 
-            box-shadow: inset -1px -1px 0 #E5E5E5; 
-        }
-        
-        .gantt-label-cell { 
-            position: sticky; left: 0; 
-            background-color: #FFFFFF !important; /* 強制不透明 */
-            z-index: 50; 
-            width: 220px; padding: 8px 10px; 
-            white-space: nowrap; overflow: hidden; 
-            box-shadow: inset -1px -1px 0 #f5f5f5; 
-        }
-        
+        .gantt-header-cell { position: sticky; top: 0; background-color: #FAFAFA !important; z-index: 100; background-clip: padding-box; text-align: center; font-size: 11px; color: #555; box-shadow: inset 0 -1px 0 #E5E5E5, inset -1px 0 0 #f0f0f0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
+        .gantt-corner { position: sticky; top: 0; left: 0; background-color: #FAFAFA !important; z-index: 110; padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1D1D1F; box-shadow: inset -1px -1px 0 #E5E5E5; }
+        .gantt-col-fixed { position: sticky; left: 0; background-color: #FFFFFF !important; z-index: 50; width: 220px; padding: 8px 10px; white-space: nowrap; overflow: hidden; box-shadow: inset -1px -1px 0 #f5f5f5; }
         .gantt-today { background-color: #FFF9C4 !important; color: #000; font-weight: 900; box-shadow: inset 0 -3px 0 #FFD700, inset -1px 0 0 #f0f0f0 !important; }
         .gantt-today-cell { background-color: #FFF9C4; } 
         .gantt-row { height: 40px; }
@@ -126,31 +106,32 @@
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* --- ★ 終極修復 1：行事曆智慧適配與手機版 --- */
+        /* 行事曆 (優化高度與顯示) */
         #calendar-container { 
             background: white; border-radius: 16px; padding: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            height: calc(100vh - 160px); /* 讓容器精準填滿螢幕剩下的空間 */
+            height: calc(100vh - 160px); 
             display: block; 
         }
-        
-        .fc { height: 100% !important; } /* 讓日曆本人填滿容器 */
-        .fc-scroller { overflow-y: auto !important; } /* 確保內部可以捲動 */
-        
+        .fc { height: 100% !important; } 
+        .fc-scroller { overflow-y: auto !important; } 
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
         .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; }
         .fc-day-today { background-color: transparent !important; }
         .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
         .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
+        
+        /* 限制每天顯示的事件數量樣式 */
         .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 4px !important; border-radius: 4px !important; }
         .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 12px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .fc-more-popover { z-index: 1000 !important; } /* 確保「+更多」的彈窗在最上層 */
+        
         .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
         .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
         
-        /* 手機版排版調整 (RWD) */
         @media (max-width: 768px) {
             .page-scroll-container { padding: 10px 10px 80px 10px; }
             #calendar-container { padding: 10px; height: calc(100vh - 180px); }
@@ -163,7 +144,7 @@
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* --- 浮動按鈕與彈窗 (置中樣式) --- */
+        /* 浮動按鈕與彈窗 */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
         .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
@@ -220,7 +201,9 @@
     </div>
 
     <div class="fab-container">
-        <div onclick="togglePanel('link')" class="fab-btn fab-link" title="客戶連結庫"><i class="fas fa-link"></i></div>
+        <div onclick="togglePanel('link')" class="fab-btn fab-link" title="客戶連結庫">
+            <i class="fas fa-link"></i>
+        </div>
         <div onclick="togglePanel('pending')" class="fab-btn" title="待分派專案" style="background:#4B5563;">
             <i class="fas fa-user-clock"></i>
             <span id="pending-badge" class="badge">0</span>
@@ -256,7 +239,9 @@
                     <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-lg py-3 rounded-lg font-bold hover:bg-gray-800">新增貼文</button>
                 </div>
             </div>
-            <div id="memo-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
+            <div id="memo-list" class="panel-scroll-area">
+                <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
+            </div>
         </div>
     </div>
 
@@ -268,7 +253,9 @@
                     <span onclick="document.getElementById('panel-pending').style.display='none'" class="cursor-pointer text-gray-400 hover:text-black text-2xl"><i class="fas fa-times"></i></span>
                 </div>
             </div>
-            <div id="pending-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div></div>
+            <div id="pending-list" class="panel-scroll-area">
+                <div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div>
+            </div>
         </div>
     </div>
 
@@ -289,7 +276,9 @@
                     <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md transition">新增連結</button>
                 </div>
             </div>
-            <div id="link-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
+            <div id="link-list" class="panel-scroll-area">
+                <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
+            </div>
         </div>
     </div>
 
@@ -614,7 +603,6 @@
             }
         });
 
-        // 登入邏輯
         function checkLogin() {
             const pass = document.getElementById('login-pass').value;
             if (pass === '00430552') {
@@ -694,7 +682,7 @@
             DATA = res;
             renderZoneOptions();
             
-            // ★ 強制重新載入一次下拉選單，避免卡空 ★
+            // ★ 強制重新載入下拉選單 ★
             renderDynamicOptions();
             
             loadMemos();
@@ -733,7 +721,7 @@
             renderDynamicOptions();
         }
 
-        // ★★★ 終極修復 3：製作人與類型選單，預設綁死「尚未暫定」 ★★★
+        // ★ 終極修復 3：製作人預設鎖定「尚未暫定」 ★
         function renderDynamicOptions() {
             if (!DATA || !DATA.config) return;
 
@@ -748,7 +736,6 @@
                     list.forEach(item => {
                         if(item) el.add(new Option(item, item));
                     });
-                    // 如果有指定預設值，且該預設值在清單中，就強制選中它
                     if(defaultVal && list.includes(defaultVal)) {
                         el.value = defaultVal;
                     }
@@ -756,8 +743,7 @@
             };
             
             fillSelect('i-type', types);
-            // 強制讓新增專案的製作人預設為「尚未暫定」
-            fillSelect('i-producer', producers, '尚未暫定');
+            fillSelect('i-producer', producers, '尚未暫定'); // 強制預設尚未暫定
             
             fillSelect('ep-type', types);
             fillSelect('ep-producer', producers);
@@ -844,7 +830,7 @@
             const dr = document.getElementById('i-date').value.split(' to ');
             const prod = document.getElementById('i-producer').value;
             
-            // ★ 終極修復 2：新專案編號自動補上前綴 ★
+            // ★ 自動補上前綴 ★
             const rawId = document.getElementById('i-id').value.trim();
             const zoneVal = document.getElementById('i-zone').value;
             const prefix = zoneVal.split('_')[0]; 
@@ -891,7 +877,7 @@
             });
         }
 
-        // --- 看板：全新膠囊視覺設計 ---
+        // --- 看板 ---
         function renderKanban(producer) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
@@ -900,7 +886,6 @@
                 const pStr = encodeURIComponent(JSON.stringify(p));
                 return `
                 <div class="kanban-item k-${color} ${p.tag === 'Urgent' ? 'k-red' : ''}">
-                    
                     <div class="absolute -top-3 left-4 flex gap-2 z-10">
                         <span class="bg-${bg} text-white px-3 py-1 rounded-full text-xs font-black shadow-md border-2 border-white tracking-wider">${p.id}</span>
                         <span class="bg-${bg} text-white px-3 py-1 rounded-full text-xs font-bold shadow-md border-2 border-white">${p.status}</span>
@@ -999,7 +984,6 @@
                         let suffix = (pEndObj > monthEnd) ? ' →' : '';
                         content = `<div class="gantt-bar" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
                     }
-                    // 加入 overflow:visible 確保跨月箭頭和字不會被切斷
                     bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible;"' : ''}>${content}</td>`;
                 }
                 body += `<tr class="gantt-row"><td class="gantt-label-cell" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
@@ -1013,7 +997,7 @@
             renderGantt(who);
         }
 
-        // --- ★ 終極修復 1：行事曆自適應與手機版 ---
+        // --- ★ 終極修復 1：行事曆自適應與捲動到今天 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -1055,8 +1039,9 @@
             calendar = new FullCalendar.Calendar(el, {
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
-                height: 'auto', // 取消強制高度，讓它自動適應內容
+                height: 'auto', 
                 contentHeight: 'auto',
+                dayMaxEvents: 3, // 限制每天顯示數量，避免格子拉太長
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
                 events: events,
@@ -1066,6 +1051,14 @@
                 }
             });
             calendar.render();
+
+            // ★ 自動捲動尋找當天日期並置中顯示 ★
+            setTimeout(() => {
+                const todayCell = document.querySelector('.fc-day-today');
+                if (todayCell) {
+                    todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 300);
         }
 
         function filterCalendar(who) {
@@ -1085,7 +1078,7 @@
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
         }
 
-        // ★★★ 編輯專案核心修復：強制載入選項清單 ★★★
+        // --- 編輯專案 ---
         function openEditProject(p) {
             document.getElementById('ep-cat').value = p.category;
             document.getElementById('ep-origin-id').value = p.id; 
@@ -1103,7 +1096,6 @@
             // 強制重新載入製作人與類型
             renderDynamicOptions(); 
 
-            // 延遲一點點確保 DOM 選單已經畫好，再設定選中的值
             setTimeout(() => {
                 document.getElementById('ep-producer').value = p.producer;
                 document.getElementById('ep-type').value = p.type;
@@ -1142,7 +1134,7 @@
             const p = {
                 category: document.getElementById('ep-cat').value,
                 zone: document.getElementById('ep-zone').value, 
-                id: document.getElementById('ep-num').value, 
+                id: document.getElementById('ep-num').value,
                 client: document.getElementById('ep-client-display').value,
                 name: document.getElementById('ep-name').value,
                 producer: document.getElementById('ep-producer').value,
@@ -1155,7 +1147,6 @@
                 status: inheritedStatus 
             };
 
-            // 確保 ID 前綴是正確的
             const prefix = p.zone.split('_')[0];
             if (!isNaN(p.id) && p.id !== "") {
                 p.id = prefix + String(p.id).padStart(3, '0');
@@ -1405,7 +1396,6 @@
             for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { newZone = key; break; } }
             if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
             
-            // 確保 ID 包含前綴
             let rawId = document.getElementById(`pe-num-${idx}`).value;
             if (!isNaN(rawId) && rawId !== "") {
                 rawId = selectedCode + String(rawId).padStart(3, '0');
@@ -1454,7 +1444,6 @@
             const startDate = dates[0];
             const endDate = dates[1] || dates[0];
 
-            // 1. 本地更新，立刻消失在待分派區
             const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(id) && String(x.zone) === String(zone));
             if (targetIdx !== -1) {
                 DATA.projects[targetIdx].producer = maker;
@@ -1474,7 +1463,6 @@
                 processDataUpdate(DATA, true); 
             }
             
-            // 2. 背景送出
             callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {
                 console.log("Assigned");
             });
@@ -1596,7 +1584,6 @@
                         folderDatalist.appendChild(new Option(folder)); 
                     }
 
-                    // 預設關閉資料夾 (移除了 open)
                     html += `
                     <details class="mb-3 group link-folder">
                         <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">

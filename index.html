@@ -122,10 +122,9 @@
         .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
         .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
         
-        /* 限制每天顯示的事件數量樣式 */
         .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 4px !important; border-radius: 4px !important; }
         .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 12px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .fc-more-popover { z-index: 1000 !important; } /* 確保「+更多」的彈窗在最上層 */
+        .fc-more-popover { z-index: 1000 !important; }
         
         .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
         .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
@@ -191,7 +190,8 @@
 <body>
     <div id="login-overlay">
         <div class="text-6xl font-black mb-8 tracking-widest text-white">JAYRAN</div>
-        <input id="login-pass" type="password" class="p-4 text-center text-black text-2xl font-bold rounded-2xl w-72 mb-6 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="輸入密碼" maxlength="8">
+        <input id="login-acc" type="email" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-4 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入帳號 (Email)">
+        <input id="login-pass" type="password" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-8 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入密碼">
         <button onclick="checkLogin()" class="bg-blue-600 hover:bg-blue-500 text-white px-12 py-4 rounded-2xl font-bold text-xl shadow-lg cursor-pointer transition">進入系統</button>
     </div>
 
@@ -201,9 +201,7 @@
     </div>
 
     <div class="fab-container">
-        <div onclick="togglePanel('link')" class="fab-btn fab-link" title="客戶連結庫">
-            <i class="fas fa-link"></i>
-        </div>
+        <div onclick="togglePanel('link')" class="fab-btn fab-link" title="客戶連結庫"><i class="fas fa-link"></i></div>
         <div onclick="togglePanel('pending')" class="fab-btn" title="待分派專案" style="background:#4B5563;">
             <i class="fas fa-user-clock"></i>
             <span id="pending-badge" class="badge">0</span>
@@ -239,9 +237,7 @@
                     <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-lg py-3 rounded-lg font-bold hover:bg-gray-800">新增貼文</button>
                 </div>
             </div>
-            <div id="memo-list" class="panel-scroll-area">
-                <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
-            </div>
+            <div id="memo-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
         </div>
     </div>
 
@@ -253,9 +249,7 @@
                     <span onclick="document.getElementById('panel-pending').style.display='none'" class="cursor-pointer text-gray-400 hover:text-black text-2xl"><i class="fas fa-times"></i></span>
                 </div>
             </div>
-            <div id="pending-list" class="panel-scroll-area">
-                <div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div>
-            </div>
+            <div id="pending-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div></div>
         </div>
     </div>
 
@@ -276,9 +270,7 @@
                     <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md transition">新增連結</button>
                 </div>
             </div>
-            <div id="link-list" class="panel-scroll-area">
-                <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
-            </div>
+            <div id="link-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
         </div>
     </div>
 
@@ -358,9 +350,7 @@
             
             <div class="mb-4">
                 <label class="text-xs text-gray-500 font-bold">製作人</label>
-                <select id="ep-producer" class="clean-select font-bold border border-gray-200">
-                    <option value="">載入中...</option>
-                </select>
+                <select id="ep-producer" class="clean-select font-bold border border-gray-200"></select>
             </div>
             <div class="mb-4">
                 <label class="text-xs text-gray-500 font-bold">專案名稱</label>
@@ -369,9 +359,7 @@
             <div class="grid grid-cols-2 gap-3 mb-4">
                  <div>
                      <label class="text-xs text-gray-500 font-bold">類型</label>
-                     <select id="ep-type" class="clean-select border border-gray-200">
-                         <option value="">載入中...</option>
-                     </select>
+                     <select id="ep-type" class="clean-select border border-gray-200"></select>
                  </div>
                  <div>
                      <label class="text-xs text-gray-500 font-bold">日期範圍</label>
@@ -426,8 +414,12 @@
     </div>
 
     <div class="header-fixed-area">
-        <div class="mb-4 flex items-center gap-3">
+        <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
+            <div class="relative w-full md:w-64">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                <input id="global-search" type="text" placeholder="搜尋專案或客戶..." class="w-full bg-white border border-gray-200 rounded-full py-2 pl-10 pr-4 text-sm font-bold focus:outline-none focus:border-blue-500 shadow-sm transition" onkeyup="handleSearch()">
+            </div>
         </div>
         <div class="segmented-nav">
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-plus mr-2"></i> 新增</div>
@@ -587,13 +579,8 @@
         let currentGanttDate = new Date(); 
         let editingMemoIdx = null;
         let editingLinkIdx = null;
+        let globalSearchQuery = ''; // 全域搜尋變數
 
-        const fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d" });
-        const fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d" });
-        const fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d" }); 
-        const fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d" }); 
-
-        // ★ 登入檢查 + ESC 關閉 ★
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") {
                 document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none');
@@ -603,9 +590,12 @@
             }
         });
 
+        // 登入邏輯 (雙重驗證)
         function checkLogin() {
+            const acc = document.getElementById('login-acc').value.trim();
             const pass = document.getElementById('login-pass').value;
-            if (pass === '00430552') {
+            
+            if (acc === 'jayran.tn@gmail.com' && pass === '00430552') {
                 localStorage.setItem(LOGIN_KEY, new Date().getTime());
                 document.getElementById('login-overlay').style.opacity = '0';
                 setTimeout(() => { 
@@ -613,7 +603,7 @@
                     startApp(); 
                 }, 500);
             } else {
-                alert("密碼錯誤");
+                alert("帳號或密碼錯誤！\n請確認您有權限進入此系統。");
                 document.getElementById('login-pass').value = '';
             }
         }
@@ -681,8 +671,6 @@
         function processDataUpdate(res, isCache) {
             DATA = res;
             renderZoneOptions();
-            
-            // ★ 強制重新載入下拉選單 ★
             renderDynamicOptions();
             
             loadMemos();
@@ -710,6 +698,25 @@
             }
         }
 
+        // --- 全域搜尋邏輯 ---
+        function handleSearch() {
+            globalSearchQuery = document.getElementById('global-search').value.trim().toLowerCase();
+            
+            // 重新渲染當前畫面
+            if (curTab === 'wei') renderKanban('魏敏軒');
+            else if (curTab === 'chiu') renderKanban('邱仁杰');
+            else if (curTab === 'gan') {
+                const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
+                renderGantt(who);
+            }
+            else if (curTab === 'calendar') renderCalendar();
+            
+            // 如果面板開著，順便過濾裡面的內容
+            if (document.getElementById('panel-memo').style.display !== 'none') loadMemos();
+            if (document.getElementById('panel-link').style.display !== 'none') loadLinks();
+            if (document.getElementById('panel-pending').style.display !== 'none') loadPending();
+        }
+
         function setProjectType(type) {
             curCat = type;
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
@@ -721,7 +728,7 @@
             renderDynamicOptions();
         }
 
-        // ★ 終極修復 3：製作人預設鎖定「尚未暫定」 ★
+        // 製作人預設鎖定「尚未暫定」
         function renderDynamicOptions() {
             if (!DATA || !DATA.config) return;
 
@@ -743,7 +750,7 @@
             };
             
             fillSelect('i-type', types);
-            fillSelect('i-producer', producers, '尚未暫定'); // 強制預設尚未暫定
+            fillSelect('i-producer', producers, '尚未暫定'); 
             
             fillSelect('ep-type', types);
             fillSelect('ep-producer', producers);
@@ -830,7 +837,6 @@
             const dr = document.getElementById('i-date').value.split(' to ');
             const prod = document.getElementById('i-producer').value;
             
-            // ★ 自動補上前綴 ★
             const rawId = document.getElementById('i-id').value.trim();
             const zoneVal = document.getElementById('i-zone').value;
             const prefix = zoneVal.split('_')[0]; 
@@ -847,7 +853,7 @@
             const p = {
                 category: curCat, 
                 zone: zoneVal, 
-                id: finalId, // 儲存包含前綴的完整 ID
+                id: finalId, 
                 client: document.getElementById('i-client').value, 
                 name: document.getElementById('i-name').value,
                 producer: prod, 
@@ -877,11 +883,20 @@
             });
         }
 
-        // --- 看板 ---
+        // 看板 (含搜尋過濾)
         function renderKanban(producer) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
-            const tasks = DATA.projects.filter(p => p.producer === producer);
+            
+            // 加入全域搜尋過濾
+            const tasks = DATA.projects.filter(p => {
+                if (p.producer !== producer) return false;
+                if (!globalSearchQuery) return true;
+                return p.name.toLowerCase().includes(globalSearchQuery) || 
+                       p.client.toLowerCase().includes(globalSearchQuery) || 
+                       p.id.toLowerCase().includes(globalSearchQuery);
+            });
+
             const card = (p, color, bg) => {
                 const pStr = encodeURIComponent(JSON.stringify(p));
                 return `
@@ -913,7 +928,7 @@
             const todoHTML = tasks.filter(p => p.status === '尚未進行').map(p => card(p, 'gray', 'gray')).join('');
             const doneHTML = tasks.filter(p => p.status === '已完成' || p.status === '已結案').map(p => card(p, 'green', 'green')).join('');
             
-            document.getElementById('kb-process').innerHTML = processHTML || '<div class="text-center text-gray-300 py-6 font-bold bg-white rounded-xl border border-gray-100">目前無任務</div>';
+            document.getElementById('kb-process').innerHTML = processHTML || '<div class="text-center text-gray-300 py-6 font-bold bg-white rounded-xl border border-gray-100">目前無符合任務</div>';
             document.getElementById('kb-review').innerHTML = reviewHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
             document.getElementById('kb-todo').innerHTML = todoHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
@@ -938,6 +953,12 @@
             const isCurrentMonth = (now.getMonth() === curMonth && now.getFullYear() === curYear);
 
             let tasks = DATA.projects.filter(p => p.producer === who && p.start && p.end);
+            
+            // 加上搜尋過濾
+            if (globalSearchQuery) {
+                tasks = tasks.filter(p => p.name.toLowerCase().includes(globalSearchQuery) || p.client.toLowerCase().includes(globalSearchQuery) || p.id.toLowerCase().includes(globalSearchQuery));
+            }
+
             tasks = tasks.filter(p => {
                 const pStart = new Date(p.start);
                 const pEnd = new Date(p.end);
@@ -986,7 +1007,7 @@
                     }
                     bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible;"' : ''}>${content}</td>`;
                 }
-                body += `<tr class="gantt-row"><td class="gantt-label-cell" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
+                body += `<tr class="gantt-row"><td class="gantt-col-fixed" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
             });
             container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
         }
@@ -997,14 +1018,18 @@
             renderGantt(who);
         }
 
-        // --- ★ 終極修復 1：行事曆自適應與捲動到今天 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
 
             let events = [];
             const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
+            
             tasks.forEach(p => {
+                // 加入搜尋過濾
+                if (globalSearchQuery && !p.name.toLowerCase().includes(globalSearchQuery) && !p.client.toLowerCase().includes(globalSearchQuery)) {
+                    return;
+                }
                 if (p.start && p.end) {
                     let color = '#8E8E93';
                     if (p.status === '製作中') color = '#007AFF';
@@ -1039,9 +1064,9 @@
             calendar = new FullCalendar.Calendar(el, {
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
-                height: 'auto', 
+                height: 'auto', // 取消強制高度，讓它自動適應內容
                 contentHeight: 'auto',
-                dayMaxEvents: 3, // 限制每天顯示數量，避免格子拉太長
+                dayMaxEvents: 3, // ★ 限制每天顯示數量，避免格子拉太長
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
                 events: events,
@@ -1052,7 +1077,7 @@
             });
             calendar.render();
 
-            // ★ 自動捲動尋找當天日期並置中顯示 ★
+            // ★ 點進行事曆自動捲動到今天的位置 ★
             setTimeout(() => {
                 const todayCell = document.querySelector('.fc-day-today');
                 if (todayCell) {
@@ -1078,7 +1103,6 @@
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
         }
 
-        // --- 編輯專案 ---
         function openEditProject(p) {
             document.getElementById('ep-cat').value = p.category;
             document.getElementById('ep-origin-id').value = p.id; 
@@ -1093,7 +1117,6 @@
             Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
             epCodeSel.value = prefix;
             
-            // 強制重新載入製作人與類型
             renderDynamicOptions(); 
 
             setTimeout(() => {
@@ -1134,7 +1157,7 @@
             const p = {
                 category: document.getElementById('ep-cat').value,
                 zone: document.getElementById('ep-zone').value, 
-                id: document.getElementById('ep-num').value,
+                id: document.getElementById('ep-num').value, 
                 client: document.getElementById('ep-client-display').value,
                 name: document.getElementById('ep-name').value,
                 producer: document.getElementById('ep-producer').value,
@@ -1284,9 +1307,15 @@
             if (type === 'pending') loadPending();
         }
 
-        // --- 待分派專案 ---
+        // --- 待分派專案 (含搜尋) ---
         function loadPending() {
-            const pendingList = DATA.projects.filter(p => p.producer === '尚未暫定');
+            let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定');
+            
+            // 搜尋過濾
+            if (globalSearchQuery) {
+                pendingList = pendingList.filter(p => p.name.toLowerCase().includes(globalSearchQuery) || p.client.toLowerCase().includes(globalSearchQuery) || p.id.toLowerCase().includes(globalSearchQuery));
+            }
+
             const container = document.getElementById('pending-list');
             const badge = document.getElementById('pending-badge');
             
@@ -1468,9 +1497,13 @@
             });
         }
 
-        // --- 便利貼邏輯 ---
+        // --- 便利貼邏輯 (含搜尋) ---
         function loadMemos() {
             callAPI('getMemos', {}, (list) => {
+                if (globalSearchQuery) {
+                    list = list.filter(m => m.content.toLowerCase().includes(globalSearchQuery) || m.owner.toLowerCase().includes(globalSearchQuery));
+                }
+
                 const container = document.getElementById('memo-list');
                 const badge = document.getElementById('memo-badge');
                 if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; }
@@ -1553,9 +1586,13 @@
             callAPI('completeMemo', { idx:idx }, (res) => loadMemos());
         }
 
-        // --- 連結庫 ---
+        // --- 連結庫 (含搜尋) ---
         function loadLinks() {
             callAPI('getLinks', {}, (list) => {
+                if (globalSearchQuery) {
+                    list = list.filter(l => l.client.toLowerCase().includes(globalSearchQuery) || l.url.toLowerCase().includes(globalSearchQuery));
+                }
+
                 const container = document.getElementById('link-list');
                 if(list.length === 0) { 
                     container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; 
@@ -1584,8 +1621,11 @@
                         folderDatalist.appendChild(new Option(folder)); 
                     }
 
+                    // 如果有搜尋，強制展開所有資料夾
+                    const isOpen = globalSearchQuery ? "open" : "";
+
                     html += `
-                    <details class="mb-3 group link-folder">
+                    <details class="mb-3 group link-folder" ${isOpen}>
                         <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">
                             <div class="flex items-center gap-3">
                                 <i class="fas fa-folder-open text-blue-500"></i> ${folder} 

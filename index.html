@@ -83,54 +83,25 @@
         .page-scroll-container::-webkit-scrollbar-thumb:hover, .gantt-wrapper::-webkit-scrollbar-thumb:hover { background-color: #9CA3AF; }
 
         /* 卡片與輸入框 */
-        .clean-card { 
-            background: var(--surface); 
-            border-radius: var(--radius); 
-            padding: 24px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
-            margin-bottom: 20px; 
-            width: 100%; 
-            box-sizing: border-box; 
-        }
-
-        .clean-input, .clean-select { 
-            width: 100%; 
-            padding: 12px; 
-            background: #F5F5F7; 
-            border: 1px solid transparent; 
-            border-radius: 8px; 
-            font-size: 15px; 
-            font-weight: 500; 
-            transition: 0.2s; 
-        }
-
-        .clean-input:focus, .clean-select:focus { 
-            background: var(--surface); 
-            border-color: var(--accent); 
-            outline: none; 
-        }
-        
+        .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+        .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
+        .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; }
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
         .type-btn.active { background: #1D1D1F; color: white; }
-        
         .icon-btn { width: 44px; height: 44px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; transition: 0.2s; }
         .btn-black { background: #1D1D1F; color: white; }
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
 
-        /* --- 看板卡片全新設計 --- */
+        /* --- 看板卡片全新設計 (膠囊標籤) --- */
         .kanban-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
         
         .kanban-item { 
-            background: white; 
-            border: 1px solid #E5E5E5; 
-            border-radius: 12px; 
-            padding: 24px 16px 16px 20px; 
-            position: relative; 
-            border-left: 5px solid transparent; 
-            transition: 0.2s; 
-            margin-top: 14px; 
+            background: white; border: 1px solid #E5E5E5; border-radius: 12px; 
+            padding: 24px 16px 16px 20px; /* 增加上方 Padding 讓膠囊有空間 */
+            position: relative; border-left: 5px solid transparent; 
+            transition: 0.2s; margin-top: 14px; 
         }
         .kanban-item:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
         
@@ -158,24 +129,21 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* --- 甘特圖 (修正標題重疊與黑點問題) --- */
+        /* --- 甘特圖 (修正重疊穿透問題) --- */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: 100%; min-height: 500px; position: relative; }
         .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; table-layout: fixed; }
         
-        /* 提升標題列層級與強制白底，防止被蓋住 */
+        /* 表頭：純白底色，Z-index拉高，避免滾動時任務穿透 */
         .gantt-header-cell { 
             position: sticky; top: 0; 
-            background: #FFFFFF; /* 強制白底 */
-            z-index: 100; /* 最高層級 */
-            background-clip: padding-box; /* 防止邊框穿透 */
+            background: #FFFFFF; z-index: 100; background-clip: padding-box;
             text-align: center; font-size: 11px; color: #555; 
             border-bottom: 2px solid #E5E5E5; border-right: 1px solid #f0f0f0; 
             padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; 
         }
         .gantt-corner { 
             position: sticky; top: 0; left: 0; 
-            z-index: 110; /* 最最最高層級 */
-            background: #FFFFFF; background-clip: padding-box;
+            z-index: 110; background: #FFFFFF; background-clip: padding-box;
             border-right: 2px solid #E5E5E5; border-bottom: 2px solid #E5E5E5; 
             padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1D1D1F; 
         }
@@ -190,10 +158,8 @@
         
         .gantt-today-text { color: #D97706; font-weight: 900; font-size: 13px; }
         .gantt-row { height: 40px; }
-        
         .gantt-id { font-weight: 900; font-size: 12px; color: #333; margin-right: 6px; }
         .gantt-name { font-size: 12px; color: #444; font-weight: 500; }
-        
         .gantt-grid-cell { border-right: 1px solid #f9f9f9; border-bottom: 1px solid #f5f5f5; position: relative; padding: 0; }
         .gantt-bar { position: absolute; top: 10px; left: 1px; height: 24px; border-radius: 6px; color: white; font-size: 11px; line-height: 24px; padding: 0 8px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.15); cursor: pointer; transition: 0.1s; font-weight: bold;}
         .gantt-bar:hover { transform: scaleY(1.1); z-index: 10; }
@@ -202,13 +168,11 @@
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* --- 行事曆 (響應式優化與文字不截斷) --- */
+        /* --- 行事曆 (響應式自動高度) --- */
         #calendar-container { 
-            background: white; 
-            border-radius: 16px; 
-            padding: 20px; 
+            background: white; border-radius: 16px; padding: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            height: auto; /* 讓它自動延伸高度 */
+            height: auto; /* 取消 100%，改為自動適應內容 */
         }
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
@@ -217,7 +181,6 @@
         .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
         .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
         
-        /* 事件膠囊美化 */
         .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 4px !important; border-radius: 4px !important; }
         .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 12px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
@@ -230,10 +193,9 @@
         @media (max-width: 768px) {
             .page-scroll-container { padding: 10px 10px 80px 10px; }
             #calendar-container { padding: 10px; }
-            .fc-header-toolbar { flex-direction: column; gap: 10px; }
-            .fc-toolbar-chunk { display: flex; justify-content: center; width: 100%; }
-            .fc-toolbar-title { font-size: 1.2rem !important; }
-            .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
+            .fc .fc-toolbar { flex-direction: column; gap: 12px; }
+            .fc .fc-toolbar-title { font-size: 1.25rem !important; }
+            .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
         }
 
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
@@ -743,12 +705,13 @@
         function processDataUpdate(res, isCache) {
             DATA = res;
             renderZoneOptions();
+            
+            // ★ 核心修復：不管快取還是API，每次更新資料都要重刷選單，避免空白 ★
+            renderDynamicOptions(); 
+            
             loadMemos();
             loadLinks();
             loadPending();
-            
-            // 強制重新載入一次下拉選單，避免卡空
-            renderDynamicOptions();
             
             if (curTab === 'wei') renderKanban('魏敏軒');
             else if (curTab === 'chiu') renderKanban('邱仁杰');
@@ -784,7 +747,6 @@
 
         // ★★★ 修正製作人與類型選單不出現的問題 ★★★
         function renderDynamicOptions() {
-            // 防呆：如果沒有抓到 config (舊版快取)，給個預設空陣列避免報錯
             if (!DATA || !DATA.config) {
                 ['i-producer', 'i-type', 'ep-producer', 'ep-type'].forEach(id => {
                     const el = document.getElementById(id);
@@ -805,7 +767,6 @@
                     list.forEach(item => {
                         if(item) el.add(new Option(item, item));
                     });
-                    // 如果原本選的值還在清單裡，就維持原樣
                     if(list.includes(currentVal)) el.value = currentVal;
                 }
             };
@@ -824,7 +785,7 @@
             
             if (tab === 'add') { 
                 document.getElementById('p-add').classList.remove('hidden'); 
-                renderDynamicOptions(); // 切換回來確保選單都在
+                renderDynamicOptions(); 
             }
             else if (tab === 'wei') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('魏敏軒'); }
             else if (tab === 'chiu') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('邱仁杰'); }
@@ -897,7 +858,7 @@
             const dr = document.getElementById('i-date').value.split(' to ');
             const prod = document.getElementById('i-producer').value;
             
-            // ★ 核心修復：自動補上前綴，解決新建只有數字的問題 ★
+            // ★ 核心修復：自動補上前綴 ★
             const rawId = document.getElementById('i-id').value.trim();
             const zoneVal = document.getElementById('i-zone').value;
             const prefix = zoneVal.split('_')[0]; 
@@ -1065,7 +1026,7 @@
             renderGantt(who);
         }
 
-        // --- 行事曆 ---
+        // --- 行事曆：自適應高度 ---
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -1107,7 +1068,7 @@
             calendar = new FullCalendar.Calendar(el, {
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
-                height: 'auto', // 讓 FullCalendar 自動適應內容高度，不出現內部雙捲軸
+                height: 'auto', // 取消強制高度，讓它自動適應內容
                 contentHeight: 'auto',
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
@@ -1648,6 +1609,7 @@
                         folderDatalist.appendChild(new Option(folder)); 
                     }
 
+                    // 移除了 open 屬性，預設關閉
                     html += `
                     <details class="mb-3 group link-folder">
                         <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">
@@ -1823,6 +1785,33 @@
                     callAPI('initAllData', {}, (data) => processDataUpdate(data));
                 });
             }
+        }
+        
+        function updateEditClientInfo() {
+            const selectedCode = document.getElementById('ep-code').value;
+            const settings = (document.getElementById('ep-cat').value === 'video') ? DATA.videoSettings : DATA.imageSettings;
+            let foundZone = "";
+            for (let key in settings) { 
+                if (key.startsWith(selectedCode + "_") || key === selectedCode) { 
+                    foundZone = key; 
+                    break; 
+                } 
+            }
+            if (foundZone) {
+                const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone;
+                document.getElementById('ep-client-display').value = clientName;
+                document.getElementById('ep-zone').value = foundZone; 
+            } else {
+                const currentClient = document.getElementById('ep-client-display').value || "未知客戶";
+                document.getElementById('ep-client-display').value = currentClient;
+                document.getElementById('ep-zone').value = selectedCode + "_" + currentClient;
+            }
+        }
+        
+        function updateZoneFromClientName() {
+            const code = document.getElementById('ep-code').value;
+            const client = document.getElementById('ep-client-display').value;
+            document.getElementById('ep-zone').value = code + "_" + client;
         }
         
         function openLeaveModal() {

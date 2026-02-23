@@ -87,7 +87,7 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* 甘特圖 (防穿透與完美捲動) */
+        /* 甘特圖 */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; }
         .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; table-layout: fixed; }
         .gantt-header-cell { position: sticky; top: 0; background-color: #FAFAFA !important; z-index: 100; background-clip: padding-box; text-align: center; font-size: 11px; color: #555; box-shadow: inset 0 -1px 0 #E5E5E5, inset -1px 0 0 #f0f0f0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
@@ -106,7 +106,7 @@
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* 行事曆 (優化高度與顯示) */
+        /* 行事曆 */
         #calendar-container { 
             background: white; border-radius: 16px; padding: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
@@ -124,7 +124,7 @@
         
         .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 4px !important; border-radius: 4px !important; }
         .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 12px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .fc-more-popover { z-index: 1000 !important; }
+        .fc-more-popover { z-index: 1000 !important; } 
         
         .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
         .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
@@ -201,7 +201,9 @@
     </div>
 
     <div class="fab-container">
-        <div onclick="togglePanel('link')" class="fab-btn fab-link" title="客戶連結庫"><i class="fas fa-link"></i></div>
+        <div onclick="togglePanel('link')" class="fab-btn fab-link" title="客戶連結庫">
+            <i class="fas fa-link"></i>
+        </div>
         <div onclick="togglePanel('pending')" class="fab-btn" title="待分派專案" style="background:#4B5563;">
             <i class="fas fa-user-clock"></i>
             <span id="pending-badge" class="badge">0</span>
@@ -218,7 +220,7 @@
         </div>
     </div>
     
-    <div id="panel-memo" class="modal-mask" onclick="if(event.target===this) this.style.display='none'">
+    <div id="panel-memo" class="modal-mask">
         <div class="float-panel">
             <div class="panel-header-area">
                 <div class="flex justify-between items-center mb-6">
@@ -237,11 +239,13 @@
                     <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-lg py-3 rounded-lg font-bold hover:bg-gray-800">新增貼文</button>
                 </div>
             </div>
-            <div id="memo-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
+            <div id="memo-list" class="panel-scroll-area">
+                <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
+            </div>
         </div>
     </div>
 
-    <div id="panel-pending" class="modal-mask" onclick="if(event.target===this) this.style.display='none'">
+    <div id="panel-pending" class="modal-mask">
         <div class="float-panel">
             <div class="panel-header-area">
                 <div class="flex justify-between items-center mb-6">
@@ -249,11 +253,13 @@
                     <span onclick="document.getElementById('panel-pending').style.display='none'" class="cursor-pointer text-gray-400 hover:text-black text-2xl"><i class="fas fa-times"></i></span>
                 </div>
             </div>
-            <div id="pending-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div></div>
+            <div id="pending-list" class="panel-scroll-area">
+                <div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div>
+            </div>
         </div>
     </div>
 
-    <div id="panel-link" class="modal-mask" onclick="if(event.target===this) this.style.display='none'">
+    <div id="panel-link" class="modal-mask">
         <div class="float-panel">
             <div class="panel-header-area">
                 <div class="flex justify-between items-center mb-6">
@@ -270,11 +276,13 @@
                     <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md transition">新增連結</button>
                 </div>
             </div>
-            <div id="link-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
+            <div id="link-list" class="panel-scroll-area">
+                <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
+            </div>
         </div>
     </div>
 
-    <div id="modal-preview" class="modal-mask" onclick="if(event.target===this) this.style.display='none'">
+    <div id="modal-preview" class="modal-mask">
         <div class="modal-body">
             <h3 class="text-xl font-black mb-2">專案歷史紀錄</h3>
             <p id="hist-title" class="text-sm text-gray-500 mb-4"></p>
@@ -283,7 +291,7 @@
         </div>
     </div>
 
-    <div id="modal-zone" class="modal-mask" onclick="if(event.target===this) this.style.display='none'">
+    <div id="modal-zone" class="modal-mask">
         <div class="modal-body">
             <h3 id="modal-title" class="text-xl font-black mb-4">區域設定</h3>
             <input type="hidden" id="edit-orig-name">
@@ -300,7 +308,7 @@
         </div>
     </div>
     
-    <div id="modal-leave" class="modal-mask" onclick="if(event.target===this) this.style.display='none'">
+    <div id="modal-leave" class="modal-mask">
         <div class="modal-body">
             <h3 class="text-xl font-black mb-4">請假申請</h3>
             <div class="mb-4">
@@ -325,7 +333,7 @@
         </div>
     </div>
 
-    <div id="modal-edit-project" class="modal-mask" onclick="if(event.target===this) this.style.display='none'">
+    <div id="modal-edit-project" class="modal-mask">
         <div class="modal-body w-[450px]">
             <h3 class="text-2xl font-black mb-6">編輯專案內容</h3>
             <input type="hidden" id="ep-cat">
@@ -350,7 +358,9 @@
             
             <div class="mb-4">
                 <label class="text-xs text-gray-500 font-bold">製作人</label>
-                <select id="ep-producer" class="clean-select font-bold border border-gray-200"></select>
+                <select id="ep-producer" class="clean-select font-bold border border-gray-200">
+                    <option value="">載入中...</option>
+                </select>
             </div>
             <div class="mb-4">
                 <label class="text-xs text-gray-500 font-bold">專案名稱</label>
@@ -359,7 +369,9 @@
             <div class="grid grid-cols-2 gap-3 mb-4">
                  <div>
                      <label class="text-xs text-gray-500 font-bold">類型</label>
-                     <select id="ep-type" class="clean-select border border-gray-200"></select>
+                     <select id="ep-type" class="clean-select border border-gray-200">
+                         <option value="">載入中...</option>
+                     </select>
                  </div>
                  <div>
                      <label class="text-xs text-gray-500 font-bold">日期範圍</label>
@@ -385,7 +397,7 @@
         </div>
     </div>
 
-    <div id="modal-hours" class="modal-mask" onclick="if(event.target===this) this.style.display='none'">
+    <div id="modal-hours" class="modal-mask">
         <div class="modal-body">
             <h3 class="text-xl font-black mb-2">送出審核</h3>
             <p class="text-sm text-gray-500 mb-6">本次花費工時 (hr)</p>
@@ -400,7 +412,7 @@
         </div>
     </div>
 
-    <div id="modal-settings" class="modal-mask" onclick="if(event.target===this) this.style.display='none'">
+    <div id="modal-settings" class="modal-mask">
         <div class="modal-body w-[350px]">
             <h3 id="setting-title" class="text-xl font-black mb-4">管理選單</h3>
             <input type="hidden" id="st-type"> 
@@ -579,7 +591,7 @@
         let currentGanttDate = new Date(); 
         let editingMemoIdx = null;
         let editingLinkIdx = null;
-        let globalSearchQuery = ''; // 全域搜尋變數
+        let globalSearchQuery = '';
 
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") {
@@ -590,7 +602,6 @@
             }
         });
 
-        // 登入邏輯 (雙重驗證)
         function checkLogin() {
             const acc = document.getElementById('login-acc').value.trim();
             const pass = document.getElementById('login-pass').value;
@@ -680,8 +691,8 @@
             if (curTab === 'wei') renderKanban('魏敏軒');
             else if (curTab === 'chiu') renderKanban('邱仁杰');
             else if (curTab === 'gan') {
-                if(document.getElementById('btn-gan-wei').classList.contains('active')) renderGantt('魏敏軒');
-                else renderGantt('邱仁杰');
+                const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
+                renderGantt(who);
             }
             else if (curTab === 'calendar') { 
                 renderCalendar(); 
@@ -698,11 +709,9 @@
             }
         }
 
-        // --- 全域搜尋邏輯 ---
         function handleSearch() {
             globalSearchQuery = document.getElementById('global-search').value.trim().toLowerCase();
             
-            // 重新渲染當前畫面
             if (curTab === 'wei') renderKanban('魏敏軒');
             else if (curTab === 'chiu') renderKanban('邱仁杰');
             else if (curTab === 'gan') {
@@ -711,7 +720,6 @@
             }
             else if (curTab === 'calendar') renderCalendar();
             
-            // 如果面板開著，順便過濾裡面的內容
             if (document.getElementById('panel-memo').style.display !== 'none') loadMemos();
             if (document.getElementById('panel-link').style.display !== 'none') loadLinks();
             if (document.getElementById('panel-pending').style.display !== 'none') loadPending();
@@ -728,7 +736,6 @@
             renderDynamicOptions();
         }
 
-        // 製作人預設鎖定「尚未暫定」
         function renderDynamicOptions() {
             if (!DATA || !DATA.config) return;
 
@@ -768,7 +775,7 @@
             }
             else if (tab === 'wei') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('魏敏軒'); }
             else if (tab === 'chiu') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('邱仁杰'); }
-            else if (tab === 'gan') { document.getElementById('p-gantt').classList.remove('hidden'); renderGantt('魏敏軒'); }
+            else if (tab === 'gan') { document.getElementById('p-gantt').classList.remove('hidden'); renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); }
             else if (tab === 'calendar') { 
                 document.getElementById('p-calendar').classList.remove('hidden'); 
                 setTimeout(() => renderCalendar(), 100); 
@@ -883,12 +890,10 @@
             });
         }
 
-        // 看板 (含搜尋過濾)
         function renderKanban(producer) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
             
-            // 加入全域搜尋過濾
             const tasks = DATA.projects.filter(p => {
                 if (p.producer !== producer) return false;
                 if (!globalSearchQuery) return true;
@@ -934,7 +939,6 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
         }
 
-        // --- 甘特圖 ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -954,7 +958,6 @@
 
             let tasks = DATA.projects.filter(p => p.producer === who && p.start && p.end);
             
-            // 加上搜尋過濾
             if (globalSearchQuery) {
                 tasks = tasks.filter(p => p.name.toLowerCase().includes(globalSearchQuery) || p.client.toLowerCase().includes(globalSearchQuery) || p.id.toLowerCase().includes(globalSearchQuery));
             }
@@ -1026,7 +1029,6 @@
             const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
             
             tasks.forEach(p => {
-                // 加入搜尋過濾
                 if (globalSearchQuery && !p.name.toLowerCase().includes(globalSearchQuery) && !p.client.toLowerCase().includes(globalSearchQuery)) {
                     return;
                 }
@@ -1064,9 +1066,9 @@
             calendar = new FullCalendar.Calendar(el, {
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
-                height: 'auto', // 取消強制高度，讓它自動適應內容
+                height: 'auto', 
                 contentHeight: 'auto',
-                dayMaxEvents: 3, // ★ 限制每天顯示數量，避免格子拉太長
+                dayMaxEvents: 3, 
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
                 events: events,
@@ -1077,7 +1079,6 @@
             });
             calendar.render();
 
-            // ★ 點進行事曆自動捲動到今天的位置 ★
             setTimeout(() => {
                 const todayCell = document.querySelector('.fc-day-today');
                 if (todayCell) {
@@ -1307,11 +1308,9 @@
             if (type === 'pending') loadPending();
         }
 
-        // --- 待分派專案 (含搜尋) ---
         function loadPending() {
             let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定');
             
-            // 搜尋過濾
             if (globalSearchQuery) {
                 pendingList = pendingList.filter(p => p.name.toLowerCase().includes(globalSearchQuery) || p.client.toLowerCase().includes(globalSearchQuery) || p.id.toLowerCase().includes(globalSearchQuery));
             }
@@ -1497,7 +1496,6 @@
             });
         }
 
-        // --- 便利貼邏輯 (含搜尋) ---
         function loadMemos() {
             callAPI('getMemos', {}, (list) => {
                 if (globalSearchQuery) {
@@ -1586,7 +1584,6 @@
             callAPI('completeMemo', { idx:idx }, (res) => loadMemos());
         }
 
-        // --- 連結庫 (含搜尋) ---
         function loadLinks() {
             callAPI('getLinks', {}, (list) => {
                 if (globalSearchQuery) {
@@ -1621,7 +1618,6 @@
                         folderDatalist.appendChild(new Option(folder)); 
                     }
 
-                    // 如果有搜尋，強制展開所有資料夾
                     const isOpen = globalSearchQuery ? "open" : "";
 
                     html += `
@@ -1732,7 +1728,6 @@
             callAPI('deleteLink', { idx:idx }, (res) => loadLinks());
         }
 
-        // --- 其他 Modal 控制 ---
         function openZoneModal(mode) {
             modalMode = mode;
             const z = document.getElementById('i-zone').value;

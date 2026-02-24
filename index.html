@@ -87,18 +87,42 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* 甘特圖 */
+        /* ★ 終極修復：甘特圖防穿透與完美捲動 ★ */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; }
-        .gantt-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; table-layout: fixed; }
-        .gantt-header-cell { position: sticky; top: 0; background-color: #FAFAFA !important; z-index: 100; background-clip: padding-box; text-align: center; font-size: 11px; color: #555; box-shadow: inset 0 -1px 0 #E5E5E5, inset -1px 0 0 #f0f0f0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
-        .gantt-corner { position: sticky; top: 0; left: 0; background-color: #FAFAFA !important; z-index: 110; padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1D1D1F; box-shadow: inset -1px -1px 0 #E5E5E5; }
-        .gantt-col-fixed { position: sticky; left: 0; background-color: #FFFFFF !important; z-index: 50; width: 220px; padding: 8px 10px; white-space: nowrap; overflow: hidden; box-shadow: inset -1px -1px 0 #f5f5f5; }
-        .gantt-today { background-color: #FFF9C4 !important; color: #000; font-weight: 900; box-shadow: inset 0 -3px 0 #FFD700, inset -1px 0 0 #f0f0f0 !important; }
-        .gantt-today-cell { background-color: #FFF9C4; } 
+        .gantt-table { width: 100%; border-collapse: collapse; min-width: 800px; table-layout: fixed; }
+        
+        .gantt-header-cell { 
+            position: sticky; top: 0; 
+            background-color: #F8FAFC !important; /* 絕對實心白灰底色 */
+            z-index: 100; /* 拉高層級防穿透 */
+            text-align: center; font-size: 11px; color: #475569; 
+            border: 1px solid #E2E8F0; /* 實線邊框 */
+            padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; 
+        }
+        
+        .gantt-corner { 
+            position: sticky; top: 0; left: 0; 
+            background-color: #F8FAFC !important; /* 絕對實心白灰底色 */
+            z-index: 110; /* 最最最高，壓住所有東西 */
+            padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1E293B; 
+            border: 1px solid #E2E8F0;
+        }
+        
+        .gantt-col-fixed { 
+            position: sticky; left: 0; 
+            background-color: #FFFFFF !important; /* 絕對實心白底色 */
+            z-index: 50; 
+            width: 220px; padding: 8px 10px; 
+            white-space: nowrap; overflow: hidden; 
+            border: 1px solid #E2E8F0;
+        }
+        
+        .gantt-today { background-color: #FFF9C4 !important; color: #000; font-weight: 900; }
+        .gantt-today-cell { background-color: #FEF9C3; } 
         .gantt-row { height: 40px; }
         .gantt-id { font-weight: 900; font-size: 12px; color: #333; margin-right: 6px; }
         .gantt-name { font-size: 12px; color: #444; font-weight: 500; }
-        .gantt-grid-cell { border-right: 1px solid #f9f9f9; border-bottom: 1px solid #f5f5f5; position: relative; padding: 0; }
+        .gantt-grid-cell { border: 1px solid #F1F5F9; position: relative; padding: 0; }
         .gantt-bar { position: absolute; top: 10px; left: 1px; height: 20px; border-radius: 4px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 5px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.1s; }
         .gantt-bar:hover { transform: scaleY(1.1); z-index: 10; }
 
@@ -106,15 +130,16 @@
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* 行事曆 */
+        /* ★ 終極修復：行事曆緊湊精緻化 ★ */
         #calendar-container { 
             background: white; border-radius: 16px; padding: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            height: calc(100vh - 160px); 
-            display: block; 
+            height: auto; 
+            max-height: calc(100vh - 160px); /* 限制最高高度，不會無限延伸 */
+            overflow: hidden; /* 防止內部雙捲軸崩潰 */
+            display: flex; flex-direction: column;
         }
         .fc { height: 100% !important; } 
-        .fc-scroller { overflow-y: auto !important; } 
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
         .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; }
@@ -122,8 +147,8 @@
         .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
         .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
         
-        .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 4px !important; border-radius: 4px !important; }
-        .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 12px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 2px !important; border-radius: 4px !important; }
+        .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 11px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .fc-more-popover { z-index: 1000 !important; } 
         
         .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
@@ -131,9 +156,10 @@
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
         
+        /* 手機版排版調整 */
         @media (max-width: 768px) {
             .page-scroll-container { padding: 10px 10px 80px 10px; }
-            #calendar-container { padding: 10px; height: calc(100vh - 180px); }
+            #calendar-container { padding: 10px; max-height: calc(100vh - 180px); }
             .fc .fc-toolbar { flex-direction: column; gap: 10px; }
             .fc .fc-toolbar-title { font-size: 1.2rem !important; }
             .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
@@ -143,7 +169,7 @@
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* 浮動按鈕與彈窗 */
+        /* 浮動按鈕與彈窗 (置中樣式) */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
         .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
@@ -234,7 +260,7 @@
                             <option>魏敏軒</option>
                             <option>邱仁杰</option>
                         </select>
-                        <input id="m-date" class="clean-input w-48 text-center font-bold border border-gray-200 bg-white" placeholder="起訖日期">
+                        <input id="m-date" class="clean-input w-48 text-center font-bold border border-gray-200 bg-white" placeholder="起訖日期" autocomplete="off">
                     </div>
                     <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-lg py-3 rounded-lg font-bold hover:bg-gray-800">新增貼文</button>
                 </div>
@@ -320,7 +346,7 @@
             </div>
             <div class="mb-4">
                 <label class="block text-xs font-bold text-gray-500 mb-1">請假時間</label>
-                <input id="leave-date" class="clean-input text-center border border-gray-200" placeholder="選擇日期範圍">
+                <input id="leave-date" class="clean-input text-center border border-gray-200" placeholder="選擇日期範圍" autocomplete="off">
             </div>
             <div class="mb-8">
                 <label class="block text-xs font-bold text-gray-500 mb-1">事由</label>
@@ -375,7 +401,7 @@
                  </div>
                  <div>
                      <label class="text-xs text-gray-500 font-bold">日期範圍</label>
-                     <input id="ep-date" class="clean-input text-center text-xs border border-gray-200">
+                     <input id="ep-date" class="clean-input text-center text-xs border border-gray-200" autocomplete="off">
                  </div>
             </div>
             <div class="mb-4">
@@ -499,7 +525,7 @@
 
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label>
-                    <input id="i-date" class="clean-input text-center" placeholder="點擊選擇">
+                    <input id="i-date" class="clean-input text-center" placeholder="點擊選擇" autocomplete="off">
                 </div>
                 <div class="mb-6">
                     <label class="block text-xs font-bold text-gray-500 mb-1">備註</label>
@@ -592,6 +618,15 @@
         let editingMemoIdx = null;
         let editingLinkIdx = null;
         let globalSearchQuery = '';
+
+        // ★ 終極修復：保證在 DOM 載入後才初始化 Flatpickr，絕對不會失效 ★
+        let fp, fpMemo, fpEdit, fpLeave;
+        document.addEventListener('DOMContentLoaded', function() {
+            fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
+            fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
+            fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+            fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+        });
 
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") {
@@ -736,28 +771,32 @@
             renderDynamicOptions();
         }
 
+        // ★ 終極修復：強制鎖定預設值 ★
         function renderDynamicOptions() {
             if (!DATA || !DATA.config) return;
 
             const types = (curCat === 'video') ? (DATA.config.videoTypes || []) : (DATA.config.imageTypes || []);
             const producers = (curCat === 'video') ? (DATA.config.videoProducers || []) : (DATA.config.imageProducers || []);
             
-            const fillSelect = (id, list, defaultVal) => {
+            const fillSelect = (id, list, forceDefault) => {
                 const el = document.getElementById(id);
-                if(el) {
-                    el.innerHTML = '';
-                    if(list.length === 0) el.add(new Option("無資料", ""));
-                    list.forEach(item => {
-                        if(item) el.add(new Option(item, item));
-                    });
-                    if(defaultVal && list.includes(defaultVal)) {
-                        el.value = defaultVal;
-                    }
+                if(!el) return;
+                const currentVal = el.value;
+                el.innerHTML = '';
+                if(list.length === 0) el.add(new Option("無資料", ""));
+                list.forEach(item => {
+                    if(item) el.add(new Option(item, item));
+                });
+                // 只要有傳入 forceDefault，就強制無視舊選項直接鎖定它！
+                if (forceDefault && list.includes(forceDefault)) {
+                    el.value = forceDefault; 
+                } else if (list.includes(currentVal)) {
+                    el.value = currentVal;
                 }
             };
             
             fillSelect('i-type', types);
-            fillSelect('i-producer', producers, '尚未暫定'); 
+            fillSelect('i-producer', producers, '尚未暫定'); // 這裡傳入 forceDefault，保證絕對是尚未暫定
             
             fillSelect('ep-type', types);
             fillSelect('ep-producer', producers);
@@ -844,6 +883,7 @@
             const dr = document.getElementById('i-date').value.split(' to ');
             const prod = document.getElementById('i-producer').value;
             
+            // ★ 自動補上前綴 ★
             const rawId = document.getElementById('i-id').value.trim();
             const zoneVal = document.getElementById('i-zone').value;
             const prefix = zoneVal.split('_')[0]; 
@@ -860,7 +900,7 @@
             const p = {
                 category: curCat, 
                 zone: zoneVal, 
-                id: finalId, 
+                id: finalId, // 儲存包含前綴的完整 ID
                 client: document.getElementById('i-client').value, 
                 name: document.getElementById('i-name').value,
                 producer: prod, 
@@ -890,6 +930,7 @@
             });
         }
 
+        // --- 看板 ---
         function renderKanban(producer) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
@@ -939,6 +980,7 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
         }
 
+        // --- 甘特圖 ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -1066,9 +1108,8 @@
             calendar = new FullCalendar.Calendar(el, {
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
-                height: 'auto', 
-                contentHeight: 'auto',
-                dayMaxEvents: 3, 
+                height: '100%', 
+                dayMaxEvents: 2, // ★ 限制顯示數量，避免版面被撐破
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
                 events: events,
@@ -1079,6 +1120,7 @@
             });
             calendar.render();
 
+            // 自動捲動到今天
             setTimeout(() => {
                 const todayCell = document.querySelector('.fc-day-today');
                 if (todayCell) {
@@ -1104,6 +1146,7 @@
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
         }
 
+        // ★ 編輯專案 ★
         function openEditProject(p) {
             document.getElementById('ep-cat').value = p.category;
             document.getElementById('ep-origin-id').value = p.id; 
@@ -1118,11 +1161,22 @@
             Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
             epCodeSel.value = prefix;
             
-            renderDynamicOptions(); 
+            // 載入選項
+            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
+            const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
+            
+            const prodSel = document.getElementById('ep-producer');
+            prodSel.innerHTML = '';
+            producers.forEach(x => prodSel.add(new Option(x, x)));
+            
+            const typeSel = document.getElementById('ep-type');
+            typeSel.innerHTML = '';
+            types.forEach(x => typeSel.add(new Option(x, x)));
 
+            // 延遲賦值以確保 DOM 已更新
             setTimeout(() => {
-                document.getElementById('ep-producer').value = p.producer;
-                document.getElementById('ep-type').value = p.type;
+                prodSel.value = p.producer;
+                typeSel.value = p.type;
             }, 50);
 
             document.getElementById('ep-num').value = numPart;
@@ -1308,6 +1362,7 @@
             if (type === 'pending') loadPending();
         }
 
+        // --- 待分派專案 ---
         function loadPending() {
             let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定');
             
@@ -1348,7 +1403,7 @@
                                 <option>魏敏軒</option>
                                 <option>邱仁杰</option>
                             </select>
-                            <input id="p-assign-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="補填日期">
+                            <input id="p-assign-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="補填日期" autocomplete="off">
                             <button onclick="confirmAssign('${p.category}', '${p.zone}', '${p.id}', ${idx})" class="bg-black text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-gray-800">確認</button>
                         </div>
                     </div>
@@ -1373,17 +1428,21 @@
                                 <option>魏敏軒</option>
                                 <option>邱仁杰</option>
                             </select>
-                            <input id="pe-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="日期">
+                            <input id="pe-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="日期" autocomplete="off">
                             <button onclick="savePendingEdit(${idx})" class="bg-blue-600 text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-800">保存</button>
                         </div>
                     </div>
                 </div>`;
             });
             container.innerHTML = html;
-            pendingList.forEach((p, idx) => { 
-                flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d" }); 
-                flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d" }); 
-            });
+            
+            // 在確保 DOM 渲染完成後綁定日曆
+            setTimeout(() => {
+                pendingList.forEach((p, idx) => { 
+                    flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+                    flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+                });
+            }, 50);
         }
 
         function enablePendingEdit(idx) {
@@ -1424,6 +1483,7 @@
             for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { newZone = key; break; } }
             if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
             
+            // 確保 ID 包含前綴
             let rawId = document.getElementById(`pe-num-${idx}`).value;
             if (!isNaN(rawId) && rawId !== "") {
                 rawId = selectedCode + String(rawId).padStart(3, '0');
@@ -1496,6 +1556,7 @@
             });
         }
 
+        // --- 便利貼邏輯 ---
         function loadMemos() {
             callAPI('getMemos', {}, (list) => {
                 if (globalSearchQuery) {
@@ -1584,6 +1645,7 @@
             callAPI('completeMemo', { idx:idx }, (res) => loadMemos());
         }
 
+        // --- 連結庫 ---
         function loadLinks() {
             callAPI('getLinks', {}, (list) => {
                 if (globalSearchQuery) {

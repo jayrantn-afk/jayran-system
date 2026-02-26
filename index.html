@@ -39,19 +39,42 @@
             color: white; transition: opacity 0.5s ease;
         }
         
-        .header-fixed-area { flex-shrink: 0; padding: 20px 20px 0 20px; background: var(--bg); z-index: 50; }
-        .segmented-nav { background: #E8E8ED; padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; flex-wrap: wrap; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; min-width: 80px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
-        .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        /* ★ 質感升級：毛玻璃頂部導覽列 ★ */
+        .header-fixed-area { 
+            flex-shrink: 0; padding: 20px 20px 0 20px; 
+            background: rgba(245, 245, 247, 0.85); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 50; 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
         
+        /* ★ RWD升級：手機版導覽列可橫向滑動 ★ */
+        .segmented-nav { 
+            background: rgba(229, 229, 234, 0.6); 
+            padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            overflow-x: auto; 
+            -webkit-overflow-scrolling: touch; 
+            scrollbar-width: none; /* Firefox */
+        }
+        .segmented-nav::-webkit-scrollbar { display: none; /* Safari and Chrome */ }
+        
+        .nav-item { flex: 1; min-width: 85px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
+        .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        
+        /* ★ 動畫升級：分頁切換淡入效果 ★ */
         .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 80px 20px; position: relative; }
-        .page-scroll-container::-webkit-scrollbar, .gantt-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
+        .fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .page-scroll-container::-webkit-scrollbar, .gantt-wrapper::-webkit-scrollbar { width: 6px; height: 6px; }
         .page-scroll-container::-webkit-scrollbar-track, .gantt-wrapper::-webkit-scrollbar-track { background: transparent; }
-        .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: #D1D5DB; border-radius: 4px; }
+        .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 10px; }
         
-        .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+        .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
-        .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; }
+        .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.1); }
         
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
@@ -60,13 +83,14 @@
         .icon-btn { width: 44px; height: 44px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; transition: 0.2s; }
         .btn-black { background: #1D1D1F; color: white; }
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
+        .icon-btn:hover { transform: scale(1.05); }
 
-        /* 看板樣式與膠囊設計 */
+        /* ★ 看板樣式與互動升級 ★ */
         .kanban-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
         @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
         
-        .kanban-item { background: white; border: 1px solid #E5E5E5; border-radius: 12px; padding: 24px 16px 16px 20px; position: relative; border-left: 5px solid transparent; transition: 0.2s; margin-top: 14px; }
-        .kanban-item:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+        .kanban-item { background: white; border: 1px solid #E5E5E5; border-radius: 12px; padding: 24px 16px 16px 20px; position: relative; border-left: 5px solid transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 14px; }
+        .kanban-item:hover { box-shadow: 0 12px 24px rgba(0,0,0,0.08); transform: translateY(-2px); border-color: transparent; }
         .k-blue { border-left-color: #007AFF; } .bg-blue { background-color: #007AFF !important; }
         .k-orange { border-left-color: #FF9500; } .bg-orange { background-color: #FF9500 !important; }
         .k-green { border-left-color: #34C759; } .bg-green { background-color: #34C759 !important; }
@@ -75,7 +99,7 @@
         
         .k-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 20; }
         .k-action-btn { width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #999; transition: 0.2s; background: #f5f5f7; }
-        .k-action-btn:hover { background: #e5e5e5; color: #333; }
+        .k-action-btn:hover { background: #e5e5e5; color: #333; transform: scale(1.1); }
         .k-del:hover { background: #fee2e2; color: #ef4444; }
 
         .k-name { font-size: 18px; font-weight: 800; color: #1D1D1F; margin-bottom: 6px; padding-right: 60px; line-height: 1.3; }
@@ -87,7 +111,7 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* ★ 終極修復：甘特圖防穿透與完美捲動 ★ */
+        /* 甘特圖 */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; }
         .gantt-table { width: 100%; border-collapse: collapse; min-width: 800px; table-layout: fixed; }
         
@@ -123,19 +147,19 @@
         .gantt-id { font-weight: 900; font-size: 12px; color: #333; margin-right: 6px; }
         .gantt-name { font-size: 12px; color: #444; font-weight: 500; }
         .gantt-grid-cell { border: 1px solid #F1F5F9; position: relative; padding: 0; }
-        .gantt-bar { position: absolute; top: 10px; left: 1px; height: 20px; border-radius: 4px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 5px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.1s; }
-        .gantt-bar:hover { transform: scaleY(1.1); z-index: 10; }
+        .gantt-bar { position: absolute; top: 10px; left: 1px; height: 20px; border-radius: 6px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 6px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; transition: 0.2s; font-weight: bold; }
+        .gantt-bar:hover { transform: scaleY(1.15); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* ★ 行事曆修復：確保容器擁有絕對高度與適應性 ★ */
+        /* 行事曆 */
         #calendar-container { 
             background: white; border-radius: 16px; padding: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            flex-grow: 1; /* 讓容器可以隨著頁面延展 */
-            min-height: 600px; /* 防止壓縮至0高度 */
+            flex-grow: 1; 
+            min-height: 600px; 
             overflow: hidden; 
             display: flex; flex-direction: column;
         }
@@ -156,6 +180,7 @@
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
         
+        /* ★ RWD：針對手機版的全面調整 ★ */
         @media (max-width: 768px) {
             .page-scroll-container { padding: 10px 10px 80px 10px; }
             #calendar-container { padding: 10px; min-height: 500px; }
@@ -163,6 +188,13 @@
             .fc .fc-toolbar-title { font-size: 1.2rem !important; }
             .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
             .fc-event-main { font-size: 10px !important; padding: 2px !important; }
+            
+            .header-fixed-area { padding: 15px 15px 0 15px; }
+            .modal-body { width: 95%; padding: 20px; }
+            .clean-card { padding: 16px; }
+            
+            .fab-container { bottom: 20px; right: 20px; }
+            .fab-btn { width: 60px; height: 60px; font-size: 24px; }
         }
 
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
@@ -170,8 +202,8 @@
 
         /* 浮動按鈕與彈窗 */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
-        .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
-        .fab-btn:hover { transform: scale(1.1); }
+        .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); position: relative; }
+        .fab-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.3); }
         .fab-btn.fab-link { background: #2D3748; } 
         .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: white; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 2px solid white; font-weight: bold; display: none; }
         
@@ -179,16 +211,17 @@
         .fab-btn-small { width: 40px; height: 40px; font-size: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
         .fab-btn-small:hover { transform: scale(1.1); }
 
-        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; }
-        .float-panel { width: 90%; max-width: 600px; background: white; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; max-height: 85vh; padding: 0; overflow: hidden; animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .float-panel { width: 90%; max-width: 600px; background: white; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; max-height: 85vh; padding: 0; overflow: hidden; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes popIn { from { transform: scale(0.95) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
         
-        .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.2s; }
+        .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .hidden { display: none !important; }
 
-        .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; }
+        .memo-item:hover, .pending-item:hover { transform: translateX(3px); }
         .memo-item.chiu { background: #E3F2FD; border-left-color: #2196F3; } 
         .pending-item { background: #f3f4f6; border-left: 6px solid #9CA3AF; }
         .memo-content, .pending-name { font-weight: 800; color: #333; margin-bottom: 8px; font-size: 20px; line-height: 1.4; }
@@ -210,9 +243,18 @@
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; font-weight:bold;}
         .setting-actions i { cursor: pointer; padding: 5px; margin-left: 5px; color: #999; }
         .setting-actions i:hover { color: #333; }
+
+        /* ★ 全新組件：Toast 提示框 ★ */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .custom-toast { background: rgba(29, 29, 31, 0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1), toastOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) 2.6s forwards; display: flex; align-items: center; gap: 8px; }
+        .custom-toast.error { background: rgba(255, 59, 48, 0.9); }
+        @keyframes toastIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes toastOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-20px); opacity: 0; } }
     </style>
 </head>
 <body>
+    <div id="toast-container"></div>
+
     <div id="login-overlay">
         <div class="text-6xl font-black mb-8 tracking-widest text-white">JAYRAN</div>
         <input id="login-acc" type="email" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-4 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入帳號 (Email)">
@@ -261,7 +303,7 @@
                         </select>
                         <input id="m-date" class="clean-input w-48 text-center font-bold border border-gray-200 bg-white" placeholder="起訖日期" autocomplete="off">
                     </div>
-                    <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-lg py-3 rounded-lg font-bold hover:bg-gray-800">新增貼文</button>
+                    <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-lg py-3 rounded-lg font-bold hover:bg-gray-800 transition">新增貼文</button>
                 </div>
             </div>
             <div id="memo-list" class="panel-scroll-area">
@@ -453,17 +495,17 @@
     <div class="header-fixed-area">
         <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
-            </div>
+        </div>
         <div class="segmented-nav">
-            <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-plus mr-2"></i> 新增</div>
-            <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user mr-2"></i> 魏敏軒</div>
-            <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user mr-2"></i> 邱仁杰</div>
-            <div onclick="switchTab('gan')" id="nav-gan" class="nav-item"><i class="fas fa-chart-bar mr-2"></i> 甘特圖</div>
-            <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item"><i class="fas fa-calendar-alt mr-2"></i> 行事曆</div>
+            <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-plus mr-1"></i> 新增</div>
+            <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user mr-1"></i> 魏敏軒</div>
+            <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user mr-1"></i> 邱仁杰</div>
+            <div onclick="switchTab('gan')" id="nav-gan" class="nav-item"><i class="fas fa-chart-bar mr-1"></i> 甘特圖</div>
+            <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item"><i class="fas fa-calendar-alt mr-1"></i> 行事曆</div>
         </div>
     </div>
 
-    <div id="p-add" class="page-scroll-container">
+    <div id="p-add" class="page-scroll-container fade-in">
         <div class="max-w-5xl mx-auto">
             <div class="clean-card">
                 <div class="type-switch">
@@ -514,7 +556,7 @@
                 </div>
                 
                 <div class="mb-4 flex items-center gap-2">
-                    <input type="checkbox" id="i-urgent" class="w-5 h-5 text-red-600 rounded focus:ring-red-500 cursor-pointer">
+                    <input type="checkbox" id="i-urgent" class="w-5 h-5 text-red-600 rounded focus:ring-red-500 cursor-pointer transition">
                     <label for="i-urgent" class="text-base font-bold text-red-600 cursor-pointer select-none">🔥 標記為急件</label>
                 </div>
 
@@ -531,7 +573,7 @@
         </div>
     </div>
 
-    <div id="p-kanban" class="hidden page-scroll-container">
+    <div id="p-kanban" class="hidden page-scroll-container fade-in">
         <div class="max-w-5xl mx-auto flex flex-col h-full">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <h2 id="kb-title" class="text-3xl font-black px-2 border-l-8 border-black pl-4"></h2>
@@ -592,7 +634,7 @@
         </div>
     </div>
 
-    <div id="p-gantt" class="hidden page-scroll-container">
+    <div id="p-gantt" class="hidden page-scroll-container fade-in">
         <div class="max-w-full h-full flex flex-col">
             <div class="flex gap-2 mb-4 px-2 items-center justify-between shrink-0">
                 <h2 id="gan-title" class="text-2xl font-black">甘特圖</h2>
@@ -607,15 +649,15 @@
         </div>
     </div>
 
-    <div id="p-calendar" class="hidden page-scroll-container">
+    <div id="p-calendar" class="hidden page-scroll-container fade-in">
         <div class="max-w-full h-full flex flex-col">
-            <div class="flex justify-between items-center mb-4 px-2 shrink-0">
+            <div class="flex flex-wrap gap-2 justify-between items-center mb-4 px-2 shrink-0">
                 <h2 class="text-2xl font-black">行事曆</h2>
-                <div class="flex gap-2">
+                <div class="flex gap-2 flex-wrap">
                     <button id="btn-cal-all" onclick="filterCalendar('all')" class="cal-filter-btn active">全部</button>
                     <button id="btn-cal-wei" onclick="filterCalendar('魏敏軒')" class="cal-filter-btn">魏敏軒</button>
                     <button id="btn-cal-chiu" onclick="filterCalendar('邱仁杰')" class="cal-filter-btn">邱仁杰</button>
-                    <button onclick="openLeaveModal()" class="bg-black text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg"><i class="fas fa-coffee mr-1"></i> 請假</button>
+                    <button onclick="openLeaveModal()" class="bg-black text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition hover:scale-105"><i class="fas fa-coffee mr-1"></i> 請假</button>
                 </div>
             </div>
             <div id="calendar-container">
@@ -655,6 +697,16 @@
             }
         });
 
+        // ★ 新增：優雅的 Toast 提示系統 ★
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `custom-toast ${type}`;
+            toast.innerHTML = (type === 'success' ? '<i class="fas fa-check-circle text-green-400"></i> ' : '<i class="fas fa-exclamation-triangle text-white"></i> ') + msg;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
         function checkLogin() {
             const acc = document.getElementById('login-acc').value.trim();
             const pass = document.getElementById('login-pass').value;
@@ -667,7 +719,7 @@
                     startApp(); 
                 }, 500);
             } else {
-                alert("帳號或密碼錯誤！\n請確認您有權限進入此系統。");
+                showToast("帳號或密碼錯誤！", "error");
                 document.getElementById('login-pass').value = '';
             }
         }
@@ -725,7 +777,7 @@
                         .then(res => res.json())
                         .then(data => onSuccess(data.data))
                         .catch(e => { 
-                            alert("連線錯誤，請檢查網路"); 
+                            showToast("連線錯誤，請檢查網路", "error"); 
                             document.getElementById('loader').style.display = 'none'; 
                         });
                 }
@@ -762,31 +814,25 @@
             }
         }
 
-        // ★ 任務看板的專屬搜尋邏輯 (表格化)
         function handleKanbanSearch() {
             const query = document.getElementById('kanban-search').value.trim().toLowerCase();
             const normalView = document.getElementById('kb-normal-view');
             const searchView = document.getElementById('kb-search-results');
             const tbody = document.getElementById('kb-search-tbody');
 
-            // 如果搜尋框是空的，顯示原本的卡片視圖
             if (!query) {
                 normalView.classList.remove('hidden');
                 searchView.classList.add('hidden');
-                
-                // 強制重新渲染當前人員的卡片確保乾淨
                 const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
                 renderKanban(who, false); 
                 return;
             }
 
-            // 若有輸入字，隱藏卡片區，顯示表格結果
             normalView.classList.add('hidden');
             searchView.classList.remove('hidden');
 
-            // 跨兩方比對 (不限制目前所在看板是魏或邱)
             const results = DATA.projects.filter(p => {
-                if (!p.producer || p.producer === '尚未暫定') return false; // 這裡我們只顯示已分配的
+                if (!p.producer || p.producer === '尚未暫定') return false; 
                 return p.name.toLowerCase().includes(query) || 
                        p.client.toLowerCase().includes(query) || 
                        String(p.id).toLowerCase().includes(query);
@@ -863,22 +909,38 @@
         }
 
         function switchTab(tab) {
+            // ★ 動畫重置：每次切換都移除並重新加上 fade-in
+            document.querySelectorAll('.page-scroll-container').forEach(el => {
+                el.classList.remove('fade-in');
+                // 強制觸發重繪 (Reflow) 才能讓動畫再次生效
+                void el.offsetWidth;
+            });
+
             curTab = tab;
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById('nav-' + tab).classList.add('active');
             ['p-add', 'p-kanban', 'p-gantt', 'p-calendar'].forEach(id => document.getElementById(id).classList.add('hidden'));
             
+            let targetId = '';
             if (tab === 'add') { 
-                document.getElementById('p-add').classList.remove('hidden'); 
+                targetId = 'p-add';
                 renderDynamicOptions(); 
             }
-            else if (tab === 'wei') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('魏敏軒'); }
-            else if (tab === 'chiu') { document.getElementById('p-kanban').classList.remove('hidden'); renderKanban('邱仁杰'); }
-            else if (tab === 'gan') { document.getElementById('p-gantt').classList.remove('hidden'); renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); }
+            else if (tab === 'wei') { targetId = 'p-kanban'; renderKanban('魏敏軒'); }
+            else if (tab === 'chiu') { targetId = 'p-kanban'; renderKanban('邱仁杰'); }
+            else if (tab === 'gan') { 
+                targetId = 'p-gantt'; 
+                renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); 
+            }
             else if (tab === 'calendar') { 
-                document.getElementById('p-calendar').classList.remove('hidden'); 
-                // 確保容器已經顯示後再渲染，確保高度不會抓到 0
+                targetId = 'p-calendar';
                 setTimeout(() => renderCalendar(), 50); 
+            }
+
+            if(targetId) {
+                const targetEl = document.getElementById(targetId);
+                targetEl.classList.remove('hidden');
+                targetEl.classList.add('fade-in');
             }
         }
 
@@ -972,13 +1034,13 @@
                 status: (prod !== '尚未暫定' && dr[0] && new Date(dr[0]) <= new Date()) ? '製作中' : '尚未進行'
             };
             
-            if(!p.zone || !rawId || !p.name) return alert("請填寫完整資訊 (區域、編號、名稱)");
-            if(prod !== '尚未暫定' && !p.start) return alert("有指定製作人時，請選擇日期範圍");
+            if(!p.zone || !rawId || !p.name) return showToast("請填寫完整資訊 (區域、編號、名稱)", "error");
+            if(prod !== '尚未暫定' && !p.start) return showToast("有指定製作人時，請選擇日期範圍", "error");
             
             DATA.projects.push(p);
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true); 
-            alert("✅ 建立成功 (背景同步中)");
+            showToast("建立成功 (背景同步中)");
 
             document.getElementById('i-id').value = ''; 
             document.getElementById('i-name').value = ''; 
@@ -990,12 +1052,10 @@
             });
         }
 
-        // --- 看板 ---
         function renderKanban(producer, clearSearch = true) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
             
-            // 如果從外圍呼叫，強制重置搜尋視窗並呈現原本的卡片區
             if (clearSearch) {
                 document.getElementById('kanban-search').value = '';
                 document.getElementById('kb-normal-view').classList.remove('hidden');
@@ -1041,7 +1101,6 @@
             document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
         }
 
-        // --- 甘特圖 ---
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -1174,12 +1233,10 @@
             });
             calendar.render();
 
-            // ★ 強制行事曆重新計算大小，防止隱藏/顯示時高度崩壞為0
             setTimeout(() => {
                 if(calendar) calendar.updateSize();
             }, 100);
 
-            // 自動捲動到今天
             setTimeout(() => {
                 const todayCell = document.querySelector('.fc-day-today');
                 if (todayCell) {
@@ -1297,7 +1354,7 @@
             closeModal('edit-project');
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true);
-            alert("✅ 修改成功 (背景同步中)");
+            showToast("修改成功 (背景同步中)");
             
             callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => { 
                 console.log("Updated"); 
@@ -1306,7 +1363,7 @@
 
         function openHistory() {
             const z = document.getElementById('i-zone').value;
-            if(!z) return alert("請先選擇客戶");
+            if(!z) return showToast("請先選擇客戶", "error");
             document.getElementById('hist-title').innerText = z;
             document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>';
             document.getElementById('modal-preview').style.display = 'flex';
@@ -1363,7 +1420,7 @@
                 if(res === 'OK') { 
                     callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); 
                 } else { 
-                    alert(res); document.getElementById('loader').style.display = 'none'; 
+                    showToast(res, "error"); document.getElementById('loader').style.display = 'none'; 
                 }
             });
             document.getElementById('st-input').value = '';
@@ -1377,7 +1434,7 @@
                 if(res === 'OK') { 
                     callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); 
                 } else { 
-                    alert(res); document.getElementById('loader').style.display = 'none'; 
+                    showToast(res, "error"); document.getElementById('loader').style.display = 'none'; 
                 }
             });
         }
@@ -1391,7 +1448,7 @@
                 if(res === 'OK') { 
                     callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); 
                 } else { 
-                    alert("編輯失敗：" + res); document.getElementById('loader').style.display = 'none'; 
+                    showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; 
                 }
             });
         }
@@ -1406,7 +1463,7 @@
 
         function confirmSendReview() {
             const h = document.getElementById('input-hours').value;
-            if(!h) return alert("請輸入工時");
+            if(!h) return showToast("請輸入工時", "error");
             closeModal('hours');
             doUpdate(document.getElementById('hours-cat').value, document.getElementById('hours-zone').value, document.getElementById('hours-id').value, '客戶審核', h);
         }
@@ -1565,7 +1622,7 @@
                         processDataUpdate(data, false); 
                     }); 
                 } else { 
-                    alert("保存失敗：" + res); 
+                    showToast("保存失敗：" + res, "error"); 
                     document.getElementById('loader').style.display = 'none'; 
                 }
             });
@@ -1575,7 +1632,7 @@
             const maker = document.getElementById(`p-assign-maker-${idx}`).value;
             const date = document.getElementById(`p-assign-date-${idx}`).value;
             
-            if(!maker || !date) return alert("請選擇製作人與日期");
+            if(!maker || !date) return showToast("請選擇製作人與日期", "error");
             
             const dates = date.split(' to ');
             const startDate = dates[0];
@@ -1598,6 +1655,7 @@
 
                 localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
                 processDataUpdate(DATA, true); 
+                showToast("專案分派成功");
             }
             
             callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {
@@ -1637,7 +1695,10 @@
         function deleteMemo(idx, el) {
             if(!confirm("確定刪除此便利貼嗎？")) return;
             el.parentElement.parentElement.style.opacity = '0.5'; 
-            callAPI('deleteMemo', { idx:idx }, (res) => loadMemos());
+            callAPI('deleteMemo', { idx:idx }, (res) => {
+                showToast("已刪除待辦");
+                loadMemos();
+            });
         }
 
         function editMemoMode(m) {
@@ -1655,7 +1716,7 @@
             const content = document.getElementById('m-content').value;
             const owner = document.getElementById('m-owner').value;
             const date = document.getElementById('m-date').value;
-            if(!content) return alert("請輸入內容");
+            if(!content) return showToast("請輸入內容", "error");
             
             document.getElementById('m-content').value = ''; 
             document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 更新中...</div>';
@@ -1667,6 +1728,7 @@
             
             callAPI('editMemo', { idx: editingMemoIdx, item: {content: content, owner: owner, date: date} }, (res) => { 
                 editingMemoIdx = null; 
+                showToast("貼文已更新");
                 loadMemos(); 
             });
         }
@@ -1675,18 +1737,24 @@
             const content = document.getElementById('m-content').value;
             const owner = document.getElementById('m-owner').value;
             const date = document.getElementById('m-date').value;
-            if(!content) return alert("請輸入內容");
+            if(!content) return showToast("請輸入內容", "error");
             
             document.getElementById('m-content').value = ''; 
             document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 儲存中...</div>';
             
-            callAPI('addMemo', { item: {content: content, owner: owner, date: date} }, (res) => loadMemos());
+            callAPI('addMemo', { item: {content: content, owner: owner, date: date} }, (res) => {
+                showToast("已新增待辦");
+                loadMemos();
+            });
         }
 
         function finishMemo(idx, el) {
             if(!confirm("確定完成此事項並封存嗎？")) return;
             el.parentElement.parentElement.style.opacity = '0.5'; 
-            callAPI('completeMemo', { idx:idx }, (res) => loadMemos());
+            callAPI('completeMemo', { idx:idx }, (res) => {
+                showToast("事項已完成封存");
+                loadMemos();
+            });
         }
 
         function loadLinks() {
@@ -1758,6 +1826,7 @@
             if (newName && newName !== oldName) {
                 document.getElementById('link-list').innerHTML = '<div class="text-center text-gray-400 py-4"><i class="fas fa-spinner fa-spin"></i> 更新資料夾中...</div>';
                 callAPI('renameLinkFolder', { oldFolder: oldName, newFolder: newName }, (res) => {
+                    showToast("資料夾已重新命名");
                     loadLinks();
                 });
             }
@@ -1777,7 +1846,7 @@
             const folder = document.getElementById('l-folder').value.trim();
             const name = document.getElementById('l-name').value.trim();
             const url = document.getElementById('l-url').value.trim();
-            if(!name || !url) return alert("請至少輸入「名稱」與「網址」");
+            if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error");
             
             const clientString = folder ? `${folder}::${name}` : name;
             const btn = document.getElementById('btn-link-add');
@@ -1792,6 +1861,7 @@
                 document.getElementById('l-folder').value = '';
                 document.getElementById('l-name').value = '';
                 document.getElementById('l-url').value = '';
+                showToast("連結已更新");
                 loadLinks();
             });
         }
@@ -1800,7 +1870,7 @@
             const folder = document.getElementById('l-folder').value.trim();
             const name = document.getElementById('l-name').value.trim();
             const url = document.getElementById('l-url').value.trim();
-            if(!name || !url) return alert("請至少輸入「名稱」與「網址」");
+            if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error");
             
             const clientString = folder ? `${folder}::${name}` : name;
             const btn = document.getElementById('btn-link-add');
@@ -1812,10 +1882,11 @@
                 btn.innerText = originalText;
                 btn.disabled = false;
                 if (res !== "OK") { 
-                    alert(res); 
+                    showToast(res, "error"); 
                 } else { 
                     document.getElementById('l-name').value = ''; 
                     document.getElementById('l-url').value = ''; 
+                    showToast("已新增連結");
                     loadLinks(); 
                 }
             });
@@ -1824,13 +1895,16 @@
         function removeLink(idx, el) {
             if(!confirm("確定刪除此連結嗎？")) return;
             el.parentElement.parentElement.style.opacity = '0.5';
-            callAPI('deleteLink', { idx:idx }, (res) => loadLinks());
+            callAPI('deleteLink', { idx:idx }, (res) => {
+                showToast("已刪除連結");
+                loadLinks();
+            });
         }
 
         function openZoneModal(mode) {
             modalMode = mode;
             const z = document.getElementById('i-zone').value;
-            if (mode === 'edit' && !z) return alert("請先選擇要編輯的客戶");
+            if (mode === 'edit' && !z) return showToast("請先選擇要編輯的客戶", "error");
             document.getElementById('modal-title').innerText = (mode==='new') ? "新增客戶" : "編輯客戶名稱";
             
             const selCode = document.getElementById('modal-code');
@@ -1884,13 +1958,19 @@
             
             if (modalMode === 'new') {
                 callAPI('createClient', { cat: curCat, code: code, name: name }, (res) => {
-                    callAPI('initAllData', {}, (data) => processDataUpdate(data));
+                    callAPI('initAllData', {}, (data) => {
+                        processDataUpdate(data);
+                        showToast("已新增客戶");
+                    });
                 });
             } else {
                 const oldName = document.getElementById('i-zone').value;
                 const newFullName = code + "_" + name; 
                 callAPI('renameClient', { cat: curCat, oldName: oldName, newFullName: newFullName }, (res) => {
-                    callAPI('initAllData', {}, (data) => processDataUpdate(data));
+                    callAPI('initAllData', {}, (data) => {
+                        processDataUpdate(data);
+                        showToast("客戶已更新");
+                    });
                 });
             }
         }
@@ -1933,7 +2013,7 @@
             const name = document.getElementById('leave-name').value;
             const date = document.getElementById('leave-date').value;
             const reason = document.getElementById('leave-reason').value;
-            if(!date || !reason) return alert("請填寫完整資訊 (日期與事由)");
+            if(!date || !reason) return showToast("請填寫完整資訊 (日期與事由)", "error");
             
             const dates = date.split(' to ');
             const item = { 
@@ -1948,7 +2028,7 @@
             
             closeModal('leave');
             renderCalendar(); 
-            alert("✅ 請假申請已送出");
+            showToast("請假申請已送出");
             callAPI('addLeave', { item: item }, (res) => {});
             
             document.getElementById('leave-date').value = '';

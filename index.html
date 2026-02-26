@@ -39,7 +39,7 @@
             color: white; transition: opacity 0.5s ease;
         }
         
-        /* ★ 質感升級：毛玻璃頂部導覽列 ★ */
+        /* 毛玻璃頂部導覽列 */
         .header-fixed-area { 
             flex-shrink: 0; padding: 20px 20px 0 20px; 
             background: rgba(245, 245, 247, 0.85); 
@@ -49,21 +49,21 @@
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         
-        /* ★ RWD升級：手機版導覽列可橫向滑動 ★ */
+        /* RWD 導覽列 */
         .segmented-nav { 
             background: rgba(229, 229, 234, 0.6); 
             padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; 
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             overflow-x: auto; 
             -webkit-overflow-scrolling: touch; 
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none; 
         }
-        .segmented-nav::-webkit-scrollbar { display: none; /* Safari and Chrome */ }
+        .segmented-nav::-webkit-scrollbar { display: none; }
         
         .nav-item { flex: 1; min-width: 85px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         
-        /* ★ 動畫升級：分頁切換淡入效果 ★ */
+        /* 頁面容器與動畫 */
         .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 80px 20px; position: relative; }
         .fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -85,26 +85,21 @@
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
         .icon-btn:hover { transform: scale(1.05); }
 
-        /* ★ 看板樣式與互動升級 ★ */
-        .kanban-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
-        @media (min-width: 768px) { .kanban-grid { grid-template-columns: repeat(2, 1fr); } }
+        /* ★ 新版：表格化列表樣式 (Excel Style) ★ */
+        .excel-table { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 14px; }
+        .excel-table thead th { text-align: left; padding: 12px 16px; background: #F9FAFB; color: #6B7280; font-weight: 700; font-size: 12px; border-bottom: 1px solid #E5E7EB; white-space: nowrap; }
+        .excel-table tbody tr { border-bottom: 1px solid #F3F4F6; transition: background 0.1s; }
+        .excel-table tbody tr:hover { background: #F9FAFB; }
+        .excel-table td { padding: 12px 16px; vertical-align: middle; color: #1F2937; font-weight: 600; }
+        .table-container { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #E5E5E5; box-shadow: 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px; }
         
-        .kanban-item { background: white; border: 1px solid #E5E5E5; border-radius: 12px; padding: 24px 16px 16px 20px; position: relative; border-left: 5px solid transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 14px; }
-        .kanban-item:hover { box-shadow: 0 12px 24px rgba(0,0,0,0.08); transform: translateY(-2px); border-color: transparent; }
-        .k-blue { border-left-color: #007AFF; } .bg-blue { background-color: #007AFF !important; }
-        .k-orange { border-left-color: #FF9500; } .bg-orange { background-color: #FF9500 !important; }
-        .k-green { border-left-color: #34C759; } .bg-green { background-color: #34C759 !important; }
-        .k-gray { border-left-color: #8E8E93; } .bg-gray { background-color: #8E8E93 !important; }
-        .k-red { border-left-color: #ff3b30 !important; border: 1px solid #ffcccc; background: #fff5f5; }
-        
-        .k-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 20; }
-        .k-action-btn { width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #999; transition: 0.2s; background: #f5f5f7; }
-        .k-action-btn:hover { background: #e5e5e5; color: #333; transform: scale(1.1); }
-        .k-del:hover { background: #fee2e2; color: #ef4444; }
-
-        .k-name { font-size: 18px; font-weight: 800; color: #1D1D1F; margin-bottom: 6px; padding-right: 60px; line-height: 1.3; }
-        .k-client { font-size: 13px; color: #666; margin-bottom: 10px; font-weight: bold; }
-        .k-date { font-size: 12px; color: #888; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        /* 狀態標籤 */
+        .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+        .sb-blue { background: #E0F2FE; color: #0284C7; }
+        .sb-orange { background: #FFEDD5; color: #EA580C; }
+        .sb-green { background: #DCFCE7; color: #16A34A; }
+        .sb-gray { background: #F3F4F6; color: #6B7280; }
+        .sb-red { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; }
 
         details > summary { list-style: none; outline: none; }
         details > summary::-webkit-details-marker { display: none; }
@@ -114,33 +109,9 @@
         /* 甘特圖 */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; }
         .gantt-table { width: 100%; border-collapse: collapse; min-width: 800px; table-layout: fixed; }
-        
-        .gantt-header-cell { 
-            position: sticky; top: 0; 
-            background-color: #F8FAFC !important; 
-            z-index: 100; 
-            text-align: center; font-size: 11px; color: #475569; 
-            border: 1px solid #E2E8F0; 
-            padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; 
-        }
-        
-        .gantt-corner { 
-            position: sticky; top: 0; left: 0; 
-            background-color: #F8FAFC !important; 
-            z-index: 110; 
-            padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1E293B; 
-            border: 1px solid #E2E8F0;
-        }
-        
-        .gantt-col-fixed { 
-            position: sticky; left: 0; 
-            background-color: #FFFFFF !important; 
-            z-index: 50; 
-            width: 220px; padding: 8px 10px; 
-            white-space: nowrap; overflow: hidden; 
-            border: 1px solid #E2E8F0;
-        }
-        
+        .gantt-header-cell { position: sticky; top: 0; background-color: #F8FAFC !important; z-index: 100; text-align: center; font-size: 11px; color: #475569; border: 1px solid #E2E8F0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
+        .gantt-corner { position: sticky; top: 0; left: 0; background-color: #F8FAFC !important; z-index: 110; padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1E293B; border: 1px solid #E2E8F0; }
+        .gantt-col-fixed { position: sticky; left: 0; background-color: #FFFFFF !important; z-index: 50; width: 220px; padding: 8px 10px; white-space: nowrap; overflow: hidden; border: 1px solid #E2E8F0; }
         .gantt-today { background-color: #FFF9C4 !important; color: #000; font-weight: 900; }
         .gantt-today-cell { background-color: #FEF9C3; } 
         .gantt-row { height: 40px; }
@@ -149,20 +120,12 @@
         .gantt-grid-cell { border: 1px solid #F1F5F9; position: relative; padding: 0; }
         .gantt-bar { position: absolute; top: 10px; left: 1px; height: 20px; border-radius: 6px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 6px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; transition: 0.2s; font-weight: bold; }
         .gantt-bar:hover { transform: scaleY(1.15); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
         /* 行事曆 */
-        #calendar-container { 
-            background: white; border-radius: 16px; padding: 20px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            flex-grow: 1; 
-            min-height: 600px; 
-            overflow: hidden; 
-            display: flex; flex-direction: column;
-        }
+        #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); flex-grow: 1; min-height: 600px; overflow: hidden; display: flex; flex-direction: column; }
         .fc { height: 100% !important; } 
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
@@ -170,17 +133,15 @@
         .fc-day-today { background-color: transparent !important; }
         .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; }
         .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
-        
         .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 2px !important; border-radius: 4px !important; }
         .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 11px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .fc-more-popover { z-index: 1000 !important; } 
-        
         .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
         .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
         
-        /* ★ RWD：針對手機版的全面調整 ★ */
+        /* RWD 手機版調整 */
         @media (max-width: 768px) {
             .page-scroll-container { padding: 10px 10px 80px 10px; }
             #calendar-container { padding: 10px; min-height: 500px; }
@@ -188,11 +149,9 @@
             .fc .fc-toolbar-title { font-size: 1.2rem !important; }
             .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
             .fc-event-main { font-size: 10px !important; padding: 2px !important; }
-            
             .header-fixed-area { padding: 15px 15px 0 15px; }
             .modal-body { width: 95%; padding: 20px; }
             .clean-card { padding: 16px; }
-            
             .fab-container { bottom: 20px; right: 20px; }
             .fab-btn { width: 60px; height: 60px; font-size: 24px; }
         }
@@ -216,7 +175,6 @@
         @keyframes popIn { from { transform: scale(0.95) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
-        
         .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .hidden { display: none !important; }
 
@@ -244,7 +202,7 @@
         .setting-actions i { cursor: pointer; padding: 5px; margin-left: 5px; color: #999; }
         .setting-actions i:hover { color: #333; }
 
-        /* ★ 全新組件：Toast 提示框 ★ */
+        /* Toast 提示框 */
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .custom-toast { background: rgba(29, 29, 31, 0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1), toastOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) 2.6s forwards; display: flex; align-items: center; gap: 8px; }
         .custom-toast.error { background: rgba(255, 59, 48, 0.9); }
@@ -574,37 +532,38 @@
     </div>
 
     <div id="p-kanban" class="hidden page-scroll-container fade-in">
-        <div class="max-w-5xl mx-auto flex flex-col h-full">
+        <div class="max-w-full mx-auto flex flex-col h-full">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <h2 id="kb-title" class="text-3xl font-black px-2 border-l-8 border-black pl-4"></h2>
                 
                 <div class="relative w-full md:w-80">
                     <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
-                    <input id="kanban-search" type="text" placeholder="搜尋全部專案 / 客戶 (列表顯示)..." class="w-full bg-white border border-gray-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:outline-none focus:border-blue-500 shadow-sm transition" onkeyup="handleKanbanSearch()">
+                    <input id="kanban-search" type="text" placeholder="搜尋全部專案 / 客戶..." class="w-full bg-white border border-gray-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:outline-none focus:border-blue-500 shadow-sm transition" onkeyup="handleKanbanSearch()">
                 </div>
             </div>
             
-            <div id="kb-search-results" class="hidden flex-grow overflow-auto bg-white rounded-xl border border-gray-200 shadow-sm pb-4">
-                <table class="w-full text-left border-collapse min-w-[800px]">
-                    <thead class="bg-gray-100 text-gray-600 text-sm sticky top-0 z-10">
-                        <tr>
-                            <th class="p-4 border-b font-bold">ID</th>
-                            <th class="p-4 border-b font-bold">專案名稱</th>
-                            <th class="p-4 border-b font-bold">客戶</th>
-                            <th class="p-4 border-b font-bold text-center">製作人</th>
-                            <th class="p-4 border-b font-bold text-center">狀態</th>
-                            <th class="p-4 border-b font-bold">日期</th>
-                            <th class="p-4 border-b font-bold text-center">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="kb-search-tbody" class="text-sm"></tbody>
-                </table>
+            <div id="kb-search-results" class="hidden flex-grow overflow-auto bg-white rounded-xl border border-gray-200 shadow-sm mb-10">
+                <div class="p-3 bg-gray-100 font-bold text-gray-600 border-b border-gray-200">🔍 搜尋結果</div>
+                <div class="overflow-x-auto">
+                    <table class="excel-table">
+                        <thead>
+                            <tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>製作人</th><th>狀態</th><th>日期</th><th>操作</th></tr>
+                        </thead>
+                        <tbody id="kb-search-tbody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="kb-normal-view">
+                
                 <div class="mb-10">
                     <h3 class="text-xl font-bold text-blue-600 mb-4 px-2">🔥 製作中</h3>
-                    <div id="kb-process" class="kanban-grid"></div>
+                    <div class="table-container">
+                        <table class="excel-table">
+                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
+                            <tbody id="kb-process"></tbody>
+                        </table>
+                    </div>
                 </div>
                 
                 <details class="mb-6 group" open>
@@ -612,7 +571,12 @@
                         <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
                         <span>👀 審核中</span>
                     </summary>
-                    <div id="kb-review" class="kanban-grid pl-2"></div>
+                    <div class="table-container">
+                        <table class="excel-table">
+                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
+                            <tbody id="kb-review"></tbody>
+                        </table>
+                    </div>
                 </details>
                 
                 <details class="mb-6 group">
@@ -620,7 +584,12 @@
                         <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
                         <span>⏳ 尚未進行</span>
                     </summary>
-                    <div id="kb-todo" class="kanban-grid pl-2"></div>
+                    <div class="table-container">
+                        <table class="excel-table">
+                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
+                            <tbody id="kb-todo"></tbody>
+                        </table>
+                    </div>
                 </details>
                 
                 <details class="mb-6 group">
@@ -628,7 +597,12 @@
                         <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
                         <span>✅ 已完成</span>
                     </summary>
-                    <div id="kb-done" class="kanban-grid pl-2"></div>
+                    <div class="table-container">
+                        <table class="excel-table">
+                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
+                            <tbody id="kb-done"></tbody>
+                        </table>
+                    </div>
                 </details>
             </div>
         </div>
@@ -697,7 +671,6 @@
             }
         });
 
-        // ★ 新增：優雅的 Toast 提示系統 ★
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -814,6 +787,7 @@
             }
         }
 
+        // ★ 新版搜尋：跨使用者表格搜尋 ★
         function handleKanbanSearch() {
             const query = document.getElementById('kanban-search').value.trim().toLowerCase();
             const normalView = document.getElementById('kb-normal-view');
@@ -839,35 +813,155 @@
             });
 
             if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-gray-400 font-bold">找不到符合的專案</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-400 font-bold">找不到符合的專案</td></tr>';
                 return;
             }
 
             let html = '';
             results.forEach(p => {
                 const pStr = encodeURIComponent(JSON.stringify(p));
-                let statusColor = 'bg-gray-200 text-gray-700';
-                if(p.status === '製作中') statusColor = 'bg-blue-100 text-blue-700';
-                else if(p.status.includes('審')) statusColor = 'bg-orange-100 text-orange-700';
-                else if(p.status === '已完成' || p.status === '已結案') statusColor = 'bg-green-100 text-green-700';
-                else if(p.tag === 'Urgent') statusColor = 'bg-red-100 text-red-700 border border-red-300'; 
-
+                let badgeClass = 'sb-gray';
+                if(p.status === '製作中') badgeClass = 'sb-blue';
+                else if(p.status.includes('審')) badgeClass = 'sb-orange';
+                else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
+                
                 html += `
-                <tr class="border-b hover:bg-gray-50 transition">
-                    <td class="p-4 font-mono font-bold text-gray-800">${p.id}</td>
-                    <td class="p-4 font-bold text-gray-900">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
-                    <td class="p-4 text-gray-600 font-medium">${p.client}</td>
-                    <td class="p-4 font-bold text-center">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
-                    <td class="p-4 text-center"><span class="px-3 py-1 rounded text-xs font-bold ${statusColor}">${p.status}</span></td>
-                    <td class="p-4 text-gray-500 text-xs font-medium">${p.start || '未定'} ~ ${p.end || '未定'}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-xs font-bold transition shadow-sm text-gray-700">編輯</button>
+                <tr>
+                    <td class="font-mono">${p.id}</td>
+                    <td>${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
+                    <td>${p.client}</td>
+                    <td>${p.producer}</td>
+                    <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
+                    <td>${p.start} ~ ${p.end}</td>
+                    <td>
+                        <button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-xs font-bold transition text-gray-700">編輯</button>
                     </td>
                 </tr>`;
             });
             tbody.innerHTML = html;
         }
 
+        // --- ★ 新版看板：Excel 表格模式 ★ ---
+        function renderKanban(producer, clearSearch = true) {
+            document.getElementById('kb-title').innerText = producer + " 任務看板";
+            if (!DATA.projects) return;
+            
+            if (clearSearch) {
+                document.getElementById('kanban-search').value = '';
+                document.getElementById('kb-normal-view').classList.remove('hidden');
+                document.getElementById('kb-search-results').classList.add('hidden');
+            }
+
+            const tasks = DATA.projects.filter(p => p.producer === producer);
+
+            const getTableRows = (filteredTasks) => {
+                if (filteredTasks.length === 0) return '<tr><td colspan="6" class="p-4 text-center text-gray-400 text-xs">無專案</td></tr>';
+                
+                return filteredTasks.map(p => {
+                    const pStr = encodeURIComponent(JSON.stringify(p));
+                    let badgeClass = 'sb-gray';
+                    if(p.status === '製作中') badgeClass = 'sb-blue';
+                    else if(p.status.includes('審')) badgeClass = 'sb-orange';
+                    else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
+                    
+                    let actionBtns = '';
+                    if (p.status === '製作中') {
+                        actionBtns = `<button onclick="openHoursModal('${p.category}','${p.zone}','${p.id}')" class="text-orange-600 hover:text-orange-800 font-bold mr-2">送審</button>`;
+                    } else if (p.status.includes('審')) {
+                        actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-gray-500 hover:text-gray-700 mr-2">退修</button>
+                                      <button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','已完成')" class="text-green-600 hover:text-green-800 font-bold">完成</button>`;
+                    } else if (p.status === '尚未進行') {
+                        actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold">開始</button>`;
+                    }
+
+                    // 編輯與刪除按鈕
+                    actionBtns += `<button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="ml-2 text-gray-400 hover:text-black"><i class="fas fa-pen"></i></button>
+                                   <button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-2 text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>`;
+
+                    return `
+                    <tr>
+                        <td class="font-mono text-xs text-gray-500">${p.id}</td>
+                        <td class="max-w-[200px] truncate" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
+                        <td class="text-gray-600 text-xs">${p.client}</td>
+                        <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
+                        <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start}<br>${p.end}</td>
+                        <td class="whitespace-nowrap">${actionBtns}</td>
+                    </tr>`;
+                }).join('');
+            };
+
+            document.getElementById('kb-process').innerHTML = getTableRows(tasks.filter(p => p.status === '製作中'));
+            document.getElementById('kb-review').innerHTML = getTableRows(tasks.filter(p => p.status.includes('審')));
+            document.getElementById('kb-todo').innerHTML = getTableRows(tasks.filter(p => p.status === '尚未進行'));
+            document.getElementById('kb-done').innerHTML = getTableRows(tasks.filter(p => p.status === '已完成' || p.status === '已結案'));
+        }
+
+        // ... (其他原有邏輯保持不變，例如甘特圖) ...
+
+        function renderCalendar() {
+            const el = document.getElementById('calendar');
+            if (calendar) { calendar.destroy(); }
+
+            let events = [];
+            // ★ 修復：這裡原本會去讀取 globalSearchQuery，現在強制忽略，只看 filter
+            const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
+            
+            tasks.forEach(p => {
+                if (p.start && p.end) {
+                    let color = '#8E8E93';
+                    if (p.status === '製作中') color = '#007AFF';
+                    else if (p.status.includes('審')) color = '#FF9500';
+                    else if (p.status === '已完成' || p.status === '已結案') color = '#34C759';
+                    const endDate = new Date(new Date(p.end).getTime() + 86400000).toISOString().split('T')[0];
+                    events.push({ 
+                        title: `${p.name} (${p.producer})`, 
+                        start: p.start, 
+                        end: endDate, 
+                        backgroundColor: color, 
+                        borderColor: color, 
+                        extendedProps: { project: p } 
+                    });
+                }
+            });
+
+            if(!DATA.leaves) DATA.leaves = [];
+            DATA.leaves.forEach(l => {
+                if (calendarFilter === 'all' || l.name === calendarFilter) {
+                    const endDate = new Date(new Date(l.end).getTime() + 86400000).toISOString().split('T')[0];
+                    events.push({ 
+                        title: `🏖️ ${l.name}: ${l.reason}`, 
+                        start: l.start, 
+                        end: endDate, 
+                        backgroundColor: '#7C3AED', 
+                        borderColor: '#7C3AED' 
+                    });
+                }
+            });
+
+            calendar = new FullCalendar.Calendar(el, {
+                initialView: 'dayGridMonth', 
+                locale: 'zh-tw', 
+                height: '100%', 
+                dayMaxEvents: 2, 
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
+                buttonText: { today: '今天', month: '月', week: '週' },
+                events: events,
+                eventClick: function(info) { 
+                    const props = info.event.extendedProps; 
+                    if (props.project) openEditProject(props.project); 
+                }
+            });
+            calendar.render();
+
+            setTimeout(() => { if(calendar) calendar.updateSize(); }, 100);
+            setTimeout(() => {
+                const todayCell = document.querySelector('.fc-day-today');
+                if (todayCell) todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+
+        // ... (下方其餘功能函數如 setProjectType, renderDynamicOptions 等皆保持原樣優化過的版本) ...
+        
         function setProjectType(type) {
             curCat = type;
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
@@ -909,10 +1003,8 @@
         }
 
         function switchTab(tab) {
-            // ★ 動畫重置：每次切換都移除並重新加上 fade-in
             document.querySelectorAll('.page-scroll-container').forEach(el => {
                 el.classList.remove('fade-in');
-                // 強制觸發重繪 (Reflow) 才能讓動畫再次生效
                 void el.offsetWidth;
             });
 
@@ -1052,55 +1144,6 @@
             });
         }
 
-        function renderKanban(producer, clearSearch = true) {
-            document.getElementById('kb-title').innerText = producer + " 任務看板";
-            if (!DATA.projects) return;
-            
-            if (clearSearch) {
-                document.getElementById('kanban-search').value = '';
-                document.getElementById('kb-normal-view').classList.remove('hidden');
-                document.getElementById('kb-search-results').classList.add('hidden');
-            }
-
-            const tasks = DATA.projects.filter(p => p.producer === producer);
-
-            const card = (p, color, bg) => {
-                const pStr = encodeURIComponent(JSON.stringify(p));
-                return `
-                <div class="kanban-item k-${color} ${p.tag === 'Urgent' ? 'k-red' : ''}">
-                    <div class="absolute -top-3 left-4 flex gap-2 z-10">
-                        <span class="bg-${bg} text-white px-3 py-1 rounded-full text-xs font-black shadow-md border-2 border-white tracking-wider">${p.id}</span>
-                        <span class="bg-${bg} text-white px-3 py-1 rounded-full text-xs font-bold shadow-md border-2 border-white">${p.status}</span>
-                        ${ p.tag === 'Urgent' ? '<span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md border-2 border-white">🔥 急件</span>' : '' }
-                    </div>
-
-                    <div class="k-actions">
-                        <div onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="k-action-btn" title="編輯"><i class="fas fa-pen text-xs"></i></div>
-                        <div onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="k-action-btn k-del" title="刪除"><i class="fas fa-times text-xs"></i></div>
-                    </div>
-                    
-                    <div class="k-name pt-2">${p.name}</div>
-                    <div class="k-client">${p.client}</div>
-                    <div class="k-date"><i class="far fa-calendar-alt"></i> ${p.start} ~ ${p.end}</div>
-                    <div class="mt-3 flex gap-2">
-                        ${ p.status==='製作中' ? `<button onclick="openHoursModal('${p.category}','${p.zone}','${p.id}')" class="flex-1 bg-gray-100 text-orange-600 text-xs font-bold py-2 rounded hover:bg-orange-50 transition">送審核</button>` : '' }
-                        ${ p.status.includes('審') ? `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="bg-gray-100 px-3 py-2 rounded text-xs font-bold transition hover:bg-gray-200">退修</button><button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','已完成')" class="flex-1 bg-black text-white text-xs font-bold py-2 rounded transition hover:bg-gray-800 shadow-md">完成</button>` : '' }
-                        ${ p.status === '尚未進行' ? `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2 rounded transition hover:bg-blue-700 shadow-md">開始製作</button>` : '' }
-                    </div>
-                </div>`;
-            };
-            
-            const processHTML = tasks.filter(p => p.status === '製作中').map(p => card(p, 'blue', 'blue')).join('');
-            const reviewHTML = tasks.filter(p => p.status.includes('審')).map(p => card(p, 'orange', 'orange')).join('');
-            const todoHTML = tasks.filter(p => p.status === '尚未進行').map(p => card(p, 'gray', 'gray')).join('');
-            const doneHTML = tasks.filter(p => p.status === '已完成' || p.status === '已結案').map(p => card(p, 'green', 'green')).join('');
-            
-            document.getElementById('kb-process').innerHTML = processHTML || '<div class="text-center text-gray-300 py-6 font-bold bg-white rounded-xl border border-gray-100">目前無符合任務</div>';
-            document.getElementById('kb-review').innerHTML = reviewHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
-            document.getElementById('kb-todo').innerHTML = todoHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
-            document.getElementById('kb-done').innerHTML = doneHTML || '<div class="text-center text-gray-300 py-4 font-bold">無</div>';
-        }
-
         function renderGantt(who) {
             document.getElementById('btn-gan-wei').classList.remove('active');
             document.getElementById('btn-gan-chiu').classList.remove('active');
@@ -1177,72 +1220,6 @@
             currentGanttDate.setMonth(currentGanttDate.getMonth() + delta);
             const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
             renderGantt(who);
-        }
-
-        function renderCalendar() {
-            const el = document.getElementById('calendar');
-            if (calendar) { calendar.destroy(); }
-
-            let events = [];
-            const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
-            
-            tasks.forEach(p => {
-                if (p.start && p.end) {
-                    let color = '#8E8E93';
-                    if (p.status === '製作中') color = '#007AFF';
-                    else if (p.status.includes('審')) color = '#FF9500';
-                    else if (p.status === '已完成' || p.status === '已結案') color = '#34C759';
-                    const endDate = new Date(new Date(p.end).getTime() + 86400000).toISOString().split('T')[0];
-                    events.push({ 
-                        title: `${p.name} (${p.producer})`, 
-                        start: p.start, 
-                        end: endDate, 
-                        backgroundColor: color, 
-                        borderColor: color, 
-                        extendedProps: { project: p } 
-                    });
-                }
-            });
-
-            if(!DATA.leaves) DATA.leaves = [];
-            DATA.leaves.forEach(l => {
-                if (calendarFilter === 'all' || l.name === calendarFilter) {
-                    const endDate = new Date(new Date(l.end).getTime() + 86400000).toISOString().split('T')[0];
-                    events.push({ 
-                        title: `🏖️ ${l.name}: ${l.reason}`, 
-                        start: l.start, 
-                        end: endDate, 
-                        backgroundColor: '#7C3AED', 
-                        borderColor: '#7C3AED' 
-                    });
-                }
-            });
-
-            calendar = new FullCalendar.Calendar(el, {
-                initialView: 'dayGridMonth', 
-                locale: 'zh-tw', 
-                height: '100%', 
-                dayMaxEvents: 2, 
-                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
-                buttonText: { today: '今天', month: '月', week: '週' },
-                events: events,
-                eventClick: function(info) { 
-                    const props = info.event.extendedProps; 
-                    if (props.project) openEditProject(props.project); 
-                }
-            });
-            calendar.render();
-
-            setTimeout(() => {
-                if(calendar) calendar.updateSize();
-            }, 100);
-
-            setTimeout(() => {
-                const todayCell = document.querySelector('.fc-day-today');
-                if (todayCell) {
-                    todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 300);
         }
 
         function filterCalendar(who) {

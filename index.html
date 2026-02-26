@@ -93,24 +93,24 @@
         
         .gantt-header-cell { 
             position: sticky; top: 0; 
-            background-color: #F8FAFC !important; /* 絕對實心白灰底色 */
-            z-index: 100; /* 拉高層級防穿透 */
+            background-color: #F8FAFC !important; 
+            z-index: 100; 
             text-align: center; font-size: 11px; color: #475569; 
-            border: 1px solid #E2E8F0; /* 實線邊框 */
+            border: 1px solid #E2E8F0; 
             padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; 
         }
         
         .gantt-corner { 
             position: sticky; top: 0; left: 0; 
-            background-color: #F8FAFC !important; /* 絕對實心白灰底色 */
-            z-index: 110; /* 最最最高，壓住所有東西 */
+            background-color: #F8FAFC !important; 
+            z-index: 110; 
             padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1E293B; 
             border: 1px solid #E2E8F0;
         }
         
         .gantt-col-fixed { 
             position: sticky; left: 0; 
-            background-color: #FFFFFF !important; /* 絕對實心白底色 */
+            background-color: #FFFFFF !important; 
             z-index: 50; 
             width: 220px; padding: 8px 10px; 
             white-space: nowrap; overflow: hidden; 
@@ -130,13 +130,13 @@
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .gan-btn:hover:not(.active) { opacity: 0.8; }
 
-        /* ★ 終極修復：行事曆緊湊精緻化 ★ */
+        /* ★ 行事曆修復：確保容器擁有絕對高度與適應性 ★ */
         #calendar-container { 
             background: white; border-radius: 16px; padding: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
-            height: auto; 
-            max-height: calc(100vh - 160px); /* 限制最高高度，不會無限延伸 */
-            overflow: hidden; /* 防止內部雙捲軸崩潰 */
+            flex-grow: 1; /* 讓容器可以隨著頁面延展 */
+            min-height: 600px; /* 防止壓縮至0高度 */
+            overflow: hidden; 
             display: flex; flex-direction: column;
         }
         .fc { height: 100% !important; } 
@@ -156,10 +156,9 @@
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
         
-        /* 手機版排版調整 */
         @media (max-width: 768px) {
             .page-scroll-container { padding: 10px 10px 80px 10px; }
-            #calendar-container { padding: 10px; max-height: calc(100vh - 180px); }
+            #calendar-container { padding: 10px; min-height: 500px; }
             .fc .fc-toolbar { flex-direction: column; gap: 10px; }
             .fc .fc-toolbar-title { font-size: 1.2rem !important; }
             .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
@@ -169,7 +168,7 @@
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* 浮動按鈕與彈窗 (置中樣式) */
+        /* 浮動按鈕與彈窗 */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
         .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; position: relative; }
         .fab-btn:hover { transform: scale(1.1); }
@@ -187,7 +186,7 @@
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
         
         .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.2s; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
 
         .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .memo-item.chiu { background: #E3F2FD; border-left-color: #2196F3; } 
@@ -454,11 +453,7 @@
     <div class="header-fixed-area">
         <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
-            <div class="relative w-full md:w-64">
-                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                <input id="global-search" type="text" placeholder="搜尋專案或客戶..." class="w-full bg-white border border-gray-200 rounded-full py-2 pl-10 pr-4 text-sm font-bold focus:outline-none focus:border-blue-500 shadow-sm transition" onkeyup="handleSearch()">
             </div>
-        </div>
         <div class="segmented-nav">
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-plus mr-2"></i> 新增</div>
             <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user mr-2"></i> 魏敏軒</div>
@@ -537,37 +532,63 @@
     </div>
 
     <div id="p-kanban" class="hidden page-scroll-container">
-        <div class="max-w-5xl mx-auto">
-            <h2 id="kb-title" class="text-3xl font-black mb-8 px-2 border-l-8 border-black pl-4"></h2>
-            
-            <div class="mb-10">
-                <h3 class="text-xl font-bold text-blue-600 mb-4 px-2">🔥 製作中</h3>
-                <div id="kb-process" class="kanban-grid"></div>
+        <div class="max-w-5xl mx-auto flex flex-col h-full">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <h2 id="kb-title" class="text-3xl font-black px-2 border-l-8 border-black pl-4"></h2>
+                
+                <div class="relative w-full md:w-80">
+                    <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+                    <input id="kanban-search" type="text" placeholder="搜尋全部專案 / 客戶 (列表顯示)..." class="w-full bg-white border border-gray-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:outline-none focus:border-blue-500 shadow-sm transition" onkeyup="handleKanbanSearch()">
+                </div>
             </div>
             
-            <details class="mb-6 group" open>
-                <summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80">
-                    <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
-                    <span>👀 審核中</span>
-                </summary>
-                <div id="kb-review" class="kanban-grid pl-2"></div>
-            </details>
-            
-            <details class="mb-6 group">
-                <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
-                    <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
-                    <span>⏳ 尚未進行</span>
-                </summary>
-                <div id="kb-todo" class="kanban-grid pl-2"></div>
-            </details>
-            
-            <details class="mb-6 group">
-                <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
-                    <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
-                    <span>✅ 已完成</span>
-                </summary>
-                <div id="kb-done" class="kanban-grid pl-2"></div>
-            </details>
+            <div id="kb-search-results" class="hidden flex-grow overflow-auto bg-white rounded-xl border border-gray-200 shadow-sm pb-4">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+                    <thead class="bg-gray-100 text-gray-600 text-sm sticky top-0 z-10">
+                        <tr>
+                            <th class="p-4 border-b font-bold">ID</th>
+                            <th class="p-4 border-b font-bold">專案名稱</th>
+                            <th class="p-4 border-b font-bold">客戶</th>
+                            <th class="p-4 border-b font-bold text-center">製作人</th>
+                            <th class="p-4 border-b font-bold text-center">狀態</th>
+                            <th class="p-4 border-b font-bold">日期</th>
+                            <th class="p-4 border-b font-bold text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kb-search-tbody" class="text-sm"></tbody>
+                </table>
+            </div>
+
+            <div id="kb-normal-view">
+                <div class="mb-10">
+                    <h3 class="text-xl font-bold text-blue-600 mb-4 px-2">🔥 製作中</h3>
+                    <div id="kb-process" class="kanban-grid"></div>
+                </div>
+                
+                <details class="mb-6 group" open>
+                    <summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80">
+                        <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
+                        <span>👀 審核中</span>
+                    </summary>
+                    <div id="kb-review" class="kanban-grid pl-2"></div>
+                </details>
+                
+                <details class="mb-6 group">
+                    <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
+                        <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
+                        <span>⏳ 尚未進行</span>
+                    </summary>
+                    <div id="kb-todo" class="kanban-grid pl-2"></div>
+                </details>
+                
+                <details class="mb-6 group">
+                    <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
+                        <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
+                        <span>✅ 已完成</span>
+                    </summary>
+                    <div id="kb-done" class="kanban-grid pl-2"></div>
+                </details>
+            </div>
         </div>
     </div>
 
@@ -617,10 +638,7 @@
         let currentGanttDate = new Date(); 
         let editingMemoIdx = null;
         let editingLinkIdx = null;
-        let globalSearchQuery = '';
 
-        // ★ 終極修復：保證在 DOM 載入後才初始化 Flatpickr，絕對不會失效 ★
-        let fp, fpMemo, fpEdit, fpLeave;
         document.addEventListener('DOMContentLoaded', function() {
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
@@ -744,20 +762,64 @@
             }
         }
 
-        function handleSearch() {
-            globalSearchQuery = document.getElementById('global-search').value.trim().toLowerCase();
-            
-            if (curTab === 'wei') renderKanban('魏敏軒');
-            else if (curTab === 'chiu') renderKanban('邱仁杰');
-            else if (curTab === 'gan') {
-                const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-                renderGantt(who);
+        // ★ 任務看板的專屬搜尋邏輯 (表格化)
+        function handleKanbanSearch() {
+            const query = document.getElementById('kanban-search').value.trim().toLowerCase();
+            const normalView = document.getElementById('kb-normal-view');
+            const searchView = document.getElementById('kb-search-results');
+            const tbody = document.getElementById('kb-search-tbody');
+
+            // 如果搜尋框是空的，顯示原本的卡片視圖
+            if (!query) {
+                normalView.classList.remove('hidden');
+                searchView.classList.add('hidden');
+                
+                // 強制重新渲染當前人員的卡片確保乾淨
+                const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
+                renderKanban(who, false); 
+                return;
             }
-            else if (curTab === 'calendar') renderCalendar();
-            
-            if (document.getElementById('panel-memo').style.display !== 'none') loadMemos();
-            if (document.getElementById('panel-link').style.display !== 'none') loadLinks();
-            if (document.getElementById('panel-pending').style.display !== 'none') loadPending();
+
+            // 若有輸入字，隱藏卡片區，顯示表格結果
+            normalView.classList.add('hidden');
+            searchView.classList.remove('hidden');
+
+            // 跨兩方比對 (不限制目前所在看板是魏或邱)
+            const results = DATA.projects.filter(p => {
+                if (!p.producer || p.producer === '尚未暫定') return false; // 這裡我們只顯示已分配的
+                return p.name.toLowerCase().includes(query) || 
+                       p.client.toLowerCase().includes(query) || 
+                       String(p.id).toLowerCase().includes(query);
+            });
+
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-gray-400 font-bold">找不到符合的專案</td></tr>';
+                return;
+            }
+
+            let html = '';
+            results.forEach(p => {
+                const pStr = encodeURIComponent(JSON.stringify(p));
+                let statusColor = 'bg-gray-200 text-gray-700';
+                if(p.status === '製作中') statusColor = 'bg-blue-100 text-blue-700';
+                else if(p.status.includes('審')) statusColor = 'bg-orange-100 text-orange-700';
+                else if(p.status === '已完成' || p.status === '已結案') statusColor = 'bg-green-100 text-green-700';
+                else if(p.tag === 'Urgent') statusColor = 'bg-red-100 text-red-700 border border-red-300'; 
+
+                html += `
+                <tr class="border-b hover:bg-gray-50 transition">
+                    <td class="p-4 font-mono font-bold text-gray-800">${p.id}</td>
+                    <td class="p-4 font-bold text-gray-900">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
+                    <td class="p-4 text-gray-600 font-medium">${p.client}</td>
+                    <td class="p-4 font-bold text-center">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
+                    <td class="p-4 text-center"><span class="px-3 py-1 rounded text-xs font-bold ${statusColor}">${p.status}</span></td>
+                    <td class="p-4 text-gray-500 text-xs font-medium">${p.start || '未定'} ~ ${p.end || '未定'}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-xs font-bold transition shadow-sm text-gray-700">編輯</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
         }
 
         function setProjectType(type) {
@@ -771,7 +833,6 @@
             renderDynamicOptions();
         }
 
-        // ★ 終極修復：強制鎖定預設值 ★
         function renderDynamicOptions() {
             if (!DATA || !DATA.config) return;
 
@@ -787,7 +848,6 @@
                 list.forEach(item => {
                     if(item) el.add(new Option(item, item));
                 });
-                // 只要有傳入 forceDefault，就強制無視舊選項直接鎖定它！
                 if (forceDefault && list.includes(forceDefault)) {
                     el.value = forceDefault; 
                 } else if (list.includes(currentVal)) {
@@ -796,7 +856,7 @@
             };
             
             fillSelect('i-type', types);
-            fillSelect('i-producer', producers, '尚未暫定'); // 這裡傳入 forceDefault，保證絕對是尚未暫定
+            fillSelect('i-producer', producers, '尚未暫定'); 
             
             fillSelect('ep-type', types);
             fillSelect('ep-producer', producers);
@@ -817,7 +877,8 @@
             else if (tab === 'gan') { document.getElementById('p-gantt').classList.remove('hidden'); renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); }
             else if (tab === 'calendar') { 
                 document.getElementById('p-calendar').classList.remove('hidden'); 
-                setTimeout(() => renderCalendar(), 100); 
+                // 確保容器已經顯示後再渲染，確保高度不會抓到 0
+                setTimeout(() => renderCalendar(), 50); 
             }
         }
 
@@ -883,7 +944,6 @@
             const dr = document.getElementById('i-date').value.split(' to ');
             const prod = document.getElementById('i-producer').value;
             
-            // ★ 自動補上前綴 ★
             const rawId = document.getElementById('i-id').value.trim();
             const zoneVal = document.getElementById('i-zone').value;
             const prefix = zoneVal.split('_')[0]; 
@@ -900,7 +960,7 @@
             const p = {
                 category: curCat, 
                 zone: zoneVal, 
-                id: finalId, // 儲存包含前綴的完整 ID
+                id: finalId, 
                 client: document.getElementById('i-client').value, 
                 name: document.getElementById('i-name').value,
                 producer: prod, 
@@ -931,17 +991,18 @@
         }
 
         // --- 看板 ---
-        function renderKanban(producer) {
+        function renderKanban(producer, clearSearch = true) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
             
-            const tasks = DATA.projects.filter(p => {
-                if (p.producer !== producer) return false;
-                if (!globalSearchQuery) return true;
-                return p.name.toLowerCase().includes(globalSearchQuery) || 
-                       p.client.toLowerCase().includes(globalSearchQuery) || 
-                       p.id.toLowerCase().includes(globalSearchQuery);
-            });
+            // 如果從外圍呼叫，強制重置搜尋視窗並呈現原本的卡片區
+            if (clearSearch) {
+                document.getElementById('kanban-search').value = '';
+                document.getElementById('kb-normal-view').classList.remove('hidden');
+                document.getElementById('kb-search-results').classList.add('hidden');
+            }
+
+            const tasks = DATA.projects.filter(p => p.producer === producer);
 
             const card = (p, color, bg) => {
                 const pStr = encodeURIComponent(JSON.stringify(p));
@@ -1000,10 +1061,6 @@
 
             let tasks = DATA.projects.filter(p => p.producer === who && p.start && p.end);
             
-            if (globalSearchQuery) {
-                tasks = tasks.filter(p => p.name.toLowerCase().includes(globalSearchQuery) || p.client.toLowerCase().includes(globalSearchQuery) || p.id.toLowerCase().includes(globalSearchQuery));
-            }
-
             tasks = tasks.filter(p => {
                 const pStart = new Date(p.start);
                 const pEnd = new Date(p.end);
@@ -1071,9 +1128,6 @@
             const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
             
             tasks.forEach(p => {
-                if (globalSearchQuery && !p.name.toLowerCase().includes(globalSearchQuery) && !p.client.toLowerCase().includes(globalSearchQuery)) {
-                    return;
-                }
                 if (p.start && p.end) {
                     let color = '#8E8E93';
                     if (p.status === '製作中') color = '#007AFF';
@@ -1109,7 +1163,7 @@
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
                 height: '100%', 
-                dayMaxEvents: 2, // ★ 限制顯示數量，避免版面被撐破
+                dayMaxEvents: 2, 
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
                 events: events,
@@ -1119,6 +1173,11 @@
                 }
             });
             calendar.render();
+
+            // ★ 強制行事曆重新計算大小，防止隱藏/顯示時高度崩壞為0
+            setTimeout(() => {
+                if(calendar) calendar.updateSize();
+            }, 100);
 
             // 自動捲動到今天
             setTimeout(() => {
@@ -1146,7 +1205,6 @@
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
         }
 
-        // ★ 編輯專案 ★
         function openEditProject(p) {
             document.getElementById('ep-cat').value = p.category;
             document.getElementById('ep-origin-id').value = p.id; 
@@ -1161,7 +1219,6 @@
             Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
             epCodeSel.value = prefix;
             
-            // 載入選項
             const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
             const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
             
@@ -1173,7 +1230,6 @@
             typeSel.innerHTML = '';
             types.forEach(x => typeSel.add(new Option(x, x)));
 
-            // 延遲賦值以確保 DOM 已更新
             setTimeout(() => {
                 prodSel.value = p.producer;
                 typeSel.value = p.type;
@@ -1362,13 +1418,8 @@
             if (type === 'pending') loadPending();
         }
 
-        // --- 待分派專案 ---
         function loadPending() {
             let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定');
-            
-            if (globalSearchQuery) {
-                pendingList = pendingList.filter(p => p.name.toLowerCase().includes(globalSearchQuery) || p.client.toLowerCase().includes(globalSearchQuery) || p.id.toLowerCase().includes(globalSearchQuery));
-            }
 
             const container = document.getElementById('pending-list');
             const badge = document.getElementById('pending-badge');
@@ -1436,7 +1487,6 @@
             });
             container.innerHTML = html;
             
-            // 在確保 DOM 渲染完成後綁定日曆
             setTimeout(() => {
                 pendingList.forEach((p, idx) => { 
                     flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
@@ -1483,7 +1533,6 @@
             for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { newZone = key; break; } }
             if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
             
-            // 確保 ID 包含前綴
             let rawId = document.getElementById(`pe-num-${idx}`).value;
             if (!isNaN(rawId) && rawId !== "") {
                 rawId = selectedCode + String(rawId).padStart(3, '0');
@@ -1556,13 +1605,8 @@
             });
         }
 
-        // --- 便利貼邏輯 ---
         function loadMemos() {
             callAPI('getMemos', {}, (list) => {
-                if (globalSearchQuery) {
-                    list = list.filter(m => m.content.toLowerCase().includes(globalSearchQuery) || m.owner.toLowerCase().includes(globalSearchQuery));
-                }
-
                 const container = document.getElementById('memo-list');
                 const badge = document.getElementById('memo-badge');
                 if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; }
@@ -1645,13 +1689,8 @@
             callAPI('completeMemo', { idx:idx }, (res) => loadMemos());
         }
 
-        // --- 連結庫 ---
         function loadLinks() {
             callAPI('getLinks', {}, (list) => {
-                if (globalSearchQuery) {
-                    list = list.filter(l => l.client.toLowerCase().includes(globalSearchQuery) || l.url.toLowerCase().includes(globalSearchQuery));
-                }
-
                 const container = document.getElementById('link-list');
                 if(list.length === 0) { 
                     container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; 
@@ -1680,10 +1719,8 @@
                         folderDatalist.appendChild(new Option(folder)); 
                     }
 
-                    const isOpen = globalSearchQuery ? "open" : "";
-
                     html += `
-                    <details class="mb-3 group link-folder" ${isOpen}>
+                    <details class="mb-3 group link-folder">
                         <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">
                             <div class="flex items-center gap-3">
                                 <i class="fas fa-folder-open text-blue-500"></i> ${folder} 

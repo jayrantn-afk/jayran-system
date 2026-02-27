@@ -85,7 +85,7 @@
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
         .icon-btn:hover { transform: scale(1.05); }
 
-        /* ★ 新版：表格化列表樣式 (Excel Style) ★ */
+        /* 表格化列表樣式 (Excel Style) */
         .excel-table { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 14px; }
         .excel-table thead th { text-align: left; padding: 12px 16px; background: #F9FAFB; color: #6B7280; font-weight: 700; font-size: 12px; border-bottom: 1px solid #E5E7EB; white-space: nowrap; }
         .excel-table tbody tr { border-bottom: 1px solid #F3F4F6; transition: background 0.1s; }
@@ -566,7 +566,7 @@
                     </div>
                 </div>
                 
-                <details class="mb-6 group" open>
+                <details class="mb-6 group">
                     <summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80">
                         <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
                         <span>👀 審核中</span>
@@ -912,7 +912,7 @@
             const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
             
             tasks.forEach(p => {
-                // ★ 新增：過濾掉已完成、已結案的任務，不在行事曆顯示
+                // 過濾掉已完成、已結案的任務，不在行事曆顯示
                 if (p.status === '已完成' || p.status === '已結案') {
                     return;
                 }
@@ -922,7 +922,7 @@
                         let startD = new Date(p.start);
                         let endD = new Date(p.end);
                         
-                        // ★ 修復：防範未填日期或格式錯誤造成的 Invalid Date 白畫面崩潰
+                        // 防範未填日期或格式錯誤造成的 Invalid Date 崩潰
                         if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) {
                             let color = '#8E8E93';
                             if (p.status === '製作中') color = '#007AFF';
@@ -972,7 +972,7 @@
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
                 height: '100%', 
-                dayMaxEvents: 4, // ★ 調整：放寬限制至4筆，讓畫面不會那麼容易出現 more
+                dayMaxEvents: 4, 
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
                 events: events,
@@ -991,7 +991,6 @@
             }, 300);
         }
 
-        // --- 以下為系統運作的輔助函式 ---
         function setProjectType(type) {
             curCat = type;
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));

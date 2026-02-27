@@ -671,6 +671,14 @@
             }
         });
 
+        // 取出當地日期的字串 (防範時區誤差)
+        function getLocalDateString(dateObj) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -787,7 +795,7 @@
             }
         }
 
-        // ★ 新版搜尋：跨使用者表格搜尋 ★
+        // 搜尋
         function handleKanbanSearch() {
             const query = document.getElementById('kanban-search').value.trim().toLowerCase();
             const normalView = document.getElementById('kb-normal-view');
@@ -827,12 +835,12 @@
                 
                 html += `
                 <tr>
-                    <td class="font-mono">${p.id}</td>
-                    <td>${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
-                    <td>${p.client}</td>
-                    <td>${p.producer}</td>
+                    <td class="font-mono text-xs text-gray-500">${p.id}</td>
+                    <td class="max-w-[200px] truncate" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
+                    <td class="text-gray-600 text-xs">${p.client}</td>
+                    <td class="font-bold text-center">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
                     <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
-                    <td>${p.start} ~ ${p.end}</td>
+                    <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start} ~ ${p.end}</td>
                     <td>
                         <button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-xs font-bold transition text-gray-700">編輯</button>
                     </td>
@@ -841,7 +849,7 @@
             tbody.innerHTML = html;
         }
 
-        // --- ★ 新版看板：Excel 表格模式 ★ ---
+        // 看板 (表格模式)
         function renderKanban(producer, clearSearch = true) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
@@ -855,7 +863,7 @@
             const tasks = DATA.projects.filter(p => p.producer === producer);
 
             const getTableRows = (filteredTasks) => {
-                if (filteredTasks.length === 0) return '<tr><td colspan="6" class="p-4 text-center text-gray-400 text-xs">無專案</td></tr>';
+                if (filteredTasks.length === 0) return '<tr><td colspan="6" class="p-4 text-center text-gray-400 text-xs font-bold">無專案</td></tr>';
                 
                 return filteredTasks.map(p => {
                     const pStr = encodeURIComponent(JSON.stringify(p));
@@ -874,15 +882,14 @@
                         actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold">開始</button>`;
                     }
 
-                    // 編輯與刪除按鈕
-                    actionBtns += `<button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="ml-2 text-gray-400 hover:text-black"><i class="fas fa-pen"></i></button>
-                                   <button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-2 text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>`;
+                    actionBtns += `<button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="ml-2 text-gray-400 hover:text-black" title="編輯"><i class="fas fa-pen"></i></button>
+                                   <button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-3 text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>`;
 
                     return `
                     <tr>
                         <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                        <td class="max-w-[200px] truncate" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
-                        <td class="text-gray-600 text-xs">${p.client}</td>
+                        <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
+                        <td class="text-gray-600 text-xs font-bold">${p.client}</td>
                         <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
                         <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start}<br>${p.end}</td>
                         <td class="whitespace-nowrap">${actionBtns}</td>
@@ -896,45 +903,68 @@
             document.getElementById('kb-done').innerHTML = getTableRows(tasks.filter(p => p.status === '已完成' || p.status === '已結案'));
         }
 
-        // ... (其他原有邏輯保持不變，例如甘特圖) ...
-
+        // 行事曆
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
 
             let events = [];
-            // ★ 修復：這裡原本會去讀取 globalSearchQuery，現在強制忽略，只看 filter
             const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
             
             tasks.forEach(p => {
+                // ★ 新增：過濾掉已完成、已結案的任務，不在行事曆顯示
+                if (p.status === '已完成' || p.status === '已結案') {
+                    return;
+                }
+
                 if (p.start && p.end) {
-                    let color = '#8E8E93';
-                    if (p.status === '製作中') color = '#007AFF';
-                    else if (p.status.includes('審')) color = '#FF9500';
-                    else if (p.status === '已完成' || p.status === '已結案') color = '#34C759';
-                    const endDate = new Date(new Date(p.end).getTime() + 86400000).toISOString().split('T')[0];
-                    events.push({ 
-                        title: `${p.name} (${p.producer})`, 
-                        start: p.start, 
-                        end: endDate, 
-                        backgroundColor: color, 
-                        borderColor: color, 
-                        extendedProps: { project: p } 
-                    });
+                    try {
+                        let startD = new Date(p.start);
+                        let endD = new Date(p.end);
+                        
+                        // ★ 修復：防範未填日期或格式錯誤造成的 Invalid Date 白畫面崩潰
+                        if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) {
+                            let color = '#8E8E93';
+                            if (p.status === '製作中') color = '#007AFF';
+                            else if (p.status.includes('審')) color = '#FF9500';
+                            
+                            // 修正時區偏移問題，確保日期準確加一天
+                            let nextDay = new Date(endD.getTime() + 86400000);
+                            const endDateStr = getLocalDateString(nextDay);
+                            const startDateStr = getLocalDateString(startD);
+
+                            events.push({ 
+                                title: `${p.name} (${p.producer})`, 
+                                start: startDateStr, 
+                                end: endDateStr, 
+                                backgroundColor: color, 
+                                borderColor: color, 
+                                extendedProps: { project: p } 
+                            });
+                        }
+                    } catch (e) { console.error("行事曆日期解析跳過", e); }
                 }
             });
 
             if(!DATA.leaves) DATA.leaves = [];
             DATA.leaves.forEach(l => {
                 if (calendarFilter === 'all' || l.name === calendarFilter) {
-                    const endDate = new Date(new Date(l.end).getTime() + 86400000).toISOString().split('T')[0];
-                    events.push({ 
-                        title: `🏖️ ${l.name}: ${l.reason}`, 
-                        start: l.start, 
-                        end: endDate, 
-                        backgroundColor: '#7C3AED', 
-                        borderColor: '#7C3AED' 
-                    });
+                    try {
+                        let startD = new Date(l.start);
+                        let endD = new Date(l.end);
+                        if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) {
+                            let nextDay = new Date(endD.getTime() + 86400000);
+                            const endDateStr = getLocalDateString(nextDay);
+                            const startDateStr = getLocalDateString(startD);
+                            events.push({ 
+                                title: `🏖️ ${l.name}: ${l.reason}`, 
+                                start: startDateStr, 
+                                end: endDateStr, 
+                                backgroundColor: '#7C3AED', 
+                                borderColor: '#7C3AED' 
+                            });
+                        }
+                    } catch(e) {}
                 }
             });
 
@@ -942,7 +972,7 @@
                 initialView: 'dayGridMonth', 
                 locale: 'zh-tw', 
                 height: '100%', 
-                dayMaxEvents: 2, 
+                dayMaxEvents: 4, // ★ 調整：放寬限制至4筆，讓畫面不會那麼容易出現 more
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
                 buttonText: { today: '今天', month: '月', week: '週' },
                 events: events,
@@ -953,15 +983,15 @@
             });
             calendar.render();
 
-            setTimeout(() => { if(calendar) calendar.updateSize(); }, 100);
+            setTimeout(() => { if(calendar) calendar.updateSize(); }, 150);
+
             setTimeout(() => {
                 const todayCell = document.querySelector('.fc-day-today');
                 if (todayCell) todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 300);
         }
 
-        // ... (下方其餘功能函數如 setProjectType, renderDynamicOptions 等皆保持原樣優化過的版本) ...
-        
+        // --- 以下為系統運作的輔助函式 ---
         function setProjectType(type) {
             curCat = type;
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
@@ -975,29 +1005,20 @@
 
         function renderDynamicOptions() {
             if (!DATA || !DATA.config) return;
-
             const types = (curCat === 'video') ? (DATA.config.videoTypes || []) : (DATA.config.imageTypes || []);
             const producers = (curCat === 'video') ? (DATA.config.videoProducers || []) : (DATA.config.imageProducers || []);
-            
             const fillSelect = (id, list, forceDefault) => {
                 const el = document.getElementById(id);
                 if(!el) return;
                 const currentVal = el.value;
                 el.innerHTML = '';
                 if(list.length === 0) el.add(new Option("無資料", ""));
-                list.forEach(item => {
-                    if(item) el.add(new Option(item, item));
-                });
-                if (forceDefault && list.includes(forceDefault)) {
-                    el.value = forceDefault; 
-                } else if (list.includes(currentVal)) {
-                    el.value = currentVal;
-                }
+                list.forEach(item => { if(item) el.add(new Option(item, item)); });
+                if (forceDefault && list.includes(forceDefault)) { el.value = forceDefault; } 
+                else if (list.includes(currentVal)) { el.value = currentVal; }
             };
-            
             fillSelect('i-type', types);
             fillSelect('i-producer', producers, '尚未暫定'); 
-            
             fillSelect('ep-type', types);
             fillSelect('ep-producer', producers);
         }
@@ -1014,19 +1035,13 @@
             ['p-add', 'p-kanban', 'p-gantt', 'p-calendar'].forEach(id => document.getElementById(id).classList.add('hidden'));
             
             let targetId = '';
-            if (tab === 'add') { 
-                targetId = 'p-add';
-                renderDynamicOptions(); 
-            }
+            if (tab === 'add') { targetId = 'p-add'; renderDynamicOptions(); }
             else if (tab === 'wei') { targetId = 'p-kanban'; renderKanban('魏敏軒'); }
             else if (tab === 'chiu') { targetId = 'p-kanban'; renderKanban('邱仁杰'); }
-            else if (tab === 'gan') { 
-                targetId = 'p-gantt'; 
-                renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); 
-            }
+            else if (tab === 'gan') { targetId = 'p-gantt'; renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); }
             else if (tab === 'calendar') { 
                 targetId = 'p-calendar';
-                setTimeout(() => renderCalendar(), 50); 
+                setTimeout(() => renderCalendar(), 100); 
             }
 
             if(targetId) {
@@ -1043,9 +1058,7 @@
             if (settings) { 
                 Object.keys(settings).sort().forEach(k => { 
                     const op = document.createElement('option'); 
-                    op.value = k; 
-                    op.text = k; 
-                    sel.add(op); 
+                    op.value = k; op.text = k; sel.add(op); 
                 }); 
             }
             updateClientName(); 
@@ -1086,62 +1099,10 @@
             const prod = document.getElementById('i-producer').value;
             const dateInput = document.getElementById('i-date');
             if (prod === '尚未暫定') { 
-                dateInput.placeholder = "日期可留空"; 
-                dateInput.style.background = "#eef"; 
+                dateInput.placeholder = "日期可留空"; dateInput.style.background = "#eef"; 
             } else { 
-                dateInput.placeholder = "點擊選擇"; 
-                dateInput.style.background = "#F5F5F7"; 
+                dateInput.placeholder = "點擊選擇"; dateInput.style.background = "#F5F5F7"; 
             }
-        }
-
-        function saveProject() {
-            const dr = document.getElementById('i-date').value.split(' to ');
-            const prod = document.getElementById('i-producer').value;
-            
-            const rawId = document.getElementById('i-id').value.trim();
-            const zoneVal = document.getElementById('i-zone').value;
-            const prefix = zoneVal.split('_')[0]; 
-            
-            let finalId = rawId;
-            if (rawId !== "") {
-                if (!isNaN(rawId)) {
-                    finalId = prefix + String(rawId).padStart(3, '0');
-                } else if (!rawId.toUpperCase().startsWith(prefix.toUpperCase())) {
-                    finalId = prefix + rawId;
-                }
-            }
-
-            const p = {
-                category: curCat, 
-                zone: zoneVal, 
-                id: finalId, 
-                client: document.getElementById('i-client').value, 
-                name: document.getElementById('i-name').value,
-                producer: prod, 
-                type: document.getElementById('i-type').value,
-                note: document.getElementById('i-note').value, 
-                start: dr[0] || "", 
-                end: dr[1] || dr[0] || "",
-                tag: document.getElementById('i-urgent').checked ? 'Urgent' : '',
-                status: (prod !== '尚未暫定' && dr[0] && new Date(dr[0]) <= new Date()) ? '製作中' : '尚未進行'
-            };
-            
-            if(!p.zone || !rawId || !p.name) return showToast("請填寫完整資訊 (區域、編號、名稱)", "error");
-            if(prod !== '尚未暫定' && !p.start) return showToast("有指定製作人時，請選擇日期範圍", "error");
-            
-            DATA.projects.push(p);
-            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true); 
-            showToast("建立成功 (背景同步中)");
-
-            document.getElementById('i-id').value = ''; 
-            document.getElementById('i-name').value = ''; 
-            document.getElementById('i-note').value = ''; 
-            document.getElementById('i-urgent').checked = false; 
-            
-            callAPI('addProject', { payload: p }, (res) => { 
-                console.log("Synced"); 
-            });
         }
 
         function renderGantt(who) {
@@ -1162,7 +1123,6 @@
             const isCurrentMonth = (now.getMonth() === curMonth && now.getFullYear() === curYear);
 
             let tasks = DATA.projects.filter(p => p.producer === who && p.start && p.end);
-            
             tasks = tasks.filter(p => {
                 const pStart = new Date(p.start);
                 const pEnd = new Date(p.end);
@@ -1175,7 +1135,6 @@
             }
 
             const daysInMonth = monthEnd.getDate();
-
             let header = '<tr class="gantt-row"><th class="gantt-corner">ID / 專案</th>';
             for (let i = 1; i <= daysInMonth; i++) {
                 let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today' : '';
@@ -1201,7 +1160,6 @@
                 for (let i = 1; i <= daysInMonth; i++) {
                     let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today-cell' : '';
                     let content = '';
-
                     if (i === gridStartDay) {
                         let span = (gridEndDay - gridStartDay) + 1;
                         if (span < 1) span = 1;
@@ -1283,7 +1241,6 @@
             
             document.getElementById('ep-note').value = p.note;
             document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
-            
             document.getElementById('modal-edit-project').style.display = 'flex';
         }
 
@@ -1332,10 +1289,7 @@
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
             processDataUpdate(DATA, true);
             showToast("修改成功 (背景同步中)");
-            
-            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => { 
-                console.log("Updated"); 
-            });
+            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {});
         }
 
         function openHistory() {
@@ -1365,9 +1319,7 @@
                 localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
                 processDataUpdate(DATA, true);
             }
-            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => { 
-                console.log("Status Updated"); 
-            });
+            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {});
         }
         
         function openSettings(type) {
@@ -1394,11 +1346,8 @@
             if(!val) return;
             document.getElementById('loader').style.display = 'flex';
             callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => {
-                if(res === 'OK') { 
-                    callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); 
-                } else { 
-                    showToast(res, "error"); document.getElementById('loader').style.display = 'none'; 
-                }
+                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
+                else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; }
             });
             document.getElementById('st-input').value = '';
         }
@@ -1408,11 +1357,8 @@
             const type = document.getElementById('st-type').value;
             document.getElementById('loader').style.display = 'flex';
             callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => {
-                if(res === 'OK') { 
-                    callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); 
-                } else { 
-                    showToast(res, "error"); document.getElementById('loader').style.display = 'none'; 
-                }
+                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
+                else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; }
             });
         }
 
@@ -1422,11 +1368,8 @@
             const type = document.getElementById('st-type').value;
             document.getElementById('loader').style.display = 'flex';
             callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => {
-                if(res === 'OK') { 
-                    callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); 
-                } else { 
-                    showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; 
-                }
+                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
+                else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; }
             });
         }
 
@@ -1454,20 +1397,13 @@
 
         function loadPending() {
             let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定');
-
             const container = document.getElementById('pending-list');
             const badge = document.getElementById('pending-badge');
             
-            if (pendingList.length > 0) { 
-                badge.style.display = 'flex'; badge.innerText = pendingList.length; 
-            } else { 
-                badge.style.display = 'none'; 
-            }
+            if (pendingList.length > 0) { badge.style.display = 'flex'; badge.innerText = pendingList.length; } 
+            else { badge.style.display = 'none'; }
             
-            if (pendingList.length === 0) { 
-                container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待分派項目</div>'; 
-                return; 
-            }
+            if (pendingList.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待分派項目</div>'; return; }
             
             let html = '';
             pendingList.forEach((p, idx) => {
@@ -1520,13 +1456,7 @@
                 </div>`;
             });
             container.innerHTML = html;
-            
-            setTimeout(() => {
-                pendingList.forEach((p, idx) => { 
-                    flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-                    flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-                });
-            }, 50);
+            setTimeout(() => { pendingList.forEach((p, idx) => { flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); }); }, 50);
         }
 
         function enablePendingEdit(idx) {
@@ -1568,24 +1498,14 @@
             if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
             
             let rawId = document.getElementById(`pe-num-${idx}`).value;
-            if (!isNaN(rawId) && rawId !== "") {
-                rawId = selectedCode + String(rawId).padStart(3, '0');
-            } else if (!rawId.toUpperCase().startsWith(selectedCode.toUpperCase())) {
-                rawId = selectedCode + rawId;
-            }
+            if (!isNaN(rawId) && rawId !== "") { rawId = selectedCode + String(rawId).padStart(3, '0'); } 
+            else if (!rawId.toUpperCase().startsWith(selectedCode.toUpperCase())) { rawId = selectedCode + rawId; }
             
             const p = {
-                category: cat, 
-                zone: newZone, 
-                id: rawId, 
-                client: document.getElementById(`pe-client-${idx}`).value, 
-                name: document.getElementById(`pe-name-${idx}`).value,
-                producer: document.getElementById(`pe-producer-${idx}`).value, 
-                type: document.getElementById(`pe-type-${idx}`).value,
-                start: dates[0] || "", 
-                end: dates[1] || dates[0] || "", 
-                note: document.getElementById(`pe-note-${idx}`).value, 
-                tag: document.getElementById(`pe-tag-${idx}`).value
+                category: cat, zone: newZone, id: rawId, client: document.getElementById(`pe-client-${idx}`).value, 
+                name: document.getElementById(`pe-name-${idx}`).value, producer: document.getElementById(`pe-producer-${idx}`).value, 
+                type: document.getElementById(`pe-type-${idx}`).value, start: dates[0] || "", end: dates[1] || dates[0] || "", 
+                note: document.getElementById(`pe-note-${idx}`).value, tag: document.getElementById(`pe-tag-${idx}`).value
             };
             
             const originId = document.getElementById(`pe-origin-id-${idx}`).value;
@@ -1593,15 +1513,8 @@
             
             document.getElementById('loader').style.display = 'flex';
             callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
-                if (res === "OK") { 
-                    callAPI('initAllData', {}, (data) => { 
-                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); 
-                        processDataUpdate(data, false); 
-                    }); 
-                } else { 
-                    showToast("保存失敗：" + res, "error"); 
-                    document.getElementById('loader').style.display = 'none'; 
-                }
+                if (res === "OK") { callAPI('initAllData', {}, (data) => { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); }); } 
+                else { showToast("保存失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; }
             });
         }
 
@@ -1623,9 +1536,7 @@
                 
                 let newStatus = '尚未進行';
                 try {
-                    let d = new Date(startDate);
-                    let today = new Date();
-                    d.setHours(0,0,0,0); today.setHours(0,0,0,0);
+                    let d = new Date(startDate); let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0);
                     if (d <= today) newStatus = '製作中';
                 } catch(e) {}
                 DATA.projects[targetIdx].status = newStatus;
@@ -1634,10 +1545,7 @@
                 processDataUpdate(DATA, true); 
                 showToast("專案分派成功");
             }
-            
-            callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {
-                console.log("Assigned");
-            });
+            callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {});
         }
 
         function loadMemos() {
@@ -1655,8 +1563,7 @@
                     <div class="memo-item ${colorClass}">
                         <div class="memo-content">${m.content}</div>
                         <div class="memo-meta">
-                            <span><i class="fas fa-user-circle"></i> ${m.owner}</span>
-                            <span><i class="far fa-clock"></i> ${m.date}</span>
+                            <span><i class="fas fa-user-circle"></i> ${m.owner}</span><span><i class="far fa-clock"></i> ${m.date}</span>
                         </div>
                         <div class="memo-actions text-lg">
                             <i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i>
@@ -1672,116 +1579,57 @@
         function deleteMemo(idx, el) {
             if(!confirm("確定刪除此便利貼嗎？")) return;
             el.parentElement.parentElement.style.opacity = '0.5'; 
-            callAPI('deleteMemo', { idx:idx }, (res) => {
-                showToast("已刪除待辦");
-                loadMemos();
-            });
+            callAPI('deleteMemo', { idx:idx }, (res) => { showToast("已刪除待辦"); loadMemos(); });
         }
 
         function editMemoMode(m) {
-            editingMemoIdx = m.idx;
-            document.getElementById('m-content').value = m.content;
-            document.getElementById('m-owner').value = m.owner;
+            editingMemoIdx = m.idx; document.getElementById('m-content').value = m.content; document.getElementById('m-owner').value = m.owner;
             if(m.date) fpMemo.setDate(m.date);
-            const btn = document.getElementById('btn-memo-add');
-            btn.innerText = "更新貼文";
-            btn.classList.add('bg-blue-600');
-            btn.onclick = updateMemoItem;
+            const btn = document.getElementById('btn-memo-add'); btn.innerText = "更新貼文"; btn.classList.add('bg-blue-600'); btn.onclick = updateMemoItem;
         }
 
         function updateMemoItem() {
-            const content = document.getElementById('m-content').value;
-            const owner = document.getElementById('m-owner').value;
-            const date = document.getElementById('m-date').value;
+            const content = document.getElementById('m-content').value; const owner = document.getElementById('m-owner').value; const date = document.getElementById('m-date').value;
             if(!content) return showToast("請輸入內容", "error");
-            
-            document.getElementById('m-content').value = ''; 
-            document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 更新中...</div>';
-            
-            const btn = document.getElementById('btn-memo-add');
-            btn.innerText = "新增貼文";
-            btn.classList.remove('bg-blue-600');
-            btn.onclick = addMemoItem;
-            
-            callAPI('editMemo', { idx: editingMemoIdx, item: {content: content, owner: owner, date: date} }, (res) => { 
-                editingMemoIdx = null; 
-                showToast("貼文已更新");
-                loadMemos(); 
-            });
+            document.getElementById('m-content').value = ''; document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 更新中...</div>';
+            const btn = document.getElementById('btn-memo-add'); btn.innerText = "新增貼文"; btn.classList.remove('bg-blue-600'); btn.onclick = addMemoItem;
+            callAPI('editMemo', { idx: editingMemoIdx, item: {content: content, owner: owner, date: date} }, (res) => { editingMemoIdx = null; showToast("貼文已更新"); loadMemos(); });
         }
 
         function addMemoItem() {
-            const content = document.getElementById('m-content').value;
-            const owner = document.getElementById('m-owner').value;
-            const date = document.getElementById('m-date').value;
+            const content = document.getElementById('m-content').value; const owner = document.getElementById('m-owner').value; const date = document.getElementById('m-date').value;
             if(!content) return showToast("請輸入內容", "error");
-            
-            document.getElementById('m-content').value = ''; 
-            document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 儲存中...</div>';
-            
-            callAPI('addMemo', { item: {content: content, owner: owner, date: date} }, (res) => {
-                showToast("已新增待辦");
-                loadMemos();
-            });
+            document.getElementById('m-content').value = ''; document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 儲存中...</div>';
+            callAPI('addMemo', { item: {content: content, owner: owner, date: date} }, (res) => { showToast("已新增待辦"); loadMemos(); });
         }
 
         function finishMemo(idx, el) {
             if(!confirm("確定完成此事項並封存嗎？")) return;
-            el.parentElement.parentElement.style.opacity = '0.5'; 
-            callAPI('completeMemo', { idx:idx }, (res) => {
-                showToast("事項已完成封存");
-                loadMemos();
-            });
+            el.parentElement.parentElement.style.opacity = '0.5'; callAPI('completeMemo', { idx:idx }, (res) => { showToast("事項已完成封存"); loadMemos(); });
         }
 
         function loadLinks() {
             callAPI('getLinks', {}, (list) => {
                 const container = document.getElementById('link-list');
-                if(list.length === 0) { 
-                    container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; 
-                    return; 
-                }
-                
-                const groups = {};
-                const folderDatalist = document.getElementById('folder-options');
-                folderDatalist.innerHTML = ''; 
-
+                if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; return; }
+                const groups = {}; const folderDatalist = document.getElementById('folder-options'); folderDatalist.innerHTML = ''; 
                 list.forEach(l => {
-                    let folder = "未分類";
-                    let displayName = l.client;
-                    if (l.client.includes('::')) {
-                        const parts = l.client.split('::');
-                        folder = parts[0];
-                        displayName = parts[1];
-                    }
-                    if (!groups[folder]) groups[folder] = [];
-                    groups[folder].push({...l, displayName: displayName, originalClient: l.client, folder: folder});
+                    let folder = "未分類"; let displayName = l.client;
+                    if (l.client.includes('::')) { const parts = l.client.split('::'); folder = parts[0]; displayName = parts[1]; }
+                    if (!groups[folder]) groups[folder] = []; groups[folder].push({...l, displayName: displayName, originalClient: l.client, folder: folder});
                 });
-
                 let html = '';
                 for (let folder in groups) {
-                    if (folder !== "未分類") { 
-                        folderDatalist.appendChild(new Option(folder)); 
-                    }
-
+                    if (folder !== "未分類") { folderDatalist.appendChild(new Option(folder)); }
                     html += `
                     <details class="mb-3 group link-folder">
                         <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">
-                            <div class="flex items-center gap-3">
-                                <i class="fas fa-folder-open text-blue-500"></i> ${folder} 
-                                <span class="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded-full">${groups[folder].length}</span>
-                            </div>
-                            <div class="flex gap-2 items-center">
-                                <i class="fas fa-pen text-gray-400 hover:text-black p-2" title="重新命名資料夾" onclick="renameFolder('${folder}')"></i>
-                                <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 group-open:rotate-180"></i>
-                            </div>
+                            <div class="flex items-center gap-3"><i class="fas fa-folder-open text-blue-500"></i> ${folder} <span class="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded-full">${groups[folder].length}</span></div>
+                            <div class="flex gap-2 items-center"><i class="fas fa-pen text-gray-400 hover:text-black p-2" title="重新命名資料夾" onclick="renameFolder('${folder}')"></i><i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 group-open:rotate-180"></i></div>
                         </summary>
                         <div class="pt-3 pl-2 pr-2">`;
-                    
                     groups[folder].forEach(l => {
-                        const lData = {idx: l.idx, folder: l.folder, name: l.displayName, url: l.url, original: l.originalClient};
-                        const lStr = encodeURIComponent(JSON.stringify(lData));
-                        
+                        const lData = {idx: l.idx, folder: l.folder, name: l.displayName, url: l.url, original: l.originalClient}; const lStr = encodeURIComponent(JSON.stringify(lData));
                         html += `
                         <div class="bg-[#2D3748] text-white p-3 rounded-lg mb-2 flex justify-between items-center cursor-pointer hover:bg-[#1A202C] transition shadow-sm" onclick="window.open('${l.url}','_blank')">
                             <div class="flex-1 truncate flex items-center gap-3"><i class="fas fa-link text-gray-400"></i> ${l.displayName}</div>
@@ -1798,218 +1646,106 @@
         }
 
         function renameFolder(oldName) {
-            event.preventDefault(); 
-            const newName = prompt(`請輸入「${oldName}」的新名稱：\n(若輸入空白則取消)`, oldName);
+            event.preventDefault(); const newName = prompt(`請輸入「${oldName}」的新名稱：\n(若輸入空白則取消)`, oldName);
             if (newName && newName !== oldName) {
                 document.getElementById('link-list').innerHTML = '<div class="text-center text-gray-400 py-4"><i class="fas fa-spinner fa-spin"></i> 更新資料夾中...</div>';
-                callAPI('renameLinkFolder', { oldFolder: oldName, newFolder: newName }, (res) => {
-                    showToast("資料夾已重新命名");
-                    loadLinks();
-                });
+                callAPI('renameLinkFolder', { oldFolder: oldName, newFolder: newName }, (res) => { showToast("資料夾已重新命名"); loadLinks(); });
             }
         }
 
         function editLinkMode(l) {
-            editingLinkIdx = l.idx;
-            document.getElementById('l-folder').value = (l.folder === "未分類") ? "" : l.folder;
-            document.getElementById('l-name').value = l.name;
-            document.getElementById('l-url').value = l.url;
-            const btn = document.getElementById('btn-link-add');
-            btn.innerText = "更新連結";
-            btn.onclick = updateLinkItem;
+            editingLinkIdx = l.idx; document.getElementById('l-folder').value = (l.folder === "未分類") ? "" : l.folder;
+            document.getElementById('l-name').value = l.name; document.getElementById('l-url').value = l.url;
+            const btn = document.getElementById('btn-link-add'); btn.innerText = "更新連結"; btn.onclick = updateLinkItem;
         }
 
         function updateLinkItem() {
-            const folder = document.getElementById('l-folder').value.trim();
-            const name = document.getElementById('l-name').value.trim();
-            const url = document.getElementById('l-url').value.trim();
+            const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim();
             if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error");
-            
-            const clientString = folder ? `${folder}::${name}` : name;
-            const btn = document.getElementById('btn-link-add');
-            
-            btn.innerText = "更新中...";
-            btn.disabled = true;
+            const clientString = folder ? `${folder}::${name}` : name; const btn = document.getElementById('btn-link-add');
+            btn.innerText = "更新中..."; btn.disabled = true;
             callAPI('editLink', { idx: editingLinkIdx, client: clientString, url: url }, (res) => {
-                btn.innerText = "新增連結";
-                btn.disabled = false;
-                btn.onclick = addLinkItem;
-                editingLinkIdx = null;
-                document.getElementById('l-folder').value = '';
-                document.getElementById('l-name').value = '';
-                document.getElementById('l-url').value = '';
-                showToast("連結已更新");
-                loadLinks();
+                btn.innerText = "新增連結"; btn.disabled = false; btn.onclick = addLinkItem; editingLinkIdx = null;
+                document.getElementById('l-folder').value = ''; document.getElementById('l-name').value = ''; document.getElementById('l-url').value = '';
+                showToast("連結已更新"); loadLinks();
             });
         }
 
         function addLinkItem() {
-            const folder = document.getElementById('l-folder').value.trim();
-            const name = document.getElementById('l-name').value.trim();
-            const url = document.getElementById('l-url').value.trim();
+            const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim();
             if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error");
-            
-            const clientString = folder ? `${folder}::${name}` : name;
-            const btn = document.getElementById('btn-link-add');
-            const originalText = btn.innerText;
-            
-            btn.innerText = "儲存中...";
-            btn.disabled = true;
+            const clientString = folder ? `${folder}::${name}` : name; const btn = document.getElementById('btn-link-add'); const originalText = btn.innerText;
+            btn.innerText = "儲存中..."; btn.disabled = true;
             callAPI('addLink', { client: clientString, url: url }, (res) => {
-                btn.innerText = originalText;
-                btn.disabled = false;
-                if (res !== "OK") { 
-                    showToast(res, "error"); 
-                } else { 
-                    document.getElementById('l-name').value = ''; 
-                    document.getElementById('l-url').value = ''; 
-                    showToast("已新增連結");
-                    loadLinks(); 
+                btn.innerText = originalText; btn.disabled = false;
+                if (res !== "OK") { showToast(res, "error"); } else { 
+                    document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("已新增連結"); loadLinks(); 
                 }
             });
         }
 
         function removeLink(idx, el) {
             if(!confirm("確定刪除此連結嗎？")) return;
-            el.parentElement.parentElement.style.opacity = '0.5';
-            callAPI('deleteLink', { idx:idx }, (res) => {
-                showToast("已刪除連結");
-                loadLinks();
-            });
+            el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteLink', { idx:idx }, (res) => { showToast("已刪除連結"); loadLinks(); });
         }
 
         function openZoneModal(mode) {
-            modalMode = mode;
-            const z = document.getElementById('i-zone').value;
+            modalMode = mode; const z = document.getElementById('i-zone').value;
             if (mode === 'edit' && !z) return showToast("請先選擇要編輯的客戶", "error");
             document.getElementById('modal-title').innerText = (mode==='new') ? "新增客戶" : "編輯客戶名稱";
-            
-            const selCode = document.getElementById('modal-code');
-            selCode.innerHTML = '';
-            const raw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-            const alphabet = (curCat === 'image') ? raw.map(c=>c.toLowerCase()) : raw;
+            const selCode = document.getElementById('modal-code'); selCode.innerHTML = '';
+            const raw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); const alphabet = (curCat === 'image') ? raw.map(c=>c.toLowerCase()) : raw;
             const used = (curCat === 'image') ? DATA.usedCodesImage : DATA.usedCodesVideo;
-            
-            alphabet.forEach(c => { 
-                if(mode === 'new' && used.includes(c)) return; 
-                const op = document.createElement('option'); 
-                op.value = c; 
-                op.text = c; 
-                selCode.add(op); 
-            });
-            
+            alphabet.forEach(c => { if(mode === 'new' && used.includes(c)) return; const op = document.createElement('option'); op.value = c; op.text = c; selCode.add(op); });
             document.getElementById('div-code-select').classList.remove('hidden');
-            
-            if (mode === 'new') {
-                document.getElementById('modal-name').value = '';
-            } else {
-                const prefix = z.split('_')[0];
-                const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z;
-                let found = false;
-                for(let i=0; i<selCode.options.length; i++) { 
-                    if(selCode.options[i].value == prefix) found = true; 
-                }
-                if(!found) { 
-                    const op = document.createElement('option'); 
-                    op.value = prefix; 
-                    op.text = prefix; 
-                    selCode.add(op); 
-                }
-                selCode.value = prefix;
-                document.getElementById('modal-name').value = realName;
+            if (mode === 'new') { document.getElementById('modal-name').value = ''; } else {
+                const prefix = z.split('_')[0]; const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z;
+                let found = false; for(let i=0; i<selCode.options.length; i++) { if(selCode.options[i].value == prefix) found = true; }
+                if(!found) { const op = document.createElement('option'); op.value = prefix; op.text = prefix; selCode.add(op); }
+                selCode.value = prefix; document.getElementById('modal-name').value = realName;
             }
             document.getElementById('modal-zone').style.display = 'flex';
         }
 
-        function closeModal(id) { 
-            document.getElementById('modal-'+id).style.display = 'none'; 
-        }
+        function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
 
         function confirmZoneModal() {
-            const name = document.getElementById('modal-name').value;
-            const code = document.getElementById('modal-code').value;
-            if(!name) return;
-            
-            closeModal('zone');
-            document.getElementById('loader').style.display = 'flex';
-            
+            const name = document.getElementById('modal-name').value; const code = document.getElementById('modal-code').value;
+            if(!name) return; closeModal('zone'); document.getElementById('loader').style.display = 'flex';
             if (modalMode === 'new') {
-                callAPI('createClient', { cat: curCat, code: code, name: name }, (res) => {
-                    callAPI('initAllData', {}, (data) => {
-                        processDataUpdate(data);
-                        showToast("已新增客戶");
-                    });
-                });
+                callAPI('createClient', { cat: curCat, code: code, name: name }, (res) => { callAPI('initAllData', {}, (data) => { processDataUpdate(data); showToast("已新增客戶"); }); });
             } else {
-                const oldName = document.getElementById('i-zone').value;
-                const newFullName = code + "_" + name; 
-                callAPI('renameClient', { cat: curCat, oldName: oldName, newFullName: newFullName }, (res) => {
-                    callAPI('initAllData', {}, (data) => {
-                        processDataUpdate(data);
-                        showToast("客戶已更新");
-                    });
-                });
+                const oldName = document.getElementById('i-zone').value; const newFullName = code + "_" + name; 
+                callAPI('renameClient', { cat: curCat, oldName: oldName, newFullName: newFullName }, (res) => { callAPI('initAllData', {}, (data) => { processDataUpdate(data); showToast("客戶已更新"); }); });
             }
         }
         
         function updateEditClientInfo() {
-            const selectedCode = document.getElementById('ep-code').value;
-            const settings = (document.getElementById('ep-cat').value === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            let foundZone = "";
-            for (let key in settings) { 
-                if (key.startsWith(selectedCode + "_") || key === selectedCode) { 
-                    foundZone = key; 
-                    break; 
-                } 
-            }
+            const selectedCode = document.getElementById('ep-code').value; const settings = (document.getElementById('ep-cat').value === 'video') ? DATA.videoSettings : DATA.imageSettings;
+            let foundZone = ""; for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
             if (foundZone) {
                 const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone;
-                document.getElementById('ep-client-display').value = clientName;
-                document.getElementById('ep-zone').value = foundZone; 
+                document.getElementById('ep-client-display').value = clientName; document.getElementById('ep-zone').value = foundZone; 
             } else {
-                const currentClient = document.getElementById('ep-client-display').value || "未知客戶";
-                document.getElementById('ep-client-display').value = currentClient;
-                document.getElementById('ep-zone').value = selectedCode + "_" + currentClient;
+                const currentClient = document.getElementById('ep-client-display').value || "未知客戶"; document.getElementById('ep-client-display').value = currentClient; document.getElementById('ep-zone').value = selectedCode + "_" + currentClient;
             }
         }
         
         function updateZoneFromClientName() {
-            const code = document.getElementById('ep-code').value;
-            const client = document.getElementById('ep-client-display').value;
-            document.getElementById('ep-zone').value = code + "_" + client;
+            const code = document.getElementById('ep-code').value; const client = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + "_" + client;
         }
         
         function openLeaveModal() {
-            document.getElementById('leave-name').value = '魏敏軒'; 
-            document.getElementById('leave-date').value = '';
-            document.getElementById('leave-reason').value = '';
-            document.getElementById('modal-leave').style.display = 'flex';
+            document.getElementById('leave-name').value = '魏敏軒'; document.getElementById('leave-date').value = ''; document.getElementById('leave-reason').value = ''; document.getElementById('modal-leave').style.display = 'flex';
         }
 
         function confirmLeave() {
-            const name = document.getElementById('leave-name').value;
-            const date = document.getElementById('leave-date').value;
-            const reason = document.getElementById('leave-reason').value;
+            const name = document.getElementById('leave-name').value; const date = document.getElementById('leave-date').value; const reason = document.getElementById('leave-reason').value;
             if(!date || !reason) return showToast("請填寫完整資訊 (日期與事由)", "error");
-            
-            const dates = date.split(' to ');
-            const item = { 
-                name: name, 
-                start: dates[0], 
-                end: dates[1] || dates[0], 
-                reason: reason 
-            };
-            
-            if(!DATA.leaves) DATA.leaves = [];
-            DATA.leaves.push(item);
-            
-            closeModal('leave');
-            renderCalendar(); 
-            showToast("請假申請已送出");
-            callAPI('addLeave', { item: item }, (res) => {});
-            
-            document.getElementById('leave-date').value = '';
-            document.getElementById('leave-reason').value = '';
+            const dates = date.split(' to '); const item = { name: name, start: dates[0], end: dates[1] || dates[0], reason: reason };
+            if(!DATA.leaves) DATA.leaves = []; DATA.leaves.push(item);
+            closeModal('leave'); renderCalendar(); showToast("請假申請已送出"); callAPI('addLeave', { item: item }, (res) => {});
+            document.getElementById('leave-date').value = ''; document.getElementById('leave-reason').value = '';
         }
     </script>
 </body>

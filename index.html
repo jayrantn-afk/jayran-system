@@ -63,8 +63,8 @@
         .nav-item { flex: 1; min-width: 85px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         
-        /* 頁面容器與動畫 */
-        .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 80px 20px; position: relative; }
+        /* ★ 修復：頁面容器與動畫 (增加 padding-bottom 防按鈕被切) ★ */
+        .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 100px 20px; position: relative; }
         .fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -141,9 +141,9 @@
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
         
-        /* RWD 手機版調整 */
+        /* ★ 修復：RWD 手機版調整 (增加 padding-bottom 防按鈕被切) ★ */
         @media (max-width: 768px) {
-            .page-scroll-container { padding: 10px 10px 80px 10px; }
+            .page-scroll-container { padding: 10px 10px 90px 10px; }
             #calendar-container { padding: 10px; min-height: 500px; }
             .fc .fc-toolbar { flex-direction: column; gap: 10px; }
             .fc .fc-toolbar-title { font-size: 1.2rem !important; }
@@ -520,7 +520,7 @@
 
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label>
-                    <input id="i-date" class="clean-input text-center" placeholder="點擊選擇" autocomplete="off">
+                    <input id="i-date" class="clean-input text-center" placeholder="點擊選擇" autocomplete="off" readonly>
                 </div>
                 <div class="mb-6">
                     <label class="block text-xs font-bold text-gray-500 mb-1">備註</label>
@@ -1747,5 +1747,3 @@
             document.getElementById('leave-date').value = ''; document.getElementById('leave-reason').value = '';
         }
     </script>
-</body>
-</html>

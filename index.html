@@ -1746,4 +1746,89 @@
             closeModal('leave'); renderCalendar(); showToast("請假申請已送出"); callAPI('addLeave', { item: item }, (res) => {});
             document.getElementById('leave-date').value = ''; document.getElementById('leave-reason').value = '';
         }
+
+        // --- 新增的 saveProject 函式 ---
+        function saveProject() {
+            const zone = document.getElementById('i-zone').value;
+            let idRaw = document.getElementById('i-id').value.trim();
+            const client = document.getElementById('i-client').value;
+            const name = document.getElementById('i-name').value.trim();
+            const producer = document.getElementById('i-producer').value;
+            const type = document.getElementById('i-type').value;
+            const isUrgent = document.getElementById('i-urgent').checked;
+            const dateStr = document.getElementById('i-date').value;
+            const note = document.getElementById('i-note').value;
+
+            if (!zone) return showToast("請選擇區域 / 客戶", "error");
+            if (!name) return showToast("請輸入專案名稱", "error");
+            if (!idRaw) return showToast("請輸入編號", "error");
+
+            const prefix = zone.split('_')[0];
+            // 處理編號格式 (自動補齊 3 位數與英文字首)
+            if (!isNaN(idRaw) && idRaw !== "") {
+                idRaw = prefix + String(idRaw).padStart(3, '0');
+            } else if (!idRaw.toUpperCase().startsWith(prefix.toUpperCase())) {
+                idRaw = prefix + idRaw;
+            }
+
+            const dates = dateStr.split(' to ');
+            const start = dates[0] || "";
+            const end = dates[1] || dates[0] || "";
+
+            // 判斷初始狀態
+            let status = '尚未進行';
+            if (producer !== '尚未暫定' && start) {
+                try {
+                    let d = new Date(start);
+                    let today = new Date();
+                    d.setHours(0,0,0,0); today.setHours(0,0,0,0);
+                    if (d <= today) status = '製作中';
+                } catch(e) {}
+            }
+
+            const payloadData = {
+                category: curCat,
+                zone: zone,
+                id: idRaw,
+                client: client,
+                name: name,
+                producer: producer,
+                type: type,
+                start: start,
+                end: end,
+                note: note,
+                tag: isUrgent ? 'Urgent' : '',
+                status: status,
+                hours: 0
+            };
+
+            const btn = document.getElementById('btn-create');
+            const originalText = btn.innerText;
+            btn.innerText = "同步中...";
+            btn.disabled = true;
+            document.getElementById('loader').style.display = 'flex';
+
+            // 呼叫 API 寫入資料庫，並重新拉取最新資料更新畫面
+            callAPI('addProject', { payload: payloadData }, (res) => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+                
+                callAPI('initAllData', {}, (data) => { 
+                    DATA = data;
+                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data));
+                    processDataUpdate(data, false); 
+                    
+                    // 成功後清空表單
+                    document.getElementById('i-id').value = '';
+                    document.getElementById('i-name').value = '';
+                    document.getElementById('i-note').value = '';
+                    document.getElementById('i-urgent').checked = false;
+                    fp.clear(); // 清除 flatpickr 日期
+                    
+                    showToast("專案已建立並同步");
+                });
+            });
+        }
     </script>
+</body>
+</html>

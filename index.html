@@ -9,6 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
@@ -85,7 +89,7 @@
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
         .icon-btn:hover { transform: scale(1.05); }
 
-        /* 表格化列表樣式 (Excel Style) */
+        /* 表格與拖曳樣式 */
         .excel-table { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 14px; }
         .excel-table thead th { text-align: left; padding: 12px 16px; background: #F9FAFB; color: #6B7280; font-weight: 700; font-size: 12px; border-bottom: 1px solid #E5E7EB; white-space: nowrap; }
         .excel-table tbody tr { border-bottom: 1px solid #F3F4F6; transition: background 0.1s; }
@@ -93,6 +97,11 @@
         .excel-table td { padding: 12px 16px; vertical-align: middle; color: #1F2937; font-weight: 600; }
         .table-container { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #E5E5E5; box-shadow: 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px; }
         
+        /* 🌟 新增拖曳互動特效 */
+        .sortable-ghost { opacity: 0.4; background: #E0F2FE !important; border: 2px dashed #0284C7; }
+        .cursor-grab { cursor: grab; }
+        .cursor-grab:active { cursor: grabbing; }
+
         /* 狀態標籤 */
         .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; }
         .sb-blue { background: #E0F2FE; color: #0284C7; }
@@ -106,7 +115,7 @@
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
-        /* 甘特圖 (加入平滑滾動與觸控優化) */
+        /* 甘特圖 */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
         .gantt-table { width: 100%; border-collapse: collapse; min-width: 800px; table-layout: fixed; }
         .gantt-header-cell { position: sticky; top: 0; background-color: #F8FAFC !important; z-index: 100; text-align: center; font-size: 11px; color: #475569; border: 1px solid #E2E8F0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
@@ -141,7 +150,6 @@
         .fc-button:hover { background-color: #d1d5db !important; }
         .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
         
-        /* RWD 手機版調整 */
         @media (max-width: 768px) {
             .page-scroll-container { padding: 10px 10px 90px 10px; }
             #calendar-container { padding: 10px; min-height: 500px; }
@@ -267,6 +275,23 @@
             <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user mr-1"></i> 邱仁杰</div>
             <div onclick="switchTab('gan')" id="nav-gan" class="nav-item"><i class="fas fa-chart-bar mr-1"></i> 甘特圖</div>
             <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item"><i class="fas fa-calendar-alt mr-1"></i> 行事曆</div>
+            <div onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item"><i class="fas fa-chart-pie mr-1"></i> 數據中心</div>
+        </div>
+    </div>
+
+    <div id="p-dashboard" class="hidden page-scroll-container fade-in">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl font-black mb-6 px-2 border-l-8 border-black pl-4">📊 營運數據中心</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="clean-card flex flex-col items-center">
+                    <h3 class="text-lg font-bold mb-4 w-full text-center text-gray-700">全公司專案狀態分佈</h3>
+                    <div style="height: 280px; width: 100%;"><canvas id="chart-status"></canvas></div>
+                </div>
+                <div class="clean-card flex flex-col items-center">
+                    <h3 class="text-lg font-bold mb-4 w-full text-center text-gray-700">製作人處理專案數佔比</h3>
+                    <div style="height: 280px; width: 100%;"><canvas id="chart-producer"></canvas></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -362,7 +387,6 @@
             </div>
 
             <div id="kb-normal-view">
-                
                 <div class="mb-10">
                     <h3 class="text-xl font-bold text-blue-600 mb-4 px-2">🔥 製作中</h3>
                     <div class="table-container">
@@ -448,7 +472,6 @@
     </div>
 
     <script>
-        // ★ 請確認此 URL 是否為您最新發布的網頁應用程式網址 ★
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
         const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
         const SESSION_HOURS = 12;
@@ -462,6 +485,10 @@
         let currentGanttDate = new Date(); 
         let editingMemoIdx = null;
         let editingLinkIdx = null;
+        
+        // 用於儲存圖表與拖曳實體，避免重複渲染
+        let dashboardCharts = {};
+        let sortableInstances = [];
 
         document.addEventListener('DOMContentLoaded', function() {
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
@@ -495,9 +522,6 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // ==========================================
-        // ★ 安全升級：將密碼驗證移至後端 GS
-        // ==========================================
         function checkLogin() {
             const acc = document.getElementById('login-acc').value.trim();
             const pass = document.getElementById('login-pass').value;
@@ -505,12 +529,10 @@
 
             if(!acc || !pass) return showToast("請輸入帳號與密碼", "error");
 
-            // UI 優化：驗證中狀態
             const originalText = btn.innerText;
             btn.innerText = "驗證中...";
             btn.disabled = true;
 
-            // 呼叫 GS 後端進行安全驗證
             callAPI('verifyLogin', { acc: acc, pass: pass }, (res) => {
                 if (res === "OK") {
                     localStorage.setItem(LOGIN_KEY, new Date().getTime());
@@ -583,7 +605,6 @@
                         .catch(e => { 
                             showToast("連線錯誤，請檢查網路", "error"); 
                             document.getElementById('loader').style.display = 'none'; 
-                            // 防止驗證失敗時卡住按鈕
                             if(action === 'verifyLogin') {
                                 const btn = document.getElementById('btn-login');
                                 btn.innerText = "進入系統"; btn.disabled = false;
@@ -602,15 +623,14 @@
             loadLinks();
             loadPending();
             
-            if (curTab === 'wei') renderKanban('魏敏軒');
-            else if (curTab === 'chiu') renderKanban('邱仁杰');
+            if (curTab === 'wei') renderKanban('魏敏軒', false);
+            else if (curTab === 'chiu') renderKanban('邱仁杰', false);
             else if (curTab === 'gan') {
                 const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
                 renderGantt(who);
             }
-            else if (curTab === 'calendar') { 
-                renderCalendar(); 
-            }
+            else if (curTab === 'calendar') { renderCalendar(); }
+            else if (curTab === 'dashboard') { renderDashboard(); }
 
             if (!isCache) {
                 document.getElementById('loader').style.display = 'none';
@@ -677,7 +697,7 @@
             tbody.innerHTML = html;
         }
 
-        // --- 看板 (表格模式) ---
+        // --- 看板與拖曳邏輯 ---
         function renderKanban(producer, clearSearch = true) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
@@ -691,7 +711,7 @@
             const tasks = DATA.projects.filter(p => p.producer === producer);
 
             const getTableRows = (filteredTasks) => {
-                if (filteredTasks.length === 0) return '<tr><td colspan="6" class="p-4 text-center text-gray-400 text-xs font-bold">無專案</td></tr>';
+                if (filteredTasks.length === 0) return ''; // 為了 SortableJS 順暢，空表格保持空白而不是塞入文字
                 
                 return filteredTasks.map(p => {
                     const pStr = encodeURIComponent(JSON.stringify(p));
@@ -713,8 +733,9 @@
                     actionBtns += `<button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="ml-2 text-gray-400 hover:text-black" title="編輯"><i class="fas fa-pen"></i></button>
                                    <button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-3 text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>`;
 
+                    // 🌟 新增 data- 屬性，供拖曳結束時辨識是哪個專案
                     return `
-                    <tr>
+                    <tr data-cat="${p.category}" data-zone="${p.zone}" data-id="${p.id}" class="cursor-grab hover:bg-gray-50">
                         <td class="font-mono text-xs text-gray-500">${p.id}</td>
                         <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
                         <td class="text-gray-600 text-xs font-bold">${p.client}</td>
@@ -729,9 +750,103 @@
             document.getElementById('kb-review').innerHTML = getTableRows(tasks.filter(p => p.status.includes('審')));
             document.getElementById('kb-todo').innerHTML = getTableRows(tasks.filter(p => p.status === '尚未進行'));
             document.getElementById('kb-done').innerHTML = getTableRows(tasks.filter(p => p.status === '已完成' || p.status === '已結案'));
+
+            // 🌟 實裝：拖曳切換狀態 (SortableJS)
+            // 先清除舊的實體，避免重複綁定
+            sortableInstances.forEach(inst => inst.destroy());
+            sortableInstances = [];
+
+            const tables = ['kb-process', 'kb-review', 'kb-todo', 'kb-done'];
+            tables.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    sortableInstances.push(new Sortable(el, {
+                        group: 'kanban', // 同一個 group 才能互相拖曳
+                        animation: 150,
+                        ghostClass: 'sortable-ghost',
+                        onEnd: function (evt) {
+                            if (evt.to.id !== evt.from.id) { // 只有跨表拖曳才處理
+                                const itemEl = evt.item;
+                                const cat = itemEl.getAttribute('data-cat');
+                                const zone = itemEl.getAttribute('data-zone');
+                                const pId = itemEl.getAttribute('data-id');
+
+                                let newStatus = '尚未進行';
+                                if (evt.to.id === 'kb-process') newStatus = '製作中';
+                                else if (evt.to.id === 'kb-review') newStatus = '客戶審核'; // 後端統一寫客戶審核
+                                else if (evt.to.id === 'kb-done') newStatus = '已完成';
+
+                                // 自動呼叫後端更新，並觸發資料重載
+                                doUpdate(cat, zone, pId, newStatus, 0);
+                                showToast(`✅ 狀態已自動更新為：${newStatus}`);
+                            }
+                        }
+                    }));
+                }
+            });
         }
 
-        // --- 行事曆 ---
+        // --- 視覺化數據中心 ---
+        function renderDashboard() {
+            if(!DATA.projects) return;
+
+            const statusCounts = { '製作中': 0, '審核中': 0, '尚未進行': 0, '已完成': 0 };
+            const producerCounts = {};
+
+            DATA.projects.forEach(p => {
+                // 狀態統計
+                if (p.status === '製作中') statusCounts['製作中']++;
+                else if (p.status.includes('審')) statusCounts['審核中']++;
+                else if (p.status === '尚未進行') statusCounts['尚未進行']++;
+                else if (p.status === '已完成' || p.status === '已結案') statusCounts['已完成']++;
+
+                // 製作人產能統計
+                if (p.producer && p.producer !== '尚未暫定') {
+                    producerCounts[p.producer] = (producerCounts[p.producer] || 0) + 1;
+                }
+            });
+
+            // 1. 狀態分佈圓餅圖
+            const ctxStatus = document.getElementById('chart-status');
+            if (dashboardCharts.status) dashboardCharts.status.destroy();
+            dashboardCharts.status = new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: ['製作中', '審核中', '尚未進行', '已完成'],
+                    datasets: [{
+                        data: [statusCounts['製作中'], statusCounts['審核中'], statusCounts['尚未進行'], statusCounts['已完成']],
+                        backgroundColor: ['#007AFF', '#FF9500', '#8E8E93', '#34C759'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 2. 製作人佔比長條圖
+            const ctxProducer = document.getElementById('chart-producer');
+            if (dashboardCharts.producer) dashboardCharts.producer.destroy();
+            const pLabels = Object.keys(producerCounts);
+            const pData = Object.values(producerCounts);
+            dashboardCharts.producer = new Chart(ctxProducer, {
+                type: 'bar',
+                data: {
+                    labels: pLabels,
+                    datasets: [{
+                        label: '專案數量',
+                        data: pData,
+                        backgroundColor: '#1D1D1F',
+                        borderRadius: 6
+                    }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
         function renderCalendar() {
             const el = document.getElementById('calendar');
             if (calendar) { calendar.destroy(); }
@@ -845,6 +960,7 @@
             fillSelect('ep-producer', producers);
         }
 
+        // 🌟 切換頁籤機制升級：實作「預設收合記憶」與加入「數據中心」
         function switchTab(tab) {
             document.querySelectorAll('.page-scroll-container').forEach(el => {
                 el.classList.remove('fade-in');
@@ -854,17 +970,26 @@
             curTab = tab;
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById('nav-' + tab).classList.add('active');
-            ['p-add', 'p-kanban', 'p-gantt', 'p-calendar'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            ['p-add', 'p-kanban', 'p-gantt', 'p-calendar', 'p-dashboard'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
             
             let targetId = '';
             if (tab === 'add') { targetId = 'p-add'; renderDynamicOptions(); }
-            else if (tab === 'wei') { targetId = 'p-kanban'; renderKanban('魏敏軒'); }
-            else if (tab === 'chiu') { targetId = 'p-kanban'; renderKanban('邱仁杰'); }
-            else if (tab === 'gan') { targetId = 'p-gantt'; renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); }
-            else if (tab === 'calendar') { 
-                targetId = 'p-calendar';
-                setTimeout(() => renderCalendar(), 100); 
+            else if (tab === 'wei') { 
+                // ✨ 只要切換到看板，就強制移除 details 的 open 屬性，完成收合要求
+                document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open'));
+                targetId = 'p-kanban'; renderKanban('魏敏軒'); 
             }
+            else if (tab === 'chiu') { 
+                // ✨ 只要切換到看板，就強制移除 details 的 open 屬性，完成收合要求
+                document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open'));
+                targetId = 'p-kanban'; renderKanban('邱仁杰'); 
+            }
+            else if (tab === 'gan') { targetId = 'p-gantt'; renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); }
+            else if (tab === 'calendar') { targetId = 'p-calendar'; setTimeout(() => renderCalendar(), 100); }
+            else if (tab === 'dashboard') { targetId = 'p-dashboard'; setTimeout(() => renderDashboard(), 100); }
 
             if(targetId) {
                 const targetEl = document.getElementById(targetId);

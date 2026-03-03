@@ -16,29 +16,101 @@
     <link rel="icon" href="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn">
     
     <style>
-        :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--primary); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        /* --- 基礎架構 --- */
+        :root { 
+            --bg: #F5F5F7; 
+            --surface: #FFFFFF; 
+            --primary: #1D1D1F; 
+            --secondary: #86868B; 
+            --accent: #007AFF; 
+            --radius: 12px; 
+        }
         
-        #login-overlay { position: fixed; inset: 0; background: #111827; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; transition: opacity 0.5s ease; }
-        #client-portal-view { position: fixed; inset: 0; background: #0f172a; z-index: 999999; color: white; overflow-y: auto; padding: 40px 20px; }
-        .portal-card { background: #1e293b; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid #334155; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); 
+            color: var(--primary); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        /* --- 登入遮罩層 --- */
+        #login-overlay {
+            position: fixed; inset: 0; background: #111827; z-index: 99999; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            color: white; transition: opacity 0.5s ease;
+        }
+
+        /* 🌟 VIP 客戶傳送門專用樣式 */
+        #client-portal-view {
+            position: fixed; inset: 0; background: #0f172a; z-index: 999999; 
+            color: white; overflow-y: auto; padding: 40px 20px;
+        }
+        .portal-card { 
+            background: #1e293b; border-radius: 16px; padding: 24px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid #334155; 
+        }
+
+        /* --- 毛玻璃頂部導覽列 --- */
+        .header-fixed-area { 
+            flex-shrink: 0; padding: 20px 20px 0 20px; 
+            background: rgba(245, 245, 247, 0.85); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 50; 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
         
-        .header-fixed-area { flex-shrink: 0; padding: 20px 20px 0 20px; background: rgba(245, 245, 247, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 50; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .segmented-nav { background: rgba(229, 229, 234, 0.6); padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        /* --- RWD 導覽列 --- */
+        .segmented-nav { 
+            background: rgba(229, 229, 234, 0.6); 
+            padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            overflow-x: auto; 
+            -webkit-overflow-scrolling: touch; 
+            scrollbar-width: none; 
+        }
         .segmented-nav::-webkit-scrollbar { display: none; }
-        .nav-item { flex: 1; min-width: 85px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
-        .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         
-        .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 100px 20px; position: relative; }
+        .nav-item { 
+            flex: 1; min-width: 85px; text-align: center; padding: 10px; 
+            font-size: 14px; font-weight: 700; color: var(--secondary); 
+            cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; 
+        }
+        .nav-item.active { 
+            background: var(--surface); color: var(--primary); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+        }
+        
+        /* --- 頁面容器與動畫 --- */
+        .page-scroll-container { 
+            flex-grow: 1; overflow-y: auto; padding: 10px 20px 100px 20px; position: relative; 
+        }
         .fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(5px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
         .page-scroll-container::-webkit-scrollbar, .gantt-wrapper::-webkit-scrollbar { width: 6px; height: 6px; }
         .page-scroll-container::-webkit-scrollbar-track, .gantt-wrapper::-webkit-scrollbar-track { background: transparent; }
         .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 10px; }
         
-        .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
-        .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
-        .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.1); }
+        /* --- 卡片與表單 --- */
+        .clean-card { 
+            background: var(--surface); border-radius: var(--radius); padding: 24px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; width: 100%; box-sizing: border-box; 
+        }
+        .clean-input, .clean-select { 
+            width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; 
+            border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; 
+        }
+        .clean-input:focus, .clean-select:focus { 
+            background: var(--surface); border-color: var(--accent); outline: none; 
+            box-shadow: 0 0 0 3px rgba(0,122,255,0.1); 
+        }
         
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
@@ -49,6 +121,7 @@
         .btn-gray { background: #F2F2F7; color: #1D1D1F; }
         .icon-btn:hover { transform: scale(1.05); }
 
+        /* --- 表格與拖曳樣式 --- */
         .excel-table { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 14px; }
         .excel-table thead th { text-align: left; padding: 12px 16px; background: #F9FAFB; color: #6B7280; font-weight: 700; font-size: 12px; border-bottom: 1px solid #E5E7EB; white-space: nowrap; }
         .excel-table tbody tr { border-bottom: 1px solid #F3F4F6; transition: background 0.1s; }
@@ -67,11 +140,22 @@
         .sb-gray { background: #F3F4F6; color: #6B7280; }
         .sb-red { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; }
 
+        /* --- 儀表板排行榜樣式 --- */
+        .leaderboard-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #F3F4F6; transition: 0.2s; }
+        .leaderboard-item:hover { background: #F9FAFB; transform: translateX(4px); }
+        .lb-rank { font-size: 16px; font-weight: 900; color: #D1D5DB; width: 30px; }
+        .lb-rank-1 { color: #F59E0B; }
+        .lb-rank-2 { color: #9CA3AF; }
+        .lb-rank-3 { color: #B45309; }
+        .lb-name { flex: 1; font-weight: 800; color: #1F2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lb-score { font-size: 14px; font-weight: 700; color: #007AFF; background: #E0F2FE; padding: 2px 8px; border-radius: 6px; }
+
         details > summary { list-style: none; outline: none; }
         details > summary::-webkit-details-marker { display: none; }
         details > summary i.fa-caret-right { transition: transform 0.2s ease; display: inline-block; width: 20px; text-align: center; }
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
+        /* --- 甘特圖 --- */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
         .gantt-table { width: 100%; border-collapse: collapse; min-width: 800px; table-layout: fixed; }
         .gantt-header-cell { position: sticky; top: 0; background-color: #F8FAFC !important; z-index: 100; text-align: center; font-size: 11px; color: #475569; border: 1px solid #E2E8F0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
@@ -88,6 +172,7 @@
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
+        /* --- 行事曆 --- */
         #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); flex-grow: 1; min-height: 600px; overflow: hidden; display: flex; flex-direction: column; }
         .fc { height: 100% !important; } 
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
@@ -98,10 +183,15 @@
         .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; }
         .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 2px !important; border-radius: 4px !important; }
         .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 11px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; }
+        .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; }
+        .fc-button:hover { background-color: #d1d5db !important; }
+        .fc-button-active { background-color: #1D1D1F !important; color: white !important; }
         
         .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; }
         .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
+        /* --- 浮動按鈕與彈窗 --- */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
         .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); position: relative; }
         .fab-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.3); }
@@ -120,6 +210,7 @@
         .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .hidden { display: none !important; }
 
+        /* --- 內部組件樣式 --- */
         .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; }
         .memo-item:hover, .pending-item:hover { transform: translateX(3px); }
         .memo-item.chiu { background: #E3F2FD; border-left-color: #2196F3; } 
@@ -135,18 +226,30 @@
         .link-item { background: #2D3748; color: white; padding: 16px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; cursor: pointer; transition: 0.2s; position: relative; font-size: 15px; }
         .link-item:hover { transform: translateX(5px); background: #1A202C; }
         
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; font-weight:bold;}
+        .setting-actions i { cursor: pointer; padding: 5px; margin-left: 5px; color: #999; }
+        .setting-actions i:hover { color: #333; }
+
+        /* --- Toast 提示框 --- */
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .custom-toast { background: rgba(29, 29, 31, 0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1), toastOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) 2.6s forwards; display: flex; align-items: center; gap: 8px; }
         .custom-toast.error { background: rgba(255, 59, 48, 0.9); }
         @keyframes toastIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes toastOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-20px); opacity: 0; } }
 
+        /* --- RWD 手機版調整 --- */
         @media (max-width: 768px) {
             .page-scroll-container { padding: 10px 10px 90px 10px; }
             #calendar-container { padding: 10px; min-height: 500px; }
+            .fc .fc-toolbar { flex-direction: column; gap: 10px; }
+            .fc .fc-toolbar-title { font-size: 1.2rem !important; }
+            .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
+            .fc-event-main { font-size: 10px !important; padding: 2px !important; }
             .header-fixed-area { padding: 15px 15px 0 15px; }
             .modal-body { width: 95%; padding: 20px; }
+            .clean-card { padding: 16px; }
             .fab-container { bottom: 20px; right: 20px; }
+            .fab-btn { width: 60px; height: 60px; font-size: 24px; }
         }
     </style>
 </head>
@@ -160,7 +263,7 @@
                     <h1 class="text-3xl font-black text-white tracking-wider">JAYRAN <span class="text-blue-500">STUDIO</span></h1>
                     <p id="portal-client-name" class="text-gray-400 mt-2 text-lg font-bold">專屬協作空間</p>
                 </div>
-                <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-16 h-16 rounded-full shadow-lg border-2 border-slate-600">
+                <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-16 h-16 rounded-full shadow-lg border-2 border-slate-600 bg-white">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -203,7 +306,7 @@
     <div id="admin-view">
 
         <div id="login-overlay">
-            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-lg mb-6 border-4 border-white">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-lg mb-6 border-4 border-white bg-white">
             <div class="text-4xl font-black mb-8 tracking-widest text-white">JAYRAN STUDIO</div>
             <input id="login-acc" type="email" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-4 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入帳號 (Email)">
             <input id="login-pass" type="password" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-8 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入密碼">
@@ -211,7 +314,7 @@
         </div>
 
         <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[999]" style="display:none;">
-            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full shadow-lg mb-4 animate-pulse">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full shadow-lg mb-4 animate-pulse bg-white">
             <div class="text-2xl font-black tracking-widest animate-pulse text-gray-800">JAYRAN STUDIO</div>
             <div id="loader-msg" class="mt-4 text-gray-500 font-bold text-center px-4">資料讀取中...</div>
         </div>
@@ -260,7 +363,7 @@
         <div class="header-fixed-area">
             <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm">
+                    <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm bg-white">
                     <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
                 </div>
             </div>
@@ -485,7 +588,7 @@
 
     <script>
         // =========================================================
-        // ★ 核心變數與設定
+        // ★ 核心變數與設定 (請換成您最新的 Web App 網址)
         // =========================================================
         // ⚠️⚠️⚠️ 記得把下面這個網址換成您的最新網址 ⚠️⚠️⚠️
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
@@ -507,6 +610,7 @@
         let currentFilteredProjects = []; 
         let portalChart = null;
 
+        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
@@ -515,12 +619,8 @@
         });
 
         document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape") { 
-                document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none'); 
-            }
-            if (event.key === "Enter" && document.getElementById('login-overlay').style.display !== 'none') { 
-                checkLogin(); 
-            }
+            if (event.key === "Escape") { document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none'); }
+            if (event.key === "Enter" && document.getElementById('login-overlay').style.display !== 'none') { checkLogin(); }
         });
 
         function getLocalDateString(dateObj) {
@@ -539,9 +639,7 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // =========================================================
-        // ★ API 連線與錯誤捕捉
-        // =========================================================
+        // API 連線
         function callAPI(action, payload, onSuccess) {
             if (!GAS_API_URL) return;
             
@@ -553,45 +651,36 @@
                 
                 fetch(GAS_API_URL + params)
                     .then(res => {
-                        if (!res.ok) throw new Error('HTTP 狀態碼異常 (非 200)');
+                        if (!res.ok) throw new Error('HTTP 狀態碼異常');
                         return res.json();
                     })
                     .then(data => onSuccess(data))
                     .catch(e => {
                         console.error("API GET 連線錯誤:", e);
                         if (action === 'initAllData') {
-                            document.getElementById('loader-msg').innerHTML = `
-                                <div class="text-red-500 font-bold mt-4 flex flex-col items-center">
-                                    <i class="fas fa-exclamation-circle text-4xl mb-2"></i>
-                                    <p>系統連線失敗</p>
-                                    <p class="text-xs text-gray-400 mt-2 font-normal">可能原因：尚未更新部署版本，或 GAS 網址不正確。</p>
-                                </div>
-                            `;
+                            document.getElementById('loader-msg').innerHTML = `<div class="text-red-500 font-bold mt-4">系統連線失敗</div>`;
                         }
                     });
             } else {
                 const postData = { action: action, ...payload };
                 fetch(GAS_API_URL, { method: "POST", body: JSON.stringify(postData) })
                 .then(res => {
-                    if (!res.ok) throw new Error('HTTP 狀態碼異常 (非 200)');
+                    if (!res.ok) throw new Error('HTTP 狀態碼異常');
                     return res.json();
                 })
                 .then(data => onSuccess(data.data))
                 .catch(e => { 
                     console.error("API POST 連線錯誤:", e);
-                    showToast("連線錯誤，請檢查網路或後端部署狀態", "error"); 
+                    showToast("連線錯誤，請檢查網路", "error"); 
                     document.getElementById('loader').style.display = 'none'; 
                     if (action === 'verifyLogin') { 
-                        const btn = document.getElementById('btn-login'); 
-                        btn.innerText = "進入系統"; btn.disabled = false; 
+                        const btn = document.getElementById('btn-login'); btn.innerText = "進入系統"; btn.disabled = false; 
                     }
                 });
             }
         }
 
-        // =========================================================
-        // ★ 路由：判斷是一般登入 還是 客戶 VIP 傳送門
-        // =========================================================
+        // 路由：一般登入 或 客戶 VIP
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const portalClient = urlParams.get('client');
@@ -674,7 +763,7 @@
         }
 
         // =========================================================
-        // ★ 一般內部登入與啟動邏輯
+        // ★ 內部登入與啟動邏輯
         // =========================================================
         function checkLogin() {
             const acc = document.getElementById('login-acc').value.trim(); 
@@ -684,22 +773,16 @@
             if(!acc || !pass) return showToast("請輸入帳號與密碼", "error");
             
             const originalText = btn.innerText; 
-            btn.innerText = "驗證中..."; 
-            btn.disabled = true;
+            btn.innerText = "驗證中..."; btn.disabled = true;
 
             callAPI('verifyLogin', { acc: acc, pass: pass }, (res) => {
                 if (res === "OK") {
                     localStorage.setItem(LOGIN_KEY, new Date().getTime());
                     document.getElementById('login-overlay').style.opacity = '0';
-                    setTimeout(() => { 
-                        document.getElementById('login-overlay').style.display = 'none'; 
-                        startApp(); 
-                    }, 500);
+                    setTimeout(() => { document.getElementById('login-overlay').style.display = 'none'; startApp(); }, 500);
                 } else {
-                    showToast(res, "error"); 
-                    document.getElementById('login-pass').value = '';
-                    btn.innerText = originalText; 
-                    btn.disabled = false;
+                    showToast(res, "error"); document.getElementById('login-pass').value = '';
+                    btn.innerText = originalText; btn.disabled = false;
                 }
             });
         }
@@ -723,7 +806,7 @@
                     const parsedData = JSON.parse(cachedData); 
                     processDataUpdate(parsedData, true); 
                     document.getElementById('loader-msg').innerText = "背景同步最新資料中...";
-                } catch(e) { console.error("Cache Parse Error", e); }
+                } catch(e) {}
             }
             
             callAPI('initAllData', {}, (res) => {
@@ -742,10 +825,7 @@
             
             if (curTab === 'wei') renderKanban('魏敏軒', false);
             else if (curTab === 'chiu') renderKanban('邱仁杰', false);
-            else if (curTab === 'gan') { 
-                const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'; 
-                renderGantt(who); 
-            }
+            else if (curTab === 'gan') { const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'; renderGantt(who); }
             else if (curTab === 'calendar') { renderCalendar(); }
             else if (curTab === 'dashboard') { renderDashboard(); }
             else if (curTab === 'vip') { renderVIPArea(); }
@@ -799,42 +879,50 @@
         }
 
         // =========================================================
-        // ★ 🌟 全新模組：VIP 客戶專區 (解決小花與 Z 系列合併問題)
+        // ★ 🌟 全新模組：VIP 客戶專區 (解決 Z 系列客戶同名問題)
         // =========================================================
         function renderVIPArea() {
             if(!DATA.projects) return;
             
-            // 透過 p.client (客戶純名稱) 來做分類，自動把 A、Z002、Z011 合併在一起
+            // 透過 p.client (客戶純名稱) 來做分類，自動把 A、Z002、Z011 的同名客戶合併在一起
             const clientMap = {};
             DATA.projects.forEach(p => {
                 if (!p.client) return;
-                if (!clientMap[p.client]) {
-                    clientMap[p.client] = { count: 0, prefixes: new Set() };
+                
+                // 確保有些名字前後不小心多打了空白也能被合併
+                const mainName = p.client.trim();
+                
+                if (!clientMap[mainName]) {
+                    clientMap[mainName] = { count: 0, prefixes: new Set() };
                 }
-                clientMap[p.client].count++;
-                clientMap[p.client].prefixes.add(p.zone.split('_')[0]); // 記錄這個客戶跨了哪些代號
+                clientMap[mainName].count++;
+                if (p.zone) {
+                    clientMap[mainName].prefixes.add(p.zone.split('_')[0]); // 記錄這個客戶跨了哪些代號
+                }
             });
 
             const tbody = document.getElementById('vip-client-tbody');
             let html = '';
             
-            for (let clientName in clientMap) {
-                const info = clientMap[clientName];
+            // 依照專案數量從高到低排序
+            const sortedClients = Object.entries(clientMap).sort((a, b) => b[1].count - a[1].count);
+
+            for (let [clientName, info] of sortedClients) {
                 const prefixesStr = Array.from(info.prefixes).join(', ');
                 html += `
-                <tr>
-                    <td class="font-black text-blue-600 text-lg">${clientName}</td>
-                    <td class="font-mono text-gray-500">${prefixesStr}</td>
-                    <td class="font-bold">${info.count} 件</td>
-                    <td>
-                        <button onclick="copyPortalLink('${clientName}')" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition shadow-sm mr-2">複製 VIP 連結</button>
-                        <button onclick="window.open('?client=${encodeURIComponent(clientName)}', '_blank')" class="bg-slate-800 text-white px-3 py-1 rounded-lg font-bold hover:bg-black transition shadow-sm">預覽畫面</button>
+                <tr class="hover:bg-blue-50 transition">
+                    <td class="font-black text-blue-700 text-lg py-3 px-4">${clientName}</td>
+                    <td class="font-mono text-gray-500 text-sm py-3 px-4">${prefixesStr}</td>
+                    <td class="font-bold text-gray-800 py-3 px-4">${info.count} 件</td>
+                    <td class="py-3 px-4">
+                        <button onclick="copyPortalLink('${clientName}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-800 transition shadow-md mr-2"><i class="fas fa-copy mr-1"></i> 複製 VIP 連結</button>
+                        <button onclick="window.open('?client=${encodeURIComponent(clientName)}', '_blank')" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-bold hover:bg-black transition shadow-md"><i class="fas fa-eye mr-1"></i> 預覽畫面</button>
                     </td>
                 </tr>`;
             }
 
             if (html === '') {
-                html = '<tr><td colspan="4" class="text-center text-gray-400 py-6">目前沒有客戶資料</td></tr>';
+                html = '<tr><td colspan="4" class="text-center text-gray-400 py-8 font-bold">目前沒有客戶資料</td></tr>';
             }
             
             tbody.innerHTML = html;
@@ -980,15 +1068,10 @@
         // =========================================================
         // ★ 任務看板與搜尋邏輯 (🌟 編輯按鈕修復)
         // =========================================================
-        
-        // 🌟 新增：透過 ID 來找資料打開編輯，避開單引號解析錯誤
         function openEditProjectById(id, zone) {
             const p = DATA.projects.find(x => String(x.id) === String(id) && String(x.zone) === String(zone));
-            if (p) {
-                openEditProject(p);
-            } else {
-                showToast("找不到該專案資料", "error");
-            }
+            if (p) openEditProject(p);
+            else showToast("找不到專案資料", "error");
         }
 
         function handleKanbanSearch() {
@@ -1026,7 +1109,6 @@
                 
                 let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結" onclick="event.stopPropagation()"><i class="fas fa-external-link-alt"></i></a>` : '';
 
-                // 🌟 使用 openEditProjectById
                 html += `
                 <tr>
                     <td class="font-mono text-xs text-gray-500">${p.id}</td>
@@ -1069,7 +1151,6 @@
                         actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold">開始</button>`; 
                     }
 
-                    // 🌟 使用 openEditProjectById 徹底解決當機
                     actionBtns += `<button onclick="openEditProjectById('${p.id}', '${p.zone}')" class="ml-2 text-gray-400 hover:text-black" title="編輯"><i class="fas fa-pen"></i></button><button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-3 text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>`;
                     let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結" onclick="event.stopPropagation()"><i class="fas fa-external-link-alt"></i></a>` : '';
 
@@ -1120,11 +1201,10 @@
         }
 
         // =========================================================
-        // ★ 儀表板資料計算與繪製
+        // ★ 儀表板資料與互動
         // =========================================================
         function renderDashboard() {
             if(!DATA.projects) return;
-            // 🌟 修復：確保明細容器一開始是隱藏的，並且清除舊內容
             document.getElementById('db-detail-container').classList.add('hidden');
             
             const selectedMonth = document.getElementById('db-month-filter').value; 
@@ -1214,7 +1294,7 @@
             });
         }
 
-        // 🌟 修復：圖表點擊明細顯示邏輯 (移除會導致畫面亂跑的 scrollIntoView)
+        // 🌟 修復：圖表點擊明細顯示邏輯 (移除強制捲動，不會再亂跳)
         function showDashboardDetail(filterType, filterValue) {
             const container = document.getElementById('db-detail-container'); 
             const tbody = document.getElementById('db-detail-tbody'); 
@@ -1254,7 +1334,6 @@
                 tbody.innerHTML = html;
             }
             container.classList.remove('hidden'); 
-            // 💡 拔除了 scrollIntoView，解決畫面被強迫往下拉的問題
         }
 
         // =========================================================
@@ -1262,7 +1341,8 @@
         // =========================================================
         function renderCalendar() {
             const el = document.getElementById('calendar'); 
-            if (calendar) { calendar.destroy(); }
+            if (calendar) { calendar.destroy(); calendar = null; }
+            el.innerHTML = '';
             
             let events = []; 
             const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
@@ -1280,7 +1360,6 @@
                             let nextDay = new Date(endD.getTime() + 86400000); 
                             const endDateStr = getLocalDateString(nextDay); 
                             const startDateStr = getLocalDateString(startD);
-                            // 🌟 點擊事件也是呼叫 openEditProjectById
                             events.push({ title: `${p.name} (${p.producer})`, start: startDateStr, end: endDateStr, backgroundColor: color, borderColor: color, extendedProps: { id: p.id, zone: p.zone } });
                         }
                     } catch (e) {}
@@ -1312,7 +1391,6 @@
                 } 
             });
             calendar.render(); 
-            // 確保重新計算寬高
             setTimeout(() => { if(calendar) calendar.updateSize(); }, 50); 
         }
 
@@ -1340,7 +1418,7 @@
                 const pStart = new Date(p.start);
                 const pEnd = new Date(p.end);
                 return pStart <= monthEnd && pEnd >= monthStart; 
-            }).sort((a, b) => new Date(a.start) - new Date(b.start));
+            }).sort((a, b) => (new Date(a.start).getTime() || 0) - (new Date(b.start).getTime() || 0));
 
             if (tasks.length === 0) { 
                 container.innerHTML = '<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl h-full flex items-center justify-center">本月無排程</div>'; 
@@ -1377,7 +1455,6 @@
                         if (span < 1) span = 1;
                         let prefix = (pStartObj < monthStart) ? '← ' : '';
                         let suffix = (pEndObj > monthEnd) ? ' →' : '';
-                        // 🌟 點擊事件也是呼叫 openEditProjectById
                         content = `<div class="gantt-bar" onclick="openEditProjectById('${p.id}', '${p.zone}')" title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
                     }
                     bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible;"' : ''}>${content}</td>`;

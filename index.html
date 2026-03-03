@@ -158,7 +158,7 @@
 
         .q-item-row:hover { background-color: #fefce8; }
 
-        /* 🌟 訪客模式防護網 */
+        /* 訪客防護網 */
         .guest-mode .admin-only { display: none !important; }
         
         /* 手機版 RWD 調整 */
@@ -211,15 +211,15 @@
             <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 md:p-8 rounded-2xl border border-slate-700 mb-8 shadow-2xl relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 translate-x-1/2 -translate-y-1/2"></div>
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
-                    <div class="bg-slate-700/50 p-4 rounded-full border border-slate-600">
-                        <i class="fas fa-user-tie text-4xl text-blue-400"></i>
+                    <div class="bg-slate-700/50 p-2 rounded-full border border-slate-600 flex justify-center items-center overflow-hidden w-16 h-16 shrink-0 shadow-lg">
+                        <img src="https://drive.google.com/uc?export=view&id=11r2xCwR6c5jqM1d0lrQnqh7p1kw4-DtK" alt="專屬管家" class="w-full h-full object-cover rounded-full">
                     </div>
                     <div class="text-center md:text-left flex-1">
                         <h2 class="text-xl font-black text-white mb-2 tracking-widest">您的專屬影像管家</h2>
                         <p class="text-gray-400 text-sm mb-4 leading-relaxed">
                             歡迎回來！目前杰冉影像正為您全力推進 <span class="text-blue-400 font-bold text-lg mx-1" id="portal-active-count">0</span> 件專案。
                         </p>
-                        <div class="inline-flex items-center gap-3 bg-slate-800/80 px-5 py-3 rounded-xl border border-slate-600/50">
+                        <div class="inline-flex items-center gap-3 bg-slate-800/80 px-5 py-3 rounded-xl border border-slate-600/50 shadow-inner">
                             <i class="far fa-calendar-check text-emerald-400 text-xl animate-pulse"></i>
                             <div class="flex flex-col">
                                 <span class="text-xs text-gray-400 font-bold">近期最快預計交件日</span>
@@ -230,10 +230,20 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div class="portal-card flex flex-col items-center justify-center min-h-[220px]">
                     <h3 class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">合作狀態分佈</h3>
                     <div style="height: 160px; width: 100%;"><canvas id="portal-chart"></canvas></div>
+                </div>
+                <div class="flex flex-col justify-between gap-4">
+                    <div class="portal-card flex-1 flex flex-col justify-center items-center">
+                        <div class="text-sm text-gray-400 font-bold mb-1 tracking-widest">已交付專案</div>
+                        <div class="text-5xl font-black text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]" id="portal-done-count">0</div>
+                    </div>
+                    <div class="portal-card flex-1 flex flex-col justify-center items-center">
+                        <div class="text-sm text-gray-400 font-bold mb-1 tracking-widest">製作 / 審核中</div>
+                        <div class="text-5xl font-black text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.2)]" id="portal-process-count">0</div>
+                    </div>
                 </div>
                 <div class="portal-card flex flex-col items-center justify-center min-h-[220px]">
                     <h3 class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">專案服務矩陣分析</h3>
@@ -986,6 +996,7 @@
             if (portalClient) {
                 document.getElementById('admin-view').style.display = 'none'; 
                 document.getElementById('login-overlay').style.display = 'none'; 
+                // 🌟 修復 1：這行就是解開白畫面的關鍵
                 document.getElementById('client-portal-view').classList.remove('hidden'); 
                 document.getElementById('portal-loader').style.display = 'flex';
                 initClientPortal(portalClient);
@@ -1045,10 +1056,11 @@
             const role = localStorage.getItem('JAYRAN_ROLE');
             const greeting = document.getElementById('user-greeting');
             
+            // 🌟 啟動訪客最高防護網
             if (role === 'GUEST') {
                 document.body.classList.add('guest-mode');
                 greeting.innerHTML = '<span class="bg-gray-100 px-3 py-1 rounded-full"><i class="fas fa-eye text-blue-500"></i> 訪客預覽模式</span>';
-                if (curTab === 'add') curTab = 'dashboard';
+                if (curTab === 'add') curTab = 'dashboard'; // 訪客預設跳數據中心
             } else {
                 greeting.innerHTML = '<span class="bg-gray-100 px-3 py-1 rounded-full"><i class="fas fa-user-shield text-emerald-500"></i> 管理員</span>';
             }
@@ -1169,15 +1181,14 @@
                     return;
                 }
 
-                document.getElementById('portal-done-count').innerText = res.totalDone;
-                document.getElementById('portal-process-count').innerText = res.totalProcess;
+                if(document.getElementById('portal-done-count')) document.getElementById('portal-done-count').innerText = res.totalDone;
+                if(document.getElementById('portal-process-count')) document.getElementById('portal-process-count').innerText = res.totalProcess;
                 
                 // 🌟 新增：影像管家 - 最近交件日演算法
                 document.getElementById('portal-active-count').innerText = res.totalProcess;
                 let closestDate = "近期無待交專案";
                 let ongoingProjects = res.projects.filter(p => p.status !== '已完成' && p.status !== '已結案' && p.rawEnd);
                 if (ongoingProjects.length > 0) {
-                    // 根據結束日期排序，找出最靠近今天的
                     ongoingProjects.sort((a, b) => new Date(a.rawEnd) - new Date(b.rawEnd));
                     closestDate = formatDateStringForClient(ongoingProjects[0].rawEnd);
                 }
@@ -1409,7 +1420,7 @@
             });
         }
 
-        // 🌟 報價單前端分頁與 0 延遲載入
+        // 🌟 報價單前端分頁與下載按鈕
         function renderQuoteTable() {
             const tbody = document.getElementById('quote-history-tbody');
             if(!DATA.quotes || DATA.quotes.length === 0) { 
@@ -1426,9 +1437,12 @@
                     <td class="font-bold text-gray-800">${q.client}</td>
                     <td class="text-blue-600 font-bold text-lg">NT$ ${Number(q.amount.replace(' 元','')).toLocaleString()}</td>
                     <td class="admin-only">
-                        <button onclick="copyToClipboard('${q.link}')" class="bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold transition mr-2"><i class="fas fa-copy mr-1"></i> 複製發送</button>
-                        <button onclick="window.open('${q.link}', '_blank')" class="bg-gray-100 text-gray-600 hover:bg-black hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition mr-2"><i class="fas fa-eye mr-1"></i> 預覽</button>
-                        <button onclick="deleteQuote('${q.id}')" class="text-gray-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="copyToClipboard('${q.link}')" class="bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold transition"><i class="fas fa-copy mr-1"></i> 發送</button>
+                            <button onclick="window.open('${q.link}', '_blank')" class="bg-gray-100 text-gray-600 hover:bg-black hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition"><i class="fas fa-eye mr-1"></i> 預覽</button>
+                            <button onclick="window.open('${q.link}&print=1', '_blank')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm"><i class="fas fa-file-pdf mr-1"></i> 下載</button>
+                            <button onclick="deleteQuote('${q.id}')" class="text-gray-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -1499,9 +1513,9 @@
                     <td class="font-black text-blue-700 text-lg py-3 px-4">${clientName}</td>
                     <td class="font-mono text-gray-500 text-sm py-3 px-4">${prefixesStr}</td>
                     <td class="font-bold text-gray-800 py-3 px-4">${info.count} 件</td>
-                    <td class="py-3 px-4">
-                        <button onclick="copyPortalLink('${clientName}')" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-800 transition shadow-md mr-1 text-xs"><i class="fas fa-copy mr-1"></i> 傳送門</button>
-                        <button onclick="openClientLinkModal('${clientName}')" class="admin-only bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-800 transition shadow-md mr-1 text-xs"><i class="fas fa-cloud-upload-alt mr-1"></i> 專屬雲端</button>
+                    <td class="py-3 px-4 flex flex-wrap gap-2">
+                        <button onclick="copyPortalLink('${clientName}')" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-800 transition shadow-md text-xs"><i class="fas fa-copy mr-1"></i> 傳送門</button>
+                        <button onclick="openClientLinkModal('${clientName}')" class="admin-only bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-800 transition shadow-md text-xs"><i class="fas fa-cloud-upload-alt mr-1"></i> 專屬雲端</button>
                         <button onclick="window.open('?client=${encodeURIComponent(clientName)}', '_blank')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-black transition shadow-md text-xs"><i class="fas fa-eye mr-1"></i> 預覽</button>
                     </td>
                 </tr>`;

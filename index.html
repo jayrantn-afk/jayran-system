@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <link rel="icon" href="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn">
+    <link rel="icon" href="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn">
     
     <style>
         /* --- 基礎架構 --- */
@@ -269,7 +269,7 @@
                     <h1 class="text-3xl font-black text-white tracking-wider">JAYRAN <span class="text-blue-500">STUDIO</span></h1>
                     <p id="portal-client-name" class="text-gray-400 mt-2 text-lg font-bold">專屬協作空間</p>
                 </div>
-                <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-16 h-16 rounded-full shadow-lg border-2 border-slate-700">
+                <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-16 h-16 rounded-full shadow-lg border-2 border-slate-700">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -313,7 +313,7 @@
     <div id="admin-view">
 
         <div id="login-overlay">
-            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-lg mb-6 border-4 border-white">
+            <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-lg mb-6 border-4 border-white">
             <div class="text-4xl font-black mb-8 tracking-widest text-white">JAYRAN STUDIO</div>
             
             <input id="login-acc" type="email" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-4 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入帳號 (Email)">
@@ -322,7 +322,7 @@
         </div>
 
         <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[999]" style="display:none;">
-            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full shadow-lg mb-4 animate-pulse">
+            <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full shadow-lg mb-4 animate-pulse">
             <div class="text-2xl font-black tracking-widest animate-pulse">JAYRAN STUDIO</div>
             <div id="loader-msg" class="mt-4 text-gray-500 font-bold text-center px-4">資料讀取中...</div>
         </div>
@@ -552,7 +552,7 @@
         <div class="header-fixed-area">
             <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm">
+                    <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm">
                     <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
                 </div>
             </div>
@@ -1107,51 +1107,50 @@
         // ★ 介面切換與渲染
         // =========================================================
         function switchTab(tab) { 
-            document.querySelectorAll('.page-scroll-container').forEach(el => { 
-                el.classList.remove('fade-in'); 
-                void el.offsetWidth; 
+            // 1. 先隱藏所有頁面
+            ['p-add', 'p-kanban', 'p-gantt', 'p-calendar', 'p-dashboard'].forEach(id => { 
+                const el = document.getElementById(id); 
+                if(el) { el.classList.add('hidden'); el.classList.remove('fade-in'); }
             }); 
+            
+            // 2. 切換導覽列狀態
             curTab = tab; 
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
             document.getElementById('nav-' + tab).classList.add('active'); 
             
-            ['p-add', 'p-kanban', 'p-gantt', 'p-calendar', 'p-dashboard'].forEach(id => { 
-                const el = document.getElementById(id); 
-                if(el) el.classList.add('hidden'); 
-            }); 
-            
+            // 3. 找出目標頁面並顯示 (強制重繪 DOM)
             let targetId = ''; 
-            if (tab === 'add') { 
-                targetId = 'p-add'; 
-                renderDynamicOptions(); 
-            } else if (tab === 'wei') { 
-                document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); 
-                targetId = 'p-kanban'; 
-                renderKanban('魏敏軒'); 
-            } else if (tab === 'chiu') { 
-                document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); 
-                targetId = 'p-kanban'; 
-                renderKanban('邱仁杰'); 
-            } else if (tab === 'gan') { 
-                targetId = 'p-gantt'; 
-                // 🌟 加入短延遲，確保畫面完全顯示後再計算甘特圖寬度，防止破圖
-                setTimeout(() => {
-                    renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰');
-                }, 50);
-            } else if (tab === 'calendar') { 
-                targetId = 'p-calendar'; 
-                // 🌟 同理，行事曆也需要延遲渲染以取得正確寬高
-                setTimeout(() => renderCalendar(), 100); 
-            } else if (tab === 'dashboard') { 
-                targetId = 'p-dashboard'; 
-                setTimeout(() => renderDashboard(), 100); 
-            } 
-            
+            if (tab === 'add') targetId = 'p-add'; 
+            else if (tab === 'wei' || tab === 'chiu') targetId = 'p-kanban'; 
+            else if (tab === 'gan') targetId = 'p-gantt'; 
+            else if (tab === 'calendar') targetId = 'p-calendar'; 
+            else if (tab === 'dashboard') targetId = 'p-dashboard'; 
+
             if(targetId) { 
                 const targetEl = document.getElementById(targetId); 
                 targetEl.classList.remove('hidden'); 
+                void targetEl.offsetWidth; // 🌟 關鍵魔法：強制瀏覽器重繪，讓底下的寬高不為 0
                 targetEl.classList.add('fade-in'); 
-            } 
+            }
+
+            // 4. 等待畫面出現後，才渲染圖表內容
+            setTimeout(() => {
+                if (tab === 'add') { 
+                    renderDynamicOptions(); 
+                } else if (tab === 'wei') { 
+                    document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); 
+                    renderKanban('魏敏軒'); 
+                } else if (tab === 'chiu') { 
+                    document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); 
+                    renderKanban('邱仁杰'); 
+                } else if (tab === 'gan') { 
+                    renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); 
+                } else if (tab === 'calendar') { 
+                    renderCalendar(); 
+                } else if (tab === 'dashboard') { 
+                    renderDashboard(); 
+                } 
+            }, 50); // 延遲 50ms 確保容器已佔用空間
         }
 
         // =========================================================
@@ -1621,8 +1620,147 @@
         }
 
         // =========================================================
-        // ★ 其他共用功能
+        // ★ 日曆與甘特圖等其他功能
         // =========================================================
+        function renderCalendar() {
+            const el = document.getElementById('calendar'); 
+            if (calendar) { calendar.destroy(); }
+            
+            let events = []; 
+            const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
+            
+            tasks.forEach(p => {
+                if (p.status === '已完成' || p.status === '已結案') { return; }
+                if (p.start && p.end) {
+                    try {
+                        let startD = new Date(p.start); let endD = new Date(p.end);
+                        if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) {
+                            let color = '#8E8E93'; 
+                            if (p.status === '製作中') color = '#007AFF'; 
+                            else if (p.status.includes('審')) color = '#FF9500';
+                            
+                            let nextDay = new Date(endD.getTime() + 86400000); 
+                            const endDateStr = getLocalDateString(nextDay); 
+                            const startDateStr = getLocalDateString(startD);
+                            events.push({ title: `${p.name} (${p.producer})`, start: startDateStr, end: endDateStr, backgroundColor: color, borderColor: color, extendedProps: { project: p } });
+                        }
+                    } catch (e) {}
+                }
+            });
+            
+            if(!DATA.leaves) DATA.leaves = [];
+            DATA.leaves.forEach(l => {
+                if (calendarFilter === 'all' || l.name === calendarFilter) {
+                    try {
+                        let startD = new Date(l.start); let endD = new Date(l.end);
+                        if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) { 
+                            let nextDay = new Date(endD.getTime() + 86400000); 
+                            const endDateStr = getLocalDateString(nextDay); 
+                            const startDateStr = getLocalDateString(startD); 
+                            events.push({ title: `🏖️ ${l.name}: ${l.reason}`, start: startDateStr, end: endDateStr, backgroundColor: '#7C3AED', borderColor: '#7C3AED' }); 
+                        }
+                    } catch(e) {}
+                }
+            });
+
+            calendar = new FullCalendar.Calendar(el, { 
+                initialView: 'dayGridMonth', locale: 'zh-tw', height: '100%', dayMaxEvents: 4, 
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' }, 
+                buttonText: { today: '今天', month: '月', week: '週' }, events: events, 
+                eventClick: function(info) { const props = info.event.extendedProps; if (props.project) openEditProject(props.project); } 
+            });
+            calendar.render(); 
+            // 🌟 確保日曆渲染後強制更新大小，防止空白
+            setTimeout(() => { if(calendar) calendar.updateSize(); }, 200); 
+            setTimeout(() => { const todayCell = document.querySelector('.fc-day-today'); if (todayCell) todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+        }
+
+        function renderGantt(who) {
+            document.getElementById('btn-gan-wei').classList.remove('active');
+            document.getElementById('btn-gan-chiu').classList.remove('active');
+            if (who === '魏敏軒') document.getElementById('btn-gan-wei').classList.add('active');
+            else document.getElementById('btn-gan-chiu').classList.add('active');
+
+            const container = document.getElementById('gantt-chart');
+            if (!DATA.projects) return;
+            
+            const now = new Date();
+            const curYear = currentGanttDate.getFullYear();
+            const curMonth = currentGanttDate.getMonth();
+            document.getElementById('gan-title').innerText = `甘特圖 (${curYear}年${curMonth + 1}月)`;
+
+            const monthStart = new Date(curYear, curMonth, 1);
+            const monthEnd = new Date(curYear, curMonth + 1, 0, 23, 59, 59);
+            const todayDay = now.getDate();
+            const isCurrentMonth = (now.getMonth() === curMonth && now.getFullYear() === curYear);
+
+            let tasks = DATA.projects.filter(p => p.producer === who && p.start && p.end);
+            tasks = tasks.filter(p => {
+                const pStart = new Date(p.start);
+                const pEnd = new Date(p.end);
+                return pStart <= monthEnd && pEnd >= monthStart; 
+            }).sort((a, b) => new Date(a.start) - new Date(b.start));
+
+            if (tasks.length === 0) { 
+                container.innerHTML = '<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl h-full flex items-center justify-center">本月無排程</div>'; 
+                return; 
+            }
+
+            const daysInMonth = monthEnd.getDate();
+            let header = '<tr class="gantt-row"><th class="gantt-corner">ID / 專案</th>';
+            for (let i = 1; i <= daysInMonth; i++) {
+                let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today' : '';
+                header += `<th class="gantt-header-cell ${bg}">${i}</th>`;
+            }
+            header += '</tr>';
+
+            let body = '';
+            tasks.forEach(p => {
+                const pStartObj = new Date(p.start);
+                const pEndObj = new Date(p.end);
+                const pStr = encodeURIComponent(JSON.stringify(p));
+
+                let color = '#8E8E93'; 
+                if (p.status === '製作中') color = '#007AFF';
+                else if (p.status.includes('審')) color = '#FF9500';
+                else if (p.status === '已完成' || p.status === '已結案') color = '#34C759';
+
+                let gridStartDay = (pStartObj < monthStart) ? 1 : pStartObj.getDate();
+                let gridEndDay = (pEndObj > monthEnd) ? daysInMonth : pEndObj.getDate();
+
+                let bars = '';
+                for (let i = 1; i <= daysInMonth; i++) {
+                    let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today-cell' : '';
+                    let content = '';
+                    if (i === gridStartDay) {
+                        let span = (gridEndDay - gridStartDay) + 1;
+                        if (span < 1) span = 1;
+                        let prefix = (pStartObj < monthStart) ? '← ' : '';
+                        let suffix = (pEndObj > monthEnd) ? ' →' : '';
+                        content = `<div class="gantt-bar" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
+                    }
+                    bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible;"' : ''}>${content}</td>`;
+                }
+                body += `<tr class="gantt-row"><td class="gantt-col-fixed" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
+            });
+            container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
+        }
+
+        function changeGanttMonth(delta) {
+            currentGanttDate.setMonth(currentGanttDate.getMonth() + delta);
+            const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
+            renderGantt(who);
+        }
+
+        function filterCalendar(who) {
+            calendarFilter = who;
+            document.querySelectorAll('.cal-filter-btn').forEach(b => b.classList.remove('active'));
+            if(who==='all') document.getElementById('btn-cal-all').classList.add('active');
+            else if(who==='魏敏軒') document.getElementById('btn-cal-wei').classList.add('active');
+            else document.getElementById('btn-cal-chiu').classList.add('active');
+            renderCalendar();
+        }
+
         function deleteProject(category, zone, id) {
             if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return;
             DATA.projects = DATA.projects.filter(p => !(String(p.id) === String(id) && p.zone === zone));

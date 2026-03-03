@@ -97,7 +97,6 @@
         .excel-table td { padding: 12px 16px; vertical-align: middle; color: #1F2937; font-weight: 600; }
         .table-container { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #E5E5E5; box-shadow: 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px; }
         
-        /* 🌟 新增拖曳互動特效 */
         .sortable-ghost { opacity: 0.4; background: #E0F2FE !important; border: 2px dashed #0284C7; }
         .cursor-grab { cursor: grab; }
         .cursor-grab:active { cursor: grabbing; }
@@ -210,7 +209,6 @@
         .setting-actions i { cursor: pointer; padding: 5px; margin-left: 5px; color: #999; }
         .setting-actions i:hover { color: #333; }
 
-        /* Toast 提示框 */
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .custom-toast { background: rgba(29, 29, 31, 0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1), toastOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) 2.6s forwards; display: flex; align-items: center; gap: 8px; }
         .custom-toast.error { background: rgba(255, 59, 48, 0.9); }
@@ -281,7 +279,43 @@
 
     <div id="p-dashboard" class="hidden page-scroll-container fade-in">
         <div class="max-w-5xl mx-auto">
-            <h2 class="text-3xl font-black mb-6 px-2 border-l-8 border-black pl-4">📊 營運數據中心</h2>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <h2 class="text-3xl font-black px-2 border-l-8 border-black pl-4">📊 營運數據中心</h2>
+                <div class="flex items-center gap-3">
+                    <label class="text-sm font-bold text-gray-500">時間範圍</label>
+                    <select id="db-month-filter" onchange="renderDashboard()" class="clean-select w-32 py-2 text-center border border-gray-200 font-bold bg-white shadow-sm cursor-pointer hover:border-blue-500 transition">
+                        <option value="all">年度總結</option>
+                        <option value="1">1月</option>
+                        <option value="2">2月</option>
+                        <option value="3">3月</option>
+                        <option value="4">4月</option>
+                        <option value="5">5月</option>
+                        <option value="6">6月</option>
+                        <option value="7">7月</option>
+                        <option value="8">8月</option>
+                        <option value="9">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-center transform transition hover:scale-105">
+                    <div class="text-xs text-gray-500 font-bold mb-1">總專案數</div>
+                    <div class="text-3xl font-black text-gray-800" id="db-total-count">0</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-center transform transition hover:scale-105">
+                    <div class="text-xs text-gray-500 font-bold mb-1">已完成專案</div>
+                    <div class="text-3xl font-black text-green-500" id="db-done-count">0</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-center transform transition hover:scale-105">
+                    <div class="text-xs text-gray-500 font-bold mb-1">總投入工時</div>
+                    <div class="text-3xl font-black text-blue-500" id="db-hours-count">0</div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="clean-card flex flex-col items-center">
                     <h3 class="text-lg font-bold mb-4 w-full text-center text-gray-700">全公司專案狀態分佈</h3>
@@ -486,7 +520,6 @@
         let editingMemoIdx = null;
         let editingLinkIdx = null;
         
-        // 用於儲存圖表與拖曳實體，避免重複渲染
         let dashboardCharts = {};
         let sortableInstances = [];
 
@@ -643,7 +676,6 @@
             }
         }
 
-        // --- 搜尋功能 ---
         function handleKanbanSearch() {
             const query = document.getElementById('kanban-search').value.trim().toLowerCase();
             const normalView = document.getElementById('kb-normal-view');
@@ -697,7 +729,6 @@
             tbody.innerHTML = html;
         }
 
-        // --- 看板與拖曳邏輯 ---
         function renderKanban(producer, clearSearch = true) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
@@ -711,7 +742,7 @@
             const tasks = DATA.projects.filter(p => p.producer === producer);
 
             const getTableRows = (filteredTasks) => {
-                if (filteredTasks.length === 0) return ''; // 為了 SortableJS 順暢，空表格保持空白而不是塞入文字
+                if (filteredTasks.length === 0) return ''; 
                 
                 return filteredTasks.map(p => {
                     const pStr = encodeURIComponent(JSON.stringify(p));
@@ -733,7 +764,6 @@
                     actionBtns += `<button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="ml-2 text-gray-400 hover:text-black" title="編輯"><i class="fas fa-pen"></i></button>
                                    <button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-3 text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>`;
 
-                    // 🌟 新增 data- 屬性，供拖曳結束時辨識是哪個專案
                     return `
                     <tr data-cat="${p.category}" data-zone="${p.zone}" data-id="${p.id}" class="cursor-grab hover:bg-gray-50">
                         <td class="font-mono text-xs text-gray-500">${p.id}</td>
@@ -751,8 +781,6 @@
             document.getElementById('kb-todo').innerHTML = getTableRows(tasks.filter(p => p.status === '尚未進行'));
             document.getElementById('kb-done').innerHTML = getTableRows(tasks.filter(p => p.status === '已完成' || p.status === '已結案'));
 
-            // 🌟 實裝：拖曳切換狀態 (SortableJS)
-            // 先清除舊的實體，避免重複綁定
             sortableInstances.forEach(inst => inst.destroy());
             sortableInstances = [];
 
@@ -761,11 +789,11 @@
                 const el = document.getElementById(id);
                 if(el) {
                     sortableInstances.push(new Sortable(el, {
-                        group: 'kanban', // 同一個 group 才能互相拖曳
+                        group: 'kanban', 
                         animation: 150,
                         ghostClass: 'sortable-ghost',
                         onEnd: function (evt) {
-                            if (evt.to.id !== evt.from.id) { // 只有跨表拖曳才處理
+                            if (evt.to.id !== evt.from.id) { 
                                 const itemEl = evt.item;
                                 const cat = itemEl.getAttribute('data-cat');
                                 const zone = itemEl.getAttribute('data-zone');
@@ -773,10 +801,9 @@
 
                                 let newStatus = '尚未進行';
                                 if (evt.to.id === 'kb-process') newStatus = '製作中';
-                                else if (evt.to.id === 'kb-review') newStatus = '客戶審核'; // 後端統一寫客戶審核
+                                else if (evt.to.id === 'kb-review') newStatus = '客戶審核'; 
                                 else if (evt.to.id === 'kb-done') newStatus = '已完成';
 
-                                // 自動呼叫後端更新，並觸發資料重載
                                 doUpdate(cat, zone, pId, newStatus, 0);
                                 showToast(`✅ 狀態已自動更新為：${newStatus}`);
                             }
@@ -786,27 +813,65 @@
             });
         }
 
-        // --- 視覺化數據中心 ---
+        // 🌟 核心升級：視覺化數據中心 (帶入 1~12 月過濾器與資訊卡片)
         function renderDashboard() {
             if(!DATA.projects) return;
 
+            const selectedMonth = document.getElementById('db-month-filter').value;
+            let filteredProjects = DATA.projects;
+
+            // 處理月份篩選邏輯
+            if (selectedMonth !== 'all') {
+                filteredProjects = DATA.projects.filter(p => {
+                    // 抓取專案的開始日期或結束日期作為判斷基準
+                    let dateStr = p.start || p.end;
+                    if (!dateStr) return false; 
+                    
+                    // 如果有 ' to ' (範圍區間)，取起始日來判斷
+                    let firstDate = dateStr.split(' to ')[0];
+                    try {
+                        let d = new Date(firstDate);
+                        if (isNaN(d.getTime())) return false;
+                        // getMonth() 回傳 0-11，需加 1
+                        return (d.getMonth() + 1).toString() === selectedMonth;
+                    } catch(e) {
+                        return false;
+                    }
+                });
+            }
+
             const statusCounts = { '製作中': 0, '審核中': 0, '尚未進行': 0, '已完成': 0 };
             const producerCounts = {};
+            let totalHours = 0;
+            let totalDone = 0;
 
-            DATA.projects.forEach(p => {
-                // 狀態統計
+            filteredProjects.forEach(p => {
+                // 1. 狀態統計
                 if (p.status === '製作中') statusCounts['製作中']++;
                 else if (p.status.includes('審')) statusCounts['審核中']++;
                 else if (p.status === '尚未進行') statusCounts['尚未進行']++;
-                else if (p.status === '已完成' || p.status === '已結案') statusCounts['已完成']++;
+                else if (p.status === '已完成' || p.status === '已結案') {
+                    statusCounts['已完成']++;
+                    totalDone++;
+                }
 
-                // 製作人產能統計
+                // 2. 製作人產能統計
                 if (p.producer && p.producer !== '尚未暫定') {
                     producerCounts[p.producer] = (producerCounts[p.producer] || 0) + 1;
                 }
+
+                // 3. 工時統計
+                if (p.hours && !isNaN(p.hours)) {
+                    totalHours += parseFloat(p.hours);
+                }
             });
 
-            // 1. 狀態分佈圓餅圖
+            // 更新上方的三大指標卡片
+            document.getElementById('db-total-count').innerText = filteredProjects.length;
+            document.getElementById('db-done-count').innerText = totalDone;
+            document.getElementById('db-hours-count').innerText = totalHours.toFixed(1); // 留一位小數
+
+            // 繪製：狀態分佈圓餅圖
             const ctxStatus = document.getElementById('chart-status');
             if (dashboardCharts.status) dashboardCharts.status.destroy();
             dashboardCharts.status = new Chart(ctxStatus, {
@@ -823,7 +888,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
 
-            // 2. 製作人佔比長條圖
+            // 繪製：製作人佔比長條圖
             const ctxProducer = document.getElementById('chart-producer');
             if (dashboardCharts.producer) dashboardCharts.producer.destroy();
             const pLabels = Object.keys(producerCounts);
@@ -960,7 +1025,6 @@
             fillSelect('ep-producer', producers);
         }
 
-        // 🌟 切換頁籤機制升級：實作「預設收合記憶」與加入「數據中心」
         function switchTab(tab) {
             document.querySelectorAll('.page-scroll-container').forEach(el => {
                 el.classList.remove('fade-in');
@@ -978,12 +1042,10 @@
             let targetId = '';
             if (tab === 'add') { targetId = 'p-add'; renderDynamicOptions(); }
             else if (tab === 'wei') { 
-                // ✨ 只要切換到看板，就強制移除 details 的 open 屬性，完成收合要求
                 document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open'));
                 targetId = 'p-kanban'; renderKanban('魏敏軒'); 
             }
             else if (tab === 'chiu') { 
-                // ✨ 只要切換到看板，就強制移除 details 的 open 屬性，完成收合要求
                 document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open'));
                 targetId = 'p-kanban'; renderKanban('邱仁杰'); 
             }

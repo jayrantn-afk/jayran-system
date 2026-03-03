@@ -16,6 +16,7 @@
     <link rel="icon" href="https://drive.google.com/uc?export=view&id=1PA3de57c2FhIo86zRGzXB2e-LTmvVnt5">
     
     <style>
+        /* --- 基礎架構 --- */
         :root { 
             --bg: #F5F5F7; 
             --surface: #FFFFFF; 
@@ -431,114 +432,6 @@
         </div>
     </div>
 
-    <div id="p-kanban" class="hidden page-scroll-container fade-in">
-        <div class="max-w-full mx-auto flex flex-col h-full">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <h2 id="kb-title" class="text-3xl font-black px-2 border-l-8 border-black pl-4"></h2>
-                
-                <div class="relative w-full md:w-80">
-                    <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
-                    <input id="kanban-search" type="text" placeholder="搜尋全部專案 / 客戶..." class="w-full bg-white border border-gray-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:outline-none focus:border-blue-500 shadow-sm transition" onkeyup="handleKanbanSearch()">
-                </div>
-            </div>
-            
-            <div id="kb-search-results" class="hidden flex-grow overflow-auto bg-white rounded-xl border border-gray-200 shadow-sm mb-10">
-                <div class="p-3 bg-gray-100 font-bold text-gray-600 border-b border-gray-200">🔍 搜尋結果</div>
-                <div class="overflow-x-auto">
-                    <table class="excel-table">
-                        <thead>
-                            <tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>製作人</th><th>狀態</th><th>日期</th><th>操作</th></tr>
-                        </thead>
-                        <tbody id="kb-search-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="kb-normal-view">
-                <div class="mb-10">
-                    <h3 class="text-xl font-bold text-blue-600 mb-4 px-2">🔥 製作中</h3>
-                    <div class="table-container">
-                        <table class="excel-table">
-                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
-                            <tbody id="kb-process"></tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <details class="mb-6 group">
-                    <summary class="text-lg font-bold text-orange-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:opacity-80">
-                        <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
-                        <span>👀 審核中</span>
-                    </summary>
-                    <div class="table-container">
-                        <table class="excel-table">
-                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
-                            <tbody id="kb-review"></tbody>
-                        </table>
-                    </div>
-                </details>
-                
-                <details class="mb-6 group">
-                    <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
-                        <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
-                        <span>⏳ 尚未進行</span>
-                    </summary>
-                    <div class="table-container">
-                        <table class="excel-table">
-                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
-                            <tbody id="kb-todo"></tbody>
-                        </table>
-                    </div>
-                </details>
-                
-                <details class="mb-6 group">
-                    <summary class="text-lg font-bold text-gray-500 mb-3 px-2 cursor-pointer list-none flex items-center gap-2 outline-none select-none hover:text-gray-700">
-                        <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90"></i>
-                        <span>✅ 已完成</span>
-                    </summary>
-                    <div class="table-container">
-                        <table class="excel-table">
-                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
-                            <tbody id="kb-done"></tbody>
-                        </table>
-                    </div>
-                </details>
-            </div>
-        </div>
-    </div>
-
-    <div id="p-gantt" class="hidden page-scroll-container fade-in">
-        <div class="max-w-full h-full flex flex-col">
-            <div class="flex gap-2 mb-4 px-2 items-center justify-between shrink-0">
-                <h2 id="gan-title" class="text-2xl font-black">甘特圖</h2>
-                <div class="flex gap-2">
-                    <button id="btn-gan-wei" onclick="renderGantt('魏敏軒')" class="gan-btn px-4 py-2 rounded-lg font-bold">魏敏軒</button>
-                    <button id="btn-gan-chiu" onclick="renderGantt('邱仁杰')" class="gan-btn px-4 py-2 rounded-lg font-bold">邱仁杰</button>
-                    <button class="icon-btn btn-gray" onclick="changeGanttMonth(-1)"><i class="fas fa-chevron-left"></i></button>
-                    <button class="icon-btn btn-gray" onclick="changeGanttMonth(1)"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </div>
-            <div id="gantt-chart" class="gantt-wrapper"></div>
-        </div>
-    </div>
-
-    <div id="p-calendar" class="hidden page-scroll-container fade-in">
-        <div class="max-w-full h-full flex flex-col">
-            <div class="flex flex-wrap gap-2 justify-between items-center mb-4 px-2 shrink-0">
-                <h2 class="text-2xl font-black">行事曆</h2>
-                <div class="flex gap-2 flex-wrap">
-                    <button id="btn-cal-all" onclick="filterCalendar('all')" class="cal-filter-btn active">全部</button>
-                    <button id="btn-cal-wei" onclick="filterCalendar('魏敏軒')" class="cal-filter-btn">魏敏軒</button>
-                    <button id="btn-cal-chiu" onclick="filterCalendar('邱仁杰')" class="cal-filter-btn">邱仁杰</button>
-                    <button onclick="openLeaveModal()" class="bg-black text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition hover:scale-105"><i class="fas fa-coffee mr-1"></i> 請假</button>
-                </div>
-            </div>
-            <div id="calendar-container">
-                <div id="calendar"></div>
-            </div>
-        </div>
-    </div>
-
     <script>
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
         const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
@@ -556,7 +449,7 @@
         
         let dashboardCharts = {};
         let sortableInstances = [];
-        let currentFilteredProjects = []; // 供儀表板互動使用
+        let currentFilteredProjects = []; 
 
         document.addEventListener('DOMContentLoaded', function() {
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
@@ -566,12 +459,8 @@
         });
 
         document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape") {
-                document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none');
-            }
-            if (event.key === "Enter" && document.getElementById('login-overlay').style.display !== 'none') {
-                checkLogin();
-            }
+            if (event.key === "Escape") { document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none'); }
+            if (event.key === "Enter" && document.getElementById('login-overlay').style.display !== 'none') { checkLogin(); }
         });
 
         function getLocalDateString(dateObj) {
@@ -591,38 +480,26 @@
         }
 
         function checkLogin() {
-            const acc = document.getElementById('login-acc').value.trim();
-            const pass = document.getElementById('login-pass').value;
+            const acc = document.getElementById('login-acc').value.trim(); const pass = document.getElementById('login-pass').value;
             const btn = document.getElementById('btn-login');
-
             if(!acc || !pass) return showToast("請輸入帳號與密碼", "error");
-
-            const originalText = btn.innerText;
-            btn.innerText = "驗證中...";
-            btn.disabled = true;
+            const originalText = btn.innerText; btn.innerText = "驗證中..."; btn.disabled = true;
 
             callAPI('verifyLogin', { acc: acc, pass: pass }, (res) => {
                 if (res === "OK") {
                     localStorage.setItem(LOGIN_KEY, new Date().getTime());
                     document.getElementById('login-overlay').style.opacity = '0';
-                    setTimeout(() => { 
-                        document.getElementById('login-overlay').style.display = 'none'; 
-                        startApp(); 
-                    }, 500);
+                    setTimeout(() => { document.getElementById('login-overlay').style.display = 'none'; startApp(); }, 500);
                 } else {
-                    showToast(res, "error");
-                    document.getElementById('login-pass').value = '';
-                    btn.innerText = originalText;
-                    btn.disabled = false;
+                    showToast(res, "error"); document.getElementById('login-pass').value = '';
+                    btn.innerText = originalText; btn.disabled = false;
                 }
             });
         }
 
         function isLoggedIn() {
-            const savedTime = localStorage.getItem(LOGIN_KEY);
-            if (!savedTime) return false;
-            const now = new Date().getTime();
-            if (now - savedTime > SESSION_HOURS * 60 * 60 * 1000) { return false; }
+            const savedTime = localStorage.getItem(LOGIN_KEY); if (!savedTime) return false;
+            const now = new Date().getTime(); if (now - savedTime > SESSION_HOURS * 60 * 60 * 1000) { return false; }
             return true;
         }
 
@@ -636,18 +513,13 @@
             const cachedData = localStorage.getItem('JAYRAN_SYSTEM_DATA');
             if (cachedData) {
                 try {
-                    const parsedData = JSON.parse(cachedData);
-                    processDataUpdate(parsedData, true); 
+                    const parsedData = JSON.parse(cachedData); processDataUpdate(parsedData, true); 
                     document.getElementById('loader-msg').innerText = "背景同步最新資料中...";
                 } catch(e) { console.error("Cache Parse Error", e); }
             }
-
             callAPI('initAllData', {}, (res) => {
                 if(res.error) { document.getElementById('loader-msg').innerHTML = `<span class="text-red-500">${res.error}</span>`; } 
-                else {
-                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(res));
-                    processDataUpdate(res, false);
-                }
+                else { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(res)); processDataUpdate(res, false); }
             });
         }
 
@@ -655,8 +527,7 @@
             if (GAS_API_URL) {
                 if (['initAllData', 'getHistory', 'getLeaves', 'getMemos', 'getLinks'].includes(action)) {
                     let params = `?action=${action}`;
-                    if(payload.cat) params += `&cat=${payload.cat}`;
-                    if(payload.zone) params += `&zone=${payload.zone}`;
+                    if(payload.cat) params += `&cat=${payload.cat}`; if(payload.zone) params += `&zone=${payload.zone}`;
                     fetch(GAS_API_URL + params).then(res => res.json()).then(data => onSuccess(data)).catch(e => console.error("API Error:", e));
                 } else {
                     const postData = { action: action, ...payload };
@@ -664,8 +535,7 @@
                         .then(res => res.json())
                         .then(data => onSuccess(data.data))
                         .catch(e => { 
-                            showToast("連線錯誤，請檢查網路", "error"); 
-                            document.getElementById('loader').style.display = 'none'; 
+                            showToast("連線錯誤，請檢查網路", "error"); document.getElementById('loader').style.display = 'none'; 
                             if(action === 'verifyLogin') { const btn = document.getElementById('btn-login'); btn.innerText = "進入系統"; btn.disabled = false; }
                         });
                 }
@@ -673,39 +543,25 @@
         }
 
         function processDataUpdate(res, isCache) {
-            DATA = res;
-            renderZoneOptions();
-            renderDynamicOptions();
-            loadMemos(); loadLinks(); loadPending();
+            DATA = res; renderZoneOptions(); renderDynamicOptions(); loadMemos(); loadLinks(); loadPending();
             
             if (curTab === 'wei') renderKanban('魏敏軒', false);
             else if (curTab === 'chiu') renderKanban('邱仁杰', false);
-            else if (curTab === 'gan') {
-                const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-                renderGantt(who);
-            }
+            else if (curTab === 'gan') { const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'; renderGantt(who); }
             else if (curTab === 'calendar') { renderCalendar(); }
             else if (curTab === 'dashboard') { renderDashboard(); }
 
             if (!isCache) {
                 document.getElementById('loader').style.display = 'none';
-                if(!localStorage.getItem('JAYRAN_INIT_DONE')){ 
-                    setProjectType('video'); localStorage.setItem('JAYRAN_INIT_DONE', '1'); 
-                }
+                if(!localStorage.getItem('JAYRAN_INIT_DONE')){ setProjectType('video'); localStorage.setItem('JAYRAN_INIT_DONE', '1'); }
             } else { document.getElementById('loader').style.display = 'none'; }
         }
 
         function handleKanbanSearch() {
             const query = document.getElementById('kanban-search').value.trim().toLowerCase();
-            const normalView = document.getElementById('kb-normal-view');
-            const searchView = document.getElementById('kb-search-results');
-            const tbody = document.getElementById('kb-search-tbody');
+            const normalView = document.getElementById('kb-normal-view'); const searchView = document.getElementById('kb-search-results'); const tbody = document.getElementById('kb-search-tbody');
 
-            if (!query) {
-                normalView.classList.remove('hidden'); searchView.classList.add('hidden');
-                const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-                renderKanban(who, false); return;
-            }
+            if (!query) { normalView.classList.remove('hidden'); searchView.classList.add('hidden'); const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'; renderKanban(who, false); return; }
 
             normalView.classList.add('hidden'); searchView.classList.remove('hidden');
 
@@ -720,11 +576,7 @@
             results.forEach(p => {
                 const pStr = encodeURIComponent(JSON.stringify(p));
                 let badgeClass = 'sb-gray';
-                if(p.status === '製作中') badgeClass = 'sb-blue';
-                else if(p.status.includes('審')) badgeClass = 'sb-orange';
-                else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
-                
-                // 🌟 新增：搜尋清單也顯示雲端連結圖示
+                if(p.status === '製作中') badgeClass = 'sb-blue'; else if(p.status.includes('審')) badgeClass = 'sb-orange'; else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
                 let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結" onclick="event.stopPropagation()"><i class="fas fa-external-link-alt"></i></a>` : '';
 
                 html += `
@@ -745,23 +597,15 @@
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
             
-            if (clearSearch) {
-                document.getElementById('kanban-search').value = '';
-                document.getElementById('kb-normal-view').classList.remove('hidden');
-                document.getElementById('kb-search-results').classList.add('hidden');
-            }
+            if (clearSearch) { document.getElementById('kanban-search').value = ''; document.getElementById('kb-normal-view').classList.remove('hidden'); document.getElementById('kb-search-results').classList.add('hidden'); }
 
             const tasks = DATA.projects.filter(p => p.producer === producer);
-
             const getTableRows = (filteredTasks) => {
                 if (filteredTasks.length === 0) return ''; 
-                
                 return filteredTasks.map(p => {
                     const pStr = encodeURIComponent(JSON.stringify(p));
                     let badgeClass = 'sb-gray';
-                    if(p.status === '製作中') badgeClass = 'sb-blue';
-                    else if(p.status.includes('審')) badgeClass = 'sb-orange';
-                    else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
+                    if(p.status === '製作中') badgeClass = 'sb-blue'; else if(p.status.includes('審')) badgeClass = 'sb-orange'; else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
                     
                     let actionBtns = '';
                     if (p.status === '製作中') { actionBtns = `<button onclick="openHoursModal('${p.category}','${p.zone}','${p.id}')" class="text-orange-600 hover:text-orange-800 font-bold mr-2">送審</button>`; } 
@@ -769,8 +613,6 @@
                     else if (p.status === '尚未進行') { actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold">開始</button>`; }
 
                     actionBtns += `<button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="ml-2 text-gray-400 hover:text-black" title="編輯"><i class="fas fa-pen"></i></button><button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-3 text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>`;
-
-                    // 🌟 新增：雲端連結圖示 (使用 event.stopPropagation() 防點擊觸發拖曳或其他行事件)
                     let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結" onclick="event.stopPropagation()"><i class="fas fa-external-link-alt"></i></a>` : '';
 
                     return `
@@ -790,31 +632,19 @@
             document.getElementById('kb-todo').innerHTML = getTableRows(tasks.filter(p => p.status === '尚未進行'));
             document.getElementById('kb-done').innerHTML = getTableRows(tasks.filter(p => p.status === '已完成' || p.status === '已結案'));
 
-            sortableInstances.forEach(inst => inst.destroy());
-            sortableInstances = [];
-
+            sortableInstances.forEach(inst => inst.destroy()); sortableInstances = [];
             const tables = ['kb-process', 'kb-review', 'kb-todo', 'kb-done'];
             tables.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
                     sortableInstances.push(new Sortable(el, {
-                        group: 'kanban', 
-                        animation: 150,
-                        ghostClass: 'sortable-ghost',
+                        group: 'kanban', animation: 150, ghostClass: 'sortable-ghost',
                         onEnd: function (evt) {
                             if (evt.to.id !== evt.from.id) { 
-                                const itemEl = evt.item;
-                                const cat = itemEl.getAttribute('data-cat');
-                                const zone = itemEl.getAttribute('data-zone');
-                                const pId = itemEl.getAttribute('data-id');
-
+                                const itemEl = evt.item; const cat = itemEl.getAttribute('data-cat'); const zone = itemEl.getAttribute('data-zone'); const pId = itemEl.getAttribute('data-id');
                                 let newStatus = '尚未進行';
-                                if (evt.to.id === 'kb-process') newStatus = '製作中';
-                                else if (evt.to.id === 'kb-review') newStatus = '客戶審核'; 
-                                else if (evt.to.id === 'kb-done') newStatus = '已完成';
-
-                                doUpdate(cat, zone, pId, newStatus, 0);
-                                showToast(`✅ 狀態已自動更新為：${newStatus}`);
+                                if (evt.to.id === 'kb-process') newStatus = '製作中'; else if (evt.to.id === 'kb-review') newStatus = '客戶審核'; else if (evt.to.id === 'kb-done') newStatus = '已完成';
+                                doUpdate(cat, zone, pId, newStatus, 0); showToast(`✅ 狀態已自動更新為：${newStatus}`);
                             }
                         }
                     }));
@@ -822,882 +652,122 @@
             });
         }
 
-        // 🌟 核心升級：視覺化數據中心 (加入排行榜與點擊互動)
         function renderDashboard() {
             if(!DATA.projects) return;
-
-            // 確保每次渲染時收起明細表
             document.getElementById('db-detail-container').classList.add('hidden');
-
-            const selectedMonth = document.getElementById('db-month-filter').value;
-            currentFilteredProjects = DATA.projects;
-
+            const selectedMonth = document.getElementById('db-month-filter').value; currentFilteredProjects = DATA.projects;
             if (selectedMonth !== 'all') {
                 currentFilteredProjects = DATA.projects.filter(p => {
-                    let dateStr = p.start || p.end;
-                    if (!dateStr) return false; 
+                    let dateStr = p.start || p.end; if (!dateStr) return false; 
                     let firstDate = dateStr.split(' to ')[0];
-                    try {
-                        let d = new Date(firstDate);
-                        if (isNaN(d.getTime())) return false;
-                        return (d.getMonth() + 1).toString() === selectedMonth;
-                    } catch(e) { return false; }
+                    try { let d = new Date(firstDate); if (isNaN(d.getTime())) return false; return (d.getMonth() + 1).toString() === selectedMonth; } catch(e) { return false; }
                 });
             }
 
-            const statusCounts = { '製作中': 0, '審核中': 0, '尚未進行': 0, '已完成': 0 };
-            const producerCounts = {};
-            const clientCounts = {};
-            let totalHours = 0;
-            let totalDone = 0;
+            const statusCounts = { '製作中': 0, '審核中': 0, '尚未進行': 0, '已完成': 0 }; const producerCounts = {}; const clientCounts = {}; let totalHours = 0; let totalDone = 0;
 
             currentFilteredProjects.forEach(p => {
-                // 1. 狀態統計
                 let unifiedStatus = p.status;
                 if (p.status === '製作中') { statusCounts['製作中']++; unifiedStatus = '製作中'; }
                 else if (p.status.includes('審')) { statusCounts['審核中']++; unifiedStatus = '審核中'; }
                 else if (p.status === '尚未進行') { statusCounts['尚未進行']++; unifiedStatus = '尚未進行'; }
                 else if (p.status === '已完成' || p.status === '已結案') { statusCounts['已完成']++; totalDone++; unifiedStatus = '已完成'; }
-                p.unifiedStatus = unifiedStatus; // 標記統一狀態方便後續過濾
+                p.unifiedStatus = unifiedStatus; 
 
-                // 2. 製作人產能統計
-                if (p.producer && p.producer !== '尚未暫定') {
-                    producerCounts[p.producer] = (producerCounts[p.producer] || 0) + 1;
-                }
-
-                // 3. 客戶排行榜統計
-                if (p.client) {
-                    clientCounts[p.client] = (clientCounts[p.client] || 0) + 1;
-                }
-
-                // 4. 工時統計
-                if (p.hours && !isNaN(p.hours)) {
-                    totalHours += parseFloat(p.hours);
-                }
+                if (p.producer && p.producer !== '尚未暫定') { producerCounts[p.producer] = (producerCounts[p.producer] || 0) + 1; }
+                if (p.client) { clientCounts[p.client] = (clientCounts[p.client] || 0) + 1; }
+                if (p.hours && !isNaN(p.hours)) { totalHours += parseFloat(p.hours); }
             });
 
-            document.getElementById('db-total-count').innerText = currentFilteredProjects.length;
-            document.getElementById('db-done-count').innerText = totalDone;
-            document.getElementById('db-hours-count').innerText = totalHours.toFixed(1);
+            document.getElementById('db-total-count').innerText = currentFilteredProjects.length; document.getElementById('db-done-count').innerText = totalDone; document.getElementById('db-hours-count').innerText = totalHours.toFixed(1);
 
-            // 繪製：狀態分佈圓餅圖 (加入 onClick 事件)
-            const ctxStatus = document.getElementById('chart-status');
-            if (dashboardCharts.status) dashboardCharts.status.destroy();
+            const ctxStatus = document.getElementById('chart-status'); if (dashboardCharts.status) dashboardCharts.status.destroy();
             dashboardCharts.status = new Chart(ctxStatus, {
                 type: 'doughnut',
-                data: {
-                    labels: ['製作中', '審核中', '尚未進行', '已完成'],
-                    datasets: [{
-                        data: [statusCounts['製作中'], statusCounts['審核中'], statusCounts['尚未進行'], statusCounts['已完成']],
-                        backgroundColor: ['#007AFF', '#FF9500', '#8E8E93', '#34C759'],
-                        borderWidth: 0, hoverOffset: 4
-                    }]
-                },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    plugins: { legend: { position: 'bottom' } },
-                    onClick: (e, elements) => {
-                        if (elements.length > 0) {
-                            const idx = elements[0].index;
-                            const label = dashboardCharts.status.data.labels[idx];
-                            showDashboardDetail('status', label);
-                        }
-                    }
-                }
+                data: { labels: ['製作中', '審核中', '尚未進行', '已完成'], datasets: [{ data: [statusCounts['製作中'], statusCounts['審核中'], statusCounts['尚未進行'], statusCounts['已完成']], backgroundColor: ['#007AFF', '#FF9500', '#8E8E93', '#34C759'], borderWidth: 0, hoverOffset: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, onClick: (e, elements) => { if (elements.length > 0) { const idx = elements[0].index; const label = dashboardCharts.status.data.labels[idx]; showDashboardDetail('status', label); } } }
             });
 
-            // 繪製：製作人佔比長條圖 (加入 onClick 事件)
-            const ctxProducer = document.getElementById('chart-producer');
-            if (dashboardCharts.producer) dashboardCharts.producer.destroy();
-            const pLabels = Object.keys(producerCounts);
-            const pData = Object.values(producerCounts);
+            const ctxProducer = document.getElementById('chart-producer'); if (dashboardCharts.producer) dashboardCharts.producer.destroy();
+            const pLabels = Object.keys(producerCounts); const pData = Object.values(producerCounts);
             dashboardCharts.producer = new Chart(ctxProducer, {
                 type: 'bar',
-                data: {
-                    labels: pLabels,
-                    datasets: [{ label: '專案數量', data: pData, backgroundColor: '#1D1D1F', borderRadius: 6 }]
-                },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-                    plugins: { legend: { display: false } },
-                    onClick: (e, elements) => {
-                        if (elements.length > 0) {
-                            const idx = elements[0].index;
-                            const label = dashboardCharts.producer.data.labels[idx];
-                            showDashboardDetail('producer', label);
-                        }
-                    }
-                }
+                data: { labels: pLabels, datasets: [{ label: '專案數量', data: pData, backgroundColor: '#1D1D1F', borderRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } }, onClick: (e, elements) => { if (elements.length > 0) { const idx = elements[0].index; const label = dashboardCharts.producer.data.labels[idx]; showDashboardDetail('producer', label); } } }
             });
 
-            // 渲染：客戶排行榜
             renderClientLeaderboard(clientCounts);
         }
 
-        // 🌟 新增：渲染客戶排行榜
         function renderClientLeaderboard(clientCounts) {
-            const container = document.getElementById('db-leaderboard');
-            // 將物件轉為陣列並排序
-            const sortedClients = Object.entries(clientCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            
+            const container = document.getElementById('db-leaderboard'); const sortedClients = Object.entries(clientCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
             if(sortedClients.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 py-6">尚無客戶資料</div>'; return; }
-
             let html = '';
             sortedClients.forEach((item, index) => {
-                let rankClass = `lb-rank-${index + 1}`;
-                if (index > 2) rankClass = ''; // 4,5名無特殊顏色
-                html += `
-                <div class="leaderboard-item cursor-pointer" onclick="showDashboardDetail('client', '${item[0]}')">
-                    <div class="flex items-center flex-1 overflow-hidden">
-                        <span class="lb-rank ${rankClass}">${index + 1}</span>
-                        <span class="lb-name" title="${item[0]}">${item[0]}</span>
-                    </div>
-                    <span class="lb-score">${item[1]} 件</span>
-                </div>`;
+                let rankClass = `lb-rank-${index + 1}`; if (index > 2) rankClass = '';
+                html += `<div class="leaderboard-item cursor-pointer" onclick="showDashboardDetail('client', '${item[0]}')"><div class="flex items-center flex-1 overflow-hidden"><span class="lb-rank ${rankClass}">${index + 1}</span><span class="lb-name" title="${item[0]}">${item[0]}</span></div><span class="lb-score">${item[1]} 件</span></div>`;
             });
             container.innerHTML = html;
         }
 
-        // 🌟 新增：圖表點擊後顯示明細表
         function showDashboardDetail(filterType, filterValue) {
-            const container = document.getElementById('db-detail-container');
-            const tbody = document.getElementById('db-detail-tbody');
-            const title = document.getElementById('db-detail-title');
-
+            const container = document.getElementById('db-detail-container'); const tbody = document.getElementById('db-detail-tbody'); const title = document.getElementById('db-detail-title');
             let results = [];
-            if (filterType === 'status') {
-                title.innerHTML = `明細過濾：<span class="text-blue-600">${filterValue}</span>`;
-                results = currentFilteredProjects.filter(p => p.unifiedStatus === filterValue);
-            } else if (filterType === 'producer') {
-                title.innerHTML = `明細過濾：<span class="text-blue-600">${filterValue}</span> 的專案`;
-                results = currentFilteredProjects.filter(p => p.producer === filterValue);
-            } else if (filterType === 'client') {
-                title.innerHTML = `明細過濾：客戶 <span class="text-blue-600">${filterValue}</span>`;
-                results = currentFilteredProjects.filter(p => p.client === filterValue);
-            }
+            if (filterType === 'status') { title.innerHTML = `明細過濾：<span class="text-blue-600">${filterValue}</span>`; results = currentFilteredProjects.filter(p => p.unifiedStatus === filterValue); } 
+            else if (filterType === 'producer') { title.innerHTML = `明細過濾：<span class="text-blue-600">${filterValue}</span> 的專案`; results = currentFilteredProjects.filter(p => p.producer === filterValue); } 
+            else if (filterType === 'client') { title.innerHTML = `明細過濾：客戶 <span class="text-blue-600">${filterValue}</span>`; results = currentFilteredProjects.filter(p => p.client === filterValue); }
 
-            if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-4">無資料</td></tr>';
-            } else {
+            if (results.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-4">無資料</td></tr>'; } 
+            else {
                 let html = '';
                 results.forEach(p => {
-                    let badgeClass = 'sb-gray';
-                    if(p.status === '製作中') badgeClass = 'sb-blue';
-                    else if(p.status.includes('審')) badgeClass = 'sb-orange';
-                    else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
-
+                    let badgeClass = 'sb-gray'; if(p.status === '製作中') badgeClass = 'sb-blue'; else if(p.status.includes('審')) badgeClass = 'sb-orange'; else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
                     let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結"><i class="fas fa-external-link-alt"></i></a>` : '';
-
-                    html += `
-                    <tr>
-                        <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                        <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td>
-                        <td class="text-gray-600 text-xs font-bold">${p.client}</td>
-                        <td class="font-bold">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
-                        <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
-                        <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start}<br>${p.end}</td>
-                    </tr>`;
+                    html += `<tr><td class="font-mono text-xs text-gray-500">${p.id}</td><td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td><td class="text-gray-600 text-xs font-bold">${p.client}</td><td class="font-bold">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td><td><span class="status-badge ${badgeClass}">${p.status}</span></td><td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start}<br>${p.end}</td></tr>`;
                 });
                 tbody.innerHTML = html;
             }
-            
-            container.classList.remove('hidden');
-            // 平滑滾動到明細區塊
-            setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 100);
+            container.classList.remove('hidden'); setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 100);
         }
 
         function renderCalendar() {
-            const el = document.getElementById('calendar');
-            if (calendar) { calendar.destroy(); }
-
-            let events = [];
-            const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
-            
+            const el = document.getElementById('calendar'); if (calendar) { calendar.destroy(); }
+            let events = []; const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
             tasks.forEach(p => {
                 if (p.status === '已完成' || p.status === '已結案') { return; }
-
                 if (p.start && p.end) {
                     try {
-                        let startD = new Date(p.start);
-                        let endD = new Date(p.end);
-                        
+                        let startD = new Date(p.start); let endD = new Date(p.end);
                         if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) {
-                            let color = '#8E8E93';
-                            if (p.status === '製作中') color = '#007AFF';
-                            else if (p.status.includes('審')) color = '#FF9500';
-                            
-                            let nextDay = new Date(endD.getTime() + 86400000);
-                            const endDateStr = getLocalDateString(nextDay);
-                            const startDateStr = getLocalDateString(startD);
-
-                            events.push({ 
-                                title: `${p.name} (${p.producer})`, 
-                                start: startDateStr, 
-                                end: endDateStr, 
-                                backgroundColor: color, 
-                                borderColor: color, 
-                                extendedProps: { project: p } 
-                            });
+                            let color = '#8E8E93'; if (p.status === '製作中') color = '#007AFF'; else if (p.status.includes('審')) color = '#FF9500';
+                            let nextDay = new Date(endD.getTime() + 86400000); const endDateStr = getLocalDateString(nextDay); const startDateStr = getLocalDateString(startD);
+                            events.push({ title: `${p.name} (${p.producer})`, start: startDateStr, end: endDateStr, backgroundColor: color, borderColor: color, extendedProps: { project: p } });
                         }
-                    } catch (e) { console.error("行事曆日期解析跳過", e); }
+                    } catch (e) {}
                 }
             });
-
             if(!DATA.leaves) DATA.leaves = [];
             DATA.leaves.forEach(l => {
                 if (calendarFilter === 'all' || l.name === calendarFilter) {
                     try {
-                        let startD = new Date(l.start);
-                        let endD = new Date(l.end);
-                        if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) {
-                            let nextDay = new Date(endD.getTime() + 86400000);
-                            const endDateStr = getLocalDateString(nextDay);
-                            const startDateStr = getLocalDateString(startD);
-                            events.push({ 
-                                title: `🏖️ ${l.name}: ${l.reason}`, 
-                                start: startDateStr, 
-                                end: endDateStr, 
-                                backgroundColor: '#7C3AED', 
-                                borderColor: '#7C3AED' 
-                            });
-                        }
+                        let startD = new Date(l.start); let endD = new Date(l.end);
+                        if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) { let nextDay = new Date(endD.getTime() + 86400000); const endDateStr = getLocalDateString(nextDay); const startDateStr = getLocalDateString(startD); events.push({ title: `🏖️ ${l.name}: ${l.reason}`, start: startDateStr, end: endDateStr, backgroundColor: '#7C3AED', borderColor: '#7C3AED' }); }
                     } catch(e) {}
                 }
             });
 
-            calendar = new FullCalendar.Calendar(el, {
-                initialView: 'dayGridMonth', 
-                locale: 'zh-tw', 
-                height: '100%', 
-                dayMaxEvents: 4, 
-                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },
-                buttonText: { today: '今天', month: '月', week: '週' },
-                events: events,
-                eventClick: function(info) { 
-                    const props = info.event.extendedProps; 
-                    if (props.project) openEditProject(props.project); 
-                }
-            });
-            calendar.render();
-            setTimeout(() => { if(calendar) calendar.updateSize(); }, 150);
-            setTimeout(() => {
-                const todayCell = document.querySelector('.fc-day-today');
-                if (todayCell) todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
+            calendar = new FullCalendar.Calendar(el, { initialView: 'dayGridMonth', locale: 'zh-tw', height: '100%', dayMaxEvents: 4, headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' }, buttonText: { today: '今天', month: '月', week: '週' }, events: events, eventClick: function(info) { const props = info.event.extendedProps; if (props.project) openEditProject(props.project); } });
+            calendar.render(); setTimeout(() => { if(calendar) calendar.updateSize(); }, 150); setTimeout(() => { const todayCell = document.querySelector('.fc-day-today'); if (todayCell) todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
         }
 
-        function setProjectType(type) {
-            curCat = type;
-            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-type-' + type).classList.add('active');
-            document.getElementById('i-name').placeholder = (type === 'video') ? "輸入影片標題" : "輸入圖文標題";
-            document.getElementById('lbl-name').innerText = (type === 'video') ? "影片名稱" : "圖文名稱";
-            document.getElementById('i-id').placeholder = "建議編號: 001";
-            renderZoneOptions();
-            renderDynamicOptions();
-        }
+        function setProjectType(type) { curCat = type; document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-type-' + type).classList.add('active'); document.getElementById('i-name').placeholder = (type === 'video') ? "輸入影片標題" : "輸入圖文標題"; document.getElementById('lbl-name').innerText = (type === 'video') ? "影片名稱" : "圖文名稱"; document.getElementById('i-id').placeholder = "建議編號: 001"; renderZoneOptions(); renderDynamicOptions(); }
+        function renderDynamicOptions() { if (!DATA || !DATA.config) return; const types = (curCat === 'video') ? (DATA.config.videoTypes || []) : (DATA.config.imageTypes || []); const producers = (curCat === 'video') ? (DATA.config.videoProducers || []) : (DATA.config.imageProducers || []); const fillSelect = (id, list, forceDefault) => { const el = document.getElementById(id); if(!el) return; const currentVal = el.value; el.innerHTML = ''; if(list.length === 0) el.add(new Option("無資料", "")); list.forEach(item => { if(item) el.add(new Option(item, item)); }); if (forceDefault && list.includes(forceDefault)) { el.value = forceDefault; } else if (list.includes(currentVal)) { el.value = currentVal; } }; fillSelect('i-type', types); fillSelect('i-producer', producers, '尚未暫定'); fillSelect('ep-type', types); fillSelect('ep-producer', producers); }
+        function switchTab(tab) { document.querySelectorAll('.page-scroll-container').forEach(el => { el.classList.remove('fade-in'); void el.offsetWidth; }); curTab = tab; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById('nav-' + tab).classList.add('active'); ['p-add', 'p-kanban', 'p-gantt', 'p-calendar', 'p-dashboard'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); }); let targetId = ''; if (tab === 'add') { targetId = 'p-add'; renderDynamicOptions(); } else if (tab === 'wei') { document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); targetId = 'p-kanban'; renderKanban('魏敏軒'); } else if (tab === 'chiu') { document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); targetId = 'p-kanban'; renderKanban('邱仁杰'); } else if (tab === 'gan') { targetId = 'p-gantt'; renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); } else if (tab === 'calendar') { targetId = 'p-calendar'; setTimeout(() => renderCalendar(), 100); } else if (tab === 'dashboard') { targetId = 'p-dashboard'; setTimeout(() => renderDashboard(), 100); } if(targetId) { const targetEl = document.getElementById(targetId); targetEl.classList.remove('hidden'); targetEl.classList.add('fade-in'); } }
+        function renderZoneOptions() { const sel = document.getElementById('i-zone'); sel.innerHTML = '<option value="">請選擇</option>'; const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings; if (settings) { Object.keys(settings).sort().forEach(k => { const op = document.createElement('option'); op.value = k; op.text = k; sel.add(op); }); } updateClientName(); }
+        function updateClientName() { const z = document.getElementById('i-zone').value; if (z) { const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z; if (z.toUpperCase().startsWith('Z')) { document.getElementById('i-client').value = ''; document.getElementById('i-client').readOnly = false; document.getElementById('i-client').classList.remove('bg-gray-100'); document.getElementById('i-client').classList.add('bg-white'); } else { document.getElementById('i-client').value = realName; document.getElementById('i-client').readOnly = true; document.getElementById('i-client').classList.add('bg-gray-100'); document.getElementById('i-client').classList.remove('bg-white'); } let lastId = (DATA.ids) ? DATA.ids[z] : ""; let displayId = "001"; if (lastId && lastId !== "無" && lastId !== "無紀錄") { const match = lastId.match(/\d+$/); if (match) displayId = match[0]; document.getElementById('i-id').placeholder = `最後編號: ${displayId}`; } else { document.getElementById('i-id').placeholder = `建議編號: 001`; } } else { document.getElementById('i-client').value = ''; document.getElementById('i-id').placeholder = ''; } }
+        function checkProducer() { const prod = document.getElementById('i-producer').value; const dateInput = document.getElementById('i-date'); if (prod === '尚未暫定') { dateInput.placeholder = "日期可留空"; dateInput.style.background = "#eef"; } else { dateInput.placeholder = "點擊選擇"; dateInput.style.background = "#F5F5F7"; } }
 
-        function renderDynamicOptions() {
-            if (!DATA || !DATA.config) return;
-            const types = (curCat === 'video') ? (DATA.config.videoTypes || []) : (DATA.config.imageTypes || []);
-            const producers = (curCat === 'video') ? (DATA.config.videoProducers || []) : (DATA.config.imageProducers || []);
-            const fillSelect = (id, list, forceDefault) => {
-                const el = document.getElementById(id);
-                if(!el) return;
-                const currentVal = el.value;
-                el.innerHTML = '';
-                if(list.length === 0) el.add(new Option("無資料", ""));
-                list.forEach(item => { if(item) el.add(new Option(item, item)); });
-                if (forceDefault && list.includes(forceDefault)) { el.value = forceDefault; } 
-                else if (list.includes(currentVal)) { el.value = currentVal; }
-            };
-            fillSelect('i-type', types);
-            fillSelect('i-producer', producers, '尚未暫定'); 
-            fillSelect('ep-type', types);
-            fillSelect('ep-producer', producers);
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.page-scroll-container').forEach(el => {
-                el.classList.remove('fade-in');
-                void el.offsetWidth;
-            });
-
-            curTab = tab;
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('nav-' + tab).classList.add('active');
-            ['p-add', 'p-kanban', 'p-gantt', 'p-calendar', 'p-dashboard'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.classList.add('hidden');
-            });
-            
-            let targetId = '';
-            if (tab === 'add') { targetId = 'p-add'; renderDynamicOptions(); }
-            else if (tab === 'wei') { 
-                document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open'));
-                targetId = 'p-kanban'; renderKanban('魏敏軒'); 
-            }
-            else if (tab === 'chiu') { 
-                document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open'));
-                targetId = 'p-kanban'; renderKanban('邱仁杰'); 
-            }
-            else if (tab === 'gan') { targetId = 'p-gantt'; renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); }
-            else if (tab === 'calendar') { targetId = 'p-calendar'; setTimeout(() => renderCalendar(), 100); }
-            else if (tab === 'dashboard') { targetId = 'p-dashboard'; setTimeout(() => renderDashboard(), 100); }
-
-            if(targetId) {
-                const targetEl = document.getElementById(targetId);
-                targetEl.classList.remove('hidden');
-                targetEl.classList.add('fade-in');
-            }
-        }
-
-        function renderZoneOptions() {
-            const sel = document.getElementById('i-zone'); 
-            sel.innerHTML = '<option value="">請選擇</option>';
-            const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            if (settings) { 
-                Object.keys(settings).sort().forEach(k => { 
-                    const op = document.createElement('option'); 
-                    op.value = k; op.text = k; sel.add(op); 
-                }); 
-            }
-            updateClientName(); 
-        }
-
-        function updateClientName() {
-            const z = document.getElementById('i-zone').value;
-            if (z) { 
-                const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z;
-                if (z.toUpperCase().startsWith('Z')) {
-                    document.getElementById('i-client').value = ''; 
-                    document.getElementById('i-client').readOnly = false; 
-                    document.getElementById('i-client').classList.remove('bg-gray-100'); 
-                    document.getElementById('i-client').classList.add('bg-white'); 
-                } else {
-                    document.getElementById('i-client').value = realName; 
-                    document.getElementById('i-client').readOnly = true; 
-                    document.getElementById('i-client').classList.add('bg-gray-100'); 
-                    document.getElementById('i-client').classList.remove('bg-white');
-                }
-                
-                let lastId = (DATA.ids) ? DATA.ids[z] : "";
-                let displayId = "001"; 
-                if (lastId && lastId !== "無" && lastId !== "無紀錄") {
-                    const match = lastId.match(/\d+$/); 
-                    if (match) displayId = match[0];
-                    document.getElementById('i-id').placeholder = `最後編號: ${displayId}`;
-                } else { 
-                    document.getElementById('i-id').placeholder = `建議編號: 001`; 
-                }
-            } else { 
-                document.getElementById('i-client').value = ''; 
-                document.getElementById('i-id').placeholder = ''; 
-            }
-        }
-
-        function checkProducer() {
-            const prod = document.getElementById('i-producer').value;
-            const dateInput = document.getElementById('i-date');
-            if (prod === '尚未暫定') { 
-                dateInput.placeholder = "日期可留空"; dateInput.style.background = "#eef"; 
-            } else { 
-                dateInput.placeholder = "點擊選擇"; dateInput.style.background = "#F5F5F7"; 
-            }
-        }
-
-        function renderGantt(who) {
-            document.getElementById('btn-gan-wei').classList.remove('active');
-            document.getElementById('btn-gan-chiu').classList.remove('active');
-            if (who === '魏敏軒') document.getElementById('btn-gan-wei').classList.add('active');
-            else document.getElementById('btn-gan-chiu').classList.add('active');
-
-            const container = document.getElementById('gantt-chart');
-            const now = new Date();
-            const curYear = currentGanttDate.getFullYear();
-            const curMonth = currentGanttDate.getMonth();
-            document.getElementById('gan-title').innerText = `甘特圖 (${curYear}年${curMonth + 1}月)`;
-
-            const monthStart = new Date(curYear, curMonth, 1);
-            const monthEnd = new Date(curYear, curMonth + 1, 0, 23, 59, 59);
-            const todayDay = now.getDate();
-            const isCurrentMonth = (now.getMonth() === curMonth && now.getFullYear() === curYear);
-
-            let tasks = DATA.projects.filter(p => p.producer === who && p.start && p.end);
-            tasks = tasks.filter(p => {
-                const pStart = new Date(p.start);
-                const pEnd = new Date(p.end);
-                return pStart <= monthEnd && pEnd >= monthStart; 
-            }).sort((a, b) => new Date(a.start) - new Date(b.start));
-
-            if (tasks.length === 0) { 
-                container.innerHTML = '<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl h-full flex items-center justify-center">本月無排程</div>'; 
-                return; 
-            }
-
-            const daysInMonth = monthEnd.getDate();
-            let header = '<tr class="gantt-row"><th class="gantt-corner">ID / 專案</th>';
-            for (let i = 1; i <= daysInMonth; i++) {
-                let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today' : '';
-                header += `<th class="gantt-header-cell ${bg}">${i}</th>`;
-            }
-            header += '</tr>';
-
-            let body = '';
-            tasks.forEach(p => {
-                const pStartObj = new Date(p.start);
-                const pEndObj = new Date(p.end);
-                const pStr = encodeURIComponent(JSON.stringify(p));
-
-                let color = '#8E8E93'; 
-                if (p.status === '製作中') color = '#007AFF';
-                else if (p.status.includes('審')) color = '#FF9500';
-                else if (p.status === '已完成' || p.status === '已結案') color = '#34C759';
-
-                let gridStartDay = (pStartObj < monthStart) ? 1 : pStartObj.getDate();
-                let gridEndDay = (pEndObj > monthEnd) ? daysInMonth : pEndObj.getDate();
-
-                let bars = '';
-                for (let i = 1; i <= daysInMonth; i++) {
-                    let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today-cell' : '';
-                    let content = '';
-                    if (i === gridStartDay) {
-                        let span = (gridEndDay - gridStartDay) + 1;
-                        if (span < 1) span = 1;
-                        let prefix = (pStartObj < monthStart) ? '← ' : '';
-                        let suffix = (pEndObj > monthEnd) ? ' →' : '';
-                        content = `<div class="gantt-bar" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
-                    }
-                    bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible;"' : ''}>${content}</td>`;
-                }
-                body += `<tr class="gantt-row"><td class="gantt-col-fixed" title="${p.name} (${p.status})" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" style="cursor:pointer;"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
-            });
-            container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
-        }
-
-        function changeGanttMonth(delta) {
-            currentGanttDate.setMonth(currentGanttDate.getMonth() + delta);
-            const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-            renderGantt(who);
-        }
-
-        function filterCalendar(who) {
-            calendarFilter = who;
-            document.querySelectorAll('.cal-filter-btn').forEach(b => b.classList.remove('active'));
-            if(who==='all') document.getElementById('btn-cal-all').classList.add('active');
-            else if(who==='魏敏軒') document.getElementById('btn-cal-wei').classList.add('active');
-            else document.getElementById('btn-cal-chiu').classList.add('active');
-            renderCalendar();
-        }
-
-        function deleteProject(category, zone, id) {
-            if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return;
-            DATA.projects = DATA.projects.filter(p => !(String(p.id) === String(id) && p.zone === zone));
-            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true);
-            callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
-        }
-
-        function openEditProject(p) {
-            document.getElementById('ep-cat').value = p.category;
-            document.getElementById('ep-origin-id').value = p.id; 
-            document.getElementById('ep-origin-zone').value = p.zone; 
-            
-            const prefix = p.zone.split('_')[0]; 
-            const numPart = String(p.id).replace(prefix, ''); 
-            
-            const epCodeSel = document.getElementById('ep-code');
-            epCodeSel.innerHTML = '';
-            const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
-            epCodeSel.value = prefix;
-            
-            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
-            const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
-            
-            const prodSel = document.getElementById('ep-producer');
-            prodSel.innerHTML = '';
-            producers.forEach(x => prodSel.add(new Option(x, x)));
-            
-            const typeSel = document.getElementById('ep-type');
-            typeSel.innerHTML = '';
-            types.forEach(x => typeSel.add(new Option(x, x)));
-
-            setTimeout(() => { prodSel.value = p.producer; typeSel.value = p.type; }, 50);
-
-            document.getElementById('ep-num').value = numPart;
-            updateEditClientInfo(); 
-            
-            document.getElementById('ep-name').value = p.name;
-            document.getElementById('ep-hours').value = p.hours || 0; 
-            
-            // 🌟 寫入連結到編輯框
-            document.getElementById('ep-link').value = p.link || ''; 
-            
-            if (p.start && p.end) { fpEdit.setDate([p.start, p.end]); } else { fpEdit.clear(); }
-            document.getElementById('ep-note').value = p.note;
-            document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
-            document.getElementById('modal-edit-project').style.display = 'flex';
-        }
-
-        function confirmEditProject() {
-            const dateVal = document.getElementById('ep-date').value;
-            const dates = dateVal.split(' to ');
-            const originId = document.getElementById('ep-origin-id').value;
-            const originZone = document.getElementById('ep-origin-zone').value;
-            
-            const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone));
-            let inheritedStatus = '尚未進行';
-            if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; }
-
-            const p = {
-                category: document.getElementById('ep-cat').value,
-                zone: document.getElementById('ep-zone').value, 
-                id: document.getElementById('ep-num').value, 
-                client: document.getElementById('ep-client-display').value,
-                name: document.getElementById('ep-name').value,
-                producer: document.getElementById('ep-producer').value,
-                type: document.getElementById('ep-type').value,
-                hours: document.getElementById('ep-hours').value, 
-                start: dates[0] || "", end: dates[1] || dates[0] || "",
-                note: document.getElementById('ep-note').value,
-                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',
-                status: inheritedStatus,
-                link: document.getElementById('ep-link').value.trim() // 🌟 包含連結資料
-            };
-
-            const prefix = p.zone.split('_')[0];
-            if (!isNaN(p.id) && p.id !== "") { p.id = prefix + String(p.id).padStart(3, '0'); } 
-            else if (!p.id.toUpperCase().startsWith(prefix.toUpperCase())) { p.id = prefix + p.id; }
-
-            if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } else { DATA.projects.push(p); }
-
-            closeModal('edit-project');
-            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true);
-            showToast("修改成功 (背景同步中)");
-            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {});
-        }
-
-        function openHistory() {
-            const z = document.getElementById('i-zone').value;
-            if(!z) return showToast("請先選擇客戶", "error");
-            document.getElementById('hist-title').innerText = z;
-            document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>';
-            document.getElementById('modal-preview').style.display = 'flex';
-            callAPI('getHistory', { cat: curCat, zone: z }, (list) => {
-                let html = list.length === 0 ? '<div class="text-center text-gray-400">尚無專案</div>' : '';
-                list.forEach(p => {
-                    let bg = '#888'; 
-                    if(p.status === '製作中') bg = '#007AFF'; 
-                    else if(p.status.includes('審')) bg = '#FF9500'; 
-                    else if(p.status === '已完成') bg = '#34C759';
-                    html += `<div class="mb-2 flex items-center justify-between border-b pb-2"><div class="flex items-center"><span class="font-bold text-gray-800 mr-2 w-16">${p.id}</span><span class="text-gray-600 mr-2 truncate w-32">${p.name}</span></div><span class="text-white text-xs px-2 py-1 rounded shadow-sm" style="background:${bg}">${p.status}</span></div>`;
-                });
-                document.getElementById('hist-list').innerHTML = html;
-            });
-        }
-        
-        function doUpdate(cat, zone, id, status, hours=0) {
-            const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone);
-            if (p) {
-                p.status = status;
-                if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours);
-                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-                processDataUpdate(DATA, true);
-            }
-            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {});
-        }
-        
-        function openSettings(type) {
-            document.getElementById('st-type').value = type;
-            document.getElementById('setting-title').innerText = (type==='Type') ? "管理類型" : "管理製作人";
-            document.getElementById('st-input').value = '';
-            renderSettingList();
-            document.getElementById('modal-settings').style.display = 'flex';
-        }
-
-        function renderSettingList() {
-            const type = document.getElementById('st-type').value;
-            const list = (curCat==='video') ? (type==='Type' ? DATA.config.videoTypes : DATA.config.videoProducers) : (type==='Type' ? DATA.config.imageTypes : DATA.config.imageProducers);
-            let html = '';
-            list.forEach(item => { 
-                html += `<div class="setting-item"><span>${item}</span><div class="setting-actions"><i onclick="editSettingItem('${item}')" class="fas fa-pen text-sm"></i><i onclick="deleteSettingItem('${item}')" class="fas fa-trash-alt text-sm"></i></div></div>`; 
-            });
-            document.getElementById('st-list').innerHTML = html;
-        }
-
-        function addSettingItem() {
-            const val = document.getElementById('st-input').value;
-            const type = document.getElementById('st-type').value;
-            if(!val) return;
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => {
-                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
-                else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; }
-            });
-            document.getElementById('st-input').value = '';
-        }
-
-        function deleteSettingItem(val) {
-            if(!confirm("確定刪除此選項嗎？")) return;
-            const type = document.getElementById('st-type').value;
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => {
-                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
-                else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; }
-            });
-        }
-
-        function editSettingItem(oldVal) {
-            const newVal = prompt("請輸入新名稱：", oldVal);
-            if (!newVal || newVal === oldVal) return;
-            const type = document.getElementById('st-type').value;
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => {
-                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
-                else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; }
-            });
-        }
-
-        function openHoursModal(cat, zone, id) {
-            document.getElementById('hours-cat').value = cat; document.getElementById('hours-zone').value = zone;
-            document.getElementById('hours-id').value = id; document.getElementById('input-hours').value = '';
-            document.getElementById('modal-hours').style.display = 'flex';
-        }
-
-        function confirmSendReview() {
-            const h = document.getElementById('input-hours').value;
-            if(!h) return showToast("請輸入工時", "error");
-            closeModal('hours');
-            doUpdate(document.getElementById('hours-cat').value, document.getElementById('hours-zone').value, document.getElementById('hours-id').value, '客戶審核', h);
-        }
-
-        function togglePanel(type) {
-            document.getElementById('panel-' + type).style.display = 'flex';
-            if (type === 'memo') loadMemos(); 
-            if (type === 'link') loadLinks(); 
-            if (type === 'pending') loadPending();
-        }
-
-        function loadPending() {
-            let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定');
-            const container = document.getElementById('pending-list');
-            const badge = document.getElementById('pending-badge');
-            
-            if (pendingList.length > 0) { badge.style.display = 'flex'; badge.innerText = pendingList.length; } 
-            else { badge.style.display = 'none'; }
-            
-            if (pendingList.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待分派項目</div>'; return; }
-            
-            let html = '';
-            pendingList.forEach((p, idx) => {
-                const prefix = p.zone.split('_')[0]; 
-                const numPart = String(p.id).replace(prefix, '');
-                html += `
-                <div id="p-item-${idx}" class="pending-item">
-                    <div id="p-display-${idx}">
-                        <div class="pending-name">${p.id} ${p.name}</div>
-                        <div class="pending-meta text-xs text-gray-500 mb-4">${p.client}</div>
-                        <div class="absolute top-3 right-3 text-gray-400 hover:text-black cursor-pointer flex gap-3 text-lg">
-                            <i class="fas fa-pen" onclick='enablePendingEdit(${idx})'></i>
-                            <i class="fas fa-trash-alt text-red-300 hover:text-red-600 cursor-pointer" onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')"></i>
-                        </div>
-                        <div class="flex gap-2">
-                            <select id="p-assign-maker-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1">
-                                <option value="">選擇製作人...</option><option>魏敏軒</option><option>邱仁杰</option>
-                            </select>
-                            <input id="p-assign-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="補填日期" autocomplete="off">
-                            <button onclick="confirmAssign('${p.category}', '${p.zone}', '${p.id}', ${idx})" class="bg-black text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-gray-800">確認</button>
-                        </div>
-                    </div>
-                    <div id="p-edit-${idx}" class="hidden">
-                        <input type="hidden" id="pe-origin-id-${idx}" value="${p.id}"><input type="hidden" id="pe-origin-zone-${idx}" value="${p.zone}">
-                        <input type="hidden" id="pe-cat-${idx}" value="${p.category}"><input type="hidden" id="pe-type-${idx}" value="${p.type}">
-                        <input type="hidden" id="pe-note-${idx}" value="${p.note}"><input type="hidden" id="pe-tag-${idx}" value="${p.tag}">
-                        <div class="flex gap-2 mb-2">
-                             <select id="pe-code-${idx}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center" onchange="updatePendingEditClient(${idx})"></select>
-                             <input id="pe-num-${idx}" value="${numPart}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center">
-                             <div class="flex-1"></div>
-                             <div class="cursor-pointer text-gray-400 hover:text-red-500 text-xl pt-1" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></div>
-                        </div>
-                        <input id="pe-name-${idx}" value="${p.name}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-2 font-bold" placeholder="專案名稱">
-                        <input id="pe-client-${idx}" value="${p.client}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-3 text-gray-500" placeholder="客戶名稱">
-                        <div class="flex gap-2">
-                            <select id="pe-producer-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1">
-                                <option value="尚未暫定">尚未暫定</option><option>魏敏軒</option><option>邱仁杰</option>
-                            </select>
-                            <input id="pe-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="日期" autocomplete="off">
-                            <button onclick="savePendingEdit(${idx})" class="bg-blue-600 text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-800">保存</button>
-                        </div>
-                    </div>
-                </div>`;
-            });
-            container.innerHTML = html;
-            setTimeout(() => { pendingList.forEach((p, idx) => { flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); }); }, 50);
-        }
-
-        function enablePendingEdit(idx) {
-            document.getElementById(`p-display-${idx}`).classList.add('hidden'); document.getElementById(`p-edit-${idx}`).classList.remove('hidden');
-            const cat = document.getElementById(`pe-cat-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            const codeSel = document.getElementById(`pe-code-${idx}`); const originZone = document.getElementById(`pe-origin-zone-${idx}`).value;
-            const prefix = originZone.split('_')[0]; codeSel.innerHTML = '';
-            Object.keys(settings).sort().forEach(k => { codeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); codeSel.value = prefix;
-        }
-
-        function cancelPendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.remove('hidden'); document.getElementById(`p-edit-${idx}`).classList.add('hidden'); }
-
-        function updatePendingEditClient(idx) {
-            const cat = document.getElementById(`pe-cat-${idx}`).value; const selectedCode = document.getElementById(`pe-code-${idx}`).value;
-            const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = "";
-            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
-            if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById(`pe-client-${idx}`).value = clientName; }
-        }
-
-        function savePendingEdit(idx) {
-            const dateVal = document.getElementById(`pe-date-${idx}`).value; const dates = dateVal.split(' to ');
-            const selectedCode = document.getElementById(`pe-code-${idx}`).value; const cat = document.getElementById(`pe-cat-${idx}`).value;
-            const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let newZone = "";
-            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { newZone = key; break; } }
-            if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
-            let rawId = document.getElementById(`pe-num-${idx}`).value;
-            if (!isNaN(rawId) && rawId !== "") { rawId = selectedCode + String(rawId).padStart(3, '0'); } else if (!rawId.toUpperCase().startsWith(selectedCode.toUpperCase())) { rawId = selectedCode + rawId; }
-            
-            const p = { category: cat, zone: newZone, id: rawId, client: document.getElementById(`pe-client-${idx}`).value, name: document.getElementById(`pe-name-${idx}`).value, producer: document.getElementById(`pe-producer-${idx}`).value, type: document.getElementById(`pe-type-${idx}`).value, start: dates[0] || "", end: dates[1] || dates[0] || "", note: document.getElementById(`pe-note-${idx}`).value, tag: document.getElementById(`pe-tag-${idx}`).value };
-            const originId = document.getElementById(`pe-origin-id-${idx}`).value; const originZone = document.getElementById(`pe-origin-zone-${idx}`).value;
-            
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
-                if (res === "OK") { callAPI('initAllData', {}, (data) => { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); }); } 
-                else { showToast("保存失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; }
-            });
-        }
-
-        function confirmAssign(cat, zone, id, idx) {
-            const maker = document.getElementById(`p-assign-maker-${idx}`).value; const date = document.getElementById(`p-assign-date-${idx}`).value;
-            if(!maker || !date) return showToast("請選擇製作人與日期", "error");
-            const dates = date.split(' to '); const startDate = dates[0]; const endDate = dates[1] || dates[0];
-            const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(id) && String(x.zone) === String(zone));
-            if (targetIdx !== -1) {
-                DATA.projects[targetIdx].producer = maker; DATA.projects[targetIdx].start = startDate; DATA.projects[targetIdx].end = endDate;
-                let newStatus = '尚未進行';
-                try { let d = new Date(startDate); let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0); if (d <= today) newStatus = '製作中'; } catch(e) {}
-                DATA.projects[targetIdx].status = newStatus;
-                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); showToast("專案分派成功");
-            }
-            callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {});
-        }
-
-        function loadMemos() {
-            callAPI('getMemos', {}, (list) => {
-                const container = document.getElementById('memo-list'); const badge = document.getElementById('memo-badge');
-                if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; }
-                if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待辦事項</div>'; return; }
-                let html = '';
-                list.forEach(m => {
-                    const colorClass = (m.owner === '邱仁杰') ? 'chiu' : ''; const mStr = encodeURIComponent(JSON.stringify(m));
-                    html += `
-                    <div class="memo-item ${colorClass}">
-                        <div class="memo-content">${m.content}</div>
-                        <div class="memo-meta"><span><i class="fas fa-user-circle"></i> ${m.owner}</span><span><i class="far fa-clock"></i> ${m.date}</span></div>
-                        <div class="memo-actions text-lg">
-                            <i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i>
-                            <i onclick="finishMemo(${m.idx}, this)" class="memo-icon far fa-check-circle text-green-500" title="完成"></i>
-                            <i onclick="deleteMemo(${m.idx}, this)" class="memo-icon fas fa-trash-alt memo-del" title="刪除"></i>
-                        </div>
-                    </div>`;
-                });
-                container.innerHTML = html;
-            });
-        }
-
-        function deleteMemo(idx, el) { if(!confirm("確定刪除此便利貼嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteMemo', { idx:idx }, (res) => { showToast("已刪除待辦"); loadMemos(); }); }
-        function editMemoMode(m) { editingMemoIdx = m.idx; document.getElementById('m-content').value = m.content; document.getElementById('m-owner').value = m.owner; if(m.date) fpMemo.setDate(m.date); const btn = document.getElementById('btn-memo-add'); btn.innerText = "更新貼文"; btn.classList.add('bg-blue-600'); btn.onclick = updateMemoItem; }
-        function updateMemoItem() { const content = document.getElementById('m-content').value; const owner = document.getElementById('m-owner').value; const date = document.getElementById('m-date').value; if(!content) return showToast("請輸入內容", "error"); document.getElementById('m-content').value = ''; document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 更新中...</div>'; const btn = document.getElementById('btn-memo-add'); btn.innerText = "新增貼文"; btn.classList.remove('bg-blue-600'); btn.onclick = addMemoItem; callAPI('editMemo', { idx: editingMemoIdx, item: {content: content, owner: owner, date: date} }, (res) => { editingMemoIdx = null; showToast("貼文已更新"); loadMemos(); }); }
-        function addMemoItem() { const content = document.getElementById('m-content').value; const owner = document.getElementById('m-owner').value; const date = document.getElementById('m-date').value; if(!content) return showToast("請輸入內容", "error"); document.getElementById('m-content').value = ''; document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 儲存中...</div>'; callAPI('addMemo', { item: {content: content, owner: owner, date: date} }, (res) => { showToast("已新增待辦"); loadMemos(); }); }
-        function finishMemo(idx, el) { if(!confirm("確定完成此事項並封存嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('completeMemo', { idx:idx }, (res) => { showToast("事項已完成封存"); loadMemos(); }); }
-
-        function loadLinks() {
-            callAPI('getLinks', {}, (list) => {
-                const container = document.getElementById('link-list');
-                if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; return; }
-                const groups = {}; const folderDatalist = document.getElementById('folder-options'); folderDatalist.innerHTML = ''; 
-                list.forEach(l => {
-                    let folder = "未分類"; let displayName = l.client;
-                    if (l.client.includes('::')) { const parts = l.client.split('::'); folder = parts[0]; displayName = parts[1]; }
-                    if (!groups[folder]) groups[folder] = []; groups[folder].push({...l, displayName: displayName, originalClient: l.client, folder: folder});
-                });
-                let html = '';
-                for (let folder in groups) {
-                    if (folder !== "未分類") { folderDatalist.appendChild(new Option(folder)); }
-                    html += `
-                    <details class="mb-3 group link-folder">
-                        <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">
-                            <div class="flex items-center gap-3"><i class="fas fa-folder-open text-blue-500"></i> ${folder} <span class="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded-full">${groups[folder].length}</span></div>
-                            <div class="flex gap-2 items-center"><i class="fas fa-pen text-gray-400 hover:text-black p-2" title="重新命名資料夾" onclick="renameFolder('${folder}')"></i><i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 group-open:rotate-180"></i></div>
-                        </summary>
-                        <div class="pt-3 pl-2 pr-2">`;
-                    groups[folder].forEach(l => {
-                        const lData = {idx: l.idx, folder: l.folder, name: l.displayName, url: l.url, original: l.originalClient}; const lStr = encodeURIComponent(JSON.stringify(lData));
-                        html += `
-                        <div class="bg-[#2D3748] text-white p-3 rounded-lg mb-2 flex justify-between items-center cursor-pointer hover:bg-[#1A202C] transition shadow-sm" onclick="window.open('${l.url}','_blank')">
-                            <div class="flex-1 truncate flex items-center gap-3"><i class="fas fa-link text-gray-400"></i> ${l.displayName}</div>
-                            <div class="flex gap-4 ml-2" onclick="event.stopPropagation()">
-                                <i onclick="editLinkMode(JSON.parse(decodeURIComponent('${lStr}')))" class="fas fa-pen text-gray-400 hover:text-white transition" title="編輯"></i>
-                                <i onclick="removeLink(${l.idx}, this)" class="fas fa-trash-alt text-gray-400 hover:text-red-400 transition" title="刪除"></i>
-                            </div>
-                        </div>`;
-                    });
-                    html += `</div></details>`;
-                }
-                container.innerHTML = html;
-            });
-        }
-
-        function renameFolder(oldName) { event.preventDefault(); const newName = prompt(`請輸入「${oldName}」的新名稱：\n(若輸入空白則取消)`, oldName); if (newName && newName !== oldName) { document.getElementById('link-list').innerHTML = '<div class="text-center text-gray-400 py-4"><i class="fas fa-spinner fa-spin"></i> 更新資料夾中...</div>'; callAPI('renameLinkFolder', { oldFolder: oldName, newFolder: newName }, (res) => { showToast("資料夾已重新命名"); loadLinks(); }); } }
-        function editLinkMode(l) { editingLinkIdx = l.idx; document.getElementById('l-folder').value = (l.folder === "未分類") ? "" : l.folder; document.getElementById('l-name').value = l.name; document.getElementById('l-url').value = l.url; const btn = document.getElementById('btn-link-add'); btn.innerText = "更新連結"; btn.onclick = updateLinkItem; }
-        function updateLinkItem() { const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); const clientString = folder ? `${folder}::${name}` : name; const btn = document.getElementById('btn-link-add'); btn.innerText = "更新中..."; btn.disabled = true; callAPI('editLink', { idx: editingLinkIdx, client: clientString, url: url }, (res) => { btn.innerText = "新增連結"; btn.disabled = false; btn.onclick = addLinkItem; editingLinkIdx = null; document.getElementById('l-folder').value = ''; document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("連結已更新"); loadLinks(); }); }
-        function addLinkItem() { const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); const clientString = folder ? `${folder}::${name}` : name; const btn = document.getElementById('btn-link-add'); const originalText = btn.innerText; btn.innerText = "儲存中..."; btn.disabled = true; callAPI('addLink', { client: clientString, url: url }, (res) => { btn.innerText = originalText; btn.disabled = false; if (res !== "OK") { showToast(res, "error"); } else { document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("已新增連結"); loadLinks(); } }); }
-        function removeLink(idx, el) { if(!confirm("確定刪除此連結嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteLink', { idx:idx }, (res) => { showToast("已刪除連結"); loadLinks(); }); }
-
-        function openZoneModal(mode) {
-            modalMode = mode; const z = document.getElementById('i-zone').value;
-            if (mode === 'edit' && !z) return showToast("請先選擇要編輯的客戶", "error");
-            document.getElementById('modal-title').innerText = (mode==='new') ? "新增客戶" : "編輯客戶名稱";
-            const selCode = document.getElementById('modal-code'); selCode.innerHTML = '';
-            const raw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); const alphabet = (curCat === 'image') ? raw.map(c=>c.toLowerCase()) : raw;
-            const used = (curCat === 'image') ? DATA.usedCodesImage : DATA.usedCodesVideo;
-            alphabet.forEach(c => { if(mode === 'new' && used.includes(c)) return; const op = document.createElement('option'); op.value = c; op.text = c; selCode.add(op); });
-            document.getElementById('div-code-select').classList.remove('hidden');
-            if (mode === 'new') { document.getElementById('modal-name').value = ''; } else {
-                const prefix = z.split('_')[0]; const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z;
-                let found = false; for(let i=0; i<selCode.options.length; i++) { if(selCode.options[i].value == prefix) found = true; }
-                if(!found) { const op = document.createElement('option'); op.value = prefix; op.text = prefix; selCode.add(op); }
-                selCode.value = prefix; document.getElementById('modal-name').value = realName;
-            }
-            document.getElementById('modal-zone').style.display = 'flex';
-        }
-
-        function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
-
-        function confirmZoneModal() {
-            const name = document.getElementById('modal-name').value; const code = document.getElementById('modal-code').value;
-            if(!name) return; closeModal('zone'); document.getElementById('loader').style.display = 'flex';
-            if (modalMode === 'new') { callAPI('createClient', { cat: curCat, code: code, name: name }, (res) => { callAPI('initAllData', {}, (data) => { processDataUpdate(data); showToast("已新增客戶"); }); }); } 
-            else { const oldName = document.getElementById('i-zone').value; const newFullName = code + "_" + name; callAPI('renameClient', { cat: curCat, oldName: oldName, newFullName: newFullName }, (res) => { callAPI('initAllData', {}, (data) => { processDataUpdate(data); showToast("客戶已更新"); }); }); }
-        }
-        
-        function updateEditClientInfo() {
-            const selectedCode = document.getElementById('ep-code').value; const settings = (document.getElementById('ep-cat').value === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = ""; for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
-            if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById('ep-client-display').value = clientName; document.getElementById('ep-zone').value = foundZone; } 
-            else { const currentClient = document.getElementById('ep-client-display').value || "未知客戶"; document.getElementById('ep-client-display').value = currentClient; document.getElementById('ep-zone').value = selectedCode + "_" + currentClient; }
-        }
-        
-        function updateZoneFromClientName() { const code = document.getElementById('ep-code').value; const client = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + "_" + client; }
-        function openLeaveModal() { document.getElementById('leave-name').value = '魏敏軒'; document.getElementById('leave-date').value = ''; document.getElementById('leave-reason').value = ''; document.getElementById('modal-leave').style.display = 'flex'; }
-        function confirmLeave() { const name = document.getElementById('leave-name').value; const date = document.getElementById('leave-date').value; const reason = document.getElementById('leave-reason').value; if(!date || !reason) return showToast("請填寫完整資訊 (日期與事由)", "error"); const dates = date.split(' to '); const item = { name: name, start: dates[0], end: dates[1] || dates[0], reason: reason }; if(!DATA.leaves) DATA.leaves = []; DATA.leaves.push(item); closeModal('leave'); renderCalendar(); showToast("請假申請已送出"); callAPI('addLeave', { item: item }, (res) => {}); document.getElementById('leave-date').value = ''; document.getElementById('leave-reason').value = ''; }
-
+        // 🌟 核心效能極致優化 (Optimistic UI 更新)
         function saveProject() {
             const zone = document.getElementById('i-zone').value;
             let idRaw = document.getElementById('i-id').value.trim();
@@ -1708,7 +778,6 @@
             const isUrgent = document.getElementById('i-urgent').checked;
             const dateStr = document.getElementById('i-date').value;
             const note = document.getElementById('i-note').value;
-            // 🌟 獲取雲端連結
             const linkUrl = document.getElementById('i-link').value.trim();
 
             if (!zone) return showToast("請選擇區域 / 客戶", "error");
@@ -1731,20 +800,33 @@
                 category: curCat, zone: zone, id: idRaw, client: client, name: name,
                 producer: producer, type: type, start: start, end: end,
                 note: note, tag: isUrgent ? 'Urgent' : '', status: status, hours: 0,
-                link: linkUrl // 🌟 傳送雲端連結
+                link: linkUrl
             };
 
             const btn = document.getElementById('btn-create');
-            const originalText = btn.innerText; btn.innerText = "同步中..."; btn.disabled = true; document.getElementById('loader').style.display = 'flex';
+            const originalText = btn.innerText; 
+            btn.innerText = "寫入中..."; 
+            btn.disabled = true; 
 
+            // ⚠️ 移除了這裡的全螢幕轉圈圈動畫，提升體感速度
             callAPI('addProject', { payload: payloadData }, (res) => {
-                btn.innerText = originalText; btn.disabled = false;
-                callAPI('initAllData', {}, (data) => { 
-                    DATA = data; localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); 
+                btn.innerText = originalText; 
+                btn.disabled = false;
+                
+                if(res === "OK") {
+                    // ★ 樂觀渲染：將新資料直接塞進前端暫存陣列，不再重新去遠端抓所有資料！
+                    DATA.projects.push(payloadData);
+                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
+                    processDataUpdate(DATA, true); 
+                    
+                    // 清空表單
                     document.getElementById('i-id').value = ''; document.getElementById('i-name').value = '';
-                    document.getElementById('i-note').value = ''; document.getElementById('i-link').value = ''; // 清空連結
-                    document.getElementById('i-urgent').checked = false; fp.clear(); showToast("專案已建立並同步");
-                });
+                    document.getElementById('i-note').value = ''; document.getElementById('i-link').value = ''; 
+                    document.getElementById('i-urgent').checked = false; fp.clear(); 
+                    showToast("專案已快速建立並同步！");
+                } else {
+                    showToast("寫入失敗：" + res, "error");
+                }
             });
         }
     </script>

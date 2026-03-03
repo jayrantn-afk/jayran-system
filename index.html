@@ -208,7 +208,6 @@
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
         .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        /* 🌟 重點修復：確保 classList.remove('hidden') 能夠生效，覆蓋尾風設定 */
         .hidden { display: none !important; }
 
         /* --- 內部組件樣式 --- */
@@ -275,6 +274,16 @@
                 </div>
                 <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-16 h-16 rounded-full shadow-lg border-2 border-slate-600 bg-white">
             </div>
+            
+            <div id="portal-global-link-container" class="mb-8 hidden fade-in">
+                <a id="portal-global-link" href="#" target="_blank" class="block w-full bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 p-6 rounded-2xl shadow-lg border border-slate-700 transition transform hover:-translate-y-1 text-center group">
+                    <div class="text-white font-black text-2xl mb-1 flex items-center justify-center gap-3">
+                        <i class="fas fa-cloud-download-alt text-3xl group-hover:scale-110 transition"></i>
+                        您的專屬雲端檔案庫
+                    </div>
+                    <div class="text-blue-100 text-sm font-bold opacity-90">點擊前往下載所有交付檔案</div>
+                </a>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="portal-card flex flex-col items-center">
@@ -302,8 +311,7 @@
                                 <th class="pb-3 pr-4 font-bold text-sm">專案編號</th>
                                 <th class="pb-3 pr-4 font-bold text-sm">專案名稱</th>
                                 <th class="pb-3 pr-4 font-bold text-sm">目前狀態</th>
-                                <th class="pb-3 pr-4 font-bold text-sm">日期</th>
-                                <th class="pb-3 font-bold text-sm text-right">專屬檔案庫</th>
+                                <th class="pb-3 font-bold text-sm text-right">交件日期</th>
                             </tr>
                         </thead>
                         <tbody id="portal-project-list"></tbody>
@@ -346,6 +354,20 @@
         <div id="modal-hours" class="modal-mask"><div class="modal-body"><h3 class="text-xl font-black mb-2">送出審核</h3><p class="text-sm text-gray-500 mb-6">本次花費工時 (hr)</p><input type="hidden" id="hours-zone"><input type="hidden" id="hours-id"><input type="hidden" id="hours-cat"><input id="input-hours" type="number" step="0.5" class="clean-input mb-8 text-center font-bold text-3xl h-20 border border-gray-200" placeholder="1.5"><div class="flex gap-3"><button onclick="closeModal('modal-hours')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button><button onclick="confirmSendReview()" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">送出</button></div></div></div>
         <div id="modal-settings" class="modal-mask"><div class="modal-body w-[350px]"><h3 id="setting-title" class="text-xl font-black mb-4">管理選單</h3><input type="hidden" id="st-type"><div class="flex gap-2 mb-6"><input id="st-input" class="clean-input flex-1 border border-gray-200 font-bold" placeholder="輸入新選項..."><button onclick="addSettingItem()" class="bg-black text-white px-5 rounded-lg font-bold shadow-md">新增</button></div><div id="st-list" class="max-h-60 overflow-y-auto border-t border-gray-100 mt-2 pt-2"></div><button onclick="closeModal('modal-settings')" class="w-full bg-gray-200 py-3 rounded-lg font-bold mt-6">關閉</button></div></div>
 
+        <div id="modal-client-link" class="modal-mask">
+            <div class="modal-body w-[400px]">
+                <h3 class="text-xl font-black mb-2">設定專屬雲端連結</h3>
+                <p class="text-sm text-gray-500 mb-4" id="c-link-target"></p>
+                <input type="hidden" id="c-link-clientname">
+                <label class="block text-xs font-bold text-gray-500 mb-1">雲端資料夾網址</label>
+                <input id="c-link-url" class="clean-input mb-6 border border-gray-200 font-bold text-blue-600" placeholder="請貼上 Google Drive 等分享網址...">
+                <div class="flex gap-3">
+                    <button onclick="closeModal('modal-client-link')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold hover:bg-gray-300 transition">取消</button>
+                    <button onclick="saveClientLink()" class="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-emerald-700 transition">儲存設定</button>
+                </div>
+            </div>
+        </div>
+
         <div id="modal-edit-project" class="modal-mask">
             <div class="modal-body w-[450px]">
                 <h3 class="text-2xl font-black mb-6">編輯專案內容</h3>
@@ -362,7 +384,6 @@
                     <div><label class="text-xs text-gray-500 font-bold">日期範圍</label><input id="ep-date" class="clean-input text-center text-xs border border-gray-200" autocomplete="off"></div>
                 </div>
                 <div class="mb-4"><label class="text-xs text-gray-500 font-bold">工時 (小時)</label><input id="ep-hours" type="number" step="0.5" class="clean-input font-bold border border-gray-200" placeholder="0"></div>
-                <div class="mb-4"><label class="text-xs text-gray-500 font-bold">🔗 雲端連結</label><input id="ep-link" class="clean-input font-bold text-sm text-blue-600 border border-gray-200" placeholder="貼上 Google Drive 或專案網址"></div>
                 <div class="mb-4"><label class="text-xs text-gray-500 font-bold">備註</label><textarea id="ep-note" class="clean-input h-16 text-sm border border-gray-200"></textarea></div>
                 <div class="flex items-center gap-2 mb-8"><input type="checkbox" id="ep-urgent" class="w-5 h-5 text-red-600 rounded"><label for="ep-urgent" class="text-base font-bold text-red-600">🔥 標記為急件</label></div>
                 <div class="flex gap-3"><button onclick="closeModal('modal-edit-project')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button><button onclick="confirmEditProject()" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">儲存變更</button></div>
@@ -395,7 +416,7 @@
                 </div>
                 
                 <div class="clean-card">
-                    <p class="text-gray-500 font-bold mb-4">點擊「複製傳送門」，即可將該客戶的所有專案進度與檔案連結，以尊榮的獨立網頁發送給客戶。</p>
+                    <p class="text-gray-500 font-bold mb-4">點擊「預覽」，即可查看並測試發送給該客戶的尊榮獨立網頁。</p>
                     <div class="table-container">
                         <table class="excel-table">
                             <thead>
@@ -479,7 +500,7 @@
                             <input id="i-id" class="clean-input font-mono font-bold" placeholder="">
                         </div>
                     </div>
-                    <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱 (顯示用)</label><input id="i-client" class="clean-input bg-gray-100 text-black font-bold"></div>
+                    <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱 (顯示用/散客分組判斷)</label><input id="i-client" class="clean-input bg-gray-100 text-black font-bold"></div>
                     <div class="mb-4"><label id="lbl-name" class="block text-xs font-bold text-gray-500 mb-1">專案名稱</label><input id="i-name" class="clean-input" placeholder="輸入標題"></div>
                     
                     <div class="grid grid-cols-2 gap-4 mb-4">
@@ -505,7 +526,6 @@
                     </div>
 
                     <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label><input id="i-date" class="clean-input text-center" placeholder="點擊選擇" autocomplete="off" readonly></div>
-                    <div class="mb-4"><label class="block text-xs font-bold text-blue-500 mb-1">🔗 專案雲端連結 (可選填)</label><input id="i-link" class="clean-input text-blue-600 font-bold bg-blue-50 focus:bg-white focus:border-blue-500" placeholder="貼上 Google Drive 或專案網址"></div>
                     <div class="mb-6"><label class="block text-xs font-bold text-gray-500 mb-1">備註</label><textarea id="i-note" class="clean-input h-20"></textarea></div>
                     <button onclick="saveProject()" id="btn-create" class="w-full bg-black text-white py-4 rounded-lg font-bold text-lg shadow-xl hover:shadow-2xl transition hover:bg-gray-800">建立並同步</button>
                 </div>
@@ -619,7 +639,6 @@
         let currentFilteredProjects = []; 
         let portalChart = null;
 
-        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
@@ -669,7 +688,6 @@
                         if (action === 'initAllData') {
                             document.getElementById('loader-msg').innerHTML = `<div class="text-red-500 font-bold mt-4">系統連線失敗，請檢查網址</div>`;
                         } else if (action === 'getClientPortalData') {
-                            // 若連線失敗，依然要移除 Loader 否則卡死
                             document.getElementById('portal-loader').style.opacity = '0';
                             setTimeout(() => {
                                 document.getElementById('portal-loader').style.display = 'none';
@@ -697,7 +715,6 @@
             }
         }
 
-        // 🌟 路由：一般登入 或 啟動 VIP 讀取畫面
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const portalClient = urlParams.get('client');
@@ -706,7 +723,6 @@
                 document.getElementById('admin-view').style.display = 'none'; 
                 document.getElementById('login-overlay').style.display = 'none'; 
                 document.getElementById('client-portal-view').style.display = 'block'; 
-                // 顯示精美 Loader
                 document.getElementById('portal-loader').style.display = 'flex';
                 initClientPortal(portalClient);
                 return;
@@ -721,14 +737,12 @@
         };
 
         // =========================================================
-        // ★ 🌟 匠人級優化：VIP 模式與讀取畫面無縫轉場
+        // ★ 🌟 匠人級優化：VIP 模式與全域雲端連結渲染
         // =========================================================
         function initClientPortal(clientName) {
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
             
             callAPI('getClientPortalData', { clientName: clientName }, (res) => {
-                
-                // 🌟 關鍵修復：這裡使用 classList.remove('hidden')，徹底打敗 !important
                 document.getElementById('portal-loader').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('portal-loader').style.display = 'none';
@@ -736,8 +750,18 @@
                     document.getElementById('portal-content').classList.add('fade-in');
                 }, 300);
 
-                if (!res || !res.projects || res.projects.length === 0) {
-                    document.getElementById('portal-project-list').innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-500 font-bold">目前查無「${clientName}」的相關專案資料</td></tr>`;
+                if (!res) return;
+
+                // 處理上方大大的專屬雲端連結按鈕
+                if (res.globalLink) {
+                    document.getElementById('portal-global-link').href = res.globalLink;
+                    document.getElementById('portal-global-link-container').classList.remove('hidden');
+                } else {
+                    document.getElementById('portal-global-link-container').classList.add('hidden');
+                }
+
+                if (!res.projects || res.projects.length === 0) {
+                    document.getElementById('portal-project-list').innerHTML = `<tr><td colspan="4" class="py-6 text-center text-gray-500 font-bold">目前查無「${clientName}」的相關專案資料</td></tr>`;
                     return;
                 }
 
@@ -753,8 +777,7 @@
                         datasets: [{
                             data: [res.totalDone, res.totalProcess],
                             backgroundColor: ['#4ade80', '#3b82f6'],
-                            borderWidth: 0,
-                            hoverOffset: 4
+                            borderWidth: 0, hoverOffset: 4
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } } }
@@ -768,18 +791,12 @@
                     else if (p.status === '製作中') badgeClass = 'text-blue-400 bg-blue-900 border border-blue-800';
                     else if (p.status.includes('審')) badgeClass = 'text-orange-400 bg-orange-900 border border-orange-800';
                     
-                    let btnHtml = '<span class="text-gray-600 text-xs">準備中</span>';
-                    if (p.link) {
-                        btnHtml = `<a href="${p.link}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-[0_0_15px_rgba(37,99,235,0.4)] inline-block">📂 檔案庫</a>`;
-                    }
-
                     html += `
                     <tr class="border-b border-slate-700/50 hover:bg-slate-800/50 transition">
                         <td class="py-4 pr-4 font-mono text-gray-500 text-sm">${p.id}</td>
                         <td class="py-4 pr-4 font-bold text-gray-200">${p.name}</td>
                         <td class="py-4 pr-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${badgeClass}">${p.status}</span></td>
-                        <td class="py-4 pr-4 text-sm text-gray-400 font-mono">${p.date}</td>
-                        <td class="py-4 text-right">${btnHtml}</td>
+                        <td class="py-4 text-right text-sm text-gray-400 font-mono">${p.date}</td>
                     </tr>`;
                 });
                 listEl.innerHTML = html;
@@ -902,7 +919,7 @@
         }
 
         // =========================================================
-        // ★ VIP 客戶專區隱私保護與智能分組
+        // ★ VIP 客戶專區隱私保護與操作面板
         // =========================================================
         function renderVIPArea() {
             if(!DATA.projects) return;
@@ -914,16 +931,14 @@
                 
                 let mainName = "未命名";
 
-                // 核心邏輯：如果是 Z 系列（非長期客戶），嚴格使用他自己的「客戶名稱」來獨立分組
                 if (p.zone && p.zone.toUpperCase().startsWith('Z')) {
-                    mainName = p.client ? p.client.trim() : "非長期客戶(未填名)";
+                    // Z系列：如果沒填客戶名稱，強制給它一個以 ID 區分的編號，確保散客絕對不會混在一起
+                    mainName = p.client ? p.client.trim() : `未命名散客_${p.id}`;
                 } 
-                // 其他常規客戶：從 Sheet 名稱提取大標題 (例如從 D_海沃_子旭 提取出 "海沃")
                 else if (p.zone && p.zone.includes('_')) {
                     const parts = p.zone.split('_');
                     mainName = parts.length >= 2 ? parts[1].trim() : p.zone;
                 } 
-                // 備用方案
                 else {
                     mainName = p.client ? p.client.trim() : "未命名";
                 }
@@ -950,8 +965,9 @@
                     <td class="font-mono text-gray-500 text-sm py-3 px-4">${prefixesStr}</td>
                     <td class="font-bold text-gray-800 py-3 px-4">${info.count} 件</td>
                     <td class="py-3 px-4">
-                        <button onclick="copyPortalLink('${clientName}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-800 transition shadow-md mr-2"><i class="fas fa-copy mr-1"></i> 複製 VIP 連結</button>
-                        <button onclick="window.open('?client=${encodeURIComponent(clientName)}', '_blank')" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-bold hover:bg-black transition shadow-md"><i class="fas fa-eye mr-1"></i> 預覽畫面</button>
+                        <button onclick="copyPortalLink('${clientName}')" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-800 transition shadow-md mr-1 text-xs"><i class="fas fa-copy mr-1"></i> 傳送門</button>
+                        <button onclick="openClientLinkModal('${clientName}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-800 transition shadow-md mr-1 text-xs"><i class="fas fa-cloud-upload-alt mr-1"></i> 專屬雲端</button>
+                        <button onclick="window.open('?client=${encodeURIComponent(clientName)}', '_blank')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-black transition shadow-md text-xs"><i class="fas fa-eye mr-1"></i> 預覽</button>
                     </td>
                 </tr>`;
             }
@@ -966,16 +982,48 @@
         function copyPortalLink(clientName) {
             const currentUrl = window.location.href.split('?')[0];
             const portalUrl = currentUrl + "?client=" + encodeURIComponent(clientName);
+            navigator.clipboard.writeText(portalUrl).then(() => { showToast(`已複製【${clientName}】的專屬入口網址！`); }).catch(err => { prompt("請手動複製以下網址：", portalUrl); });
+        }
+
+        // 🌟 專屬雲端連結彈窗邏輯
+        function openClientLinkModal(clientName) {
+            document.getElementById('c-link-target').innerText = "為【" + clientName + "】設定統一的雲端檔案下載點。";
+            document.getElementById('c-link-clientname').value = clientName;
+            document.getElementById('c-link-url').placeholder = "資料載入中...";
+            document.getElementById('c-link-url').value = '';
+            document.getElementById('modal-client-link').style.display = 'flex';
             
-            navigator.clipboard.writeText(portalUrl).then(() => {
-                showToast(`已複製【${clientName}】的專屬入口網址！`);
-            }).catch(err => {
-                prompt("由於瀏覽器安全限制，請手動複製以下網址：", portalUrl);
+            // 預先取得現有的連結
+            callAPI('getClientPortalData', { clientName: clientName }, (res) => {
+                if(res && res.globalLink) {
+                    document.getElementById('c-link-url').value = res.globalLink;
+                }
+                document.getElementById('c-link-url').placeholder = "請貼上 Google Drive 等分享網址...";
+            });
+        }
+
+        function saveClientLink() {
+            const clientName = document.getElementById('c-link-clientname').value;
+            const url = document.getElementById('c-link-url').value.trim();
+            
+            if(!url) return showToast("請輸入網址，或點擊取消", "error");
+
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader-msg').innerText = "雲端連結綁定中...";
+            
+            callAPI('setClientPortalLink', { clientName: clientName, url: url }, (res) => {
+                document.getElementById('loader').style.display = 'none';
+                if(res === 'OK') {
+                    showToast(`已成功綁定【${clientName}】的專屬雲端！`);
+                    closeModal('modal-client-link');
+                } else {
+                    showToast("設定失敗", "error");
+                }
             });
         }
 
         // =========================================================
-        // ★ 表單區塊邏輯
+        // ★ 表單區塊邏輯 (移除舊有專案內連結)
         // =========================================================
         function setProjectType(type) { 
             curCat = type; 
@@ -1046,7 +1094,7 @@
             const isUrgent = document.getElementById('i-urgent').checked;
             const dateStr = document.getElementById('i-date').value;
             const note = document.getElementById('i-note').value;
-            const linkUrl = document.getElementById('i-link').value.trim();
+            const linkUrl = ""; // 已廢棄單一連結
 
             if (!zone) return showToast("請選擇區域 / 客戶", "error");
             if (!name) return showToast("請輸入專案名稱", "error");
@@ -1089,7 +1137,6 @@
                     document.getElementById('i-id').value = ''; 
                     document.getElementById('i-name').value = '';
                     document.getElementById('i-note').value = ''; 
-                    document.getElementById('i-link').value = ''; 
                     document.getElementById('i-urgent').checked = false; 
                     fp.clear(); 
                     
@@ -1141,13 +1188,11 @@
                 if(p.status === '製作中') badgeClass = 'sb-blue'; 
                 else if(p.status.includes('審')) badgeClass = 'sb-orange'; 
                 else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
-                
-                let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結" onclick="event.stopPropagation()"><i class="fas fa-external-link-alt"></i></a>` : '';
 
                 html += `
                 <tr>
                     <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                    <td class="max-w-[200px] truncate" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td>
+                    <td class="max-w-[200px] truncate" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
                     <td class="text-gray-600 text-xs">${p.client}</td>
                     <td class="font-bold text-center">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
                     <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
@@ -1187,12 +1232,11 @@
                     }
 
                     actionBtns += `<button onclick="openEditProjectById('${p.id}', '${p.zone}')" class="ml-2 text-gray-400 hover:text-black" title="編輯"><i class="fas fa-pen"></i></button><button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-3 text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>`;
-                    let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結" onclick="event.stopPropagation()"><i class="fas fa-external-link-alt"></i></a>` : '';
 
                     return `
                     <tr data-cat="${p.category}" data-zone="${p.zone}" data-id="${p.id}" class="cursor-grab hover:bg-gray-50">
                         <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                        <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td>
+                        <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
                         <td class="text-gray-600 text-xs font-bold">${p.client}</td>
                         <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
                         <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start}<br>${p.end}</td>
@@ -1236,7 +1280,7 @@
         }
 
         // =========================================================
-        // ★ 儀表板資料與互動 
+        // ★ 儀表板資料與互動 (🌟 升級透明度漸層長條圖)
         // =========================================================
         function renderDashboard() {
             if(!DATA.projects) return;
@@ -1309,6 +1353,7 @@
             const pLabels = Object.keys(producerCounts); 
             const pData = Object.values(producerCounts);
             
+            // 🌟 將圖表改為漂亮的科技藍與翡翠綠，並加入圓角
             dashboardCharts.producer = new Chart(ctxProducer, {
                 type: 'bar',
                 data: { 
@@ -1317,9 +1362,9 @@
                         label: '專案數量', 
                         data: pData, 
                         backgroundColor: [
-                            'rgba(59, 130, 246, 0.8)', 
-                            'rgba(16, 185, 129, 0.8)', 
-                            'rgba(245, 158, 11, 0.8)', 
+                            'rgba(59, 130, 246, 0.8)', // 科技藍
+                            'rgba(16, 185, 129, 0.8)', // 翡翠綠
+                            'rgba(245, 158, 11, 0.8)', // 活力橘
                         ], 
                         borderColor: [
                             'rgb(37, 99, 235)',
@@ -1370,12 +1415,10 @@
                     else if(p.status.includes('審')) badgeClass = 'sb-orange'; 
                     else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
                     
-                    let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結"><i class="fas fa-external-link-alt"></i></a>` : '';
-                    
                     html += `
                     <tr>
                         <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                        <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td>
+                        <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
                         <td class="text-gray-600 text-xs font-bold">${p.client}</td>
                         <td class="font-bold">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
                         <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
@@ -1550,7 +1593,6 @@
             
             document.getElementById('ep-name').value = p.name;
             document.getElementById('ep-hours').value = p.hours || 0; 
-            document.getElementById('ep-link').value = p.link || ''; 
             
             if (p.start && p.end) { fpEdit.setDate([p.start, p.end]); } else { fpEdit.clear(); }
             document.getElementById('ep-note').value = p.note;
@@ -1573,7 +1615,7 @@
                 name: document.getElementById('ep-name').value, producer: document.getElementById('ep-producer').value,
                 type: document.getElementById('ep-type').value, hours: document.getElementById('ep-hours').value, 
                 start: dates[0] || "", end: dates[1] || dates[0] || "", note: document.getElementById('ep-note').value,
-                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '', status: inheritedStatus, link: document.getElementById('ep-link').value.trim()
+                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '', status: inheritedStatus, link: ""
             };
 
             const prefix = p.zone.split('_')[0];

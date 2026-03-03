@@ -99,7 +99,7 @@
         }
         .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
+            from { opacity: 0; transform: translateY(15px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
 
@@ -208,6 +208,7 @@
         .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; }
         .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
         .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* 🌟 重點修復：確保 classList.remove('hidden') 能夠生效，覆蓋尾風設定 */
         .hidden { display: none !important; }
 
         /* --- 內部組件樣式 --- */
@@ -258,7 +259,7 @@
 
     <div id="client-portal-view" style="display: none;">
         
-        <div id="portal-loader" class="fixed inset-0 bg-[#0f172a] z-[9999999] flex flex-col justify-center items-center transition-opacity duration-500">
+        <div id="portal-loader" class="fixed inset-0 bg-[#0f172a] z-[9999999] flex flex-col justify-center items-center transition-opacity duration-300">
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-6 bg-white border-4 border-slate-700 animate-pulse">
             <div class="text-3xl font-black tracking-widest text-white mb-2">JAYRAN <span class="text-blue-500">STUDIO</span></div>
             <div class="mt-4 text-blue-400 font-bold text-sm flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700">
@@ -596,9 +597,9 @@
 
     <script>
         // =========================================================
-        // ★ 核心變數與設定 (請換成您最新的 Web App 網址)
+        // ★ 核心變數與設定 (請換成您最新部署的 Web App 網址)
         // =========================================================
-        // ⚠️⚠️⚠️ 記得把下面這個網址換成您的最新網址 ⚠️⚠️⚠️
+        // ⚠️⚠️⚠️ 極度重要：如果您剛才在 GAS 建立了「新版本」，請務必把下方這個網址換成最新的！ ⚠️⚠️⚠️
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
         
         const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
@@ -666,7 +667,15 @@
                     .catch(e => {
                         console.error("API GET 連線錯誤:", e);
                         if (action === 'initAllData') {
-                            document.getElementById('loader-msg').innerHTML = `<div class="text-red-500 font-bold mt-4">系統連線失敗</div>`;
+                            document.getElementById('loader-msg').innerHTML = `<div class="text-red-500 font-bold mt-4">系統連線失敗，請檢查網址</div>`;
+                        } else if (action === 'getClientPortalData') {
+                            // 若連線失敗，依然要移除 Loader 否則卡死
+                            document.getElementById('portal-loader').style.opacity = '0';
+                            setTimeout(() => {
+                                document.getElementById('portal-loader').style.display = 'none';
+                                document.getElementById('portal-content').classList.remove('hidden');
+                                document.getElementById('portal-project-list').innerHTML = `<tr><td colspan="5" class="py-6 text-center text-red-400 font-bold">資料庫連線失敗，請聯繫工作室</td></tr>`;
+                            }, 300);
                         }
                     });
             } else {
@@ -712,23 +721,23 @@
         };
 
         // =========================================================
-        // ★ VIP 模式渲染邏輯 (處理讀取畫面與資料呈現)
+        // ★ 🌟 匠人級優化：VIP 模式與讀取畫面無縫轉場
         // =========================================================
         function initClientPortal(clientName) {
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
             
             callAPI('getClientPortalData', { clientName: clientName }, (res) => {
                 
-                // 資料抓取完畢，隱藏 Loader 並淡入內容
+                // 🌟 關鍵修復：這裡使用 classList.remove('hidden')，徹底打敗 !important
                 document.getElementById('portal-loader').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('portal-loader').style.display = 'none';
-                    document.getElementById('portal-content').style.display = 'block';
+                    document.getElementById('portal-content').classList.remove('hidden');
                     document.getElementById('portal-content').classList.add('fade-in');
-                }, 500);
+                }, 300);
 
-                if (!res || !res.projects) {
-                    document.getElementById('portal-project-list').innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-500">無法取得資料</td></tr>`;
+                if (!res || !res.projects || res.projects.length === 0) {
+                    document.getElementById('portal-project-list').innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-500 font-bold">目前查無「${clientName}」的相關專案資料</td></tr>`;
                     return;
                 }
 
@@ -752,32 +761,28 @@
                 });
 
                 const listEl = document.getElementById('portal-project-list');
-                if (res.projects.length === 0) {
-                    listEl.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-500">目前尚無進行中的專案</td></tr>`;
-                } else {
-                    let html = '';
-                    res.projects.forEach(p => {
-                        let badgeClass = 'text-gray-400 bg-gray-800 border-gray-700';
-                        if (p.status === '已完成' || p.status === '已結案') badgeClass = 'text-green-400 bg-green-900 border border-green-800';
-                        else if (p.status === '製作中') badgeClass = 'text-blue-400 bg-blue-900 border border-blue-800';
-                        else if (p.status.includes('審')) badgeClass = 'text-orange-400 bg-orange-900 border border-orange-800';
-                        
-                        let btnHtml = '<span class="text-gray-600 text-xs">準備中</span>';
-                        if (p.link) {
-                            btnHtml = `<a href="${p.link}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-[0_0_15px_rgba(37,99,235,0.4)] inline-block">📂 檔案庫</a>`;
-                        }
+                let html = '';
+                res.projects.forEach(p => {
+                    let badgeClass = 'text-gray-400 bg-gray-800 border-gray-700';
+                    if (p.status === '已完成' || p.status === '已結案') badgeClass = 'text-green-400 bg-green-900 border border-green-800';
+                    else if (p.status === '製作中') badgeClass = 'text-blue-400 bg-blue-900 border border-blue-800';
+                    else if (p.status.includes('審')) badgeClass = 'text-orange-400 bg-orange-900 border border-orange-800';
+                    
+                    let btnHtml = '<span class="text-gray-600 text-xs">準備中</span>';
+                    if (p.link) {
+                        btnHtml = `<a href="${p.link}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-[0_0_15px_rgba(37,99,235,0.4)] inline-block">📂 檔案庫</a>`;
+                    }
 
-                        html += `
-                        <tr class="border-b border-slate-700/50 hover:bg-slate-800/50 transition">
-                            <td class="py-4 pr-4 font-mono text-gray-500 text-sm">${p.id}</td>
-                            <td class="py-4 pr-4 font-bold text-gray-200">${p.name}</td>
-                            <td class="py-4 pr-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${badgeClass}">${p.status}</span></td>
-                            <td class="py-4 pr-4 text-sm text-gray-400 font-mono">${p.date}</td>
-                            <td class="py-4 text-right">${btnHtml}</td>
-                        </tr>`;
-                    });
-                    listEl.innerHTML = html;
-                }
+                    html += `
+                    <tr class="border-b border-slate-700/50 hover:bg-slate-800/50 transition">
+                        <td class="py-4 pr-4 font-mono text-gray-500 text-sm">${p.id}</td>
+                        <td class="py-4 pr-4 font-bold text-gray-200">${p.name}</td>
+                        <td class="py-4 pr-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${badgeClass}">${p.status}</span></td>
+                        <td class="py-4 pr-4 text-sm text-gray-400 font-mono">${p.date}</td>
+                        <td class="py-4 text-right">${btnHtml}</td>
+                    </tr>`;
+                });
+                listEl.innerHTML = html;
             });
         }
 
@@ -1231,7 +1236,7 @@
         }
 
         // =========================================================
-        // ★ 儀表板資料與互動 (🌟 圓角半透明漸層色彩圖表)
+        // ★ 儀表板資料與互動 
         // =========================================================
         function renderDashboard() {
             if(!DATA.projects) return;
@@ -1312,9 +1317,9 @@
                         label: '專案數量', 
                         data: pData, 
                         backgroundColor: [
-                            'rgba(59, 130, 246, 0.8)', // 科技藍半透明
-                            'rgba(16, 185, 129, 0.8)', // 翡翠綠半透明
-                            'rgba(245, 158, 11, 0.8)', // 活力橘半透明
+                            'rgba(59, 130, 246, 0.8)', 
+                            'rgba(16, 185, 129, 0.8)', 
+                            'rgba(245, 158, 11, 0.8)', 
                         ], 
                         borderColor: [
                             'rgb(37, 99, 235)',

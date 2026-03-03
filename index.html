@@ -158,7 +158,7 @@
 
         .q-item-row:hover { background-color: #fefce8; }
 
-        /* 訪客防護網 */
+        /* 🌟 訪客模式防護網 */
         .guest-mode .admin-only { display: none !important; }
         
         /* 手機版 RWD 調整 */
@@ -208,13 +208,25 @@
                 </a>
             </div>
 
-            <div class="bg-slate-800/50 p-5 rounded-2xl border border-slate-700 mb-6 shadow-lg">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-sm font-bold text-gray-300 tracking-widest">整體專案交付進度</span>
-                    <span class="text-2xl font-black text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]" id="portal-completion-rate">0%</span>
-                </div>
-                <div class="w-full bg-slate-900/80 rounded-full h-3 border border-slate-700/80 overflow-hidden shadow-inner">
-                    <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-3 rounded-full transition-all duration-1000 ease-out" id="portal-progress-bar" style="width: 0%"></div>
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 md:p-8 rounded-2xl border border-slate-700 mb-8 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 translate-x-1/2 -translate-y-1/2"></div>
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
+                    <div class="bg-slate-700/50 p-4 rounded-full border border-slate-600">
+                        <i class="fas fa-user-tie text-4xl text-blue-400"></i>
+                    </div>
+                    <div class="text-center md:text-left flex-1">
+                        <h2 class="text-xl font-black text-white mb-2 tracking-widest">您的專屬影像管家</h2>
+                        <p class="text-gray-400 text-sm mb-4 leading-relaxed">
+                            歡迎回來！目前杰冉影像正為您全力推進 <span class="text-blue-400 font-bold text-lg mx-1" id="portal-active-count">0</span> 件專案。
+                        </p>
+                        <div class="inline-flex items-center gap-3 bg-slate-800/80 px-5 py-3 rounded-xl border border-slate-600/50">
+                            <i class="far fa-calendar-check text-emerald-400 text-xl animate-pulse"></i>
+                            <div class="flex flex-col">
+                                <span class="text-xs text-gray-400 font-bold">近期最快預計交件日</span>
+                                <span class="text-lg font-black text-emerald-300 tracking-wider" id="portal-closest-date">計算中...</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -596,7 +608,7 @@
                                 <tr><th>單號</th><th>建立日期</th><th>客戶名稱</th><th>總計金額</th><th class="admin-only">操作</th></tr>
                             </thead>
                             <tbody id="quote-history-tbody">
-                                <tr><td colspan="5" class="text-center text-gray-400 py-6"><i class="fas fa-spinner fa-spin"></i> 資料讀取中...</td></tr>
+                                <tr><td colspan="5" class="text-center text-gray-400 py-6">無資料或系統未連線</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -864,7 +876,7 @@
         const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
         const SESSION_HOURS = 12;
 
-        let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
+        let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [], quotes: [] };
         let curTab = 'add';
         let curCat = 'video';
         let modalMode = 'new';
@@ -880,9 +892,7 @@
         let portalTypeChart = null;
 
         // 🌟 報價單與 VIP 分頁變數
-        let quoteHistoryData = [];
         let quoteVisibleCount = 3;
-        
         let portalProjectsData = [];
         let portalVisibleCount = 3;
 
@@ -1076,7 +1086,7 @@
             else if (curTab === 'calendar') { renderCalendar(); }
             else if (curTab === 'dashboard') { renderDashboard(); }
             else if (curTab === 'vip') { renderVIPArea(); }
-            else if (curTab === 'quote') { loadQuoteHistory(); }
+            else if (curTab === 'quote') { renderQuoteTable(); } // 🌟 變成 0 秒載入
             else if (curTab === 'add') { /* do nothing */ }
 
             if (!isCache) {
@@ -1124,12 +1134,15 @@
                 else if (tab === 'calendar') { renderCalendar(); } 
                 else if (tab === 'dashboard') { renderDashboard(); } 
                 else if (tab === 'vip') { renderVIPArea(); }
-                else if (tab === 'quote') { loadQuoteHistory(); }
+                else if (tab === 'quote') { 
+                    quoteVisibleCount = 3; 
+                    renderQuoteTable(); // 🌟 0 延遲顯示 
+                }
             }, 300); 
         }
 
         // =========================================================
-        // 🌟 VIP 尊榮科技卡片與傳送門邏輯
+        // 🌟 VIP 尊榮影像管家看板
         // =========================================================
         function initClientPortal(clientName) {
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
@@ -1159,15 +1172,18 @@
                 document.getElementById('portal-done-count').innerText = res.totalDone;
                 document.getElementById('portal-process-count').innerText = res.totalProcess;
                 
-                // 🌟 新增：整體進度達成率計算
-                const totalProjects = res.totalDone + res.totalProcess;
-                const completionRate = totalProjects > 0 ? Math.round((res.totalDone / totalProjects) * 100) : 0;
-                document.getElementById('portal-completion-rate').innerText = completionRate + '%';
-                setTimeout(() => {
-                    document.getElementById('portal-progress-bar').style.width = completionRate + '%';
-                }, 500);
+                // 🌟 新增：影像管家 - 最近交件日演算法
+                document.getElementById('portal-active-count').innerText = res.totalProcess;
+                let closestDate = "近期無待交專案";
+                let ongoingProjects = res.projects.filter(p => p.status !== '已完成' && p.status !== '已結案' && p.rawEnd);
+                if (ongoingProjects.length > 0) {
+                    // 根據結束日期排序，找出最靠近今天的
+                    ongoingProjects.sort((a, b) => new Date(a.rawEnd) - new Date(b.rawEnd));
+                    closestDate = formatDateStringForClient(ongoingProjects[0].rawEnd);
+                }
+                document.getElementById('portal-closest-date').innerText = closestDate;
 
-                // 第一個圖表：合作狀態總覽
+                // 圖表一：合作狀態總覽
                 const ctx = document.getElementById('portal-chart'); 
                 if (portalChart) portalChart.destroy();
                 portalChart = new Chart(ctx, { 
@@ -1187,7 +1203,7 @@
                     } 
                 });
 
-                // 🌟 第二個圖表：服務類型矩陣分析 (計算分類)
+                // 🌟 圖表二：服務類型矩陣分析 (增強專業感)
                 const typeCounts = {};
                 res.projects.forEach(p => {
                     const t = p.type || '其他設計';
@@ -1210,7 +1226,7 @@
                         }]
                     },
                     options: {
-                        indexAxis: 'y', // 橫向長條圖更具專業感
+                        indexAxis: 'y',
                         responsive: true, maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
                         scales: { 
@@ -1220,11 +1236,18 @@
                     }
                 });
 
-                // 儲存供分頁使用
                 portalProjectsData = res.projects;
                 portalVisibleCount = 3;
                 renderPortalProjectsList();
             });
+        }
+        
+        function formatDateStringForClient(dateStr) {
+            try {
+                let d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr;
+                return `${d.getFullYear()} 年 ${d.getMonth() + 1} 月 ${d.getDate()} 日`;
+            } catch(e) { return dateStr; }
         }
 
         // 🌟 VIP 專區分頁載入邏輯
@@ -1284,7 +1307,7 @@
         }
 
         // =========================================================
-        // 🌟 報價單前端邏輯 (分頁載入機制)
+        // 🌟 報價單前端邏輯 (0 秒預載入)
         // =========================================================
         function openCreateQuote() {
             document.getElementById('modal-quote-create').style.display = 'flex';
@@ -1362,7 +1385,6 @@
 
             if (!form.clientName) return showToast("請輸入客戶名稱", "error");
 
-            // 🌟 修復 2：按鈕狀態與加強 Loader
             const saveBtn = document.getElementById('btn-save-quote');
             const originalText = saveBtn.innerText;
             saveBtn.innerText = "🔄 產生中...";
@@ -1377,33 +1399,26 @@
                 if(res.id) { 
                     showToast("報價單已成功建立並同步雲端！"); 
                     closeModal('modal-quote-create'); 
-                    loadQuoteHistory(); 
+                    // 🌟 直接推入本地端 DATA.quotes 並重新渲染，達到 0 延遲
+                    if(!DATA.quotes) DATA.quotes = [];
+                    DATA.quotes.unshift(res); 
+                    renderQuoteTable();
                 } else { 
                     showToast("建立失敗", "error"); 
                 }
             });
         }
 
-        // 🌟 修復 3：報價單前端分頁與懶載入
-        function loadQuoteHistory() {
-            document.getElementById('quote-history-tbody').innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-6"><i class="fas fa-spinner fa-spin"></i> 資料讀取中...</td></tr>';
-            document.getElementById('quote-load-more-container').classList.add('hidden');
-            
-            callAPI('getQuoteHistory', {}, (list) => {
-                quoteHistoryData = list;
-                quoteVisibleCount = 3; // 🌟 預設先看 3 筆，畫面秒開
-                renderQuoteTable();
-            });
-        }
-
+        // 🌟 報價單前端分頁與 0 延遲載入
         function renderQuoteTable() {
             const tbody = document.getElementById('quote-history-tbody');
-            if(quoteHistoryData.length === 0) { 
+            if(!DATA.quotes || DATA.quotes.length === 0) { 
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-6 font-bold">尚無報價單紀錄</td></tr>'; 
+                document.getElementById('quote-load-more-container').classList.add('hidden');
                 return; 
             }
             
-            const visibleData = quoteHistoryData.slice(0, quoteVisibleCount);
+            const visibleData = DATA.quotes.slice(0, quoteVisibleCount);
             tbody.innerHTML = visibleData.map(q => `
                 <tr class="border-b hover:bg-amber-50 transition">
                     <td class="font-mono text-amber-600 font-bold">${q.id}</td>
@@ -1418,7 +1433,7 @@
                 </tr>
             `).join('');
 
-            const remain = quoteHistoryData.length - quoteVisibleCount;
+            const remain = DATA.quotes.length - quoteVisibleCount;
             const moreContainer = document.getElementById('quote-load-more-container');
             if (remain > 0) {
                 moreContainer.classList.remove('hidden');
@@ -1444,7 +1459,9 @@
             callAPI('deleteQuote', { id: id }, (res) => { 
                 document.getElementById('loader').style.display = 'none'; 
                 showToast("已刪除單據"); 
-                loadQuoteHistory(); 
+                // 從本地端陣列中移除
+                DATA.quotes = DATA.quotes.filter(q => q.id !== id);
+                renderQuoteTable(); 
             }); 
         }
 

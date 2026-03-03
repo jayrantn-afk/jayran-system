@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <link rel="icon" href="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn">
+    <link rel="icon" href="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn">
     
     <style>
         /* --- 基礎架構 --- */
@@ -212,6 +212,7 @@
         .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .hidden { display: none !important; }
 
+        /* --- 內部組件樣式 --- */
         .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; }
         .memo-item:hover, .pending-item:hover { transform: translateX(3px); }
         .memo-item.chiu { background: #E3F2FD; border-left-color: #2196F3; } 
@@ -269,7 +270,7 @@
                     <h1 class="text-3xl font-black text-white tracking-wider">JAYRAN <span class="text-blue-500">STUDIO</span></h1>
                     <p id="portal-client-name" class="text-gray-400 mt-2 text-lg font-bold">專屬協作空間</p>
                 </div>
-                <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-16 h-16 rounded-full shadow-lg border-2 border-slate-700">
+                <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-16 h-16 rounded-full shadow-lg border-2 border-slate-700">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -313,7 +314,7 @@
     <div id="admin-view">
 
         <div id="login-overlay">
-            <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-lg mb-6 border-4 border-white">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-lg mb-6 border-4 border-white">
             <div class="text-4xl font-black mb-8 tracking-widest text-white">JAYRAN STUDIO</div>
             
             <input id="login-acc" type="email" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-4 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入帳號 (Email)">
@@ -322,7 +323,7 @@
         </div>
 
         <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[999]" style="display:none;">
-            <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full shadow-lg mb-4 animate-pulse">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full shadow-lg mb-4 animate-pulse">
             <div class="text-2xl font-black tracking-widest animate-pulse">JAYRAN STUDIO</div>
             <div id="loader-msg" class="mt-4 text-gray-500 font-bold text-center px-4">資料讀取中...</div>
         </div>
@@ -386,14 +387,23 @@
                         <h3 class="font-black text-2xl">🔗 客戶連結庫</h3>
                         <span onclick="document.getElementById('panel-link').style.display='none'" class="cursor-pointer text-gray-400 hover:text-black text-2xl"><i class="fas fa-times"></i></span>
                     </div>
+                    
+                    <div class="mb-6 bg-blue-50 p-4 rounded-xl border border-blue-200 shadow-inner">
+                        <h4 class="font-black text-blue-800 mb-3"><i class="fas fa-crown"></i> 產生 VIP 客戶進度看板</h4>
+                        <div class="flex gap-2">
+                            <input id="vip-client-name" class="clean-input font-bold flex-1 border border-blue-200 bg-white" placeholder="輸入客戶名稱 (例如：台積電)">
+                            <button onclick="generateVIPLink()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-800 shadow-md transition whitespace-nowrap">複製網址</button>
+                        </div>
+                    </div>
+
                     <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
                         <div class="flex gap-2 mb-3">
                             <input id="l-folder" list="folder-options" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="資料夾 (可選填)">
                             <datalist id="folder-options"></datalist>
-                            <input id="l-name" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="連結名稱">
+                            <input id="l-name" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="內部連結名稱">
                         </div>
                         <input id="l-url" class="w-full clean-input text-base font-bold mb-4 border border-gray-200 bg-white" placeholder="貼上完整網址 (https://...)">
-                        <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md transition">新增連結</button>
+                        <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-gray-800 text-white text-lg py-3 rounded-lg font-bold hover:bg-black shadow-md transition">新增內部連結</button>
                     </div>
                 </div>
                 <div id="link-list" class="panel-scroll-area">
@@ -552,7 +562,7 @@
         <div class="header-fixed-area">
             <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm">
+                    <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm">
                     <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
                 </div>
             </div>
@@ -811,13 +821,13 @@
 
     <script>
         // =========================================================
-        // ★ 核心變數與設定 (請換成您最新的 Web App 網址)
+        // ★ 核心變數與設定
         // =========================================================
         // ⚠️⚠️⚠️ 記得把下面這個網址換成您的最新網址 ⚠️⚠️⚠️
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
         
         const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
-        const SESSION_HOURS = 12; // 登入保持時間(小時)
+        const SESSION_HOURS = 12;
 
         let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
         let curTab = 'add';
@@ -833,9 +843,7 @@
         let currentFilteredProjects = []; 
         let portalChart = null;
 
-        // =========================================================
-        // ★ 初始化與共用函數
-        // =========================================================
+        // 初始化套件
         document.addEventListener('DOMContentLoaded', function() {
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
@@ -844,12 +852,8 @@
         });
 
         document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape") { 
-                document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none'); 
-            }
-            if (event.key === "Enter" && document.getElementById('login-overlay').style.display !== 'none') { 
-                checkLogin(); 
-            }
+            if (event.key === "Escape") { document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none'); }
+            if (event.key === "Enter" && document.getElementById('login-overlay').style.display !== 'none') { checkLogin(); }
         });
 
         function getLocalDateString(dateObj) {
@@ -900,10 +904,7 @@
                     });
             } else {
                 const postData = { action: action, ...payload };
-                fetch(GAS_API_URL, { 
-                    method: "POST", 
-                    body: JSON.stringify(postData) 
-                })
+                fetch(GAS_API_URL, { method: "POST", body: JSON.stringify(postData) })
                 .then(res => {
                     if (!res.ok) throw new Error('HTTP 狀態碼異常 (非 200)');
                     return res.json();
@@ -972,13 +973,7 @@
                             hoverOffset: 4
                         }]
                     },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { 
-                            legend: { position: 'right', labels: { color: '#cbd5e1' } } 
-                        } 
-                    }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } } }
                 });
 
                 const listEl = document.getElementById('portal-project-list');
@@ -1042,13 +1037,13 @@
             });
         }
 
+        // 🌟 登出時間修正
         function isLoggedIn() {
             const savedTime = localStorage.getItem(LOGIN_KEY); 
             if (!savedTime) return false;
             const now = new Date().getTime(); 
-            // 修正判斷邏輯，確保 12 小時內絕對不會被登出
             if (now - parseInt(savedTime) > SESSION_HOURS * 60 * 60 * 1000) { 
-                localStorage.removeItem(LOGIN_KEY); // 過期則清除
+                localStorage.removeItem(LOGIN_KEY); 
                 return false; 
             }
             return true;
@@ -1077,11 +1072,7 @@
 
         function processDataUpdate(res, isCache) {
             DATA = res; 
-            renderZoneOptions(); 
-            renderDynamicOptions(); 
-            loadMemos(); 
-            loadLinks(); 
-            loadPending();
+            renderZoneOptions(); renderDynamicOptions(); loadMemos(); loadLinks(); loadPending();
             
             if (curTab === 'wei') renderKanban('魏敏軒', false);
             else if (curTab === 'chiu') renderKanban('邱仁杰', false);
@@ -1095,30 +1086,24 @@
             if (!isCache) {
                 document.getElementById('loader').style.display = 'none';
                 if(!localStorage.getItem('JAYRAN_INIT_DONE')){ 
-                    setProjectType('video'); 
-                    localStorage.setItem('JAYRAN_INIT_DONE', '1'); 
+                    setProjectType('video'); localStorage.setItem('JAYRAN_INIT_DONE', '1'); 
                 }
-            } else { 
-                document.getElementById('loader').style.display = 'none'; 
-            }
+            } else { document.getElementById('loader').style.display = 'none'; }
         }
 
         // =========================================================
-        // ★ 介面切換與渲染
+        // ★ 介面切換與渲染 (🌟 徹底解決圖表消失的問題)
         // =========================================================
         function switchTab(tab) { 
-            // 1. 先隱藏所有頁面
             ['p-add', 'p-kanban', 'p-gantt', 'p-calendar', 'p-dashboard'].forEach(id => { 
                 const el = document.getElementById(id); 
                 if(el) { el.classList.add('hidden'); el.classList.remove('fade-in'); }
             }); 
             
-            // 2. 切換導覽列狀態
             curTab = tab; 
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
             document.getElementById('nav-' + tab).classList.add('active'); 
             
-            // 3. 找出目標頁面並顯示 (強制重繪 DOM)
             let targetId = ''; 
             if (tab === 'add') targetId = 'p-add'; 
             else if (tab === 'wei' || tab === 'chiu') targetId = 'p-kanban'; 
@@ -1129,28 +1114,19 @@
             if(targetId) { 
                 const targetEl = document.getElementById(targetId); 
                 targetEl.classList.remove('hidden'); 
-                void targetEl.offsetWidth; // 🌟 關鍵魔法：強制瀏覽器重繪，讓底下的寬高不為 0
+                void targetEl.offsetWidth; // 確保瀏覽器畫出實體
                 targetEl.classList.add('fade-in'); 
             }
 
-            // 4. 等待畫面出現後，才渲染圖表內容
+            // 🌟 延遲到畫面完全展開後才畫圖表
             setTimeout(() => {
-                if (tab === 'add') { 
-                    renderDynamicOptions(); 
-                } else if (tab === 'wei') { 
-                    document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); 
-                    renderKanban('魏敏軒'); 
-                } else if (tab === 'chiu') { 
-                    document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); 
-                    renderKanban('邱仁杰'); 
-                } else if (tab === 'gan') { 
-                    renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); 
-                } else if (tab === 'calendar') { 
-                    renderCalendar(); 
-                } else if (tab === 'dashboard') { 
-                    renderDashboard(); 
-                } 
-            }, 50); // 延遲 50ms 確保容器已佔用空間
+                if (tab === 'add') { renderDynamicOptions(); } 
+                else if (tab === 'wei') { document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); renderKanban('魏敏軒'); } 
+                else if (tab === 'chiu') { document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); renderKanban('邱仁杰'); } 
+                else if (tab === 'gan') { renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); } 
+                else if (tab === 'calendar') { renderCalendar(); } 
+                else if (tab === 'dashboard') { renderDashboard(); } 
+            }, 300); 
         }
 
         // =========================================================
@@ -1163,8 +1139,7 @@
             document.getElementById('i-name').placeholder = (type === 'video') ? "輸入影片標題" : "輸入圖文標題"; 
             document.getElementById('lbl-name').innerText = (type === 'video') ? "影片名稱" : "圖文名稱"; 
             document.getElementById('i-id').placeholder = "建議編號: 001"; 
-            renderZoneOptions(); 
-            renderDynamicOptions(); 
+            renderZoneOptions(); renderDynamicOptions(); 
         }
         
         function renderDynamicOptions() { 
@@ -1181,22 +1156,14 @@
                 if (forceDefault && list.includes(forceDefault)) { el.value = forceDefault; } 
                 else if (list.includes(currentVal)) { el.value = currentVal; } 
             }; 
-            fillSelect('i-type', types); 
-            fillSelect('i-producer', producers, '尚未暫定'); 
-            fillSelect('ep-type', types); 
-            fillSelect('ep-producer', producers); 
+            fillSelect('i-type', types); fillSelect('i-producer', producers, '尚未暫定'); fillSelect('ep-type', types); fillSelect('ep-producer', producers); 
         }
 
         function renderZoneOptions() { 
             const sel = document.getElementById('i-zone'); 
             sel.innerHTML = '<option value="">請選擇</option>'; 
             const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings; 
-            if (settings) { 
-                Object.keys(settings).sort().forEach(k => { 
-                    const op = document.createElement('option'); 
-                    op.value = k; op.text = k; sel.add(op); 
-                }); 
-            } 
+            if (settings) { Object.keys(settings).sort().forEach(k => { const op = document.createElement('option'); op.value = k; op.text = k; sel.add(op); }); } 
             updateClientName(); 
         }
 
@@ -1205,105 +1172,55 @@
             if (z) { 
                 const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z; 
                 if (z.toUpperCase().startsWith('Z')) { 
-                    document.getElementById('i-client').value = ''; 
-                    document.getElementById('i-client').readOnly = false; 
-                    document.getElementById('i-client').classList.remove('bg-gray-100'); 
-                    document.getElementById('i-client').classList.add('bg-white'); 
+                    document.getElementById('i-client').value = ''; document.getElementById('i-client').readOnly = false; document.getElementById('i-client').classList.remove('bg-gray-100'); document.getElementById('i-client').classList.add('bg-white'); 
                 } else { 
-                    document.getElementById('i-client').value = realName; 
-                    document.getElementById('i-client').readOnly = true; 
-                    document.getElementById('i-client').classList.add('bg-gray-100'); 
-                    document.getElementById('i-client').classList.remove('bg-white'); 
+                    document.getElementById('i-client').value = realName; document.getElementById('i-client').readOnly = true; document.getElementById('i-client').classList.add('bg-gray-100'); document.getElementById('i-client').classList.remove('bg-white'); 
                 } 
-                let lastId = (DATA.ids) ? DATA.ids[z] : ""; 
-                let displayId = "001"; 
-                if (lastId && lastId !== "無" && lastId !== "無紀錄") { 
-                    const match = lastId.match(/\d+$/); 
-                    if (match) displayId = match[0]; 
-                    document.getElementById('i-id').placeholder = `最後編號: ${displayId}`; 
-                } else { 
-                    document.getElementById('i-id').placeholder = `建議編號: 001`; 
-                } 
-            } else { 
-                document.getElementById('i-client').value = ''; 
-                document.getElementById('i-id').placeholder = ''; 
-            } 
+                let lastId = (DATA.ids) ? DATA.ids[z] : ""; let displayId = "001"; 
+                if (lastId && lastId !== "無" && lastId !== "無紀錄") { const match = lastId.match(/\d+$/); if (match) displayId = match[0]; document.getElementById('i-id').placeholder = `最後編號: ${displayId}`; } 
+                else { document.getElementById('i-id').placeholder = `建議編號: 001`; } 
+            } else { document.getElementById('i-client').value = ''; document.getElementById('i-id').placeholder = ''; } 
         }
 
         function checkProducer() { 
-            const prod = document.getElementById('i-producer').value; 
-            const dateInput = document.getElementById('i-date'); 
-            if (prod === '尚未暫定') { 
-                dateInput.placeholder = "日期可留空"; dateInput.style.background = "#eef"; 
-            } else { 
-                dateInput.placeholder = "點擊選擇"; dateInput.style.background = "#F5F5F7"; 
-            } 
+            const prod = document.getElementById('i-producer').value; const dateInput = document.getElementById('i-date'); 
+            if (prod === '尚未暫定') { dateInput.placeholder = "日期可留空"; dateInput.style.background = "#eef"; } 
+            else { dateInput.placeholder = "點擊選擇"; dateInput.style.background = "#F5F5F7"; } 
         }
 
         // =========================================================
-        // ★ 核心：建立專案與極速更新 (Optimistic UI)
+        // ★ 建立專案
         // =========================================================
         function saveProject() {
-            const zone = document.getElementById('i-zone').value;
-            let idRaw = document.getElementById('i-id').value.trim();
-            const client = document.getElementById('i-client').value;
-            const name = document.getElementById('i-name').value.trim();
-            const producer = document.getElementById('i-producer').value;
-            const type = document.getElementById('i-type').value;
-            const isUrgent = document.getElementById('i-urgent').checked;
-            const dateStr = document.getElementById('i-date').value;
-            const note = document.getElementById('i-note').value;
-            const linkUrl = document.getElementById('i-link').value.trim();
+            const zone = document.getElementById('i-zone').value; let idRaw = document.getElementById('i-id').value.trim();
+            const client = document.getElementById('i-client').value; const name = document.getElementById('i-name').value.trim();
+            const producer = document.getElementById('i-producer').value; const type = document.getElementById('i-type').value;
+            const isUrgent = document.getElementById('i-urgent').checked; const dateStr = document.getElementById('i-date').value;
+            const note = document.getElementById('i-note').value; const linkUrl = document.getElementById('i-link').value.trim();
 
-            if (!zone) return showToast("請選擇區域 / 客戶", "error");
-            if (!name) return showToast("請輸入專案名稱", "error");
-            if (!idRaw) return showToast("請輸入編號", "error");
+            if (!zone) return showToast("請選擇區域 / 客戶", "error"); if (!name) return showToast("請輸入專案名稱", "error"); if (!idRaw) return showToast("請輸入編號", "error");
 
             const prefix = zone.split('_')[0];
-            if (!isNaN(idRaw) && idRaw !== "") { idRaw = prefix + String(idRaw).padStart(3, '0'); } 
-            else if (!idRaw.toUpperCase().startsWith(prefix.toUpperCase())) { idRaw = prefix + idRaw; }
+            if (!isNaN(idRaw) && idRaw !== "") { idRaw = prefix + String(idRaw).padStart(3, '0'); } else if (!idRaw.toUpperCase().startsWith(prefix.toUpperCase())) { idRaw = prefix + idRaw; }
 
-            const dates = dateStr.split(' to ');
-            const start = dates[0] || ""; const end = dates[1] || dates[0] || "";
-
+            const dates = dateStr.split(' to '); const start = dates[0] || ""; const end = dates[1] || dates[0] || "";
             let status = '尚未進行';
-            if (producer !== '尚未暫定' && start) {
-                try { let d = new Date(start); let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0); if (d <= today) status = '製作中'; } catch(e) {}
-            }
+            if (producer !== '尚未暫定' && start) { try { let d = new Date(start); let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0); if (d <= today) status = '製作中'; } catch(e) {} }
 
             const payloadData = {
-                category: curCat, zone: zone, id: idRaw, client: client, name: name,
-                producer: producer, type: type, start: start, end: end,
-                note: note, tag: isUrgent ? 'Urgent' : '', status: status, hours: 0,
-                link: linkUrl
+                category: curCat, zone: zone, id: idRaw, client: client, name: name, producer: producer, type: type, start: start, end: end, note: note, tag: isUrgent ? 'Urgent' : '', status: status, hours: 0, link: linkUrl
             };
 
-            const btn = document.getElementById('btn-create');
-            const originalText = btn.innerText; 
-            btn.innerText = "寫入中..."; 
-            btn.disabled = true; 
+            const btn = document.getElementById('btn-create'); const originalText = btn.innerText; btn.innerText = "寫入中..."; btn.disabled = true; 
 
             callAPI('addProject', { payload: payloadData }, (res) => {
-                btn.innerText = originalText; 
-                btn.disabled = false;
-                
+                btn.innerText = originalText; btn.disabled = false;
                 if(res === "OK") {
-                    if(!DATA.projects) DATA.projects = [];
-                    DATA.projects.push(payloadData);
-                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
-                    processDataUpdate(DATA, true); 
-                    
-                    document.getElementById('i-id').value = ''; 
-                    document.getElementById('i-name').value = '';
-                    document.getElementById('i-note').value = ''; 
-                    document.getElementById('i-link').value = ''; 
-                    document.getElementById('i-urgent').checked = false; 
-                    fp.clear(); 
-                    
+                    if(!DATA.projects) DATA.projects = []; DATA.projects.push(payloadData);
+                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); 
+                    document.getElementById('i-id').value = ''; document.getElementById('i-name').value = ''; document.getElementById('i-note').value = ''; document.getElementById('i-link').value = ''; document.getElementById('i-urgent').checked = false; fp.clear(); 
                     showToast("專案已快速建立並同步！");
-                } else {
-                    showToast("寫入失敗：" + res, "error");
-                }
+                } else { showToast("寫入失敗：" + res, "error"); }
             });
         }
 
@@ -1312,50 +1229,24 @@
         // =========================================================
         function handleKanbanSearch() {
             const query = document.getElementById('kanban-search').value.trim().toLowerCase();
-            const normalView = document.getElementById('kb-normal-view'); 
-            const searchView = document.getElementById('kb-search-results'); 
-            const tbody = document.getElementById('kb-search-tbody');
-
-            if (!query) { 
-                normalView.classList.remove('hidden'); searchView.classList.add('hidden'); 
-                const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'; 
-                renderKanban(who, false); 
-                return; 
-            }
-
-            normalView.classList.add('hidden'); 
-            searchView.classList.remove('hidden');
+            const normalView = document.getElementById('kb-normal-view'); const searchView = document.getElementById('kb-search-results'); const tbody = document.getElementById('kb-search-tbody');
+            if (!query) { normalView.classList.remove('hidden'); searchView.classList.add('hidden'); const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'; renderKanban(who, false); return; }
+            normalView.classList.add('hidden'); searchView.classList.remove('hidden');
 
             const results = DATA.projects.filter(p => {
                 if (!p.producer || p.producer === '尚未暫定') return false; 
                 return p.name.toLowerCase().includes(query) || p.client.toLowerCase().includes(query) || String(p.id).toLowerCase().includes(query);
             });
 
-            if (results.length === 0) { 
-                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-400 font-bold">找不到符合的專案</td></tr>'; 
-                return; 
-            }
+            if (results.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-400 font-bold">找不到符合的專案</td></tr>'; return; }
 
             let html = '';
             results.forEach(p => {
-                const pStr = encodeURIComponent(JSON.stringify(p));
-                let badgeClass = 'sb-gray';
-                if(p.status === '製作中') badgeClass = 'sb-blue'; 
-                else if(p.status.includes('審')) badgeClass = 'sb-orange'; 
-                else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
-                
+                const pStr = encodeURIComponent(JSON.stringify(p)); let badgeClass = 'sb-gray';
+                if(p.status === '製作中') badgeClass = 'sb-blue'; else if(p.status.includes('審')) badgeClass = 'sb-orange'; else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
                 let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結" onclick="event.stopPropagation()"><i class="fas fa-external-link-alt"></i></a>` : '';
 
-                html += `
-                <tr>
-                    <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                    <td class="max-w-[200px] truncate" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td>
-                    <td class="text-gray-600 text-xs">${p.client}</td>
-                    <td class="font-bold text-center">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
-                    <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
-                    <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start} ~ ${p.end}</td>
-                    <td><button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-xs font-bold transition text-gray-700">編輯</button></td>
-                </tr>`;
+                html += `<tr><td class="font-mono text-xs text-gray-500">${p.id}</td><td class="max-w-[200px] truncate" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td><td class="text-gray-600 text-xs">${p.client}</td><td class="font-bold text-center">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td><td><span class="status-badge ${badgeClass}">${p.status}</span></td><td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start} ~ ${p.end}</td><td><button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-xs font-bold transition text-gray-700">編輯</button></td></tr>`;
             });
             tbody.innerHTML = html;
         }
@@ -1364,54 +1255,30 @@
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
             
-            if (clearSearch) { 
-                document.getElementById('kanban-search').value = ''; 
-                document.getElementById('kb-normal-view').classList.remove('hidden'); 
-                document.getElementById('kb-search-results').classList.add('hidden'); 
-            }
+            if (clearSearch) { document.getElementById('kanban-search').value = ''; document.getElementById('kb-normal-view').classList.remove('hidden'); document.getElementById('kb-search-results').classList.add('hidden'); }
 
             const tasks = DATA.projects.filter(p => p.producer === producer);
             const getTableRows = (filteredTasks) => {
                 if (filteredTasks.length === 0) return ''; 
                 return filteredTasks.map(p => {
-                    const pStr = encodeURIComponent(JSON.stringify(p));
-                    let badgeClass = 'sb-gray';
-                    if(p.status === '製作中') badgeClass = 'sb-blue'; 
-                    else if(p.status.includes('審')) badgeClass = 'sb-orange'; 
-                    else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
+                    const pStr = encodeURIComponent(JSON.stringify(p)); let badgeClass = 'sb-gray';
+                    if(p.status === '製作中') badgeClass = 'sb-blue'; else if(p.status.includes('審')) badgeClass = 'sb-orange'; else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
                     
                     let actionBtns = '';
-                    if (p.status === '製作中') { 
-                        actionBtns = `<button onclick="openHoursModal('${p.category}','${p.zone}','${p.id}')" class="text-orange-600 hover:text-orange-800 font-bold mr-2">送審</button>`; 
-                    } else if (p.status.includes('審')) { 
-                        actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-gray-500 hover:text-gray-700 mr-2">退修</button><button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','已完成')" class="text-green-600 hover:text-green-800 font-bold">完成</button>`; 
-                    } else if (p.status === '尚未進行') { 
-                        actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold">開始</button>`; 
-                    }
+                    if (p.status === '製作中') { actionBtns = `<button onclick="openHoursModal('${p.category}','${p.zone}','${p.id}')" class="text-orange-600 hover:text-orange-800 font-bold mr-2">送審</button>`; } 
+                    else if (p.status.includes('審')) { actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-gray-500 hover:text-gray-700 mr-2">退修</button><button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','已完成')" class="text-green-600 hover:text-green-800 font-bold">完成</button>`; } 
+                    else if (p.status === '尚未進行') { actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold">開始</button>`; }
 
                     actionBtns += `<button onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" class="ml-2 text-gray-400 hover:text-black" title="編輯"><i class="fas fa-pen"></i></button><button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-3 text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>`;
                     let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結" onclick="event.stopPropagation()"><i class="fas fa-external-link-alt"></i></a>` : '';
 
-                    return `
-                    <tr data-cat="${p.category}" data-zone="${p.zone}" data-id="${p.id}" class="cursor-grab hover:bg-gray-50">
-                        <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                        <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td>
-                        <td class="text-gray-600 text-xs font-bold">${p.client}</td>
-                        <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
-                        <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start}<br>${p.end}</td>
-                        <td class="whitespace-nowrap">${actionBtns}</td>
-                    </tr>`;
+                    return `<tr data-cat="${p.category}" data-zone="${p.zone}" data-id="${p.id}" class="cursor-grab hover:bg-gray-50"><td class="font-mono text-xs text-gray-500">${p.id}</td><td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td><td class="text-gray-600 text-xs font-bold">${p.client}</td><td><span class="status-badge ${badgeClass}">${p.status}</span></td><td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start}<br>${p.end}</td><td class="whitespace-nowrap">${actionBtns}</td></tr>`;
                 }).join('');
             };
 
-            document.getElementById('kb-process').innerHTML = getTableRows(tasks.filter(p => p.status === '製作中'));
-            document.getElementById('kb-review').innerHTML = getTableRows(tasks.filter(p => p.status.includes('審')));
-            document.getElementById('kb-todo').innerHTML = getTableRows(tasks.filter(p => p.status === '尚未進行'));
-            document.getElementById('kb-done').innerHTML = getTableRows(tasks.filter(p => p.status === '已完成' || p.status === '已結案'));
+            document.getElementById('kb-process').innerHTML = getTableRows(tasks.filter(p => p.status === '製作中')); document.getElementById('kb-review').innerHTML = getTableRows(tasks.filter(p => p.status.includes('審'))); document.getElementById('kb-todo').innerHTML = getTableRows(tasks.filter(p => p.status === '尚未進行')); document.getElementById('kb-done').innerHTML = getTableRows(tasks.filter(p => p.status === '已完成' || p.status === '已結案'));
 
-            // 綁定 SortableJS 拖曳功能
-            sortableInstances.forEach(inst => inst.destroy()); 
-            sortableInstances = [];
+            sortableInstances.forEach(inst => inst.destroy()); sortableInstances = [];
             const tables = ['kb-process', 'kb-review', 'kb-todo', 'kb-done'];
             tables.forEach(id => {
                 const el = document.getElementById(id);
@@ -1420,17 +1287,9 @@
                         group: 'kanban', animation: 150, ghostClass: 'sortable-ghost',
                         onEnd: function (evt) {
                             if (evt.to.id !== evt.from.id) { 
-                                const itemEl = evt.item; 
-                                const cat = itemEl.getAttribute('data-cat'); 
-                                const zone = itemEl.getAttribute('data-zone'); 
-                                const pId = itemEl.getAttribute('data-id');
-                                let newStatus = '尚未進行';
-                                if (evt.to.id === 'kb-process') newStatus = '製作中'; 
-                                else if (evt.to.id === 'kb-review') newStatus = '客戶審核'; 
-                                else if (evt.to.id === 'kb-done') newStatus = '已完成';
-                                
-                                doUpdate(cat, zone, pId, newStatus, 0); 
-                                showToast(`✅ 狀態已自動更新為：${newStatus}`);
+                                const itemEl = evt.item; const cat = itemEl.getAttribute('data-cat'); const zone = itemEl.getAttribute('data-zone'); const pId = itemEl.getAttribute('data-id');
+                                let newStatus = '尚未進行'; if (evt.to.id === 'kb-process') newStatus = '製作中'; else if (evt.to.id === 'kb-review') newStatus = '客戶審核'; else if (evt.to.id === 'kb-done') newStatus = '已完成';
+                                doUpdate(cat, zone, pId, newStatus, 0); showToast(`✅ 狀態已自動更新為：${newStatus}`);
                             }
                         }
                     }));
@@ -1439,33 +1298,22 @@
         }
 
         // =========================================================
-        // ★ 儀表板資料與排行榜 (含 VIP 連結複製功能)
+        // ★ 儀表板資料與 VIP 連結複製功能
         // =========================================================
         function renderDashboard() {
             if(!DATA.projects) return;
             document.getElementById('db-detail-container').classList.add('hidden');
             
-            const selectedMonth = document.getElementById('db-month-filter').value; 
-            currentFilteredProjects = DATA.projects;
+            const selectedMonth = document.getElementById('db-month-filter').value; currentFilteredProjects = DATA.projects;
             
             if (selectedMonth !== 'all') {
                 currentFilteredProjects = DATA.projects.filter(p => {
-                    let dateStr = p.start || p.end; 
-                    if (!dateStr) return false; 
-                    let firstDate = dateStr.split(' to ')[0];
-                    try { 
-                        let d = new Date(firstDate); 
-                        if (isNaN(d.getTime())) return false; 
-                        return (d.getMonth() + 1).toString() === selectedMonth; 
-                    } catch(e) { return false; }
+                    let dateStr = p.start || p.end; if (!dateStr) return false; let firstDate = dateStr.split(' to ')[0];
+                    try { let d = new Date(firstDate); if (isNaN(d.getTime())) return false; return (d.getMonth() + 1).toString() === selectedMonth; } catch(e) { return false; }
                 });
             }
 
-            const statusCounts = { '製作中': 0, '審核中': 0, '尚未進行': 0, '已完成': 0 }; 
-            const producerCounts = {}; 
-            const clientCounts = {}; 
-            let totalHours = 0; 
-            let totalDone = 0;
+            const statusCounts = { '製作中': 0, '審核中': 0, '尚未進行': 0, '已完成': 0 }; const producerCounts = {}; const clientCounts = {}; let totalHours = 0; let totalDone = 0;
 
             currentFilteredProjects.forEach(p => {
                 let unifiedStatus = p.status;
@@ -1480,63 +1328,33 @@
                 if (p.hours && !isNaN(p.hours)) { totalHours += parseFloat(p.hours); }
             });
 
-            document.getElementById('db-total-count').innerText = currentFilteredProjects.length; 
-            document.getElementById('db-done-count').innerText = totalDone; 
-            document.getElementById('db-hours-count').innerText = totalHours.toFixed(1);
+            document.getElementById('db-total-count').innerText = currentFilteredProjects.length; document.getElementById('db-done-count').innerText = totalDone; document.getElementById('db-hours-count').innerText = totalHours.toFixed(1);
 
-            const ctxStatus = document.getElementById('chart-status'); 
-            if (dashboardCharts.status) dashboardCharts.status.destroy();
+            const ctxStatus = document.getElementById('chart-status'); if (dashboardCharts.status) dashboardCharts.status.destroy();
             dashboardCharts.status = new Chart(ctxStatus, {
                 type: 'doughnut',
-                data: { 
-                    labels: ['製作中', '審核中', '尚未進行', '已完成'], 
-                    datasets: [{ 
-                        data: [statusCounts['製作中'], statusCounts['審核中'], statusCounts['尚未進行'], statusCounts['已完成']], 
-                        backgroundColor: ['#007AFF', '#FF9500', '#8E8E93', '#34C759'], 
-                        borderWidth: 0, hoverOffset: 4 
-                    }] 
-                },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    plugins: { legend: { position: 'bottom' } }, 
-                    onClick: (e, elements) => { 
-                        if (elements.length > 0) { 
-                            const idx = elements[0].index; 
-                            const label = dashboardCharts.status.data.labels[idx]; 
-                            showDashboardDetail('status', label); 
-                        } 
-                    } 
-                }
+                data: { labels: ['製作中', '審核中', '尚未進行', '已完成'], datasets: [{ data: [statusCounts['製作中'], statusCounts['審核中'], statusCounts['尚未進行'], statusCounts['已完成']], backgroundColor: ['#007AFF', '#FF9500', '#8E8E93', '#34C759'], borderWidth: 0, hoverOffset: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, onClick: (e, elements) => { if (elements.length > 0) { const idx = elements[0].index; const label = dashboardCharts.status.data.labels[idx]; showDashboardDetail('status', label); } } }
             });
 
-            const ctxProducer = document.getElementById('chart-producer'); 
-            if (dashboardCharts.producer) dashboardCharts.producer.destroy();
-            const pLabels = Object.keys(producerCounts); 
-            const pData = Object.values(producerCounts);
+            const ctxProducer = document.getElementById('chart-producer'); if (dashboardCharts.producer) dashboardCharts.producer.destroy();
+            const pLabels = Object.keys(producerCounts); const pData = Object.values(producerCounts);
             dashboardCharts.producer = new Chart(ctxProducer, {
                 type: 'bar',
-                data: { 
-                    labels: pLabels, 
-                    datasets: [{ label: '專案數量', data: pData, backgroundColor: '#1D1D1F', borderRadius: 6 }] 
-                },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, 
-                    plugins: { legend: { display: false } }, 
-                    onClick: (e, elements) => { 
-                        if (elements.length > 0) { 
-                            const idx = elements[0].index; 
-                            const label = dashboardCharts.producer.data.labels[idx]; 
-                            showDashboardDetail('producer', label); 
-                        } 
-                    } 
-                }
+                data: { labels: pLabels, datasets: [{ label: '專案數量', data: pData, backgroundColor: '#1D1D1F', borderRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } }, onClick: (e, elements) => { if (elements.length > 0) { const idx = elements[0].index; const label = dashboardCharts.producer.data.labels[idx]; showDashboardDetail('producer', label); } } }
             });
 
             renderClientLeaderboard(clientCounts);
         }
 
-        // 🌟 複製專屬網址功能
+        // 🌟 產生並複製 VIP 客戶傳送門的專屬網址
+        function generateVIPLink() {
+            const clientName = document.getElementById('vip-client-name').value.trim();
+            if(!clientName) return showToast("請先輸入客戶名稱！", "error");
+            copyPortalLink(clientName);
+        }
+
         function copyPortalLink(clientName) {
             const currentUrl = window.location.href.split('?')[0];
             const portalUrl = currentUrl + "?client=" + encodeURIComponent(clientName);
@@ -1544,23 +1362,16 @@
             navigator.clipboard.writeText(portalUrl).then(() => {
                 showToast(`已複製【${clientName}】的專屬入口網址！`);
             }).catch(err => {
-                prompt("請複製以下網址：", portalUrl);
+                prompt("由於瀏覽器安全限制，請手動複製以下網址：", portalUrl);
             });
         }
 
         function renderClientLeaderboard(clientCounts) {
-            const container = document.getElementById('db-leaderboard'); 
-            const sortedClients = Object.entries(clientCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            
-            if(sortedClients.length === 0) { 
-                container.innerHTML = '<div class="text-center text-gray-400 py-6">尚無客戶資料</div>'; 
-                return; 
-            }
-            
+            const container = document.getElementById('db-leaderboard'); const sortedClients = Object.entries(clientCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            if(sortedClients.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 py-6">尚無客戶資料</div>'; return; }
             let html = '';
             sortedClients.forEach((item, index) => {
-                let rankClass = `lb-rank-${index + 1}`; 
-                if (index > 2) rankClass = '';
+                let rankClass = `lb-rank-${index + 1}`; if (index > 2) rankClass = '';
                 html += `
                 <div class="leaderboard-item cursor-pointer" onclick="showDashboardDetail('client', '${item[0]}')">
                     <div class="flex items-center flex-1 overflow-hidden">
@@ -1575,59 +1386,35 @@
         }
 
         function showDashboardDetail(filterType, filterValue) {
-            const container = document.getElementById('db-detail-container'); 
-            const tbody = document.getElementById('db-detail-tbody'); 
-            const title = document.getElementById('db-detail-title');
+            const container = document.getElementById('db-detail-container'); const tbody = document.getElementById('db-detail-tbody'); const title = document.getElementById('db-detail-title');
             let results = [];
             
-            if (filterType === 'status') { 
-                title.innerHTML = `明細過濾：<span class="text-blue-600">${filterValue}</span>`; 
-                results = currentFilteredProjects.filter(p => p.unifiedStatus === filterValue); 
-            } else if (filterType === 'producer') { 
-                title.innerHTML = `明細過濾：<span class="text-blue-600">${filterValue}</span> 的專案`; 
-                results = currentFilteredProjects.filter(p => p.producer === filterValue); 
-            } else if (filterType === 'client') { 
-                title.innerHTML = `明細過濾：客戶 <span class="text-blue-600">${filterValue}</span>`; 
-                results = currentFilteredProjects.filter(p => p.client === filterValue); 
-            }
+            if (filterType === 'status') { title.innerHTML = `明細過濾：<span class="text-blue-600">${filterValue}</span>`; results = currentFilteredProjects.filter(p => p.unifiedStatus === filterValue); } 
+            else if (filterType === 'producer') { title.innerHTML = `明細過濾：<span class="text-blue-600">${filterValue}</span> 的專案`; results = currentFilteredProjects.filter(p => p.producer === filterValue); } 
+            else if (filterType === 'client') { title.innerHTML = `明細過濾：客戶 <span class="text-blue-600">${filterValue}</span>`; results = currentFilteredProjects.filter(p => p.client === filterValue); }
 
-            if (results.length === 0) { 
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-4">無資料</td></tr>'; 
-            } else {
+            if (results.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-4">無資料</td></tr>'; } 
+            else {
                 let html = '';
                 results.forEach(p => {
-                    let badgeClass = 'sb-gray'; 
-                    if(p.status === '製作中') badgeClass = 'sb-blue'; 
-                    else if(p.status.includes('審')) badgeClass = 'sb-orange'; 
-                    else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
-                    
+                    let badgeClass = 'sb-gray'; if(p.status === '製作中') badgeClass = 'sb-blue'; else if(p.status.includes('審')) badgeClass = 'sb-orange'; else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
                     let linkIcon = p.link ? `<a href="${p.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="開啟專案雲端連結"><i class="fas fa-external-link-alt"></i></a>` : '';
-                    
-                    html += `
-                    <tr>
-                        <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                        <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td>
-                        <td class="text-gray-600 text-xs font-bold">${p.client}</td>
-                        <td class="font-bold">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
-                        <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
-                        <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start}<br>${p.end}</td>
-                    </tr>`;
+                    html += `<tr><td class="font-mono text-xs text-gray-500">${p.id}</td><td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}${linkIcon}</td><td class="text-gray-600 text-xs font-bold">${p.client}</td><td class="font-bold">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td><td><span class="status-badge ${badgeClass}">${p.status}</span></td><td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start}<br>${p.end}</td></tr>`;
                 });
                 tbody.innerHTML = html;
             }
-            container.classList.remove('hidden'); 
-            setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 100);
+            container.classList.remove('hidden'); setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 100);
         }
 
         // =========================================================
-        // ★ 日曆與甘特圖等其他功能
+        // ★ 日曆與甘特圖 (🌟 完全修復延遲渲染消失的問題)
         // =========================================================
         function renderCalendar() {
             const el = document.getElementById('calendar'); 
+            el.innerHTML = ''; // 🌟 強制清空重繪
             if (calendar) { calendar.destroy(); }
             
-            let events = []; 
-            const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
+            let events = []; const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter);
             
             tasks.forEach(p => {
                 if (p.status === '已完成' || p.status === '已結案') { return; }
@@ -1635,13 +1422,8 @@
                     try {
                         let startD = new Date(p.start); let endD = new Date(p.end);
                         if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) {
-                            let color = '#8E8E93'; 
-                            if (p.status === '製作中') color = '#007AFF'; 
-                            else if (p.status.includes('審')) color = '#FF9500';
-                            
-                            let nextDay = new Date(endD.getTime() + 86400000); 
-                            const endDateStr = getLocalDateString(nextDay); 
-                            const startDateStr = getLocalDateString(startD);
+                            let color = '#8E8E93'; if (p.status === '製作中') color = '#007AFF'; else if (p.status.includes('審')) color = '#FF9500';
+                            let nextDay = new Date(endD.getTime() + 86400000); const endDateStr = getLocalDateString(nextDay); const startDateStr = getLocalDateString(startD);
                             events.push({ title: `${p.name} (${p.producer})`, start: startDateStr, end: endDateStr, backgroundColor: color, borderColor: color, extendedProps: { project: p } });
                         }
                     } catch (e) {}
@@ -1653,12 +1435,7 @@
                 if (calendarFilter === 'all' || l.name === calendarFilter) {
                     try {
                         let startD = new Date(l.start); let endD = new Date(l.end);
-                        if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) { 
-                            let nextDay = new Date(endD.getTime() + 86400000); 
-                            const endDateStr = getLocalDateString(nextDay); 
-                            const startDateStr = getLocalDateString(startD); 
-                            events.push({ title: `🏖️ ${l.name}: ${l.reason}`, start: startDateStr, end: endDateStr, backgroundColor: '#7C3AED', borderColor: '#7C3AED' }); 
-                        }
+                        if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) { let nextDay = new Date(endD.getTime() + 86400000); const endDateStr = getLocalDateString(nextDay); const startDateStr = getLocalDateString(startD); events.push({ title: `🏖️ ${l.name}: ${l.reason}`, start: startDateStr, end: endDateStr, backgroundColor: '#7C3AED', borderColor: '#7C3AED' }); }
                     } catch(e) {}
                 }
             });
@@ -1670,73 +1447,44 @@
                 eventClick: function(info) { const props = info.event.extendedProps; if (props.project) openEditProject(props.project); } 
             });
             calendar.render(); 
-            // 🌟 確保日曆渲染後強制更新大小，防止空白
-            setTimeout(() => { if(calendar) calendar.updateSize(); }, 200); 
-            setTimeout(() => { const todayCell = document.querySelector('.fc-day-today'); if (todayCell) todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+            // 🌟 再次強制確保日曆取得正確尺寸
+            setTimeout(() => { if(calendar) calendar.updateSize(); }, 300); 
+            setTimeout(() => { const todayCell = document.querySelector('.fc-day-today'); if (todayCell) todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 500);
         }
 
         function renderGantt(who) {
-            document.getElementById('btn-gan-wei').classList.remove('active');
-            document.getElementById('btn-gan-chiu').classList.remove('active');
-            if (who === '魏敏軒') document.getElementById('btn-gan-wei').classList.add('active');
-            else document.getElementById('btn-gan-chiu').classList.add('active');
+            document.getElementById('btn-gan-wei').classList.remove('active'); document.getElementById('btn-gan-chiu').classList.remove('active');
+            if (who === '魏敏軒') document.getElementById('btn-gan-wei').classList.add('active'); else document.getElementById('btn-gan-chiu').classList.add('active');
 
             const container = document.getElementById('gantt-chart');
             if (!DATA.projects) return;
             
-            const now = new Date();
-            const curYear = currentGanttDate.getFullYear();
-            const curMonth = currentGanttDate.getMonth();
+            const now = new Date(); const curYear = currentGanttDate.getFullYear(); const curMonth = currentGanttDate.getMonth();
             document.getElementById('gan-title').innerText = `甘特圖 (${curYear}年${curMonth + 1}月)`;
-
-            const monthStart = new Date(curYear, curMonth, 1);
-            const monthEnd = new Date(curYear, curMonth + 1, 0, 23, 59, 59);
-            const todayDay = now.getDate();
-            const isCurrentMonth = (now.getMonth() === curMonth && now.getFullYear() === curYear);
+            const monthStart = new Date(curYear, curMonth, 1); const monthEnd = new Date(curYear, curMonth + 1, 0, 23, 59, 59);
+            const todayDay = now.getDate(); const isCurrentMonth = (now.getMonth() === curMonth && now.getFullYear() === curYear);
 
             let tasks = DATA.projects.filter(p => p.producer === who && p.start && p.end);
-            tasks = tasks.filter(p => {
-                const pStart = new Date(p.start);
-                const pEnd = new Date(p.end);
-                return pStart <= monthEnd && pEnd >= monthStart; 
-            }).sort((a, b) => new Date(a.start) - new Date(b.start));
+            tasks = tasks.filter(p => { const pStart = new Date(p.start); const pEnd = new Date(p.end); return pStart <= monthEnd && pEnd >= monthStart; }).sort((a, b) => new Date(a.start) - new Date(b.start));
 
-            if (tasks.length === 0) { 
-                container.innerHTML = '<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl h-full flex items-center justify-center">本月無排程</div>'; 
-                return; 
-            }
+            if (tasks.length === 0) { container.innerHTML = '<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl h-full flex items-center justify-center">本月無排程</div>'; return; }
 
             const daysInMonth = monthEnd.getDate();
             let header = '<tr class="gantt-row"><th class="gantt-corner">ID / 專案</th>';
-            for (let i = 1; i <= daysInMonth; i++) {
-                let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today' : '';
-                header += `<th class="gantt-header-cell ${bg}">${i}</th>`;
-            }
+            for (let i = 1; i <= daysInMonth; i++) { let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today' : ''; header += `<th class="gantt-header-cell ${bg}">${i}</th>`; }
             header += '</tr>';
 
             let body = '';
             tasks.forEach(p => {
-                const pStartObj = new Date(p.start);
-                const pEndObj = new Date(p.end);
-                const pStr = encodeURIComponent(JSON.stringify(p));
-
-                let color = '#8E8E93'; 
-                if (p.status === '製作中') color = '#007AFF';
-                else if (p.status.includes('審')) color = '#FF9500';
-                else if (p.status === '已完成' || p.status === '已結案') color = '#34C759';
-
-                let gridStartDay = (pStartObj < monthStart) ? 1 : pStartObj.getDate();
-                let gridEndDay = (pEndObj > monthEnd) ? daysInMonth : pEndObj.getDate();
-
+                const pStartObj = new Date(p.start); const pEndObj = new Date(p.end); const pStr = encodeURIComponent(JSON.stringify(p));
+                let color = '#8E8E93'; if (p.status === '製作中') color = '#007AFF'; else if (p.status.includes('審')) color = '#FF9500'; else if (p.status === '已完成' || p.status === '已結案') color = '#34C759';
+                let gridStartDay = (pStartObj < monthStart) ? 1 : pStartObj.getDate(); let gridEndDay = (pEndObj > monthEnd) ? daysInMonth : pEndObj.getDate();
                 let bars = '';
                 for (let i = 1; i <= daysInMonth; i++) {
-                    let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today-cell' : '';
-                    let content = '';
+                    let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today-cell' : ''; let content = '';
                     if (i === gridStartDay) {
-                        let span = (gridEndDay - gridStartDay) + 1;
-                        if (span < 1) span = 1;
-                        let prefix = (pStartObj < monthStart) ? '← ' : '';
-                        let suffix = (pEndObj > monthEnd) ? ' →' : '';
+                        let span = (gridEndDay - gridStartDay) + 1; if (span < 1) span = 1;
+                        let prefix = (pStartObj < monthStart) ? '← ' : ''; let suffix = (pEndObj > monthEnd) ? ' →' : '';
                         content = `<div class="gantt-bar" onclick="openEditProject(JSON.parse(decodeURIComponent('${pStr}')))" title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color};">${prefix}${p.name}${suffix}</div>`;
                     }
                     bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible;"' : ''}>${content}</td>`;
@@ -1746,423 +1494,81 @@
             container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
         }
 
-        function changeGanttMonth(delta) {
-            currentGanttDate.setMonth(currentGanttDate.getMonth() + delta);
-            const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-            renderGantt(who);
-        }
-
-        function filterCalendar(who) {
-            calendarFilter = who;
-            document.querySelectorAll('.cal-filter-btn').forEach(b => b.classList.remove('active'));
-            if(who==='all') document.getElementById('btn-cal-all').classList.add('active');
-            else if(who==='魏敏軒') document.getElementById('btn-cal-wei').classList.add('active');
-            else document.getElementById('btn-cal-chiu').classList.add('active');
-            renderCalendar();
-        }
-
-        function deleteProject(category, zone, id) {
-            if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return;
-            DATA.projects = DATA.projects.filter(p => !(String(p.id) === String(id) && p.zone === zone));
-            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true);
-            callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); });
-        }
+        function changeGanttMonth(delta) { currentGanttDate.setMonth(currentGanttDate.getMonth() + delta); const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'; renderGantt(who); }
+        function filterCalendar(who) { calendarFilter = who; document.querySelectorAll('.cal-filter-btn').forEach(b => b.classList.remove('active')); if(who==='all') document.getElementById('btn-cal-all').classList.add('active'); else if(who==='魏敏軒') document.getElementById('btn-cal-wei').classList.add('active'); else document.getElementById('btn-cal-chiu').classList.add('active'); renderCalendar(); }
+        function deleteProject(category, zone, id) { if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return; DATA.projects = DATA.projects.filter(p => !(String(p.id) === String(id) && p.zone === zone)); localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => { console.log("Deleted"); }); }
 
         function openEditProject(p) {
-            document.getElementById('ep-cat').value = p.category;
-            document.getElementById('ep-origin-id').value = p.id; 
-            document.getElementById('ep-origin-zone').value = p.zone; 
-            
-            const prefix = p.zone.split('_')[0]; 
-            const numPart = String(p.id).replace(prefix, ''); 
-            
-            const epCodeSel = document.getElementById('ep-code');
-            epCodeSel.innerHTML = '';
+            document.getElementById('ep-cat').value = p.category; document.getElementById('ep-origin-id').value = p.id; document.getElementById('ep-origin-zone').value = p.zone; 
+            const prefix = p.zone.split('_')[0]; const numPart = String(p.id).replace(prefix, ''); 
+            const epCodeSel = document.getElementById('ep-code'); epCodeSel.innerHTML = '';
             const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); });
-            epCodeSel.value = prefix;
-            
-            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;
-            const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
-            
-            const prodSel = document.getElementById('ep-producer');
-            prodSel.innerHTML = '';
-            producers.forEach(x => prodSel.add(new Option(x, x)));
-            
-            const typeSel = document.getElementById('ep-type');
-            typeSel.innerHTML = '';
-            types.forEach(x => typeSel.add(new Option(x, x)));
-
+            Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); epCodeSel.value = prefix;
+            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes; const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
+            const prodSel = document.getElementById('ep-producer'); prodSel.innerHTML = ''; producers.forEach(x => prodSel.add(new Option(x, x)));
+            const typeSel = document.getElementById('ep-type'); typeSel.innerHTML = ''; types.forEach(x => typeSel.add(new Option(x, x)));
             setTimeout(() => { prodSel.value = p.producer; typeSel.value = p.type; }, 50);
-
-            document.getElementById('ep-num').value = numPart;
-            updateEditClientInfo(); 
-            
-            document.getElementById('ep-name').value = p.name;
-            document.getElementById('ep-hours').value = p.hours || 0; 
-            document.getElementById('ep-link').value = p.link || ''; 
-            
+            document.getElementById('ep-num').value = numPart; updateEditClientInfo(); 
+            document.getElementById('ep-name').value = p.name; document.getElementById('ep-hours').value = p.hours || 0; document.getElementById('ep-link').value = p.link || ''; 
             if (p.start && p.end) { fpEdit.setDate([p.start, p.end]); } else { fpEdit.clear(); }
-            document.getElementById('ep-note').value = p.note;
-            document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
-            document.getElementById('modal-edit-project').style.display = 'flex';
+            document.getElementById('ep-note').value = p.note; document.getElementById('ep-urgent').checked = (p.tag === 'Urgent'); document.getElementById('modal-edit-project').style.display = 'flex';
         }
 
         function confirmEditProject() {
-            const dateVal = document.getElementById('ep-date').value;
-            const dates = dateVal.split(' to ');
-            const originId = document.getElementById('ep-origin-id').value;
-            const originZone = document.getElementById('ep-origin-zone').value;
-            
-            const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone));
-            let inheritedStatus = '尚未進行';
-            if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; }
-
-            const p = {
-                category: document.getElementById('ep-cat').value,
-                zone: document.getElementById('ep-zone').value, 
-                id: document.getElementById('ep-num').value, 
-                client: document.getElementById('ep-client-display').value,
-                name: document.getElementById('ep-name').value,
-                producer: document.getElementById('ep-producer').value,
-                type: document.getElementById('ep-type').value,
-                hours: document.getElementById('ep-hours').value, 
-                start: dates[0] || "", end: dates[1] || dates[0] || "",
-                note: document.getElementById('ep-note').value,
-                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',
-                status: inheritedStatus,
-                link: document.getElementById('ep-link').value.trim()
-            };
-
-            const prefix = p.zone.split('_')[0];
-            if (!isNaN(p.id) && p.id !== "") { p.id = prefix + String(p.id).padStart(3, '0'); } 
-            else if (!p.id.toUpperCase().startsWith(prefix.toUpperCase())) { p.id = prefix + p.id; }
-
+            const dateVal = document.getElementById('ep-date').value; const dates = dateVal.split(' to '); const originId = document.getElementById('ep-origin-id').value; const originZone = document.getElementById('ep-origin-zone').value;
+            const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone)); let inheritedStatus = '尚未進行'; if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; }
+            const p = { category: document.getElementById('ep-cat').value, zone: document.getElementById('ep-zone').value, id: document.getElementById('ep-num').value, client: document.getElementById('ep-client-display').value, name: document.getElementById('ep-name').value, producer: document.getElementById('ep-producer').value, type: document.getElementById('ep-type').value, hours: document.getElementById('ep-hours').value, start: dates[0] || "", end: dates[1] || dates[0] || "", note: document.getElementById('ep-note').value, tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '', status: inheritedStatus, link: document.getElementById('ep-link').value.trim() };
+            const prefix = p.zone.split('_')[0]; if (!isNaN(p.id) && p.id !== "") { p.id = prefix + String(p.id).padStart(3, '0'); } else if (!p.id.toUpperCase().startsWith(prefix.toUpperCase())) { p.id = prefix + p.id; }
             if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } else { DATA.projects.push(p); }
-
-            closeModal('edit-project');
-            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-            processDataUpdate(DATA, true);
-            showToast("修改成功 (背景同步中)");
-            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {});
+            closeModal('edit-project'); localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); showToast("修改成功 (背景同步中)"); callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {});
         }
 
         function doUpdate(cat, zone, id, status, hours=0) {
             const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone);
-            if (p) {
-                p.status = status;
-                if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours);
-                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-                processDataUpdate(DATA, true);
-            }
+            if (p) { p.status = status; if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours); localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); }
             callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {});
         }
 
-        function openHistory() {
-            const z = document.getElementById('i-zone').value;
-            if(!z) return showToast("請先選擇客戶", "error");
-            document.getElementById('hist-title').innerText = z;
-            document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>';
-            document.getElementById('modal-preview').style.display = 'flex';
-            callAPI('getHistory', { cat: curCat, zone: z }, (list) => {
-                let html = list.length === 0 ? '<div class="text-center text-gray-400">尚無專案</div>' : '';
-                list.forEach(p => {
-                    let bg = '#888'; 
-                    if(p.status === '製作中') bg = '#007AFF'; 
-                    else if(p.status.includes('審')) bg = '#FF9500'; 
-                    else if(p.status === '已完成') bg = '#34C759';
-                    html += `<div class="mb-2 flex items-center justify-between border-b pb-2"><div class="flex items-center"><span class="font-bold text-gray-800 mr-2 w-16">${p.id}</span><span class="text-gray-600 mr-2 truncate w-32">${p.name}</span></div><span class="text-white text-xs px-2 py-1 rounded shadow-sm" style="background:${bg}">${p.status}</span></div>`;
-                });
-                document.getElementById('hist-list').innerHTML = html;
-            });
-        }
-
-        function openSettings(type) {
-            document.getElementById('st-type').value = type;
-            document.getElementById('setting-title').innerText = (type==='Type') ? "管理類型" : "管理製作人";
-            document.getElementById('st-input').value = '';
-            renderSettingList();
-            document.getElementById('modal-settings').style.display = 'flex';
-        }
-
-        function renderSettingList() {
-            const type = document.getElementById('st-type').value;
-            const list = (curCat==='video') ? (type==='Type' ? DATA.config.videoTypes : DATA.config.videoProducers) : (type==='Type' ? DATA.config.imageTypes : DATA.config.imageProducers);
-            let html = '';
-            list.forEach(item => { 
-                html += `<div class="setting-item"><span>${item}</span><div class="setting-actions"><i onclick="editSettingItem('${item}')" class="fas fa-pen text-sm"></i><i onclick="deleteSettingItem('${item}')" class="fas fa-trash-alt text-sm"></i></div></div>`; 
-            });
-            document.getElementById('st-list').innerHTML = html;
-        }
-
-        function addSettingItem() {
-            const val = document.getElementById('st-input').value;
-            const type = document.getElementById('st-type').value;
-            if(!val) return;
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => {
-                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
-                else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; }
-            });
-            document.getElementById('st-input').value = '';
-        }
-
-        function deleteSettingItem(val) {
-            if(!confirm("確定刪除此選項嗎？")) return;
-            const type = document.getElementById('st-type').value;
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => {
-                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
-                else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; }
-            });
-        }
-
-        function editSettingItem(oldVal) {
-            const newVal = prompt("請輸入新名稱：", oldVal);
-            if (!newVal || newVal === oldVal) return;
-            const type = document.getElementById('st-type').value;
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => {
-                if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } 
-                else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; }
-            });
-        }
-
-        function openHoursModal(cat, zone, id) {
-            document.getElementById('hours-cat').value = cat; 
-            document.getElementById('hours-zone').value = zone;
-            document.getElementById('hours-id').value = id; 
-            document.getElementById('input-hours').value = '';
-            document.getElementById('modal-hours').style.display = 'flex';
-        }
-
-        function confirmSendReview() {
-            const h = document.getElementById('input-hours').value;
-            if(!h) return showToast("請輸入工時", "error");
-            closeModal('hours');
-            doUpdate(document.getElementById('hours-cat').value, document.getElementById('hours-zone').value, document.getElementById('hours-id').value, '客戶審核', h);
-        }
-
-        function togglePanel(type) {
-            document.getElementById('panel-' + type).style.display = 'flex';
-            if (type === 'memo') loadMemos(); 
-            if (type === 'link') loadLinks(); 
-            if (type === 'pending') loadPending();
-        }
+        function openHistory() { const z = document.getElementById('i-zone').value; if(!z) return showToast("請先選擇客戶", "error"); document.getElementById('hist-title').innerText = z; document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>'; document.getElementById('modal-preview').style.display = 'flex'; callAPI('getHistory', { cat: curCat, zone: z }, (list) => { let html = list.length === 0 ? '<div class="text-center text-gray-400">尚無專案</div>' : ''; list.forEach(p => { let bg = '#888'; if(p.status === '製作中') bg = '#007AFF'; else if(p.status.includes('審')) bg = '#FF9500'; else if(p.status === '已完成') bg = '#34C759'; html += `<div class="mb-2 flex items-center justify-between border-b pb-2"><div class="flex items-center"><span class="font-bold text-gray-800 mr-2 w-16">${p.id}</span><span class="text-gray-600 mr-2 truncate w-32">${p.name}</span></div><span class="text-white text-xs px-2 py-1 rounded shadow-sm" style="background:${bg}">${p.status}</span></div>`; }); document.getElementById('hist-list').innerHTML = html; }); }
+        function openSettings(type) { document.getElementById('st-type').value = type; document.getElementById('setting-title').innerText = (type==='Type') ? "管理類型" : "管理製作人"; document.getElementById('st-input').value = ''; renderSettingList(); document.getElementById('modal-settings').style.display = 'flex'; }
+        function renderSettingList() { const type = document.getElementById('st-type').value; const list = (curCat==='video') ? (type==='Type' ? DATA.config.videoTypes : DATA.config.videoProducers) : (type==='Type' ? DATA.config.imageTypes : DATA.config.imageProducers); let html = ''; list.forEach(item => { html += `<div class="setting-item"><span>${item}</span><div class="setting-actions"><i onclick="editSettingItem('${item}')" class="fas fa-pen text-sm"></i><i onclick="deleteSettingItem('${item}')" class="fas fa-trash-alt text-sm"></i></div></div>`; }); document.getElementById('st-list').innerHTML = html; }
+        function addSettingItem() { const val = document.getElementById('st-input').value; const type = document.getElementById('st-type').value; if(!val) return; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); document.getElementById('st-input').value = ''; }
+        function deleteSettingItem(val) { if(!confirm("確定刪除此選項嗎？")) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
+        function editSettingItem(oldVal) { const newVal = prompt("請輸入新名稱：", oldVal); if (!newVal || newVal === oldVal) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => { if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
+        function openHoursModal(cat, zone, id) { document.getElementById('hours-cat').value = cat; document.getElementById('hours-zone').value = zone; document.getElementById('hours-id').value = id; document.getElementById('input-hours').value = ''; document.getElementById('modal-hours').style.display = 'flex'; }
+        function confirmSendReview() { const h = document.getElementById('input-hours').value; if(!h) return showToast("請輸入工時", "error"); closeModal('hours'); doUpdate(document.getElementById('hours-cat').value, document.getElementById('hours-zone').value, document.getElementById('hours-id').value, '客戶審核', h); }
+        function togglePanel(type) { document.getElementById('panel-' + type).style.display = 'flex'; if (type === 'memo') loadMemos(); if (type === 'link') loadLinks(); if (type === 'pending') loadPending(); }
 
         function loadPending() {
-            let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定');
-            const container = document.getElementById('pending-list');
-            const badge = document.getElementById('pending-badge');
-            
-            if (pendingList.length > 0) { badge.style.display = 'flex'; badge.innerText = pendingList.length; } 
-            else { badge.style.display = 'none'; }
-            
+            let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定'); const container = document.getElementById('pending-list'); const badge = document.getElementById('pending-badge');
+            if (pendingList.length > 0) { badge.style.display = 'flex'; badge.innerText = pendingList.length; } else { badge.style.display = 'none'; }
             if (pendingList.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待分派項目</div>'; return; }
-            
             let html = '';
             pendingList.forEach((p, idx) => {
-                const prefix = p.zone ? p.zone.split('_')[0] : ''; 
-                const numPart = p.id ? String(p.id).replace(prefix, '') : '';
-                html += `
-                <div id="p-item-${idx}" class="pending-item">
-                    <div id="p-display-${idx}">
-                        <div class="pending-name">${p.id} ${p.name}</div>
-                        <div class="pending-meta text-xs text-gray-500 mb-4">${p.client}</div>
-                        <div class="absolute top-3 right-3 text-gray-400 hover:text-black cursor-pointer flex gap-3 text-lg">
-                            <i class="fas fa-pen" onclick='enablePendingEdit(${idx})'></i>
-                            <i class="fas fa-trash-alt text-red-300 hover:text-red-600 cursor-pointer" onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')"></i>
-                        </div>
-                        <div class="flex gap-2">
-                            <select id="p-assign-maker-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1">
-                                <option value="">選擇製作人...</option><option>魏敏軒</option><option>邱仁杰</option>
-                            </select>
-                            <input id="p-assign-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="補填日期" autocomplete="off">
-                            <button onclick="confirmAssign('${p.category}', '${p.zone}', '${p.id}', ${idx})" class="bg-black text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-gray-800">確認</button>
-                        </div>
-                    </div>
-                    <div id="p-edit-${idx}" class="hidden">
-                        <input type="hidden" id="pe-origin-id-${idx}" value="${p.id}"><input type="hidden" id="pe-origin-zone-${idx}" value="${p.zone}">
-                        <input type="hidden" id="pe-cat-${idx}" value="${p.category}"><input type="hidden" id="pe-type-${idx}" value="${p.type}">
-                        <input type="hidden" id="pe-note-${idx}" value="${p.note}"><input type="hidden" id="pe-tag-${idx}" value="${p.tag}">
-                        <div class="flex gap-2 mb-2">
-                             <select id="pe-code-${idx}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center" onchange="updatePendingEditClient(${idx})"></select>
-                             <input id="pe-num-${idx}" value="${numPart}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center">
-                             <div class="flex-1"></div>
-                             <div class="cursor-pointer text-gray-400 hover:text-red-500 text-xl pt-1" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></div>
-                        </div>
-                        <input id="pe-name-${idx}" value="${p.name}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-2 font-bold" placeholder="專案名稱">
-                        <input id="pe-client-${idx}" value="${p.client}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-3 text-gray-500" placeholder="客戶名稱">
-                        <div class="flex gap-2">
-                            <select id="pe-producer-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1">
-                                <option value="尚未暫定">尚未暫定</option><option>魏敏軒</option><option>邱仁杰</option>
-                            </select>
-                            <input id="pe-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="日期" autocomplete="off">
-                            <button onclick="savePendingEdit(${idx})" class="bg-blue-600 text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-800">保存</button>
-                        </div>
-                    </div>
-                </div>`;
+                const prefix = p.zone ? p.zone.split('_')[0] : ''; const numPart = p.id ? String(p.id).replace(prefix, '') : '';
+                html += `<div id="p-item-${idx}" class="pending-item"><div id="p-display-${idx}"><div class="pending-name">${p.id} ${p.name}</div><div class="pending-meta text-xs text-gray-500 mb-4">${p.client}</div><div class="absolute top-3 right-3 text-gray-400 hover:text-black cursor-pointer flex gap-3 text-lg"><i class="fas fa-pen" onclick='enablePendingEdit(${idx})'></i><i class="fas fa-trash-alt text-red-300 hover:text-red-600 cursor-pointer" onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')"></i></div><div class="flex gap-2"><select id="p-assign-maker-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1"><option value="">選擇製作人...</option><option>魏敏軒</option><option>邱仁杰</option></select><input id="p-assign-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="補填日期" autocomplete="off"><button onclick="confirmAssign('${p.category}', '${p.zone}', '${p.id}', ${idx})" class="bg-black text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-gray-800">確認</button></div></div><div id="p-edit-${idx}" class="hidden"><input type="hidden" id="pe-origin-id-${idx}" value="${p.id}"><input type="hidden" id="pe-origin-zone-${idx}" value="${p.zone}"><input type="hidden" id="pe-cat-${idx}" value="${p.category}"><input type="hidden" id="pe-type-${idx}" value="${p.type}"><input type="hidden" id="pe-note-${idx}" value="${p.note}"><input type="hidden" id="pe-tag-${idx}" value="${p.tag}"><div class="flex gap-2 mb-2"><select id="pe-code-${idx}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center" onchange="updatePendingEditClient(${idx})"></select><input id="pe-num-${idx}" value="${numPart}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center"><div class="flex-1"></div><div class="cursor-pointer text-gray-400 hover:text-red-500 text-xl pt-1" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></div></div><input id="pe-name-${idx}" value="${p.name}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-2 font-bold" placeholder="專案名稱"><input id="pe-client-${idx}" value="${p.client}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-3 text-gray-500" placeholder="客戶名稱"><div class="flex gap-2"><select id="pe-producer-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1"><option value="尚未暫定">尚未暫定</option><option>魏敏軒</option><option>邱仁杰</option></select><input id="pe-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="日期" autocomplete="off"><button onclick="savePendingEdit(${idx})" class="bg-blue-600 text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-800">保存</button></div></div></div>`;
             });
             container.innerHTML = html;
-            setTimeout(() => { 
-                pendingList.forEach((p, idx) => { 
-                    flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-                    flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-                }); 
-            }, 50);
+            setTimeout(() => { pendingList.forEach((p, idx) => { flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); }); }, 50);
         }
 
-        function enablePendingEdit(idx) {
-            document.getElementById(`p-display-${idx}`).classList.add('hidden'); 
-            document.getElementById(`p-edit-${idx}`).classList.remove('hidden');
-            const cat = document.getElementById(`pe-cat-${idx}`).value; 
-            const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            const codeSel = document.getElementById(`pe-code-${idx}`); 
-            const originZone = document.getElementById(`pe-origin-zone-${idx}`).value;
-            const prefix = originZone.split('_')[0]; 
-            codeSel.innerHTML = '';
-            Object.keys(settings).sort().forEach(k => { codeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); 
-            codeSel.value = prefix;
-        }
+        function enablePendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.add('hidden'); document.getElementById(`p-edit-${idx}`).classList.remove('hidden'); const cat = document.getElementById(`pe-cat-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; const codeSel = document.getElementById(`pe-code-${idx}`); const originZone = document.getElementById(`pe-origin-zone-${idx}`).value; const prefix = originZone.split('_')[0]; codeSel.innerHTML = ''; Object.keys(settings).sort().forEach(k => { codeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); codeSel.value = prefix; }
+        function cancelPendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.remove('hidden'); document.getElementById(`p-edit-${idx}`).classList.add('hidden'); }
+        function updatePendingEditClient(idx) { const cat = document.getElementById(`pe-cat-${idx}`).value; const selectedCode = document.getElementById(`pe-code-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = ""; for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } } if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById(`pe-client-${idx}`).value = clientName; } }
+        function savePendingEdit(idx) { const dateVal = document.getElementById(`pe-date-${idx}`).value; const dates = dateVal.split(' to '); const selectedCode = document.getElementById(`pe-code-${idx}`).value; const cat = document.getElementById(`pe-cat-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let newZone = ""; for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { newZone = key; break; } } if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; let rawId = document.getElementById(`pe-num-${idx}`).value; if (!isNaN(rawId) && rawId !== "") { rawId = selectedCode + String(rawId).padStart(3, '0'); } else if (!rawId.toUpperCase().startsWith(selectedCode.toUpperCase())) { rawId = selectedCode + rawId; } const p = { category: cat, zone: newZone, id: rawId, client: document.getElementById(`pe-client-${idx}`).value, name: document.getElementById(`pe-name-${idx}`).value, producer: document.getElementById(`pe-producer-${idx}`).value, type: document.getElementById(`pe-type-${idx}`).value, start: dates[0] || "", end: dates[1] || dates[0] || "", note: document.getElementById(`pe-note-${idx}`).value, tag: document.getElementById(`pe-tag-${idx}`).value }; const originId = document.getElementById(`pe-origin-id-${idx}`).value; const originZone = document.getElementById(`pe-origin-zone-${idx}`).value; document.getElementById('loader').style.display = 'flex'; callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => { if (res === "OK") { callAPI('initAllData', {}, (data) => { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); }); } else { showToast("保存失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
+        function confirmAssign(cat, zone, id, idx) { const maker = document.getElementById(`p-assign-maker-${idx}`).value; const date = document.getElementById(`p-assign-date-${idx}`).value; if(!maker || !date) return showToast("請選擇製作人與日期", "error"); const dates = date.split(' to '); const startDate = dates[0]; const endDate = dates[1] || dates[0]; const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(id) && String(x.zone) === String(zone)); if (targetIdx !== -1) { DATA.projects[targetIdx].producer = maker; DATA.projects[targetIdx].start = startDate; DATA.projects[targetIdx].end = endDate; let newStatus = '尚未進行'; try { let d = new Date(startDate); let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0); if (d <= today) newStatus = '製作中'; } catch(e) {} DATA.projects[targetIdx].status = newStatus; localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); showToast("專案分派成功"); } callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {}); }
 
-        function cancelPendingEdit(idx) { 
-            document.getElementById(`p-display-${idx}`).classList.remove('hidden'); 
-            document.getElementById(`p-edit-${idx}`).classList.add('hidden'); 
-        }
-
-        function updatePendingEditClient(idx) {
-            const cat = document.getElementById(`pe-cat-${idx}`).value; 
-            const selectedCode = document.getElementById(`pe-code-${idx}`).value;
-            const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; 
-            let foundZone = "";
-            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
-            if (foundZone) { 
-                const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; 
-                document.getElementById(`pe-client-${idx}`).value = clientName; 
-            }
-        }
-
-        function savePendingEdit(idx) {
-            const dateVal = document.getElementById(`pe-date-${idx}`).value; const dates = dateVal.split(' to ');
-            const selectedCode = document.getElementById(`pe-code-${idx}`).value; const cat = document.getElementById(`pe-cat-${idx}`).value;
-            const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let newZone = "";
-            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { newZone = key; break; } }
-            if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
-            let rawId = document.getElementById(`pe-num-${idx}`).value;
-            if (!isNaN(rawId) && rawId !== "") { rawId = selectedCode + String(rawId).padStart(3, '0'); } 
-            else if (!rawId.toUpperCase().startsWith(selectedCode.toUpperCase())) { rawId = selectedCode + rawId; }
-            
-            const p = { 
-                category: cat, zone: newZone, id: rawId, client: document.getElementById(`pe-client-${idx}`).value, 
-                name: document.getElementById(`pe-name-${idx}`).value, producer: document.getElementById(`pe-producer-${idx}`).value, 
-                type: document.getElementById(`pe-type-${idx}`).value, start: dates[0] || "", end: dates[1] || dates[0] || "", 
-                note: document.getElementById(`pe-note-${idx}`).value, tag: document.getElementById(`pe-tag-${idx}`).value 
-            };
-            const originId = document.getElementById(`pe-origin-id-${idx}`).value; 
-            const originZone = document.getElementById(`pe-origin-zone-${idx}`).value;
-            
-            document.getElementById('loader').style.display = 'flex';
-            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
-                if (res === "OK") { 
-                    callAPI('initAllData', {}, (data) => { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); }); 
-                } else { 
-                    showToast("保存失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; 
-                }
-            });
-        }
-
-        function confirmAssign(cat, zone, id, idx) {
-            const maker = document.getElementById(`p-assign-maker-${idx}`).value; 
-            const date = document.getElementById(`p-assign-date-${idx}`).value;
-            if(!maker || !date) return showToast("請選擇製作人與日期", "error");
-            
-            const dates = date.split(' to '); const startDate = dates[0]; const endDate = dates[1] || dates[0];
-            const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(id) && String(x.zone) === String(zone));
-            if (targetIdx !== -1) {
-                DATA.projects[targetIdx].producer = maker; DATA.projects[targetIdx].start = startDate; DATA.projects[targetIdx].end = endDate;
-                let newStatus = '尚未進行';
-                try { 
-                    let d = new Date(startDate); let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0); 
-                    if (d <= today) newStatus = '製作中'; 
-                } catch(e) {}
-                DATA.projects[targetIdx].status = newStatus;
-                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
-                processDataUpdate(DATA, true); 
-                showToast("專案分派成功");
-            }
-            callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {});
-        }
-
-        function loadMemos() {
-            callAPI('getMemos', {}, (list) => {
-                const container = document.getElementById('memo-list'); const badge = document.getElementById('memo-badge');
-                if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; }
-                if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待辦事項</div>'; return; }
-                let html = '';
-                list.forEach(m => {
-                    const colorClass = (m.owner === '邱仁杰') ? 'chiu' : ''; const mStr = encodeURIComponent(JSON.stringify(m));
-                    html += `
-                    <div class="memo-item ${colorClass}">
-                        <div class="memo-content">${m.content}</div>
-                        <div class="memo-meta"><span><i class="fas fa-user-circle"></i> ${m.owner}</span><span><i class="far fa-clock"></i> ${m.date}</span></div>
-                        <div class="memo-actions text-lg">
-                            <i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i>
-                            <i onclick="finishMemo(${m.idx}, this)" class="memo-icon far fa-check-circle text-green-500" title="完成"></i>
-                            <i onclick="deleteMemo(${m.idx}, this)" class="memo-icon fas fa-trash-alt memo-del" title="刪除"></i>
-                        </div>
-                    </div>`;
-                });
-                container.innerHTML = html;
-            });
-        }
-
+        function loadMemos() { callAPI('getMemos', {}, (list) => { const container = document.getElementById('memo-list'); const badge = document.getElementById('memo-badge'); if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; } if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待辦事項</div>'; return; } let html = ''; list.forEach(m => { const colorClass = (m.owner === '邱仁杰') ? 'chiu' : ''; const mStr = encodeURIComponent(JSON.stringify(m)); html += `<div class="memo-item ${colorClass}"><div class="memo-content">${m.content}</div><div class="memo-meta"><span><i class="fas fa-user-circle"></i> ${m.owner}</span><span><i class="far fa-clock"></i> ${m.date}</span></div><div class="memo-actions text-lg"><i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i><i onclick="finishMemo(${m.idx}, this)" class="memo-icon far fa-check-circle text-green-500" title="完成"></i><i onclick="deleteMemo(${m.idx}, this)" class="memo-icon fas fa-trash-alt memo-del" title="刪除"></i></div></div>`; }); container.innerHTML = html; }); }
         function deleteMemo(idx, el) { if(!confirm("確定刪除此便利貼嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteMemo', { idx:idx }, (res) => { showToast("已刪除待辦"); loadMemos(); }); }
         function editMemoMode(m) { editingMemoIdx = m.idx; document.getElementById('m-content').value = m.content; document.getElementById('m-owner').value = m.owner; if(m.date) fpMemo.setDate(m.date); const btn = document.getElementById('btn-memo-add'); btn.innerText = "更新貼文"; btn.classList.add('bg-blue-600'); btn.onclick = updateMemoItem; }
         function updateMemoItem() { const content = document.getElementById('m-content').value; const owner = document.getElementById('m-owner').value; const date = document.getElementById('m-date').value; if(!content) return showToast("請輸入內容", "error"); document.getElementById('m-content').value = ''; document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 更新中...</div>'; const btn = document.getElementById('btn-memo-add'); btn.innerText = "新增貼文"; btn.classList.remove('bg-blue-600'); btn.onclick = addMemoItem; callAPI('editMemo', { idx: editingMemoIdx, item: {content: content, owner: owner, date: date} }, (res) => { editingMemoIdx = null; showToast("貼文已更新"); loadMemos(); }); }
         function addMemoItem() { const content = document.getElementById('m-content').value; const owner = document.getElementById('m-owner').value; const date = document.getElementById('m-date').value; if(!content) return showToast("請輸入內容", "error"); document.getElementById('m-content').value = ''; document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 儲存中...</div>'; callAPI('addMemo', { item: {content: content, owner: owner, date: date} }, (res) => { showToast("已新增待辦"); loadMemos(); }); }
         function finishMemo(idx, el) { if(!confirm("確定完成此事項並封存嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('completeMemo', { idx:idx }, (res) => { showToast("事項已完成封存"); loadMemos(); }); }
 
-        function loadLinks() {
-            callAPI('getLinks', {}, (list) => {
-                const container = document.getElementById('link-list');
-                if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; return; }
-                const groups = {}; const folderDatalist = document.getElementById('folder-options'); folderDatalist.innerHTML = ''; 
-                list.forEach(l => {
-                    let folder = "未分類"; let displayName = l.client;
-                    if (l.client.includes('::')) { const parts = l.client.split('::'); folder = parts[0]; displayName = parts[1]; }
-                    if (!groups[folder]) groups[folder] = []; groups[folder].push({...l, displayName: displayName, originalClient: l.client, folder: folder});
-                });
-                let html = '';
-                for (let folder in groups) {
-                    if (folder !== "未分類") { folderDatalist.appendChild(new Option(folder)); }
-                    html += `
-                    <details class="mb-3 group link-folder">
-                        <summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200">
-                            <div class="flex items-center gap-3"><i class="fas fa-folder-open text-blue-500"></i> ${folder} <span class="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded-full">${groups[folder].length}</span></div>
-                            <div class="flex gap-2 items-center"><i class="fas fa-pen text-gray-400 hover:text-black p-2" title="重新命名資料夾" onclick="renameFolder('${folder}')"></i><i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 group-open:rotate-180"></i></div>
-                        </summary>
-                        <div class="pt-3 pl-2 pr-2">`;
-                    groups[folder].forEach(l => {
-                        const lData = {idx: l.idx, folder: l.folder, name: l.displayName, url: l.url, original: l.originalClient}; const lStr = encodeURIComponent(JSON.stringify(lData));
-                        html += `
-                        <div class="bg-[#2D3748] text-white p-3 rounded-lg mb-2 flex justify-between items-center cursor-pointer hover:bg-[#1A202C] transition shadow-sm" onclick="window.open('${l.url}','_blank')">
-                            <div class="flex-1 truncate flex items-center gap-3"><i class="fas fa-link text-gray-400"></i> ${l.displayName}</div>
-                            <div class="flex gap-4 ml-2" onclick="event.stopPropagation()">
-                                <i onclick="editLinkMode(JSON.parse(decodeURIComponent('${lStr}')))" class="fas fa-pen text-gray-400 hover:text-white transition" title="編輯"></i>
-                                <i onclick="removeLink(${l.idx}, this)" class="fas fa-trash-alt text-gray-400 hover:text-red-400 transition" title="刪除"></i>
-                            </div>
-                        </div>`;
-                    });
-                    html += `</div></details>`;
-                }
-                container.innerHTML = html;
-            });
-        }
-
+        function loadLinks() { callAPI('getLinks', {}, (list) => { const container = document.getElementById('link-list'); if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; return; } const groups = {}; const folderDatalist = document.getElementById('folder-options'); folderDatalist.innerHTML = ''; list.forEach(l => { let folder = "未分類"; let displayName = l.client; if (l.client.includes('::')) { const parts = l.client.split('::'); folder = parts[0]; displayName = parts[1]; } if (!groups[folder]) groups[folder] = []; groups[folder].push({...l, displayName: displayName, originalClient: l.client, folder: folder}); }); let html = ''; for (let folder in groups) { if (folder !== "未分類") { folderDatalist.appendChild(new Option(folder)); } html += `<details class="mb-3 group link-folder"><summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200"><div class="flex items-center gap-3"><i class="fas fa-folder-open text-blue-500"></i> ${folder} <span class="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded-full">${groups[folder].length}</span></div><div class="flex gap-2 items-center"><i class="fas fa-pen text-gray-400 hover:text-black p-2" title="重新命名資料夾" onclick="renameFolder('${folder}')"></i><i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 group-open:rotate-180"></i></div></summary><div class="pt-3 pl-2 pr-2">`; groups[folder].forEach(l => { const lData = {idx: l.idx, folder: l.folder, name: l.displayName, url: l.url, original: l.originalClient}; const lStr = encodeURIComponent(JSON.stringify(lData)); html += `<div class="bg-[#2D3748] text-white p-3 rounded-lg mb-2 flex justify-between items-center cursor-pointer hover:bg-[#1A202C] transition shadow-sm" onclick="window.open('${l.url}','_blank')"><div class="flex-1 truncate flex items-center gap-3"><i class="fas fa-link text-gray-400"></i> ${l.displayName}</div><div class="flex gap-4 ml-2" onclick="event.stopPropagation()"><i onclick="editLinkMode(JSON.parse(decodeURIComponent('${lStr}')))" class="fas fa-pen text-gray-400 hover:text-white transition" title="編輯"></i><i onclick="removeLink(${l.idx}, this)" class="fas fa-trash-alt text-gray-400 hover:text-red-400 transition" title="刪除"></i></div></div>`; }); html += `</div></details>`; } container.innerHTML = html; }); }
         function renameFolder(oldName) { event.preventDefault(); const newName = prompt(`請輸入「${oldName}」的新名稱：\n(若輸入空白則取消)`, oldName); if (newName && newName !== oldName) { document.getElementById('link-list').innerHTML = '<div class="text-center text-gray-400 py-4"><i class="fas fa-spinner fa-spin"></i> 更新資料夾中...</div>'; callAPI('renameLinkFolder', { oldFolder: oldName, newFolder: newName }, (res) => { showToast("資料夾已重新命名"); loadLinks(); }); } }
         function editLinkMode(l) { editingLinkIdx = l.idx; document.getElementById('l-folder').value = (l.folder === "未分類") ? "" : l.folder; document.getElementById('l-name').value = l.name; document.getElementById('l-url').value = l.url; const btn = document.getElementById('btn-link-add'); btn.innerText = "更新連結"; btn.onclick = updateLinkItem; }
-        function updateLinkItem() { const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); const clientString = folder ? `${folder}::${name}` : name; const btn = document.getElementById('btn-link-add'); btn.innerText = "更新中..."; btn.disabled = true; callAPI('editLink', { idx: editingLinkIdx, client: clientString, url: url }, (res) => { btn.innerText = "新增連結"; btn.disabled = false; btn.onclick = addLinkItem; editingLinkIdx = null; document.getElementById('l-folder').value = ''; document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("連結已更新"); loadLinks(); }); }
+        function updateLinkItem() { const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); const clientString = folder ? `${folder}::${name}` : name; const btn = document.getElementById('btn-link-add'); btn.innerText = "更新中..."; btn.disabled = true; callAPI('editLink', { idx: editingLinkIdx, client: clientString, url: url }, (res) => { btn.innerText = "新增內部連結"; btn.disabled = false; btn.onclick = addLinkItem; editingLinkIdx = null; document.getElementById('l-folder').value = ''; document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("連結已更新"); loadLinks(); }); }
         function addLinkItem() { const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); const clientString = folder ? `${folder}::${name}` : name; const btn = document.getElementById('btn-link-add'); const originalText = btn.innerText; btn.innerText = "儲存中..."; btn.disabled = true; callAPI('addLink', { client: clientString, url: url }, (res) => { btn.innerText = originalText; btn.disabled = false; if (res !== "OK") { showToast(res, "error"); } else { document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("已新增連結"); loadLinks(); } }); }
         function removeLink(idx, el) { if(!confirm("確定刪除此連結嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteLink', { idx:idx }, (res) => { showToast("已刪除連結"); loadLinks(); }); }
 

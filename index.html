@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <link rel="icon" href="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn">
+    <link rel="icon" href="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn">
     
     <style>
         /* --- 基礎架構 --- */
@@ -269,7 +269,7 @@
                     <h1 class="text-3xl font-black text-white tracking-wider">JAYRAN <span class="text-blue-500">STUDIO</span></h1>
                     <p id="portal-client-name" class="text-gray-400 mt-2 text-lg font-bold">專屬協作空間</p>
                 </div>
-                <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-16 h-16 rounded-full shadow-lg border-2 border-slate-700">
+                <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-16 h-16 rounded-full shadow-lg border-2 border-slate-700">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -313,7 +313,7 @@
     <div id="admin-view">
 
         <div id="login-overlay">
-            <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-lg mb-6 border-4 border-white">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-lg mb-6 border-4 border-white">
             <div class="text-4xl font-black mb-8 tracking-widest text-white">JAYRAN STUDIO</div>
             
             <input id="login-acc" type="email" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-4 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入帳號 (Email)">
@@ -322,7 +322,7 @@
         </div>
 
         <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[999]" style="display:none;">
-            <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full shadow-lg mb-4 animate-pulse">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full shadow-lg mb-4 animate-pulse">
             <div class="text-2xl font-black tracking-widest animate-pulse">JAYRAN STUDIO</div>
             <div id="loader-msg" class="mt-4 text-gray-500 font-bold text-center px-4">資料讀取中...</div>
         </div>
@@ -552,7 +552,7 @@
         <div class="header-fixed-area">
             <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <img src="https://drive.google.com/uc?export=view&id=1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm">
+                    <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm">
                     <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
                 </div>
             </div>
@@ -612,12 +612,12 @@
                     </div>
                 </div>
 
-                <div id="db-detail-container" class="hidden clean-card border-t-4 border-black">
+                <div id="db-detail-container" class="hidden clean-card border-t-4 border-black mt-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 id="db-detail-title" class="text-xl font-bold text-gray-800">專案明細</h3>
                         <i class="fas fa-times text-gray-400 hover:text-black cursor-pointer text-xl" onclick="document.getElementById('db-detail-container').classList.add('hidden')"></i>
                     </div>
-                    <div class="table-container m-0">
+                    <div class="table-container m-0" style="max-height: 400px; overflow-y: auto;">
                         <table class="excel-table">
                             <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>製作人</th><th>狀態</th><th>日期</th></tr></thead>
                             <tbody id="db-detail-tbody"></tbody>
@@ -813,10 +813,11 @@
         // =========================================================
         // ★ 核心變數與設定 (請換成您最新的 Web App 網址)
         // =========================================================
+        // ⚠️⚠️⚠️ 記得把下面這個網址換成您的最新網址 ⚠️⚠️⚠️
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
         
         const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
-        const SESSION_HOURS = 12;
+        const SESSION_HOURS = 12; // 登入保持時間(小時)
 
         let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [] };
         let curTab = 'add';
@@ -873,10 +874,11 @@
         function callAPI(action, payload, onSuccess) {
             if (!GAS_API_URL) return;
             
-            if (['initAllData', 'getHistory', 'getLeaves', 'getMemos', 'getLinks'].includes(action)) {
+            if (['initAllData', 'getHistory', 'getLeaves', 'getMemos', 'getLinks', 'getClientPortalData'].includes(action)) {
                 let params = `?action=${action}`;
                 if(payload.cat) params += `&cat=${payload.cat}`; 
                 if(payload.zone) params += `&zone=${payload.zone}`;
+                if(payload.clientName) params += `&clientName=${encodeURIComponent(payload.clientName)}`;
                 
                 fetch(GAS_API_URL + params)
                     .then(res => {
@@ -923,20 +925,17 @@
         // ★ 路由：判斷是一般登入 還是 客戶 VIP 傳送門
         // =========================================================
         window.onload = function() {
-            // 抓取網址參數 (例如：?client=台積電)
             const urlParams = new URLSearchParams(window.location.search);
             const portalClient = urlParams.get('client');
             
-            // 🌟 如果是客戶專屬網址，啟動 VIP 模式！
             if (portalClient) {
-                document.getElementById('admin-view').style.display = 'none'; // 隱藏所有內部管理介面
-                document.getElementById('login-overlay').style.display = 'none'; // 免登入
-                document.getElementById('client-portal-view').style.display = 'block'; // 顯示 VIP 介面
+                document.getElementById('admin-view').style.display = 'none'; 
+                document.getElementById('login-overlay').style.display = 'none'; 
+                document.getElementById('client-portal-view').style.display = 'block'; 
                 initClientPortal(portalClient);
                 return;
             }
 
-            // 如果沒有參數，走一般內部管理登入流程
             if (isLoggedIn()) { 
                 document.getElementById('login-overlay').style.display = 'none'; 
                 startApp(); 
@@ -951,18 +950,15 @@
         function initClientPortal(clientName) {
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
             
-            // 呼叫專屬安全 API (只拿不機密的資料)
             callAPI('getClientPortalData', { clientName: clientName }, (res) => {
                 if (!res || !res.projects) {
                     document.getElementById('portal-project-list').innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-500">無法取得資料</td></tr>`;
                     return;
                 }
 
-                // 1. 渲染數字卡片
                 document.getElementById('portal-done-count').innerText = res.totalDone;
                 document.getElementById('portal-process-count').innerText = res.totalProcess;
 
-                // 2. 渲染圓餅圖
                 const ctx = document.getElementById('portal-chart');
                 if (portalChart) portalChart.destroy();
                 portalChart = new Chart(ctx, {
@@ -985,7 +981,6 @@
                     }
                 });
 
-                // 3. 渲染專案清單
                 const listEl = document.getElementById('portal-project-list');
                 if (res.projects.length === 0) {
                     listEl.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-500">目前尚無進行中的專案</td></tr>`;
@@ -1045,6 +1040,18 @@
                     btn.disabled = false;
                 }
             });
+        }
+
+        function isLoggedIn() {
+            const savedTime = localStorage.getItem(LOGIN_KEY); 
+            if (!savedTime) return false;
+            const now = new Date().getTime(); 
+            // 修正判斷邏輯，確保 12 小時內絕對不會被登出
+            if (now - parseInt(savedTime) > SESSION_HOURS * 60 * 60 * 1000) { 
+                localStorage.removeItem(LOGIN_KEY); // 過期則清除
+                return false; 
+            }
+            return true;
         }
 
         function startApp() {
@@ -1127,9 +1134,13 @@
                 renderKanban('邱仁杰'); 
             } else if (tab === 'gan') { 
                 targetId = 'p-gantt'; 
-                renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); 
+                // 🌟 加入短延遲，確保畫面完全顯示後再計算甘特圖寬度，防止破圖
+                setTimeout(() => {
+                    renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰');
+                }, 50);
             } else if (tab === 'calendar') { 
                 targetId = 'p-calendar'; 
+                // 🌟 同理，行事曆也需要延遲渲染以取得正確寬高
                 setTimeout(() => renderCalendar(), 100); 
             } else if (tab === 'dashboard') { 
                 targetId = 'p-dashboard'; 
@@ -1526,6 +1537,7 @@
             renderClientLeaderboard(clientCounts);
         }
 
+        // 🌟 複製專屬網址功能
         function copyPortalLink(clientName) {
             const currentUrl = window.location.href.split('?')[0];
             const portalUrl = currentUrl + "?client=" + encodeURIComponent(clientName);

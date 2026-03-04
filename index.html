@@ -270,7 +270,7 @@
                 <div class="flex flex-col md:flex-row items-center gap-6 relative z-10">
                     
                     <div class="bg-slate-700/50 p-1.5 rounded-full border-2 border-slate-500/50 flex justify-center items-center overflow-hidden w-24 h-24 md:w-32 md:h-32 shrink-0 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                        <img src="https://drive.google.com/uc?export=view&id=11r2xCwR6c5jqM1d0lrQnqh7p1kw4-DtK" alt="專屬管家" class="w-full h-full object-cover rounded-full">
+                        <img src="https://lh3.googleusercontent.com/d/11r2xCwR6c5jqM1d0lrQnqh7p1kw4-DtK" onerror="this.src='https://ui-avatars.com/api/?name=專屬+管家&background=1e293b&color=3b82f6'" alt="專屬管家" class="w-full h-full object-cover rounded-full">
                     </div>
 
                     <div class="text-center md:text-left flex-1 flex flex-col justify-center h-full min-h-[6rem] md:min-h-[8rem]">
@@ -291,7 +291,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div class="portal-card flex flex-col items-center justify-center min-h-[220px]">
-                    <h3 class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">合作狀態分佈</h3>
+                    <h3 id="portal-chart-title" class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">合作狀態分佈</h3>
                     <div style="height: 160px; width: 100%;"><canvas id="portal-chart"></canvas></div>
                 </div>
                 <div class="flex flex-col justify-between gap-4">
@@ -1001,9 +1001,9 @@
 
     <script>
         // =========================================================
-        // ★ 核心變數與設定 (請換成您最新部署的 Web App 網址)
+        // ★ 核心變數與設定
         // =========================================================
-        // ⚠️⚠️⚠️ 極度重要：請將此網址替換為剛剛「建立新版本」後的網址 ⚠️⚠️⚠️
+        // ⚠️⚠️⚠️ 極度重要：請保留您的原始網址 ⚠️⚠️⚠️
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
         
         const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
@@ -1119,7 +1119,6 @@
             if (portalClient) {
                 document.getElementById('admin-view').style.display = 'none'; 
                 document.getElementById('login-overlay').style.display = 'none'; 
-                // 🌟 修復 1：這行是解開白畫面的關鍵
                 document.getElementById('client-portal-view').classList.remove('hidden'); 
                 document.getElementById('portal-loader').style.display = 'flex';
                 initClientPortal(portalClient);
@@ -1281,6 +1280,11 @@
         function initClientPortal(clientName) {
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
             
+            // 🌟 優化 2：動態載入當前年份
+            const currentYear = new Date().getFullYear();
+            const chartTitle = document.getElementById('portal-chart-title');
+            if(chartTitle) chartTitle.innerText = `${currentYear} 合作狀態分佈`;
+
             callAPI('getClientPortalData', { clientName: clientName }, (res) => {
                 document.getElementById('portal-loader').style.opacity = '0';
                 setTimeout(() => {
@@ -1382,10 +1386,14 @@
             } catch(e) { return dateStr; }
         }
 
-        // 🌟 VIP 專區分頁載入邏輯
-        function renderPortalProjectsList() {
+        // 🌟 優化 3：VIP 專區分頁載入邏輯重構 (採用高效率的 Append)
+        function renderPortalProjectsList(appendOnly = false) {
             const listEl = document.getElementById('portal-project-list');
-            const visibleData = portalProjectsData.slice(0, portalVisibleCount);
+            
+            // 決定要渲染的範圍
+            let startIdx = appendOnly ? portalVisibleCount - 5 : 0;
+            let endIdx = portalVisibleCount;
+            const visibleData = portalProjectsData.slice(startIdx, endIdx);
             
             let html = '';
             visibleData.forEach(p => {
@@ -1421,7 +1429,13 @@
                     </div>
                 </div>`;
             });
-            listEl.innerHTML = html;
+            
+            // 使用增量寫入，避免網頁閃爍或卡頓
+            if (appendOnly) {
+                listEl.insertAdjacentHTML('beforeend', html);
+            } else {
+                listEl.innerHTML = html;
+            }
 
             const remain = portalProjectsData.length - portalVisibleCount;
             const btnContainer = document.getElementById('portal-load-more-container');
@@ -1435,7 +1449,8 @@
 
         function loadMorePortalProjects() {
             portalVisibleCount += 5;
-            renderPortalProjectsList();
+            // 傳入 true，啟動增量渲染模式
+            renderPortalProjectsList(true);
         }
 
         // =========================================================

@@ -240,7 +240,7 @@
     <div id="client-portal-view" class="hidden">
         
         <div id="portal-loader" class="fixed inset-0 z-[9999999] flex flex-col justify-center items-center transition-opacity duration-300" style="background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);">
-            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-6 bg-white border-4 border-slate-700 animate-pulse object-cover">
+            <img src="https://lh3.googleusercontent.com/d/11r2xCwR6c5jqM1d0lrQnqh7p1kw4-DtK" alt="Logo" class="w-24 h-24 rounded-full shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-6 bg-white border-4 border-slate-700 animate-pulse object-cover">
             <div class="text-3xl font-black tracking-widest text-white mb-2">JAYRAN <span class="text-blue-500">STUDIO</span></div>
             <div id="portal-loader-text" class="mt-4 text-blue-400 font-bold text-sm flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700 shadow-inner">
                 <i class="fas fa-circle-notch fa-spin"></i> 正在與伺服器建立安全連線...
@@ -253,7 +253,7 @@
                     <h1 class="text-3xl font-black text-white tracking-wider drop-shadow-md">JAYRAN <span class="text-blue-500">STUDIO</span></h1>
                     <p id="portal-client-name" class="text-gray-400 mt-2 text-lg font-bold">專屬協作空間</p>
                 </div>
-                <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-14 h-14 md:w-16 md:h-16 rounded-full shadow-xl border-2 border-slate-600 bg-white relative z-10">
+                <img src="https://lh3.googleusercontent.com/d/11r2xCwR6c5jqM1d0lrQnqh7p1kw4-DtK" alt="Logo" class="w-14 h-14 md:w-16 md:h-16 rounded-full shadow-xl border-2 border-slate-600 bg-white relative z-10">
             </div>
             
             <div id="portal-global-link-container" class="mb-8 hidden fade-in">
@@ -760,9 +760,14 @@
 
         <div id="p-vip" class="hidden page-scroll-container fade-in">
             <div class="max-w-5xl mx-auto">
-                <div class="flex items-center gap-3 mb-6 px-2">
-                    <h2 class="text-3xl font-black border-l-8 border-blue-600 pl-4">💼 VIP 客戶專區</h2>
-                    <span class="text-sm text-gray-500 font-bold bg-gray-100 px-3 py-1 rounded-full">自動合併同名客戶</span>
+                <div class="flex items-center justify-between gap-3 mb-6 px-2">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-3xl font-black border-l-8 border-blue-600 pl-4">💼 VIP 客戶專區</h2>
+                        <span class="text-sm text-gray-500 font-bold bg-gray-100 px-3 py-1 rounded-full hidden sm:inline-block">自動合併同名客戶</span>
+                    </div>
+                    <button onclick="syncPortalMasterData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow-md whitespace-nowrap">
+                        <i class="fas fa-bolt mr-1"></i> <span class="hidden sm:inline">更新客戶資料 </span>(加速)
+                    </button>
                 </div>
                 <div class="clean-card">
                     <p class="text-gray-500 font-bold mb-4">點擊「預覽」，即可查看並測試發送給該客戶的尊榮獨立網頁。</p>
@@ -1278,22 +1283,35 @@
         }
 
         // =========================================================
+        // 🌟 匠人新增：手動同步極速總表
+        // =========================================================
+        function syncPortalMasterData() {
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader-msg').innerText = "編譯極速總表中，請稍候幾秒...";
+            callAPI('syncPortalMaster', {}, (res) => {
+                document.getElementById('loader').style.display = 'none';
+                if(res === 'OK') {
+                    showToast("✅ 資料庫已同步！客戶專區載入已升級為極速。");
+                } else {
+                    showToast("同步失敗：" + res, "error");
+                }
+            });
+        }
+
+        // =========================================================
         // 🌟 VIP 尊榮影像管家看板
         // =========================================================
         function initClientPortal(clientName) {
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
             
-            // 動態載入當前年份
             const currentYear = new Date().getFullYear();
             const chartTitle = document.getElementById('portal-chart-title');
             if(chartTitle) chartTitle.innerText = `${currentYear} 合作狀態分佈`;
             
-            // 🌟 匠人修正：管家大浮水印動態年份
             if(document.getElementById('butler-year-watermark')) {
                 document.getElementById('butler-year-watermark').innerText = currentYear;
             }
 
-            // 🌟 匠人修正：動態切換 Loader 文字，安撫等待焦慮
             const loaderTextEl = document.getElementById('portal-loader-text');
             const loadingMsgs = [
                 "正在與伺服器建立安全連線...",
@@ -1309,7 +1327,6 @@
             }, 1200);
 
             callAPI('getClientPortalData', { clientName: clientName }, (res) => {
-                // 清除文字切換計時器
                 clearInterval(loaderInterval);
                 
                 document.getElementById('portal-loader').style.opacity = '0';
@@ -1345,7 +1362,6 @@
                 }
                 if(document.getElementById('portal-closest-date')) document.getElementById('portal-closest-date').innerText = closestDate;
 
-                // 圖表一：合作狀態總覽
                 const ctx = document.getElementById('portal-chart'); 
                 if (portalChart) portalChart.destroy();
                 portalChart = new Chart(ctx, { 
@@ -1365,7 +1381,6 @@
                     } 
                 });
 
-                // 圖表二：服務類型矩陣分析
                 const typeCounts = {};
                 res.projects.forEach(p => {
                     const t = p.type || '其他設計';
@@ -1412,7 +1427,6 @@
             } catch(e) { return dateStr; }
         }
 
-        // 🌟 匠人修正：極致效能的分頁增量渲染邏輯
         function renderPortalProjectsList(appendOnly = false) {
             const listEl = document.getElementById('portal-project-list');
             

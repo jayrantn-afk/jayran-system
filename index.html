@@ -505,8 +505,15 @@
                 <h3 class="text-xl font-black mb-2">設定專屬雲端連結</h3>
                 <p class="text-sm text-gray-500 mb-4" id="c-link-target"></p>
                 <input type="hidden" id="c-link-clientname">
-                <label class="block text-xs font-bold text-gray-500 mb-1">雲端資料夾網址</label>
+                
+                <div class="mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">目前綁定的雲端：</label>
+                    <div id="c-link-current" class="text-sm font-bold text-blue-600 break-all overflow-hidden" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">無</div>
+                </div>
+
+                <label class="block text-xs font-bold text-gray-500 mb-1">修改 / 新增連結 (將覆蓋舊網址)</label>
                 <input id="c-link-url" class="clean-input mb-6 border border-gray-200 font-bold text-blue-600" placeholder="請貼上 Google Drive 等分享網址...">
+                
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-client-link')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold hover:bg-gray-300 transition">取消</button>
                     <button onclick="saveClientLink()" class="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-emerald-700 transition">儲存設定</button>
@@ -1017,7 +1024,7 @@
         const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
         const SESSION_HOURS = 12;
 
-        let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [], quotes: [] };
+        let DATA = { ids: {}, videoSettings: {}, imageSettings: {}, projects: [], usedCodesVideo: [], usedCodesImage: [], config: {}, leaves: [], quotes: [], clientLinks: {} };
         let curTab = 'add';
         let curCat = 'video';
         let modalMode = 'new';
@@ -1032,7 +1039,6 @@
         let portalChart = null;
         let portalTypeChart = null;
 
-        // 🌟 報價單與 VIP 分頁變數
         let quoteVisibleCount = 3;
         let portalProjectsData = [];
         let portalVisibleCount = 3;
@@ -1065,9 +1071,6 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // =========================================================
-        // 🌟 網路層 API 連線
-        // =========================================================
         function callAPI(action, payload, onSuccess) {
             if (!GAS_API_URL) return;
             
@@ -1076,7 +1079,7 @@
                 if(payload.cat) params += `&cat=${payload.cat}`; 
                 if(payload.zone) params += `&zone=${payload.zone}`;
                 if(payload.clientName) params += `&clientName=${encodeURIComponent(payload.clientName)}`;
-                if(payload.mode) params += `&mode=${payload.mode}`; // 增加分頁 mode 參數
+                if(payload.mode) params += `&mode=${payload.mode}`; 
                 
                 fetch(GAS_API_URL + params)
                     .then(res => {
@@ -1118,9 +1121,6 @@
             }
         }
 
-        // =========================================================
-        // 🌟 初始化路由與登入邏輯
-        // =========================================================
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const portalClient = urlParams.get('client');
@@ -1289,12 +1289,10 @@
         function initClientPortal(clientName) {
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
             
-            // 進度條動畫邏輯
             let progress = 0;
             const progressText = document.getElementById('portal-progress-text');
             const progressBar = document.getElementById('portal-progress-bar');
             
-            // 模擬快速讀取，最高停在 88% 等待後端
             const progressInterval = setInterval(() => {
                 if (progress < 88) { progress += Math.floor(Math.random() * 15) + 5; }
                 if (progress > 88) progress = 88;
@@ -1302,9 +1300,7 @@
                 progressBar.style.width = `${progress}%`;
             }, 50);
 
-            // mode: 'init' 告訴後端只要回傳 3 筆就好
             callAPI('getClientPortalData', { clientName: clientName, mode: 'init' }, (res) => {
-                // 資料抵達，直接衝到 100%
                 clearInterval(progressInterval);
                 progressText.innerText = `100%`;
                 progressBar.style.width = `100%`;
@@ -1316,7 +1312,6 @@
                         document.getElementById('portal-content').classList.remove('hidden');
                         document.getElementById('portal-content').classList.add('fade-in');
                         
-                        // 重置 Loader 以防下次切換
                         document.getElementById('portal-loader').style.opacity = '1';
                         progressBar.style.width = '0%';
                         progressText.innerText = '0%';
@@ -1343,7 +1338,6 @@
                 
                 if(document.getElementById('portal-closest-date')) document.getElementById('portal-closest-date').innerText = res.closestDate || "近期無待交專案";
 
-                // 圖表一：合作狀態總覽
                 const ctx = document.getElementById('portal-chart'); 
                 if (portalChart) portalChart.destroy();
                 portalChart = new Chart(ctx, { 
@@ -1359,7 +1353,6 @@
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } } } 
                 });
 
-                // 圖表二：服務類型矩陣分析 (現已包含全類型)
                 const ctxType = document.getElementById('portal-type-chart');
                 if (portalTypeChart) portalTypeChart.destroy();
                 portalTypeChart = new Chart(ctxType, {
@@ -1384,9 +1377,8 @@
                     }
                 });
 
-                // 處理列表與按鈕狀態
                 portalProjectsData = res.projects;
-                portalVisibleCount = res.projects.length; // 初始就是3筆，全顯示
+                portalVisibleCount = res.projects.length; 
                 renderPortalProjectsList();
 
                 const btnContainer = document.getElementById('portal-load-more-container');
@@ -1404,7 +1396,6 @@
             });
         }
         
-        // 🌟 真實向後端請求歷史資料，節省首屏資源
         function loadMorePortalProjects() {
             const urlParams = new URLSearchParams(window.location.search);
             const clientName = urlParams.get('client');
@@ -1414,15 +1405,11 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 歷史資料安全讀取中...';
             btn.disabled = true;
 
-            // mode: 'more' 告訴後端拿第 4 筆之後的所有資料
             callAPI('getClientPortalData', { clientName: clientName, mode: 'more' }, (res) => {
                 if (res && res.projects) {
-                    // 將新拉回來的歷史資料接在原本的陣列後面
                     portalProjectsData = portalProjectsData.concat(res.projects);
                     portalVisibleCount = portalProjectsData.length;
                     renderPortalProjectsList();
-                    
-                    // 資料已全部載入，隱藏按鈕
                     document.getElementById('portal-load-more-container').classList.add('hidden');
                 } else {
                     btn.innerHTML = originalText;
@@ -1432,7 +1419,6 @@
             });
         }
 
-        // 🌟 VIP 專區分頁載入邏輯
         function renderPortalProjectsList() {
             const listEl = document.getElementById('portal-project-list');
             const visibleData = portalProjectsData.slice(0, portalVisibleCount);
@@ -1474,9 +1460,18 @@
             listEl.innerHTML = html;
         }
 
-        // =========================================================
-        // 🌟 報價單前端邏輯 (支援 PDF 與圖檔下載)
-        // =========================================================
+        // 🌟 修正 1：絕對網址機制，防止分享與預覽進入登入頁面
+        function openPortalPreview(clientName) {
+            const url = window.location.href.split('?')[0] + '?client=' + encodeURIComponent(clientName);
+            window.open(url, '_blank');
+        }
+
+        // 🌟 修正 3：補上複製提示功能
+        function copyPortalLink(clientName) {
+            const url = window.location.href.split('?')[0] + '?client=' + encodeURIComponent(clientName);
+            navigator.clipboard.writeText(url).then(() => showToast("已複製專屬傳送門連結！"));
+        }
+
         function openCreateQuote() {
             document.getElementById('modal-quote-create').style.display = 'flex';
             document.getElementById('quote-items-tbody').innerHTML = '';
@@ -1613,7 +1608,6 @@
 
         function loadMoreQuotes() { quoteVisibleCount += 10; renderQuoteTable(); }
 
-        // 🌟 報價單明細預覽與下載
         function openQuotePreview(id) {
             document.getElementById('loader').style.display = 'flex';
             document.getElementById('loader-msg').innerText = "載入報價單明細中...";
@@ -1700,9 +1694,7 @@
             }); 
         }
 
-        // =========================================================
-        // ★ 內部任務看板與區域設定邏輯
-        // =========================================================
+        // 🌟 更新預覽按鈕，呼叫新的絕對網址機制函數 openPortalPreview
         function renderVIPArea() {
             if(!DATA.projects) return;
             const clientMap = {};
@@ -1733,7 +1725,7 @@
                         <div class="flex flex-wrap gap-2">
                             <button onclick="copyPortalLink('${clientName}')" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-800 transition shadow-md text-xs"><i class="fas fa-copy mr-1"></i> 傳送門</button>
                             <button onclick="openClientLinkModal('${clientName}')" class="admin-only bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-800 transition shadow-md text-xs"><i class="fas fa-cloud-upload-alt mr-1"></i> 專屬雲端</button>
-                            <button onclick="window.open('?client=${encodeURIComponent(clientName)}', '_blank')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-black transition shadow-md text-xs"><i class="fas fa-eye mr-1"></i> 預覽</button>
+                            <button onclick="openPortalPreview('${clientName}')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-black transition shadow-md text-xs"><i class="fas fa-eye mr-1"></i> 預覽</button>
                         </div>
                     </td>
                 </tr>`;
@@ -1742,17 +1734,22 @@
             tbody.innerHTML = html;
         }
 
+        // 🌟 修正 2：利用剛才從後端快取的 DATA.clientLinks 達成「零秒開啟雲端設定」並顯示當前連結
         function openClientLinkModal(clientName) {
             document.getElementById('c-link-target').innerText = "為【" + clientName + "】設定統一的雲端檔案下載點。";
             document.getElementById('c-link-clientname').value = clientName;
-            document.getElementById('c-link-url').placeholder = "資料載入中...";
+            
+            const currentLink = (DATA.clientLinks && DATA.clientLinks[clientName]) ? DATA.clientLinks[clientName] : "";
+            const currentDisplay = document.getElementById('c-link-current');
+            
+            if (currentLink) {
+                currentDisplay.innerHTML = `<a href="${currentLink}" target="_blank" class="hover:underline">${currentLink}</a>`;
+            } else {
+                currentDisplay.innerText = "尚未綁定任何連結";
+            }
+            
             document.getElementById('c-link-url').value = '';
             document.getElementById('modal-client-link').style.display = 'flex';
-            
-            callAPI('getClientPortalData', { clientName: clientName, mode: 'init' }, (res) => {
-                if(res && res.globalLink) { document.getElementById('c-link-url').value = res.globalLink; }
-                document.getElementById('c-link-url').placeholder = "請貼上 Google Drive 等分享網址...";
-            });
         }
 
         function saveClientLink() {
@@ -1763,7 +1760,13 @@
             document.getElementById('loader-msg').innerText = "雲端連結綁定中...";
             callAPI('setClientPortalLink', { clientName: clientName, url: url }, (res) => {
                 document.getElementById('loader').style.display = 'none';
-                if(res === 'OK') { showToast(`已成功綁定【${clientName}】的專屬雲端！`); closeModal('modal-client-link'); } 
+                if(res === 'OK') { 
+                    showToast(`已成功綁定【${clientName}】的專屬雲端！`); 
+                    // 同步更新前端快取，確保下次點開依然是最新的
+                    if (!DATA.clientLinks) DATA.clientLinks = {};
+                    DATA.clientLinks[clientName] = url;
+                    closeModal('modal-client-link'); 
+                } 
                 else { showToast("設定失敗", "error"); }
             });
         }

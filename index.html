@@ -240,7 +240,6 @@
     <div id="client-portal-view" class="hidden">
         
         <div id="portal-loader" class="fixed inset-0 z-[9999999] flex flex-col justify-center items-center transition-opacity duration-300" style="background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);">
-            <!-- 優化 Logo 去背融入 -->
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full mb-6 object-cover drop-shadow-[0_0_15px_rgba(255,255,255,0.15)] animate-pulse">
             <div class="text-3xl font-black tracking-widest text-white mb-2">JAYRAN <span class="text-blue-500">STUDIO</span></div>
             <div class="mt-2 text-blue-400 font-bold text-sm flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700 shadow-inner">
@@ -259,7 +258,6 @@
                     <h1 class="text-3xl font-black text-white tracking-wider drop-shadow-md">JAYRAN <span class="text-blue-500">STUDIO</span></h1>
                     <p id="portal-client-name" class="text-gray-400 mt-2 text-lg font-bold">專屬協作空間</p>
                 </div>
-                <!-- 優化 Logo 去背融入 -->
                 <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-14 h-14 md:w-16 md:h-16 rounded-full drop-shadow-md relative z-10">
             </div>
             
@@ -316,7 +314,8 @@
                     </div>
                 </div>
                 <div class="portal-card flex flex-col items-center justify-center min-h-[220px]">
-                    <h3 class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">專案服務矩陣分析</h3>
+                    <!-- 💡 優化：加入 id 以便 JS 動態寫入「2026 已交付專案矩陣」等字樣 -->
+                    <h3 id="portal-type-chart-title" class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">已交付專案矩陣</h3>
                     <div style="height: 160px; width: 100%;"><canvas id="portal-type-chart"></canvas></div>
                 </div>
             </div>
@@ -341,7 +340,6 @@
 
     <div id="admin-view">
         <div id="login-overlay">
-            <!-- 優化 Logo 去背融入 -->
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full mb-6 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
             <div class="text-4xl font-black mb-8 tracking-widest text-white">JAYRAN STUDIO</div>
             <input id="login-acc" type="text" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-4 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入帳號 (Email)">
@@ -351,7 +349,6 @@
         </div>
 
         <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[9999999]" style="display:none;">
-            <!-- 優化 Logo 去背融入 -->
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full drop-shadow-lg mb-4 animate-pulse">
             <div class="text-2xl font-black tracking-widest animate-pulse text-gray-800">JAYRAN STUDIO</div>
             <div id="loader-msg" class="mt-4 text-gray-500 font-bold text-center px-4">內部資料讀取中...</div>
@@ -716,8 +713,7 @@
         <div class="header-fixed-area">
             <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <!-- 優化 Logo 去背融入 -->
-                    <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm drop-shadow-sm">
+                    <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm bg-white">
                     <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
                 </div>
                 <div class="flex items-center gap-4">
@@ -731,7 +727,6 @@
                 <div onclick="switchTab('add')" id="nav-add" class="nav-item active admin-only"><i class="fas fa-plus mr-1"></i> 新增</div>
                 <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user mr-1"></i> 魏敏軒</div>
                 <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user mr-1"></i> 邱仁杰</div>
-                <!-- 優化：加上 admin-only 隱藏訪客權限 -->
                 <div onclick="switchTab('quote')" id="nav-quote" class="nav-item bg-amber-50 text-amber-600 border border-amber-100 admin-only"><i class="fas fa-file-invoice-dollar mr-1"></i> 報價單</div>
                 <div onclick="switchTab('gan')" id="nav-gan" class="nav-item"><i class="fas fa-chart-bar mr-1"></i> 甘特圖</div>
                 <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item"><i class="fas fa-calendar-alt mr-1"></i> 行事曆</div>
@@ -1040,7 +1035,6 @@
 
         // 🌟 報價單與 VIP 分頁變數
         let quoteVisibleCount = 3;
-        let portalProjectsData = []; 
         let currentPortalClient = ''; 
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1071,14 +1065,11 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // 優化：傳送門複製連結功能
         function copyPortalLink(clientName) {
             const url = window.location.origin + window.location.pathname + '?client=' + encodeURIComponent(clientName);
-            // 使用新版 Clipboard API (如有權限問題可提供更兼容寫法，但此為主流現代寫法)
             navigator.clipboard.writeText(url).then(() => {
                 showToast("✅ 已複製專屬連結，可直接傳送給客戶囉！");
             }).catch(() => {
-                // 相容性後備方案
                 const textArea = document.createElement("textarea");
                 textArea.value = url;
                 document.body.appendChild(textArea);
@@ -1270,7 +1261,6 @@
         }
 
         function switchTab(tab) { 
-            // 如果是訪客且點擊報價單，直接阻擋 (雙重防護)
             const role = localStorage.getItem('JAYRAN_ROLE');
             if(role === 'GUEST' && tab === 'quote') {
                 showToast("訪客模式無法使用此功能", "error");
@@ -1332,13 +1322,71 @@
                 document.getElementById('butler-year-watermark').innerText = currentYear;
             }
 
-            // 優化：處理 0-100% 擬真進度條
+            // 💡 獨立拉出渲染矩陣圖函式，確保每次都能針對「已完成/結案」做精準的橫向繪圖
+            const typeChartTitleEl = document.getElementById('portal-type-chart-title');
+            if (typeChartTitleEl) typeChartTitleEl.innerText = `${currentYear} 已交付專案矩陣`;
+
+            window.renderPortalMatrixChart = function(projList) {
+                const typeCounts = {};
+                let hasDone = false;
+                projList.forEach(p => {
+                    // 💡 嚴格過濾：只顯示已完成或已結案的
+                    if (p.status === '已完成' || p.status === '已結案') {
+                        const typeName = p.type || '未分類';
+                        typeCounts[typeName] = (typeCounts[typeName] || 0) + 1;
+                        hasDone = true;
+                    }
+                });
+                
+                const typeLabels = Object.keys(typeCounts);
+                const typeData = Object.values(typeCounts);
+                
+                if (!hasDone) {
+                    typeLabels.push('尚無已交付資料');
+                    typeData.push(0);
+                }
+
+                const ctxType = document.getElementById('portal-type-chart');
+                if (portalTypeChart) portalTypeChart.destroy();
+                portalTypeChart = new Chart(ctxType, {
+                    type: 'bar',
+                    data: {
+                        labels: typeLabels,
+                        datasets: [{
+                            label: '已交付數量',
+                            data: typeData,
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // 💡 改為橫向長條圖
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            x: { 
+                                beginAtZero: true, 
+                                ticks: { stepSize: 1, color: '#cbd5e1' }, 
+                                grid: { color: 'rgba(51, 65, 85, 0.3)' } 
+                            },
+                            y: { 
+                                ticks: { color: '#cbd5e1', font: { weight: 'bold' } }, 
+                                grid: { display: false } 
+                            }
+                        }
+                    }
+                });
+            };
+
             let progress = 0;
             const progressBar = document.getElementById('portal-progress-bar');
             const progressText = document.getElementById('portal-progress-text');
             
             const progressInterval = setInterval(() => {
-                if(progress < 85) { // 最高跑到 85% 等待 API 回傳
+                if(progress < 85) { 
                     progress += Math.floor(Math.random() * 8) + 2; 
                     if(progress > 85) progress = 85;
                     if(progressBar) progressBar.style.width = progress + '%';
@@ -1346,15 +1394,11 @@
                 }
             }, 150);
 
-            // 呼叫 API
             callAPI('getClientPortalData', { clientName: clientName }, (res) => {
-                
-                // API 讀取成功，進度條直接衝到 100%
                 clearInterval(progressInterval);
                 if(progressBar) progressBar.style.width = '100%';
                 if(progressText) progressText.innerText = '100%';
 
-                // 稍微延遲讓客戶看見 100%，再淡出 Loader
                 setTimeout(() => {
                     document.getElementById('portal-loader').style.opacity = '0';
                     setTimeout(() => {
@@ -1410,68 +1454,18 @@
                     } 
                 });
 
-                // 優化：專案服務矩陣分析圖表 (依據回傳的 projects 動態分類，並確保文字不傾斜)
-                const typeCounts = {};
-                res.projects.forEach(p => {
-                    const typeName = p.type || '未分類';
-                    typeCounts[typeName] = (typeCounts[typeName] || 0) + 1;
-                });
-                
-                const typeLabels = Object.keys(typeCounts);
-                const typeData = Object.values(typeCounts);
-                
-                // 防呆：如果完全沒資料，至少給個預設顯示
-                if (typeLabels.length === 0) {
-                    typeLabels.push('無資料');
-                    typeData.push(0);
-                }
+                // 💡 儲存到全域變數並繪製
+                window.portalAccumulatedProjects = res.projects || [];
+                window.renderPortalMatrixChart(window.portalAccumulatedProjects);
 
-                const ctxType = document.getElementById('portal-type-chart');
-                if (portalTypeChart) portalTypeChart.destroy();
-                portalTypeChart = new Chart(ctxType, {
-                    type: 'bar', // 保持垂直長條圖，但修正下方文字傾斜
-                    data: {
-                        labels: typeLabels,
-                        datasets: [{
-                            label: '專案數量',
-                            data: typeData,
-                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                            borderColor: 'rgb(59, 130, 246)',
-                            borderWidth: 1,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { 
-                            x: { 
-                                ticks: { 
-                                    color: '#cbd5e1',
-                                    maxRotation: 0, // 💡 優化：強制文字不傾斜
-                                    minRotation: 0,
-                                    font: { size: 11 } // 稍微縮小字體以適應空間
-                                }, 
-                                grid: { display: false } 
-                            },
-                            y: { 
-                                beginAtZero: true, 
-                                ticks: { stepSize: 1, color: '#cbd5e1' }, 
-                                grid: { color: 'rgba(51, 65, 85, 0.5)' } 
-                            }
-                        }
-                    }
-                });
-
-                // 渲染專案列表
                 let html = '';
-                res.projects.forEach(p => {
-                    html += buildProjectCard(p);
-                });
+                res.projects.forEach(p => { html += buildProjectCard(p); });
                 document.getElementById('portal-project-list').innerHTML = html;
 
-                // 判斷載入更多按鈕
-                const remain = (res.totalDone + res.totalProcess) - res.projects.length; // 改用實際長度計算剩餘
+                const currentTotal = window.portalAccumulatedProjects.length;
+                const grandTotal = res.totalDone + res.totalProcess;
+                const remain = grandTotal - currentTotal;
+                
                 const btnContainer = document.getElementById('portal-load-more-container');
                 if (remain > 0) {
                     btnContainer.classList.remove('hidden');
@@ -1531,7 +1525,6 @@
             
             const btnContainer = document.getElementById('portal-load-more-container');
             const btn = btnContainer.querySelector('button');
-            const originalHTML = btn.innerHTML;
             
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 正在讀取剩下的資料...';
             btn.disabled = true;
@@ -1543,8 +1536,29 @@
                         html += buildProjectCard(p);
                     });
                     document.getElementById('portal-project-list').insertAdjacentHTML('beforeend', html);
+
+                    // 💡 載入更多時，合併資料並重繪矩陣圖，這樣才會有「完整」的已交付資料
+                    if (window.portalAccumulatedProjects) {
+                        window.portalAccumulatedProjects = window.portalAccumulatedProjects.concat(res.projects);
+                        window.renderPortalMatrixChart(window.portalAccumulatedProjects);
+                    }
+
+                    const currentTotal = window.portalAccumulatedProjects.length;
+                    const doneCount = parseInt(document.getElementById('portal-done-count').innerText) || 0;
+                    const processCount = parseInt(document.getElementById('portal-process-count').innerText) || 0;
+                    const grandTotal = doneCount + processCount;
+                    const newRemain = grandTotal - currentTotal;
+                    
+                    if (newRemain > 0) {
+                        document.getElementById('portal-remain-count').innerText = newRemain;
+                        btn.innerHTML = `⬇️ 載入更多歷史專案 (還有 <span id="portal-remain-count">${newRemain}</span> 筆)`;
+                        btn.disabled = false;
+                    } else {
+                        btnContainer.classList.add('hidden');
+                    }
+                } else {
+                    btnContainer.classList.add('hidden');
                 }
-                btnContainer.classList.add('hidden');
                 isFetchingMore = false;
             });
         }

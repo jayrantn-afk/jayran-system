@@ -1371,7 +1371,12 @@
                         scales: { 
                             x: { 
                                 beginAtZero: true, 
-                                ticks: { stepSize: 1, color: '#cbd5e1' }, 
+                                ticks: { 
+                                    stepSize: 1, 
+                                    color: '#cbd5e1',
+                                    maxRotation: 0, // 💡 確保數字絕對不傾斜
+                                    minRotation: 0
+                                }, 
                                 grid: { color: 'rgba(51, 65, 85, 0.3)' } 
                             },
                             y: { 
@@ -1459,6 +1464,7 @@
 
                 // 先把首批資料存入暫存池，並繪製列表
                 window.portalAccumulatedProjects = res.projects || [];
+                window.portalRenderedCount = window.portalAccumulatedProjects.length; // 💡 紀錄已顯示的數量
                 let html = '';
                 res.projects.forEach(p => { html += buildProjectCard(p); });
                 document.getElementById('portal-project-list').innerHTML = html;
@@ -1468,21 +1474,33 @@
                 const btnContainer = document.getElementById('portal-load-more-container');
 
                 if (window.portalAccumulatedProjects.length < grandTotal) {
+                    // 💡 確保按鈕顯示並呈現正確剩餘數量
+                    btnContainer.classList.remove('hidden');
+                    document.getElementById('portal-remain-count').innerText = grandTotal - window.portalRenderedCount;
+
+                    window.isPortalSilentLoading = true; // 💡 標記背景讀取中
+
                     // 靜默載入所有剩餘資料
                     callAPI('getClientPortalMore', { clientName: clientName }, (moreRes) => {
+                        window.isPortalSilentLoading = false; // 解除讀取標記
                         if (moreRes && moreRes.projects) {
                             window.portalAccumulatedProjects = window.portalAccumulatedProjects.concat(moreRes.projects);
                             
                             // 拿到全部資料後，立刻重新繪製完美精準的「已交付矩陣圖」
                             window.renderPortalMatrixChart(window.portalAccumulatedProjects);
                             
-                            // 同時將剩餘專案無縫加入列表中
-                            let moreHtml = '';
-                            moreRes.projects.forEach(p => { moreHtml += buildProjectCard(p); });
-                            document.getElementById('portal-project-list').insertAdjacentHTML('beforeend', moreHtml);
-                            
-                            // 資料全部載完，自動隱藏載入按鈕
-                            btnContainer.classList.add('hidden');
+                            // 💡 計算剩下的數量，更新按鈕但不直接印出列表
+                            const remain = window.portalAccumulatedProjects.length - window.portalRenderedCount;
+                            if (remain > 0) {
+                                document.getElementById('portal-remain-count').innerText = remain;
+                                const btn = btnContainer.querySelector('button');
+                                // 防呆：如果客戶在背景偷抓時就先按了載入更多，那抓完直接幫他展開
+                                if(btn.disabled) {
+                                    loadMorePortalProjects();
+                                }
+                            } else {
+                                btnContainer.classList.add('hidden');
+                            }
                         }
                     });
                 } else {
@@ -1535,10 +1553,31 @@
             </div>`;
         }
 
-        // 載入更多按鈕功能已由「靜默全量載入」取代，但仍保留函數做為備用防呆
-        let isFetchingMore = false;
+        // 💡 修改後的載入更多函數：不再自動印出，而是等客戶點擊
         function loadMorePortalProjects() {
-            // 背景已處理完成，按鈕原則上不會出現，但保留架構相容性
+            const btnContainer = document.getElementById('portal-load-more-container');
+            const btn = btnContainer.querySelector('button');
+
+            if (window.isPortalSilentLoading) {
+                // 如果背景還在抓，讓按鈕轉圈圈並鎖死
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 歷史資料同步中...';
+                btn.disabled = true;
+                return;
+            }
+            
+            // 背景抓完了，一次把剩下的專案印出來
+            const unrendered = window.portalAccumulatedProjects.slice(window.portalRenderedCount);
+            if (unrendered && unrendered.length > 0) {
+                let html = '';
+                unrendered.forEach(p => {
+                    html += buildProjectCard(p);
+                });
+                document.getElementById('portal-project-list').insertAdjacentHTML('beforeend', html);
+                window.portalRenderedCount = window.portalAccumulatedProjects.length;
+            }
+
+            // 展開後隱藏按鈕
+            btnContainer.classList.add('hidden');
         }
 
         // =========================================================

@@ -126,9 +126,11 @@
         /* --- 甘特圖 --- */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
         .gantt-table { width: 100%; border-collapse: collapse; min-width: 800px; table-layout: fixed; }
-        .gantt-header-cell { position: sticky; top: 0; background-color: #F8FAFC !important; z-index: 100; text-align: center; font-size: 11px; color: #475569; border: 1px solid #E2E8F0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
-        .gantt-corner { position: sticky; top: 0; left: 0; background-color: #F8FAFC !important; z-index: 110; padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1E293B; border: 1px solid #E2E8F0; }
-        .gantt-col-fixed { position: sticky; left: 0; background-color: #FFFFFF !important; z-index: 50; width: 220px; padding: 8px 10px; white-space: nowrap; overflow: hidden; border: 1px solid #E2E8F0; }
+        /* 💡 甘特圖優化：強制鎖死左側兩欄的寬度，嚴防擠壓後方日期 */
+        .gantt-corner { position: sticky; top: 0; left: 0; background-color: #F8FAFC !important; z-index: 110; padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1E293B; border: 1px solid #E2E8F0; width: 160px; min-width: 160px; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .gantt-col-fixed { position: sticky; left: 0; background-color: #FFFFFF !important; z-index: 50; width: 160px; min-width: 160px; max-width: 160px; padding: 8px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid #E2E8F0; }
+        .gantt-header-cell { position: sticky; top: 0; background-color: #F8FAFC !important; z-index: 100; text-align: center; font-size: 11px; color: #475569; border: 1px solid #E2E8F0; padding: 8px 0; width: 34px; min-width: 34px; max-width: 34px; font-weight: 700; }
+        
         .gantt-today { background-color: #FFF9C4 !important; color: #000; font-weight: 900; }
         .gantt-today-cell { background-color: #FEF9C3; } 
         .gantt-row { height: 40px; }
@@ -314,7 +316,6 @@
                     </div>
                 </div>
                 <div class="portal-card flex flex-col items-center justify-center min-h-[220px]">
-                    <!-- 💡 優化：加入 id 以便 JS 動態寫入「2026 已交付專案矩陣」等字樣 -->
                     <h3 id="portal-type-chart-title" class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">已交付專案矩陣</h3>
                     <div style="height: 160px; width: 100%;"><canvas id="portal-type-chart"></canvas></div>
                 </div>
@@ -1308,7 +1309,7 @@
         }
 
         // =========================================================
-        // 🌟 VIP 尊榮影像管家看板 (真・分頁讀取 + 進度條動畫)
+        // 🌟 VIP 尊榮影像管家看板 (真・分頁讀取 + 靜默全量補齊)
         // =========================================================
         function initClientPortal(clientName) {
             currentPortalClient = clientName; 
@@ -1322,15 +1323,16 @@
                 document.getElementById('butler-year-watermark').innerText = currentYear;
             }
 
-            // 💡 獨立拉出渲染矩陣圖函式，確保每次都能針對「已完成/結案」做精準的橫向繪圖
+            // 💡 優化：動態設定矩陣圖標題為當前年份
             const typeChartTitleEl = document.getElementById('portal-type-chart-title');
-            if (typeChartTitleEl) typeChartTitleEl.innerText = `${currentYear} 已交付專案矩陣`;
+            if (typeChartTitleEl) typeChartTitleEl.innerText = `${currentYear}年已交付專案矩陣`;
 
+            // 獨立繪製矩陣圖函數 (已強制轉為絕對橫向)
             window.renderPortalMatrixChart = function(projList) {
                 const typeCounts = {};
                 let hasDone = false;
                 projList.forEach(p => {
-                    // 💡 嚴格過濾：只顯示已完成或已結案的
+                    // 💡 嚴格過濾：只統計真正已完成/結案的專案
                     if (p.status === '已完成' || p.status === '已結案') {
                         const typeName = p.type || '未分類';
                         typeCounts[typeName] = (typeCounts[typeName] || 0) + 1;
@@ -1362,7 +1364,7 @@
                         }]
                     },
                     options: {
-                        indexAxis: 'y', // 💡 改為橫向長條圖
+                        indexAxis: 'y', // 💡 確保為橫向圖表 (水平)
                         responsive: true, 
                         maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
@@ -1394,6 +1396,7 @@
                 }
             }, 150);
 
+            // 呼叫 API 取得初始資料
             callAPI('getClientPortalData', { clientName: clientName }, (res) => {
                 clearInterval(progressInterval);
                 if(progressBar) progressBar.style.width = '100%';
@@ -1454,23 +1457,37 @@
                     } 
                 });
 
-                // 💡 儲存到全域變數並繪製
+                // 先把首批資料存入暫存池，並繪製列表
                 window.portalAccumulatedProjects = res.projects || [];
-                window.renderPortalMatrixChart(window.portalAccumulatedProjects);
-
                 let html = '';
                 res.projects.forEach(p => { html += buildProjectCard(p); });
                 document.getElementById('portal-project-list').innerHTML = html;
 
-                const currentTotal = window.portalAccumulatedProjects.length;
+                // 💡 資料正確性修復：立刻發動背景靜默讀取，拿回「所有」剩餘歷史專案來畫圖
                 const grandTotal = res.totalDone + res.totalProcess;
-                const remain = grandTotal - currentTotal;
-                
                 const btnContainer = document.getElementById('portal-load-more-container');
-                if (remain > 0) {
-                    btnContainer.classList.remove('hidden');
-                    document.getElementById('portal-remain-count').innerText = remain;
+
+                if (window.portalAccumulatedProjects.length < grandTotal) {
+                    // 靜默載入所有剩餘資料
+                    callAPI('getClientPortalMore', { clientName: clientName }, (moreRes) => {
+                        if (moreRes && moreRes.projects) {
+                            window.portalAccumulatedProjects = window.portalAccumulatedProjects.concat(moreRes.projects);
+                            
+                            // 拿到全部資料後，立刻重新繪製完美精準的「已交付矩陣圖」
+                            window.renderPortalMatrixChart(window.portalAccumulatedProjects);
+                            
+                            // 同時將剩餘專案無縫加入列表中
+                            let moreHtml = '';
+                            moreRes.projects.forEach(p => { moreHtml += buildProjectCard(p); });
+                            document.getElementById('portal-project-list').insertAdjacentHTML('beforeend', moreHtml);
+                            
+                            // 資料全部載完，自動隱藏載入按鈕
+                            btnContainer.classList.add('hidden');
+                        }
+                    });
                 } else {
+                    // 若首批即是全部資料，直接畫圖
+                    window.renderPortalMatrixChart(window.portalAccumulatedProjects);
                     btnContainer.classList.add('hidden');
                 }
             });
@@ -1518,49 +1535,10 @@
             </div>`;
         }
 
+        // 載入更多按鈕功能已由「靜默全量載入」取代，但仍保留函數做為備用防呆
         let isFetchingMore = false;
         function loadMorePortalProjects() {
-            if (isFetchingMore) return;
-            isFetchingMore = true;
-            
-            const btnContainer = document.getElementById('portal-load-more-container');
-            const btn = btnContainer.querySelector('button');
-            
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 正在讀取剩下的資料...';
-            btn.disabled = true;
-
-            callAPI('getClientPortalMore', { clientName: currentPortalClient }, (res) => {
-                if (res && res.projects) {
-                    let html = '';
-                    res.projects.forEach(p => {
-                        html += buildProjectCard(p);
-                    });
-                    document.getElementById('portal-project-list').insertAdjacentHTML('beforeend', html);
-
-                    // 💡 載入更多時，合併資料並重繪矩陣圖，這樣才會有「完整」的已交付資料
-                    if (window.portalAccumulatedProjects) {
-                        window.portalAccumulatedProjects = window.portalAccumulatedProjects.concat(res.projects);
-                        window.renderPortalMatrixChart(window.portalAccumulatedProjects);
-                    }
-
-                    const currentTotal = window.portalAccumulatedProjects.length;
-                    const doneCount = parseInt(document.getElementById('portal-done-count').innerText) || 0;
-                    const processCount = parseInt(document.getElementById('portal-process-count').innerText) || 0;
-                    const grandTotal = doneCount + processCount;
-                    const newRemain = grandTotal - currentTotal;
-                    
-                    if (newRemain > 0) {
-                        document.getElementById('portal-remain-count').innerText = newRemain;
-                        btn.innerHTML = `⬇️ 載入更多歷史專案 (還有 <span id="portal-remain-count">${newRemain}</span> 筆)`;
-                        btn.disabled = false;
-                    } else {
-                        btnContainer.classList.add('hidden');
-                    }
-                } else {
-                    btnContainer.classList.add('hidden');
-                }
-                isFetchingMore = false;
-            });
+            // 背景已處理完成，按鈕原則上不會出現，但保留架構相容性
         }
 
         // =========================================================
@@ -2285,7 +2263,8 @@
                 
                 let rowClickAction = !isGuest ? `onclick="openEditProjectById('${p.id}', '${p.zone}')"` : ''; let rowCursorStyle = isGuest ? 'default' : 'pointer';
                 
-                body += `<tr class="gantt-row"><td class="gantt-col-fixed" title="${p.name} (${p.status})" ${rowClickAction} style="cursor:${rowCursorStyle};"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
+                // 💡 甘特圖優化：文字超出會自動變「...」，且不會撐破 160px 的寬度
+                body += `<tr class="gantt-row"><td class="gantt-col-fixed" title="${p.name} (${p.status})" ${rowClickAction} style="cursor:${rowCursorStyle};"><div style="display:flex; align-items:center; gap:4px; overflow:hidden; width:100%;"><span class="gantt-id flex-shrink-0">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span></div></td>${bars}</tr>`;
             });
             container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
         }

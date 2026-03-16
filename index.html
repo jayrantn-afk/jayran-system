@@ -91,7 +91,6 @@
         .clean-input:focus, .clean-select:focus { 
             background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.1); 
         }
-        .clean-input:disabled, .clean-select:disabled { opacity: 0.7; cursor: not-allowed; }
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
         .type-btn.active { background: #1D1D1F; color: white; }
@@ -127,10 +126,9 @@
         /* --- 甘特圖 --- */
         .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
         .gantt-table { width: 100%; border-collapse: collapse; min-width: 800px; table-layout: fixed; }
-        .gantt-corner { position: sticky; top: 0; left: 0; background-color: #F8FAFC !important; z-index: 110; padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1E293B; border: 1px solid #E2E8F0; width: 160px; min-width: 160px; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .gantt-col-fixed { position: sticky; left: 0; background-color: #FFFFFF !important; z-index: 50; width: 160px; min-width: 160px; max-width: 160px; padding: 8px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid #E2E8F0; }
-        .gantt-header-cell { position: sticky; top: 0; background-color: #F8FAFC !important; z-index: 100; text-align: center; font-size: 11px; color: #475569; border: 1px solid #E2E8F0; padding: 8px 0; width: 34px; min-width: 34px; max-width: 34px; font-weight: 700; }
-        
+        .gantt-header-cell { position: sticky; top: 0; background-color: #F8FAFC !important; z-index: 100; text-align: center; font-size: 11px; color: #475569; border: 1px solid #E2E8F0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
+        .gantt-corner { position: sticky; top: 0; left: 0; background-color: #F8FAFC !important; z-index: 110; padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1E293B; border: 1px solid #E2E8F0; }
+        .gantt-col-fixed { position: sticky; left: 0; background-color: #FFFFFF !important; z-index: 50; width: 220px; padding: 8px 10px; white-space: nowrap; overflow: hidden; border: 1px solid #E2E8F0; }
         .gantt-today { background-color: #FFF9C4 !important; color: #000; font-weight: 900; }
         .gantt-today-cell { background-color: #FEF9C3; } 
         .gantt-row { height: 40px; }
@@ -242,16 +240,11 @@
     <div id="client-portal-view" class="hidden">
         
         <div id="portal-loader" class="fixed inset-0 z-[9999999] flex flex-col justify-center items-center transition-opacity duration-300" style="background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);">
-            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full mb-6 object-cover drop-shadow-[0_0_15px_rgba(255,255,255,0.15)] animate-pulse">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-6 bg-white border-4 border-slate-700 animate-pulse object-cover">
             <div class="text-3xl font-black tracking-widest text-white mb-2">JAYRAN <span class="text-blue-500">STUDIO</span></div>
-            <div class="mt-2 text-blue-400 font-bold text-sm flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700 shadow-inner">
-                <i class="fas fa-shield-alt"></i> 專屬資料安全連線中
+            <div class="mt-4 text-blue-400 font-bold text-sm flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700 shadow-inner">
+                <i class="fas fa-circle-notch fa-spin"></i> 專屬資料安全加密傳輸中...
             </div>
-            <!-- 優化：0-100% 讀取進度條 -->
-            <div class="w-64 h-2 bg-slate-700 rounded-full mt-6 overflow-hidden border border-slate-600">
-                <div id="portal-progress-bar" class="h-full bg-blue-500 w-0 transition-all duration-300 ease-out shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>
-            </div>
-            <div id="portal-progress-text" class="text-blue-400 font-bold mt-2 text-sm">0%</div>
         </div>
 
         <div id="portal-content" class="max-w-5xl mx-auto hidden p-4 md:p-10">
@@ -260,7 +253,7 @@
                     <h1 class="text-3xl font-black text-white tracking-wider drop-shadow-md">JAYRAN <span class="text-blue-500">STUDIO</span></h1>
                     <p id="portal-client-name" class="text-gray-400 mt-2 text-lg font-bold">專屬協作空間</p>
                 </div>
-                <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-14 h-14 md:w-16 md:h-16 rounded-full drop-shadow-md relative z-10">
+                <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-14 h-14 md:w-16 md:h-16 rounded-full shadow-xl border-2 border-slate-600 bg-white relative z-10">
             </div>
             
             <div id="portal-global-link-container" class="mb-8 hidden fade-in">
@@ -316,7 +309,7 @@
                     </div>
                 </div>
                 <div class="portal-card flex flex-col items-center justify-center min-h-[220px]">
-                    <h3 id="portal-type-chart-title" class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">已交付專案矩陣</h3>
+                    <h3 class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">專案服務矩陣分析</h3>
                     <div style="height: 160px; width: 100%;"><canvas id="portal-type-chart"></canvas></div>
                 </div>
             </div>
@@ -341,7 +334,7 @@
 
     <div id="admin-view">
         <div id="login-overlay">
-            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full mb-6 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-lg mb-6 border-4 border-white bg-white">
             <div class="text-4xl font-black mb-8 tracking-widest text-white">JAYRAN STUDIO</div>
             <input id="login-acc" type="text" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-4 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入帳號 (Email)">
             <input id="login-pass" type="password" class="p-4 text-center text-black text-xl font-bold rounded-2xl w-80 mb-8 outline-none border-4 border-transparent focus:border-blue-500 transition" placeholder="登入密碼">
@@ -350,7 +343,7 @@
         </div>
 
         <div id="loader" class="fixed top-0 left-0 w-full h-full bg-[#F5F5F7] flex flex-col justify-center items-center z-[9999999]" style="display:none;">
-            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full drop-shadow-lg mb-4 animate-pulse">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-20 h-20 rounded-full shadow-lg mb-4 animate-pulse bg-white">
             <div class="text-2xl font-black tracking-widest animate-pulse text-gray-800">JAYRAN STUDIO</div>
             <div id="loader-msg" class="mt-4 text-gray-500 font-bold text-center px-4">內部資料讀取中...</div>
         </div>
@@ -379,7 +372,7 @@
                             </select>
                             <input id="m-date" class="clean-input w-48 text-center font-bold border border-gray-200 bg-white" placeholder="起訖日期" autocomplete="off">
                         </div>
-                        <button id="btn-memo-add" onclick="addMemoItem(event)" class="w-full bg-black text-white text-lg py-3 rounded-lg font-bold hover:bg-gray-800 transition">新增貼文</button>
+                        <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-lg py-3 rounded-lg font-bold hover:bg-gray-800 transition">新增貼文</button>
                     </div>
                 </div>
                 <div id="memo-list" class="panel-scroll-area">
@@ -416,7 +409,7 @@
                             <input id="l-name" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="連結名稱">
                         </div>
                         <input id="l-url" class="w-full clean-input text-base font-bold mb-4 border border-gray-200 bg-white" placeholder="貼上完整網址 (https://...)">
-                        <button id="btn-link-add" onclick="addLinkItem(event)" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md transition">新增連結</button>
+                        <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md transition">新增連結</button>
                     </div>
                 </div>
                 <div id="link-list" class="panel-scroll-area">
@@ -434,7 +427,6 @@
             </div>
         </div>
 
-        <!-- 區域/客戶設定彈窗 -->
         <div id="modal-zone" class="modal-mask">
             <div class="modal-body">
                 <h3 id="modal-title" class="text-xl font-black mb-4">區域設定</h3>
@@ -447,8 +439,7 @@
                 <input id="modal-name" class="clean-input mb-6 border border-gray-200 font-bold" placeholder="例如：台積電">
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-zone')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
-                    <!-- ✅ 修復點：加上傳入 event，進行載入保護 -->
-                    <button onclick="confirmZoneModal(event)" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">確認儲存</button>
+                    <button onclick="confirmZoneModal()" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">確認</button>
                 </div>
             </div>
         </div>
@@ -472,8 +463,7 @@
                 </div>
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-leave')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
-                    <!-- ✅ 修復點：加上傳入 event -->
-                    <button onclick="confirmLeave(event)" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">送出</button>
+                    <button onclick="confirmLeave()" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">送出</button>
                 </div>
             </div>
         </div>
@@ -488,8 +478,7 @@
                 <input id="input-hours" type="number" step="0.5" class="clean-input mb-8 text-center font-bold text-3xl h-20 border border-gray-200" placeholder="1.5">
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-hours')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
-                    <!-- ✅ 修復點：傳遞 event 進行防連點與 UI 回饋 -->
-                    <button onclick="confirmSendReview(event)" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">確認送出</button>
+                    <button onclick="confirmSendReview(event)" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">送出</button>
                 </div>
             </div>
         </div>
@@ -574,7 +563,6 @@
                 </div>
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-edit-project')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
-                    <!-- ✅ 修復點：傳遞 event 進行防呆並顯示 loading -->
                     <button onclick="confirmEditProject(event)" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">儲存變更</button>
                 </div>
             </div>
@@ -647,7 +635,7 @@
                         <textarea id="q-note" class="clean-input h-16 border"></textarea>
                     </div>
 
-                    <button id="btn-save-quote" onclick="confirmSaveQuote(event)" class="w-full bg-black text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-gray-800 transition">產生報價單並存檔</button>
+                    <button id="btn-save-quote" onclick="confirmSaveQuote()" class="w-full bg-black text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-gray-800 transition">產生報價單並存檔</button>
                 </div>
             </div>
         </div>
@@ -1049,14 +1037,6 @@
             fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
             fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-            
-            // 綁定輸入框防止意外 Submit
-            const hInput = document.getElementById('input-hours');
-            if(hInput) {
-                hInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') confirmSendReview(e);
-                });
-            }
         });
 
         document.addEventListener('keydown', function(event) {
@@ -1080,34 +1060,15 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        function copyPortalLink(clientName) {
-            const url = window.location.origin + window.location.pathname + '?client=' + encodeURIComponent(clientName);
-            navigator.clipboard.writeText(url).then(() => {
-                showToast("✅ 已複製專屬連結，可直接傳送給客戶囉！");
-            }).catch(() => {
-                const textArea = document.createElement("textarea");
-                textArea.value = url;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    showToast("✅ 已複製專屬連結，可直接傳送給客戶囉！");
-                } catch (err) {
-                    showToast("請自行開啟預覽複製網址", "error");
-                }
-                document.body.removeChild(textArea);
-            });
-        }
-
-        // 格式化專案 ID (確保前面包含前綴，且後方為純數字補滿3位)
-        function formatProjectId(prefix, rawInput) {
-            let numStr = String(rawInput).replace(/\D/g, ''); 
-            if (!numStr) return ''; 
-            return prefix.toUpperCase() + numStr.padStart(3, '0');
+        // ✅ 強悍的核心防呆：完美萃取純數字並加上前綴 (杜絕 II001 與 aa010)
+        function formatIdSafely(prefix, rawId) {
+            let nums = String(rawId).replace(/\D/g, ''); // 只保留純數字
+            if (!nums) nums = '001';
+            return prefix + nums.padStart(3, '0');
         }
 
         // =========================================================
-        // 🌟 網路層 API 連線
+        // 🌟 網路層 API 連線 (修復 undefined 寫入報錯)
         // =========================================================
         function callAPI(action, payload, onSuccess) {
             if (!GAS_API_URL) return;
@@ -1144,7 +1105,13 @@
                     if (!res.ok) throw new Error('HTTP 狀態碼異常');
                     return res.json();
                 })
-                .then(data => onSuccess(data.data))
+                .then(data => {
+                    // ✅ 修復點：靈活相容新舊版 API 的回傳結構 (解決 undefined)
+                    let result = data;
+                    if (data && data.data !== undefined) result = data.data;
+                    else if (data && data.status) result = data.status;
+                    onSuccess(result);
+                })
                 .catch(e => { 
                     console.error("API POST 連線錯誤:", e);
                     showToast("連線錯誤，請檢查網路", "error"); 
@@ -1283,12 +1250,6 @@
         }
 
         function switchTab(tab) { 
-            const role = localStorage.getItem('JAYRAN_ROLE');
-            if(role === 'GUEST' && tab === 'quote') {
-                showToast("訪客模式無法使用此功能", "error");
-                return;
-            }
-
             ['p-add', 'p-kanban', 'p-gantt', 'p-calendar', 'p-dashboard', 'p-vip', 'p-quote'].forEach(id => { 
                 const el = document.getElementById(id); 
                 if(el) { el.classList.add('hidden'); el.classList.remove('fade-in'); }
@@ -1333,7 +1294,7 @@
         // 🌟 VIP 尊榮影像管家看板
         // =========================================================
         function initClientPortal(clientName) {
-            currentPortalClient = clientName; 
+            currentPortalClient = clientName; // 儲存當前客戶名稱供載入更多使用
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
             
             const currentYear = new Date().getFullYear();
@@ -1344,89 +1305,13 @@
                 document.getElementById('butler-year-watermark').innerText = currentYear;
             }
 
-            const typeChartTitleEl = document.getElementById('portal-type-chart-title');
-            if (typeChartTitleEl) typeChartTitleEl.innerText = `${currentYear}年已交付專案矩陣`;
-
-            window.renderPortalMatrixChart = function(projList) {
-                const typeCounts = {};
-                let hasDone = false;
-                projList.forEach(p => {
-                    if (p.status === '已完成' || p.status === '已結案') {
-                        const typeName = p.type || '未分類';
-                        typeCounts[typeName] = (typeCounts[typeName] || 0) + 1;
-                        hasDone = true;
-                    }
-                });
-                
-                const typeLabels = Object.keys(typeCounts);
-                const typeData = Object.values(typeCounts);
-                
-                if (!hasDone) {
-                    typeLabels.push('尚無已交付資料');
-                    typeData.push(0);
-                }
-
-                const ctxType = document.getElementById('portal-type-chart');
-                if (portalTypeChart) portalTypeChart.destroy();
-                portalTypeChart = new Chart(ctxType, {
-                    type: 'bar',
-                    data: {
-                        labels: typeLabels,
-                        datasets: [{
-                            label: '已交付數量',
-                            data: typeData,
-                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                            borderColor: 'rgb(59, 130, 246)',
-                            borderWidth: 1,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y', 
-                        responsive: true, 
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { 
-                            x: { 
-                                beginAtZero: true, 
-                                ticks: { stepSize: 1, color: '#cbd5e1', maxRotation: 0, minRotation: 0 }, 
-                                grid: { color: 'rgba(51, 65, 85, 0.3)' } 
-                            },
-                            y: { 
-                                ticks: { color: '#cbd5e1', font: { weight: 'bold' } }, 
-                                grid: { display: false } 
-                            }
-                        }
-                    }
-                });
-            };
-
-            let progress = 0;
-            const progressBar = document.getElementById('portal-progress-bar');
-            const progressText = document.getElementById('portal-progress-text');
-            
-            const progressInterval = setInterval(() => {
-                if(progress < 85) { 
-                    progress += Math.floor(Math.random() * 8) + 2; 
-                    if(progress > 85) progress = 85;
-                    if(progressBar) progressBar.style.width = progress + '%';
-                    if(progressText) progressText.innerText = progress + '%';
-                }
-            }, 150);
-
             callAPI('getClientPortalData', { clientName: clientName }, (res) => {
-                clearInterval(progressInterval);
-                if(progressBar) progressBar.style.width = '100%';
-                if(progressText) progressText.innerText = '100%';
-
+                document.getElementById('portal-loader').style.opacity = '0';
                 setTimeout(() => {
-                    document.getElementById('portal-loader').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('portal-loader').style.display = 'none';
-                        document.getElementById('portal-content').classList.remove('hidden');
-                        document.getElementById('portal-content').classList.add('fade-in');
-                    }, 300);
-                }, 400);
+                    document.getElementById('portal-loader').style.display = 'none';
+                    document.getElementById('portal-content').classList.remove('hidden');
+                    document.getElementById('portal-content').classList.add('fade-in');
+                }, 300);
 
                 if (!res) return;
 
@@ -1444,6 +1329,7 @@
 
                 if(document.getElementById('portal-done-count')) document.getElementById('portal-done-count').innerText = res.totalDone;
                 if(document.getElementById('portal-process-count')) document.getElementById('portal-process-count').innerText = res.totalProcess;
+                
                 if(document.getElementById('portal-active-count')) document.getElementById('portal-active-count').innerText = res.totalProcess;
                 
                 let closestDate = "近期無待交專案";
@@ -1463,7 +1349,8 @@
                         datasets: [{ 
                             data: [res.totalDone, res.totalProcess], 
                             backgroundColor: ['#34d399', '#3b82f6'], 
-                            borderWidth: 0, hoverOffset: 4 
+                            borderWidth: 0, 
+                            hoverOffset: 4 
                         }] 
                     }, 
                     options: { 
@@ -1472,39 +1359,44 @@
                     } 
                 });
 
-                window.portalAccumulatedProjects = res.projects || [];
-                window.portalRenderedCount = window.portalAccumulatedProjects.length; 
+                const ctxType = document.getElementById('portal-type-chart');
+                if (portalTypeChart) portalTypeChart.destroy();
+                portalTypeChart = new Chart(ctxType, {
+                    type: 'bar',
+                    data: {
+                        labels: ['總專案數'],
+                        datasets: [{
+                            label: '專案數量',
+                            data: [res.totalDone + res.totalProcess],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            x: { beginAtZero: true, ticks: { stepSize: 1, color: '#cbd5e1' }, grid: { color: 'rgba(51, 65, 85, 0.5)' } },
+                            y: { ticks: { color: '#cbd5e1' }, grid: { display: false } }
+                        }
+                    }
+                });
+
                 let html = '';
-                res.projects.forEach(p => { html += buildProjectCard(p); });
+                res.projects.forEach(p => {
+                    html += buildProjectCard(p);
+                });
                 document.getElementById('portal-project-list').innerHTML = html;
 
-                const grandTotal = res.totalDone + res.totalProcess;
+                const remain = (res.totalDone + res.totalProcess) - 3;
                 const btnContainer = document.getElementById('portal-load-more-container');
-
-                if (window.portalAccumulatedProjects.length < grandTotal) {
+                if (remain > 0) {
                     btnContainer.classList.remove('hidden');
-                    document.getElementById('portal-remain-count').innerText = grandTotal - window.portalRenderedCount;
-
-                    window.isPortalSilentLoading = true; 
-
-                    callAPI('getClientPortalMore', { clientName: clientName }, (moreRes) => {
-                        window.isPortalSilentLoading = false; 
-                        if (moreRes && moreRes.projects) {
-                            window.portalAccumulatedProjects = window.portalAccumulatedProjects.concat(moreRes.projects);
-                            window.renderPortalMatrixChart(window.portalAccumulatedProjects);
-                            
-                            const remain = window.portalAccumulatedProjects.length - window.portalRenderedCount;
-                            if (remain > 0) {
-                                document.getElementById('portal-remain-count').innerText = remain;
-                                const btn = btnContainer.querySelector('button');
-                                if(btn.disabled) { loadMorePortalProjects(); }
-                            } else {
-                                btnContainer.classList.add('hidden');
-                            }
-                        }
-                    });
+                    document.getElementById('portal-remain-count').innerText = remain;
                 } else {
-                    window.renderPortalMatrixChart(window.portalAccumulatedProjects);
                     btnContainer.classList.add('hidden');
                 }
             });
@@ -1552,29 +1444,33 @@
             </div>`;
         }
 
+        let isFetchingMore = false;
         function loadMorePortalProjects() {
+            if (isFetchingMore) return;
+            isFetchingMore = true;
+            
             const btnContainer = document.getElementById('portal-load-more-container');
             const btn = btnContainer.querySelector('button');
-
-            if (window.isPortalSilentLoading) {
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 歷史資料同步中...';
-                btn.disabled = true;
-                return;
-            }
+            const originalHTML = btn.innerHTML;
             
-            const unrendered = window.portalAccumulatedProjects.slice(window.portalRenderedCount);
-            if (unrendered && unrendered.length > 0) {
-                let html = '';
-                unrendered.forEach(p => { html += buildProjectCard(p); });
-                document.getElementById('portal-project-list').insertAdjacentHTML('beforeend', html);
-                window.portalRenderedCount = window.portalAccumulatedProjects.length;
-            }
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 正在讀取剩下的資料...';
+            btn.disabled = true;
 
-            btnContainer.classList.add('hidden');
+            callAPI('getClientPortalMore', { clientName: currentPortalClient }, (res) => {
+                if (res && res.projects) {
+                    let html = '';
+                    res.projects.forEach(p => {
+                        html += buildProjectCard(p);
+                    });
+                    document.getElementById('portal-project-list').insertAdjacentHTML('beforeend', html);
+                }
+                btnContainer.classList.add('hidden');
+                isFetchingMore = false;
+            });
         }
 
         // =========================================================
-        // 🌟 報價單前端邏輯 
+        // 🌟 報價單前端邏輯
         // =========================================================
         function openCreateQuote() {
             document.getElementById('modal-quote-create').style.display = 'flex';
@@ -1631,11 +1527,7 @@
             document.getElementById('q-total').innerText = Math.round(finalTotal).toLocaleString();
         }
 
-        // ✅ 加上事件鎖定防呆
-        function confirmSaveQuote(e) {
-            const btn = e ? e.currentTarget : document.getElementById('btn-save-quote');
-            const originalText = btn.innerText;
-            
+        function confirmSaveQuote() {
             const items = [];
             document.querySelectorAll('.q-item-row').forEach(row => { 
                 const name = row.querySelector('.q-item-name').value.trim(); 
@@ -1660,16 +1552,18 @@
 
             if (!form.clientName) return showToast("請輸入客戶名稱", "error");
 
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin mr-2'></i>產生中...";
-            btn.disabled = true;
+            const saveBtn = document.getElementById('btn-save-quote');
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = "🔄 產生中...";
+            saveBtn.disabled = true;
             document.getElementById('loader').style.display = 'flex'; 
             document.getElementById('loader-msg').innerText = "產生報價單並同步雲端中...";
             
             callAPI('saveQuote', { form: form }, (res) => {
                 document.getElementById('loader').style.display = 'none';
-                btn.innerText = originalText;
-                btn.disabled = false;
-                if(res.id) { 
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+                if(res && res.id) { 
                     showToast("報價單已成功建立！"); 
                     closeModal('modal-quote-create'); 
                     if(!DATA.quotes) DATA.quotes = [];
@@ -1863,78 +1757,70 @@
             document.getElementById('loader-msg').innerText = "雲端連結綁定中...";
             callAPI('setClientPortalLink', { clientName: clientName, url: url }, (res) => {
                 document.getElementById('loader').style.display = 'none';
-                if(res === 'OK') { showToast(`已成功綁定【${clientName}】的專屬雲端！`); closeModal('modal-client-link'); } 
+                if(res === 'OK' || res.status === 'OK') { showToast(`已成功綁定【${clientName}】的專屬雲端！`); closeModal('modal-client-link'); } 
                 else { showToast("設定失敗", "error"); }
             });
         }
 
-        // ✅ 新增區域/客戶防呆強化
         function openZoneModal(mode) {
             document.getElementById('edit-orig-name').value = '';
             document.getElementById('modal-name').value = '';
             
             const codeSel = document.getElementById('modal-code');
             codeSel.innerHTML = '';
-            for(let i=65; i<=90; i++) {
-                const letter = String.fromCharCode(i);
-                codeSel.add(new Option(letter, letter));
-            }
+            
+            // ✅ 修復點：自動根據圖文或影片提供大/小寫選項
+            const isVideo = (curCat === 'video');
+            const startChar = isVideo ? 65 : 97; // A=65, a=97
+            const endChar = isVideo ? 90 : 122;  // Z=90, z=122
+            
+            const settings = isVideo ? DATA.videoSettings : DATA.imageSettings;
+            // 抓出所有已經使用過的代號
+            const usedPrefixes = Object.keys(settings || {}).map(k => k.split('_')[0]);
 
+            let currentEditPrefix = "";
             if(mode === 'edit') {
                 const currentZone = document.getElementById('i-zone').value;
                 if(!currentZone) return showToast("請先選擇要編輯的客戶", "error");
+                currentEditPrefix = currentZone.split('_')[0];
+                const name = currentZone.includes('_') ? currentZone.substring(currentZone.indexOf('_') + 1) : '';
                 
-                const parts = currentZone.split('_');
-                const prefix = parts[0] || 'A';
-                const name = parts[1] || '';
-                
-                codeSel.value = prefix;
                 document.getElementById('modal-name').value = name;
                 document.getElementById('edit-orig-name').value = currentZone;
                 document.getElementById('modal-title').innerText = "編輯客戶設定";
             } else {
                 document.getElementById('modal-title').innerText = "新增客戶設定";
             }
+
+            for(let i = startChar; i <= endChar; i++) {
+                const letter = String.fromCharCode(i);
+                // ✅ 修復點：如果該代號還沒被用過，或者是目前正在編輯的對象，才顯示
+                if (!usedPrefixes.includes(letter) || letter === currentEditPrefix) {
+                    codeSel.add(new Option(letter, letter));
+                }
+            }
+            if (mode === 'edit' && currentEditPrefix) { codeSel.value = currentEditPrefix; }
             document.getElementById('modal-zone').style.display = 'flex';
         }
 
-        function confirmZoneModal(e) {
-            const btn = e ? e.currentTarget : null;
-            if (btn) {
-                btn.dataset.origin = btn.innerText;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 儲存中';
-                btn.disabled = true;
-            }
-
-            try {
-                const prefix = document.getElementById('modal-code').value;
-                const name = document.getElementById('modal-name').value.trim();
-                const origZone = document.getElementById('edit-orig-name').value;
-                
-                if(!name) {
-                    if(btn) { btn.innerHTML = btn.dataset.origin; btn.disabled = false; }
-                    return showToast("請輸入客戶名稱", "error");
-                }
-                
-                const newZone = `${prefix}_${name}`;
-                const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings;
-                
-                if(origZone && origZone !== newZone) {
-                    delete settings[origZone];
-                }
-                if(!settings[newZone]) settings[newZone] = "000";
-                
-                renderZoneOptions();
-                document.getElementById('i-zone').value = newZone;
-                updateClientName();
-                closeModal('modal-zone');
-                showToast("✅ 已設定客戶，建立專案後將同步雲端");
-            } catch(err) {
-                console.error(err);
-                showToast("設定時發生錯誤", "error");
-            } finally {
-                if(btn) { btn.innerHTML = btn.dataset.origin; btn.disabled = false; }
-            }
+        function confirmZoneModal() {
+            const prefix = document.getElementById('modal-code').value;
+            const name = document.getElementById('modal-name').value.trim();
+            const origZone = document.getElementById('edit-orig-name').value;
+            
+            if(!name) return showToast("請輸入客戶名稱", "error");
+            
+            const newZone = `${prefix}_${name}`;
+            const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings;
+            
+            if(origZone && origZone !== newZone) { delete settings[origZone]; }
+            if(!settings[newZone]) settings[newZone] = "000";
+            
+            renderZoneOptions();
+            document.getElementById('i-zone').value = newZone;
+            updateClientName();
+            closeModal('modal-zone');
+            showToast("✅ 已設定客戶，建立專案後將同步雲端");
         }
 
         function setProjectType(type) { 
@@ -1943,7 +1829,7 @@
             document.getElementById('btn-type-' + type).classList.add('active'); 
             document.getElementById('i-name').placeholder = (type === 'video') ? "輸入影片標題" : "輸入圖文標題"; 
             document.getElementById('lbl-name').innerText = (type === 'video') ? "影片名稱" : "圖文名稱"; 
-            document.getElementById('i-id').placeholder = "例如: 023"; 
+            document.getElementById('i-id').placeholder = "建議編號: 001"; 
             renderZoneOptions(); renderDynamicOptions(); 
         }
         
@@ -1981,16 +1867,16 @@
                 } else { 
                     document.getElementById('i-client').value = realName; document.getElementById('i-client').readOnly = true; document.getElementById('i-client').classList.add('bg-gray-100'); document.getElementById('i-client').classList.remove('bg-white'); 
                 } 
-                let lastId = (DATA.ids) ? DATA.ids[z] : ""; 
-                let displayId = "001"; 
+                let lastId = (DATA.ids) ? DATA.ids[z] : ""; let displayId = "001"; 
                 if (lastId && lastId !== "無" && lastId !== "無紀錄") { 
                     const match = lastId.match(/\d+$/); 
                     if (match) displayId = String(parseInt(match[0]) + 1).padStart(3, '0'); 
                 } 
-                document.getElementById('i-id').value = displayId; 
-                document.getElementById('i-id').placeholder = "例如: 023";
+                // ✅ 修復點：自動帶入正確的下一個數字編號，避免混淆
+                document.getElementById('i-id').value = displayId;
             } else { 
-                document.getElementById('i-client').value = ''; document.getElementById('i-id').value = ''; 
+                document.getElementById('i-client').value = ''; 
+                document.getElementById('i-id').value = ''; 
             } 
         }
 
@@ -2000,12 +1886,10 @@
             else { dateInput.placeholder = "點擊選擇"; dateInput.style.background = "#F5F5F7"; } 
         }
 
-        // ✅ 建立專案加入防連點
         function saveProject(e) {
             const btn = e ? e.currentTarget : document.getElementById('btn-create');
-            
             const zone = document.getElementById('i-zone').value;
-            let rawIdInput = document.getElementById('i-id').value.trim();
+            let idRaw = document.getElementById('i-id').value.trim();
             const client = document.getElementById('i-client').value;
             const name = document.getElementById('i-name').value.trim();
             const producer = document.getElementById('i-producer').value;
@@ -2016,11 +1900,11 @@
 
             if (!zone) return showToast("請選擇區域 / 客戶", "error");
             if (!name) return showToast("請輸入專案名稱", "error");
-            if (!rawIdInput) return showToast("請輸入編號", "error");
+            if (!idRaw) return showToast("請輸入編號", "error");
 
             const prefix = zone.split('_')[0];
-            const finalId = formatProjectId(prefix, rawIdInput || "001");
-            if (!finalId) return showToast("請輸入有效的編號數字", "error");
+            // ✅ 修復點：使用新的 formatIdSafely，杜絕前綴字疊加錯誤
+            const finalId = formatIdSafely(prefix, idRaw);
 
             const dates = dateStr.split(' to ');
             const start = dates[0] || ""; const end = dates[1] || dates[0] || "";
@@ -2032,13 +1916,12 @@
 
             const payloadData = { category: curCat, zone: zone, id: finalId, client: client, name: name, producer: producer, type: type, start: start, end: end, note: note, tag: isUrgent ? 'Urgent' : '', status: status, hours: 0, link: "" };
 
-            const originalText = btn.innerText; 
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin mr-2'></i>寫入中..."; 
-            btn.disabled = true; 
+            const originalText = btn.innerText; btn.innerText = "寫入中..."; btn.disabled = true; 
 
             callAPI('addProject', { payload: payloadData }, (res) => {
                 btn.innerText = originalText; btn.disabled = false;
-                if(res === "OK") {
+                // ✅ 修復點：相容各種後端回傳成功狀態
+                if(res === "OK" || res === true || res.status === "success" || !res.error) {
                     if(!DATA.projects) DATA.projects = [];
                     DATA.projects.push(payloadData);
                     
@@ -2054,7 +1937,7 @@
                     document.getElementById('i-urgent').checked = false; 
                     fp.clear(); 
                     showToast(`✅ 專案 ${finalId} 建立成功並同步！`);
-                    updateClientName();
+                    updateClientName(); // 自動刷新下一個號碼
                 } else { showToast("寫入失敗：" + res, "error"); }
             });
         }
@@ -2064,11 +1947,16 @@
             if (p) {
                 document.getElementById('ep-cat').value = p.category; document.getElementById('ep-origin-id').value = p.id; document.getElementById('ep-origin-zone').value = p.zone; 
                 const prefix = p.zone.split('_')[0]; 
-                const numPart = String(p.id).replace(/\D/g, '');
+                // ✅ 修復點：用 regex 強制濾掉英文，只保留數字，防止編輯時抓不到正確編號
+                const numPart = String(p.id).replace(/\D/g, ''); 
                 
                 const epCodeSel = document.getElementById('ep-code'); epCodeSel.innerHTML = '';
                 const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
-                Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); epCodeSel.value = prefix;
+                
+                // 去除重複的代號，保持乾淨
+                const uniquePrefixes = [...new Set(Object.keys(settings).map(k => k.split('_')[0]))];
+                uniquePrefixes.sort().forEach(pref => epCodeSel.add(new Option(pref, pref)));
+                epCodeSel.value = prefix;
                 
                 const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes; const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
                 const prodSel = document.getElementById('ep-producer'); prodSel.innerHTML = ''; producers.forEach(x => prodSel.add(new Option(x, x)));
@@ -2083,6 +1971,85 @@
             } else {
                 showToast("找不到專案資料", "error");
             }
+        }
+
+        function confirmEditProject(e) {
+            const btn = e ? e.currentTarget : document.querySelector('#modal-edit-project button.bg-black');
+            if (btn) { btn.dataset.originalText = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 儲存中'; btn.disabled = true; }
+
+            try {
+                const dateVal = document.getElementById('ep-date').value; const dates = dateVal.split(' to ');
+                const originId = document.getElementById('ep-origin-id').value; const originZone = document.getElementById('ep-origin-zone').value;
+                const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone));
+                let inheritedStatus = '尚未進行'; if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; }
+
+                const prefix = document.getElementById('ep-code').value;
+                const rawNum = document.getElementById('ep-num').value;
+                // ✅ 修復點：透過 formatIdSafely 強制產生對的 ID
+                const finalId = formatIdSafely(prefix, rawNum);
+
+                const p = { 
+                    category: document.getElementById('ep-cat').value, zone: document.getElementById('ep-zone').value, 
+                    id: finalId, client: document.getElementById('ep-client-display').value, 
+                    name: document.getElementById('ep-name').value, producer: document.getElementById('ep-producer').value, 
+                    type: document.getElementById('ep-type').value, hours: document.getElementById('ep-hours').value, 
+                    start: dates[0] || "", end: dates[1] || dates[0] || "", 
+                    note: document.getElementById('ep-note').value, tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '', 
+                    status: inheritedStatus, link: "" 
+                };
+
+                if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } else { DATA.projects.push(p); }
+                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
+                
+                // ✅ 局部熱更新，避免全域畫面閃爍
+                if (curTab === 'wei' || curTab === 'chiu') {
+                    const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
+                    renderKanban(who, false);
+                } else if (curTab === 'gan') {
+                    const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
+                    renderGantt(who);
+                }
+                
+                closeModal('modal-edit-project'); 
+                showToast("✅ 修改成功 (背景同步中)");
+                callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {});
+            } catch(err) {
+                showToast("儲存時發生錯誤", "error");
+            } finally {
+                if (btn) { btn.innerHTML = btn.dataset.originalText; btn.disabled = false; }
+            }
+        }
+
+        function updateEditClientInfo() {
+            const selectedCode = document.getElementById('ep-code').value; const cat = document.getElementById('ep-cat').value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = "";
+            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
+            if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById('ep-client-display').value = clientName; document.getElementById('ep-zone').value = foundZone; }
+        }
+
+        function updateZoneFromClientName() { const code = document.getElementById('ep-code').value; const clientName = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + (clientName ? "_" + clientName : ""); }
+        
+        // ✅ 修復點：熱更新狀態不鎖死全域 UI，使得發送 Line 通知時極度流暢
+        function doUpdate(cat, zone, id, status, hours=0) { 
+            const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone); 
+            if (p) { 
+                p.status = status; 
+                if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours); 
+                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
+                
+                // 針對當前畫面進行輕量化局部刷新
+                if (curTab === 'wei' || curTab === 'chiu') {
+                    const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
+                    renderKanban(who, false);
+                } else if (curTab === 'dashboard') {
+                    renderDashboard();
+                } else if (curTab === 'calendar') {
+                    renderCalendar();
+                } else if (curTab === 'gan') {
+                    const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
+                    renderGantt(who);
+                }
+            } 
+            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {}); 
         }
 
         function handleKanbanSearch() {
@@ -2121,8 +2088,8 @@
                 html += `
                 <tr>
                     <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                    <td class="max-w-[200px] truncate" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
-                    <td class="text-gray-600 text-xs">${p.client}</td>
+                    <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
+                    <td class="text-gray-600 text-xs font-bold">${p.client}</td>
                     <td class="font-bold text-center">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
                     <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
                     <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start} ~ ${p.end}</td>
@@ -2132,7 +2099,6 @@
             tbody.innerHTML = html;
         }
 
-        // ✅ 嚴格套用 event.stopPropagation() 防事件穿透
         function renderKanban(producer, clearSearch = true) {
             document.getElementById('kb-title').innerText = producer + " 任務看板";
             if (!DATA.projects) return;
@@ -2203,9 +2169,8 @@
                                     else if (evt.to.id === 'kb-review') newStatus = '客戶審核'; 
                                     else if (evt.to.id === 'kb-done') newStatus = '已完成';
                                     
-                                    doUpdate(cat, zone, pId, newStatus, 0, true); 
+                                    doUpdate(cat, zone, pId, newStatus, 0); 
                                     showToast(`✅ 狀態已自動更新為：${newStatus}`);
-                                    setTimeout(() => { renderKanban(producer, false); }, 150);
                                 }
                             }
                         }));
@@ -2414,135 +2379,6 @@
         function filterCalendar(who) { calendarFilter = who; document.querySelectorAll('.cal-filter-btn').forEach(b => b.classList.remove('active')); if(who==='all') document.getElementById('btn-cal-all').classList.add('active'); else if(who==='魏敏軒') document.getElementById('btn-cal-wei').classList.add('active'); else document.getElementById('btn-cal-chiu').classList.add('active'); renderCalendar(); }
         function deleteProject(category, zone, id) { if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return; DATA.projects = DATA.projects.filter(p => !(String(p.id) === String(id) && p.zone === zone)); localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => {}); }
 
-        // ✅ 強化的「送審」保護處理機制
-        function confirmSendReview(e) {
-            const h = document.getElementById('input-hours').value; 
-            if(!h) {
-                document.getElementById('input-hours').focus();
-                return showToast("請輸入工時再送出", "error"); 
-            }
-            
-            // 防連點與視覺回饋
-            const btn = e ? e.currentTarget : document.querySelector('#modal-hours button.bg-black');
-            if(btn) {
-                btn.dataset.origin = btn.innerText;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 送出中';
-                btn.disabled = true;
-            }
-
-            try {
-                doUpdate(
-                    document.getElementById('hours-cat').value, 
-                    document.getElementById('hours-zone').value, 
-                    document.getElementById('hours-id').value, 
-                    '客戶審核', 
-                    h
-                ); 
-                closeModal('modal-hours'); 
-                showToast("✅ 已成功送審");
-            } catch (err) {
-                console.error(err);
-                showToast("送審過程發生錯誤", "error");
-            } finally {
-                if(btn) { btn.innerHTML = btn.dataset.origin; btn.disabled = false; }
-            }
-        }
-
-        // ✅ 徹底解決「編輯確定按鈕失效/卡死」的重寫函式
-        function confirmEditProject(e) {
-            const btn = e ? e.currentTarget : document.querySelector('#modal-edit-project button.bg-black');
-            if (btn) {
-                btn.dataset.originalText = btn.innerText;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 儲存中';
-                btn.disabled = true;
-            }
-
-            try {
-                const dateVal = document.getElementById('ep-date').value; const dates = dateVal.split(' to ');
-                const originId = document.getElementById('ep-origin-id').value; const originZone = document.getElementById('ep-origin-zone').value;
-                const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone));
-                let inheritedStatus = '尚未進行'; if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; }
-
-                const prefix = document.getElementById('ep-code').value;
-                const rawNum = document.getElementById('ep-num').value;
-                const finalId = formatProjectId(prefix, rawNum);
-                
-                if(!finalId) {
-                    if (btn) { btn.innerHTML = btn.dataset.originalText; btn.disabled = false; }
-                    return showToast("請確認編號填寫正確", "error");
-                }
-
-                const clientName = document.getElementById('ep-client-display').value.trim();
-                const projName = document.getElementById('ep-name').value.trim();
-                
-                if(!clientName) {
-                    if (btn) { btn.innerHTML = btn.dataset.originalText; btn.disabled = false; }
-                    return showToast("請輸入客戶名稱", "error");
-                }
-                if(!projName) {
-                    if (btn) { btn.innerHTML = btn.dataset.originalText; btn.disabled = false; }
-                    return showToast("請輸入專案名稱", "error");
-                }
-
-                const p = { 
-                    category: document.getElementById('ep-cat').value, zone: document.getElementById('ep-zone').value, 
-                    id: finalId, client: clientName, name: projName, 
-                    producer: document.getElementById('ep-producer').value, type: document.getElementById('ep-type').value, 
-                    hours: document.getElementById('ep-hours').value, 
-                    start: dates[0] || "", end: dates[1] || dates[0] || "", 
-                    note: document.getElementById('ep-note').value, tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '', 
-                    status: inheritedStatus, link: "" 
-                };
-
-                if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } else { DATA.projects.push(p); }
-                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
-                
-                // 局部更新渲染，避免 ProcessDataUpdate 的全站閃爍導致元件失靈
-                if (curTab === 'wei' || curTab === 'chiu') {
-                    const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-                    renderKanban(who, false);
-                } else if (curTab === 'gan') {
-                    const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-                    renderGantt(who);
-                } else if (curTab === 'calendar') {
-                    renderCalendar();
-                }
-
-                callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {});
-                
-                closeModal('modal-edit-project'); 
-                showToast("✅ 修改成功 (已在背景同步)");
-            } catch(err) {
-                console.error(err);
-                showToast("儲存時發生錯誤，請聯絡開發人員", "error");
-            } finally {
-                if (btn) { btn.innerHTML = btn.dataset.originalText; btn.disabled = false; }
-            }
-        }
-
-        function updateEditClientInfo() {
-            const selectedCode = document.getElementById('ep-code').value; const cat = document.getElementById('ep-cat').value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = "";
-            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
-            if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById('ep-client-display').value = clientName; document.getElementById('ep-zone').value = foundZone; }
-        }
-
-        function updateZoneFromClientName() { const code = document.getElementById('ep-code').value; const clientName = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + (clientName ? "_" + clientName : ""); }
-        
-        // doUpdate 支援單一區域刷新
-        function doUpdate(cat, zone, id, status, hours=0, fromDrag=false) { 
-            const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone); 
-            if (p) { 
-                p.status = status; 
-                if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours); 
-                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
-                if(!fromDrag) {
-                    const producer = p.producer;
-                    setTimeout(() => renderKanban(producer, false), 50); 
-                }
-            } 
-            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {}); 
-        }
-
         function openHistory() {
             const z = document.getElementById('i-zone').value; if(!z) return showToast("請先選擇客戶", "error");
             document.getElementById('hist-title').innerText = z; document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>'; document.getElementById('modal-preview').style.display = 'flex';
@@ -2565,10 +2401,37 @@
             document.getElementById('hours-id').value = id; 
             document.getElementById('input-hours').value = ''; 
             document.getElementById('modal-hours').style.display = 'flex'; 
-            // 開啟時自動對焦，提昇使用體驗
             setTimeout(() => { document.getElementById('input-hours').focus() }, 100);
         }
+        
+        function confirmSendReview(e) { 
+            const h = document.getElementById('input-hours').value; 
+            if(!h) {
+                document.getElementById('input-hours').focus();
+                return showToast("請輸入工時再送出", "error"); 
+            }
+            
+            // ✅ 修復點：加入視覺按鈕回饋，防止連點
+            const btn = e ? e.currentTarget : document.querySelector('#modal-hours button.bg-black');
+            if(btn) { btn.dataset.origin = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 送出中'; btn.disabled = true; }
 
+            try {
+                doUpdate(
+                    document.getElementById('hours-cat').value, 
+                    document.getElementById('hours-zone').value, 
+                    document.getElementById('hours-id').value, 
+                    '客戶審核', 
+                    h
+                ); 
+                closeModal('modal-hours'); 
+                showToast("✅ 已成功送審");
+            } catch(err) {
+                showToast("發生錯誤", "error");
+            } finally {
+                if(btn) { btn.innerHTML = btn.dataset.origin; btn.disabled = false; }
+            }
+        }
+        
         function togglePanel(type) { document.getElementById('panel-' + type).style.display = 'flex'; if (type === 'memo') loadMemos(); if (type === 'link') loadLinks(); if (type === 'pending') loadPending(); }
 
         function loadPending() {
@@ -2577,7 +2440,7 @@
             if (pendingList.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待分派項目</div>'; return; }
             let html = '';
             pendingList.forEach((p, idx) => {
-                const prefix = p.zone ? p.zone.split('_')[0] : ''; const numPart = p.id ? String(p.id).replace(prefix, '') : '';
+                const prefix = p.zone ? p.zone.split('_')[0] : ''; const numPart = p.id ? String(p.id).replace(/\D/g, '') : '';
                 html += `
                 <div id="p-item-${idx}" class="pending-item">
                     <div id="p-display-${idx}">
@@ -2600,7 +2463,6 @@
         function enablePendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.add('hidden'); document.getElementById(`p-edit-${idx}`).classList.remove('hidden'); const cat = document.getElementById(`pe-cat-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; const codeSel = document.getElementById(`pe-code-${idx}`); const originZone = document.getElementById(`pe-origin-zone-${idx}`).value; const prefix = originZone.split('_')[0]; codeSel.innerHTML = ''; Object.keys(settings).sort().forEach(k => { codeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); codeSel.value = prefix; }
         function cancelPendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.remove('hidden'); document.getElementById(`p-edit-${idx}`).classList.add('hidden'); }
         function updatePendingEditClient(idx) { const cat = document.getElementById(`pe-cat-${idx}`).value; const selectedCode = document.getElementById(`pe-code-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = ""; for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } } if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById(`pe-client-${idx}`).value = clientName; } }
-        
         function savePendingEdit(idx, e) {
             const btn = e ? e.currentTarget : null;
             if(btn) { btn.dataset.origin = btn.innerText; btn.innerText = '儲存中...'; btn.disabled = true; }
@@ -2610,7 +2472,7 @@
             if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
             
             let rawId = document.getElementById(`pe-num-${idx}`).value; 
-            const formattedId = formatProjectId(selectedCode, rawId);
+            const formattedId = formatIdSafely(selectedCode, rawId);
 
             if(!formattedId) {
                 if(btn) { btn.innerText = btn.dataset.origin; btn.disabled = false; }
@@ -2705,7 +2567,7 @@
             const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); 
             const clientString = folder ? `${folder}::${name}` : name; 
             const originalText = btn.innerText; btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> 儲存中..."; btn.disabled = true; 
-            callAPI('addLink', { client: clientString, url: url }, (res) => { btn.innerText = originalText; btn.disabled = false; if (res !== "OK") { showToast(res, "error"); } else { document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("已新增連結"); loadLinks(); } }); 
+            callAPI('addLink', { client: clientString, url: url }, (res) => { btn.innerText = originalText; btn.disabled = false; if (res !== "OK" && res.status !== "OK") { showToast("錯誤", "error"); } else { document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("已新增連結"); loadLinks(); } }); 
         }
         function removeLink(idx, el) { if(!confirm("確定刪除此連結嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteLink', { idx:idx }, (res) => { showToast("已刪除連結"); loadLinks(); }); }
 

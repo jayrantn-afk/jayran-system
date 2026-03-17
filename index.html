@@ -975,8 +975,8 @@
         let portalTypeChart = null;
 
         // 🌟 防禦型變數 (防止快取蓋掉剛建立的資料)
-        let localHasMutated = false;
-        function markLocalEdit() { localHasMutated = true; }
+        let lastLocalEditTime = 0;
+        function markLocalEdit() { lastLocalEditTime = Date.now(); }
 
         // 🌟 報價單與 VIP 分頁變數
         let quoteVisibleCount = 3;
@@ -1047,6 +1047,8 @@
                                 document.getElementById('portal-content').classList.remove('hidden');
                                 document.getElementById('portal-project-list').innerHTML = `<div class="text-center text-red-400 font-bold py-6">資料庫連線失敗，請聯繫工作室</div>`;
                             }, 300);
+                        } else {
+                            onSuccess({ error: true });
                         }
                     });
             } else {
@@ -1058,24 +1060,29 @@
                 })
                 .then(data => {
                     // ✅ 修復點：如果後端明確回傳 error，就拋出明確訊息
+                    if (data && data.status === "error") {
+                        onSuccess({ error: true, msg: data.message || "後台處理失敗" });
+                        return;
+                    }
                     if (data && data.error) {
-                        showToast(data.error, "error");
                         onSuccess({ error: true, msg: data.error });
                         return;
                     }
                     // ✅ 防呆解析
-                    let result = (data && data.data !== undefined) ? data.data : data;
+                    let result = data;
+                    if (data && data.data !== undefined) result = data.data;
                     onSuccess(result);
                 })
                 .catch(e => { 
                     console.error("API POST 連線錯誤:", e);
-                    showToast("連線錯誤，請檢查網路", "error"); 
+                    showToast("連線錯誤或後台拒絕寫入", "error"); 
                     document.getElementById('loader').style.display = 'none'; 
                     if (action === 'verifyLogin') { 
                         const btn = document.getElementById('btn-login'); 
                         btn.innerText = "進入系統"; 
                         btn.disabled = false; 
                     }
+                    onSuccess({ error: true, msg: "連線異常或後台錯誤" });
                 });
             }
         }
@@ -1171,8 +1178,9 @@
                     document.getElementById('loader-msg').innerHTML = `<span class="text-red-500">${res.error}</span>`; 
                 } else if(res) { 
                     // ✅ 修復點：強悍的本地護盾。如果您剛新增/編輯了資料，就無視這次因延遲而過期的舊資料！
-                    if (localHasMutated) {
-                        console.log("Local state mutated during init, preserving local data safely.");
+                    // 設定 8 秒安全期，超過 8 秒才允許刷新，以防死鎖
+                    if (Date.now() - lastLocalEditTime < 8000) {
+                        console.log("Skipping background update to protect local unsynced edits.");
                         return;
                     }
                     localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(res)); 
@@ -1717,7 +1725,7 @@
             document.getElementById('loader-msg').innerText = "雲端連結綁定中...";
             callAPI('setClientPortalLink', { clientName: clientName, url: url }, (res) => {
                 document.getElementById('loader').style.display = 'none';
-                if(res === 'OK' || res.status === 'OK') { showToast(`已成功綁定【${clientName}】的專屬雲端！`); closeModal('modal-client-link'); } 
+                if(res === 'OK' || res.status === 'OK' || res === true) { showToast(`已成功綁定【${clientName}】的專屬雲端！`); closeModal('modal-client-link'); } 
                 else { showToast("設定失敗", "error"); }
             });
         }
@@ -1882,29 +1890,33 @@
             callAPI('addProject', { payload: payloadData }, (res) => {
                 btn.innerText = originalText; btn.disabled = false;
                 
-                // 如果後端明確回傳 error 就阻擋
-                if(res && res.error) {
-                    showToast("寫入失敗：" + (res.msg || res.error), "error");
-                    return;
+                // ✅ 修復點：嚴格檢查後端回傳是否真正成功，而不是寬鬆的 !res.error，阻擋「假性成功」
+                const isSuccess = res === "OK" || res === true || res === "success" || (res && (res.status === "OK" || res.status === "success"));
+                
+                if(isSuccess) {
+                    if(!DATA.projects) DATA.projects = [];
+                    DATA.projects.push(payloadData);
+                    
+                    if(!DATA.ids) DATA.ids = {};
+                    DATA.ids[zone] = finalId;
+
+                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
+                    processDataUpdate(DATA, true); 
+                    
+                    document.getElementById('i-id').value = ''; 
+                    document.getElementById('i-name').value = '';
+                    document.getElementById('i-note').value = ''; 
+                    document.getElementById('i-urgent').checked = false; 
+                    fp.clear(); 
+                    showToast(`✅ 專案 ${finalId} 建立成功並同步！`);
+                    updateClientName(); // 自動刷新下一個號碼
+                } else {
+                    let errorMsg = (res && res.msg) ? res.msg : JSON.stringify(res);
+                    if (errorMsg.includes("undefined") || errorMsg.includes("null") || errorMsg.includes("error")) {
+                        errorMsg = "請確認後台試算表是否已建立該代號的專屬分頁 (例如 J 分頁)";
+                    }
+                    showToast("寫入失敗：" + errorMsg, "error"); 
                 }
-
-                // 成功寫入
-                if(!DATA.projects) DATA.projects = [];
-                DATA.projects.push(payloadData);
-                
-                if(!DATA.ids) DATA.ids = {};
-                DATA.ids[zone] = finalId;
-
-                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
-                processDataUpdate(DATA, true); 
-                
-                document.getElementById('i-id').value = ''; 
-                document.getElementById('i-name').value = '';
-                document.getElementById('i-note').value = ''; 
-                document.getElementById('i-urgent').checked = false; 
-                fp.clear(); 
-                showToast(`✅ 專案 ${finalId} 建立成功並同步！`);
-                updateClientName(); // 自動刷新下一個號碼
             });
         }
 
@@ -2371,9 +2383,9 @@
 
         function openSettings(type) { document.getElementById('st-type').value = type; document.getElementById('setting-title').innerText = (type==='Type') ? "管理類型" : "管理製作人"; document.getElementById('st-input').value = ''; renderSettingList(); document.getElementById('modal-settings').style.display = 'flex'; }
         function renderSettingList() { const type = document.getElementById('st-type').value; const list = (curCat==='video') ? (type==='Type' ? DATA.config.videoTypes : DATA.config.videoProducers) : (type==='Type' ? DATA.config.imageTypes : DATA.config.imageProducers); let html = ''; list.forEach(item => { html += `<div class="setting-item"><span>${item}</span><div class="setting-actions"><i onclick="editSettingItem('${item}')" class="fas fa-pen text-sm"></i><i onclick="deleteSettingItem('${item}')" class="fas fa-trash-alt text-sm"></i></div></div>`; }); document.getElementById('st-list').innerHTML = html; }
-        function addSettingItem() { const val = document.getElementById('st-input').value; const type = document.getElementById('st-type').value; if(!val) return; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK' || res.status === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); document.getElementById('st-input').value = ''; }
-        function deleteSettingItem(val) { if(!confirm("確定刪除此選項嗎？")) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK' || res.status === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
-        function editSettingItem(oldVal) { const newVal = prompt("請輸入新名稱：", oldVal); if (!newVal || newVal === oldVal) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => { if(res === 'OK' || res.status === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
+        function addSettingItem() { const val = document.getElementById('st-input').value; const type = document.getElementById('st-type').value; if(!val) return; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK' || res === true || (res && res.status === 'OK')) { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); document.getElementById('st-input').value = ''; }
+        function deleteSettingItem(val) { if(!confirm("確定刪除此選項嗎？")) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK' || res === true || (res && res.status === 'OK')) { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
+        function editSettingItem(oldVal) { const newVal = prompt("請輸入新名稱：", oldVal); if (!newVal || newVal === oldVal) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => { if(res === 'OK' || res === true || (res && res.status === 'OK')) { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
 
         function openHoursModal(cat, zone, id) { 
             document.getElementById('hours-cat').value = cat; 
@@ -2500,7 +2512,7 @@
             });
         }
 
-        function loadMemos() { callAPI('getMemos', {}, (list) => { const container = document.getElementById('memo-list'); const badge = document.getElementById('memo-badge'); if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; } if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待辦事項</div>'; return; } let html = ''; list.forEach(m => { const colorClass = (m.owner === '邱仁杰') ? 'chiu' : ''; const mStr = encodeURIComponent(JSON.stringify(m)); html += `<div class="memo-item ${colorClass}"><div class="memo-content">${m.content}</div><div class="memo-meta"><span><i class="fas fa-user-circle"></i> ${m.owner}</span><span><i class="far fa-clock"></i> ${m.date}</span></div><div class="memo-actions text-lg"><i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i><i onclick="finishMemo(${m.idx}, this)" class="memo-icon far fa-check-circle text-green-500" title="完成"></i><i onclick="deleteMemo(${m.idx}, this)" class="memo-icon fas fa-trash-alt memo-del" title="刪除"></i></div></div>`; }); container.innerHTML = html; }); }
+        function loadMemos() { callAPI('getMemos', {}, (list) => { const container = document.getElementById('memo-list'); const badge = document.getElementById('memo-badge'); if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; } if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待辦事項</div>'; return; } let html = ''; list.forEach(m => { const colorClass = (m.owner === '邱仁杰')? 'chiu' : ''; const mStr = encodeURIComponent(JSON.stringify(m)); html += `<div class="memo-item ${colorClass}"><div class="memo-content">${m.content}</div><div class="memo-meta"><span><i class="fas fa-user-circle"></i> ${m.owner}</span><span><i class="far fa-clock"></i> ${m.date}</span></div><div class="memo-actions text-lg"><i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i><i onclick="finishMemo(${m.idx}, this)" class="memo-icon far fa-check-circle text-green-500" title="完成"></i><i onclick="deleteMemo(${m.idx}, this)" class="memo-icon fas fa-trash-alt memo-del" title="刪除"></i></div></div>`; }); container.innerHTML = html; }); }
         function deleteMemo(idx, el) { if(!confirm("確定刪除此便利貼嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteMemo', { idx:idx }, (res) => { showToast("已刪除待辦"); loadMemos(); }); }
         function editMemoMode(m) { editingMemoIdx = m.idx; document.getElementById('m-content').value = m.content; document.getElementById('m-owner').value = m.owner; if(m.date) fpMemo.setDate(m.date); const btn = document.getElementById('btn-memo-add'); btn.innerText = "更新貼文"; btn.classList.add('bg-blue-600'); btn.onclick = updateMemoItem; }
         

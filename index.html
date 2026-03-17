@@ -18,60 +18,23 @@
     
     <style>
         /* --- 基礎架構 --- */
-        :root { 
-            --bg: #F5F5F7; 
-            --surface: #FFFFFF; 
-            --primary: #1D1D1F; 
-            --secondary: #86868B; 
-            --accent: #007AFF; 
-            --radius: 12px; 
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg); color: var(--primary); height: 100vh; overflow: hidden; display: flex; flex-direction: column; 
-        }
+        :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--primary); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         #admin-view { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; }
-        #login-overlay { 
-            position: fixed; inset: 0; background: #111827; z-index: 99999; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            color: white; transition: opacity 0.5s ease; 
-        }
+        #login-overlay { position: fixed; inset: 0; background: #111827; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; transition: opacity 0.5s ease; }
 
         /* --- VIP 客戶傳送門專用樣式 --- */
-        #client-portal-view { 
-            position: fixed; inset: 0; 
-            background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%); 
-            z-index: 999999; color: white; overflow-y: auto; padding: 0; 
-        }
-        .portal-card { 
-            background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); 
-            border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-            border: 1px solid rgba(51, 65, 85, 0.8); 
-        }
+        #client-portal-view { position: fixed; inset: 0; background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%); z-index: 999999; color: white; overflow-y: auto; padding: 0; }
+        .portal-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(51, 65, 85, 0.8); }
 
         /* --- 導覽列與容器 --- */
-        .header-fixed-area { 
-            flex-shrink: 0; padding: 20px 20px 0 20px; 
-            background: rgba(245, 245, 247, 0.85); backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px); z-index: 50; border-bottom: 1px solid rgba(0,0,0,0.05); 
-        }
-        .segmented-nav { 
-            background: rgba(229, 229, 234, 0.6); padding: 4px; border-radius: 10px; 
-            display: flex; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
-            overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; 
-        }
+        .header-fixed-area { flex-shrink: 0; padding: 20px 20px 0 20px; background: rgba(245, 245, 247, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 50; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .segmented-nav { background: rgba(229, 229, 234, 0.6); padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .segmented-nav::-webkit-scrollbar { display: none; }
-        .nav-item { 
-            flex: 1; min-width: 85px; text-align: center; padding: 10px; 
-            font-size: 14px; font-weight: 700; color: var(--secondary); 
-            cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; 
-        }
+        .nav-item { flex: 1; min-width: 85px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
         .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         
-        .page-scroll-container { 
-            flex-grow: 1; overflow-y: auto; padding: 10px 20px 100px 20px; 
-            position: relative; overscroll-behavior-y: contain; 
-        }
+        .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 100px 20px; position: relative; overscroll-behavior-y: contain; }
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -80,17 +43,9 @@
         .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 10px; }
         
         /* --- 卡片與表單 --- */
-        .clean-card { 
-            background: var(--surface); border-radius: var(--radius); padding: 24px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; width: 100%; box-sizing: border-box; 
-        }
-        .clean-input, .clean-select { 
-            width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; 
-            border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; 
-        }
-        .clean-input:focus, .clean-select:focus { 
-            background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.1); 
-        }
+        .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+        .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
+        .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.1); }
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
         .type-btn.active { background: #1D1D1F; color: white; }
@@ -106,7 +61,6 @@
         .excel-table tbody tr:hover { background: #F9FAFB; }
         .excel-table td { padding: 12px 16px; vertical-align: middle; color: #1F2937; font-weight: 600; }
         .table-container { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #E5E5E5; box-shadow: 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px; }
-        
         .sortable-ghost { opacity: 0.4; background: #E0F2FE !important; border: 2px dashed #0284C7; }
         .cursor-grab { cursor: grab; }
         .cursor-grab:active { cursor: grabbing; }
@@ -238,7 +192,6 @@
     <div id="toast-container"></div>
 
     <div id="client-portal-view" class="hidden">
-        
         <div id="portal-loader" class="fixed inset-0 z-[9999999] flex flex-col justify-center items-center transition-opacity duration-300" style="background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);">
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-6 bg-white border-4 border-slate-700 animate-pulse object-cover">
             <div class="text-3xl font-black tracking-widest text-white mb-2">JAYRAN <span class="text-blue-500">STUDIO</span></div>
@@ -266,17 +219,12 @@
             </div>
 
             <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 md:p-8 rounded-2xl border border-slate-700 mb-8 shadow-2xl relative overflow-hidden">
-                <div id="butler-year-watermark" class="absolute right-0 bottom-0 translate-x-1/8 translate-y-1/4 text-[120px] md:text-[180px] font-black text-white/5 tracking-tighter select-none pointer-events-none z-0 leading-none">
-                    2026
-                </div>
-
+                <div id="butler-year-watermark" class="absolute right-0 bottom-0 translate-x-1/8 translate-y-1/4 text-[120px] md:text-[180px] font-black text-white/5 tracking-tighter select-none pointer-events-none z-0 leading-none">2026</div>
                 <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 translate-x-1/2 -translate-y-1/2 z-0"></div>
                 <div class="flex flex-col md:flex-row items-center gap-6 relative z-10">
-                    
                     <div class="bg-slate-700/50 p-1.5 rounded-full border-2 border-slate-500/50 flex justify-center items-center overflow-hidden w-24 h-24 md:w-32 md:h-32 shrink-0 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
                         <img src="https://lh3.googleusercontent.com/d/11r2xCwR6c5jqM1d0lrQnqh7p1kw4-DtK" alt="專屬管家" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=專屬+管家&background=1e293b&color=3b82f6';">
                     </div>
-
                     <div class="text-center md:text-left flex-1 flex flex-col justify-center h-full min-h-[6rem] md:min-h-[8rem]">
                         <h2 class="text-xl md:text-2xl font-black text-white mb-2 tracking-widest">您的專屬管家</h2>
                         <p class="text-gray-400 text-sm md:text-base mb-4 leading-relaxed">
@@ -328,7 +276,6 @@
                     ⬇️ 載入更多歷史專案 (還有 <span id="portal-remain-count">0</span> 筆)
                 </button>
             </div>
-            
         </div>
     </div>
 
@@ -1028,8 +975,8 @@
         let portalTypeChart = null;
 
         // 🌟 防禦型變數 (防止快取蓋掉剛建立的資料)
-        let lastLocalEditTime = 0;
-        function markLocalEdit() { lastLocalEditTime = Date.now(); }
+        let localHasMutated = false;
+        function markLocalEdit() { localHasMutated = true; }
 
         // 🌟 報價單與 VIP 分頁變數
         let quoteVisibleCount = 3;
@@ -1064,7 +1011,7 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // ✅ 強悍的核心防呆：完美萃取純數字並加上前綴 (杜絕 II001 與 aa010)
+        // ✅ 強悍的核心防呆：完美萃取純數字並加上前綴 (杜絕 II001 疊加，且不會強迫轉大寫)
         function formatIdSafely(prefix, rawId) {
             let nums = String(rawId).replace(/\D/g, ''); // 只保留純數字
             if (!nums) nums = '001';
@@ -1072,7 +1019,7 @@
         }
 
         // =========================================================
-        // 🌟 網路層 API 連線 (修復 undefined 寫入報錯與判斷機制)
+        // 🌟 網路層 API 連線 (修復解析機制與報錯)
         // =========================================================
         function callAPI(action, payload, onSuccess) {
             if (!GAS_API_URL) return;
@@ -1110,12 +1057,13 @@
                     return res.json();
                 })
                 .then(data => {
-                    // ✅ 修復點：防禦型解構，如果有 error 就攔截，確保回傳準確
+                    // ✅ 修復點：如果後端明確回傳 error，就拋出明確訊息
                     if (data && data.error) {
                         showToast(data.error, "error");
                         onSuccess({ error: true, msg: data.error });
                         return;
                     }
+                    // ✅ 防呆解析
                     let result = (data && data.data !== undefined) ? data.data : data;
                     onSuccess(result);
                 })
@@ -1222,20 +1170,11 @@
                 if(res && res.error) { 
                     document.getElementById('loader-msg').innerHTML = `<span class="text-red-500">${res.error}</span>`; 
                 } else if(res) { 
-                    // ✅ 修復點：智慧合併機制 (避免背景下載的舊資料覆蓋您剛輸入的熱騰騰新專案)
-                    if (Date.now() - lastLocalEditTime < 10000) {
-                        const localProjects = DATA.projects || [];
-                        const mergedProjects = [...localProjects];
-                        
-                        res.projects.forEach(serverProj => {
-                            const localIndex = mergedProjects.findIndex(p => p.id === serverProj.id && p.zone === serverProj.zone);
-                            if (localIndex === -1) {
-                                mergedProjects.push(serverProj); // 保留您本地新增的，並把同事新增的合併進來
-                            }
-                        });
-                        res.projects = mergedProjects;
+                    // ✅ 修復點：強悍的本地護盾。如果您剛新增/編輯了資料，就無視這次因延遲而過期的舊資料！
+                    if (localHasMutated) {
+                        console.log("Local state mutated during init, preserving local data safely.");
+                        return;
                     }
-                    
                     localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(res)); 
                     processDataUpdate(res, false); 
                 }
@@ -1790,7 +1729,7 @@
             const codeSel = document.getElementById('modal-code');
             codeSel.innerHTML = '';
             
-            // ✅ 修復點：自動根據圖文或影片提供大/小寫選項
+            // ✅ 修復點：自動根據圖文或影片提供大/小寫選項，且剔除已經用過的
             const isVideo = (curCat === 'video');
             const startChar = isVideo ? 65 : 97; // A=65, a=97
             const endChar = isVideo ? 90 : 122;  // Z=90, z=122
@@ -1815,7 +1754,7 @@
 
             for(let i = startChar; i <= endChar; i++) {
                 const letter = String.fromCharCode(i);
-                // ✅ 修復點：如果該代號還沒被用過，或者是目前正在編輯的對象，才顯示
+                // 只有沒被用過，或是當前正在編輯的那個，才允許出現在選單中
                 if (!usedPrefixes.includes(letter) || letter === currentEditPrefix) {
                     codeSel.add(new Option(letter, letter));
                 }
@@ -1893,7 +1832,7 @@
                     const match = lastId.match(/\d+$/); 
                     if (match) displayId = String(parseInt(match[0]) + 1).padStart(3, '0'); 
                 } 
-                // ✅ 修復點：自動帶入正確的下一個數字編號，避免混淆
+                // 只提供純數字到框框裡，代號會透過 formatIdSafely 安全補齊
                 document.getElementById('i-id').value = displayId;
             } else { 
                 document.getElementById('i-client').value = ''; 
@@ -1942,27 +1881,30 @@
 
             callAPI('addProject', { payload: payloadData }, (res) => {
                 btn.innerText = originalText; btn.disabled = false;
-                // ✅ 修復點：嚴格檢查後端回傳是否真正成功，而不是寬鬆的 !res.error
-                const isSuccess = res === "OK" || res === true || res === "success" || (res && (res.status === "OK" || res.status === "success"));
                 
-                if(isSuccess) {
-                    if(!DATA.projects) DATA.projects = [];
-                    DATA.projects.push(payloadData);
-                    
-                    if(!DATA.ids) DATA.ids = {};
-                    DATA.ids[zone] = finalId;
+                // 如果後端明確回傳 error 就阻擋
+                if(res && res.error) {
+                    showToast("寫入失敗：" + (res.msg || res.error), "error");
+                    return;
+                }
 
-                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
-                    processDataUpdate(DATA, true); 
-                    
-                    document.getElementById('i-id').value = ''; 
-                    document.getElementById('i-name').value = '';
-                    document.getElementById('i-note').value = ''; 
-                    document.getElementById('i-urgent').checked = false; 
-                    fp.clear(); 
-                    showToast(`✅ 專案 ${finalId} 建立成功並同步！`);
-                    updateClientName(); // 自動刷新下一個號碼
-                } else { showToast("寫入失敗，請稍後重試", "error"); }
+                // 成功寫入
+                if(!DATA.projects) DATA.projects = [];
+                DATA.projects.push(payloadData);
+                
+                if(!DATA.ids) DATA.ids = {};
+                DATA.ids[zone] = finalId;
+
+                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
+                processDataUpdate(DATA, true); 
+                
+                document.getElementById('i-id').value = ''; 
+                document.getElementById('i-name').value = '';
+                document.getElementById('i-note').value = ''; 
+                document.getElementById('i-urgent').checked = false; 
+                fp.clear(); 
+                showToast(`✅ 專案 ${finalId} 建立成功並同步！`);
+                updateClientName(); // 自動刷新下一個號碼
             });
         }
 
@@ -1971,13 +1913,13 @@
             if (p) {
                 document.getElementById('ep-cat').value = p.category; document.getElementById('ep-origin-id').value = p.id; document.getElementById('ep-origin-zone').value = p.zone; 
                 const prefix = p.zone.split('_')[0]; 
-                // ✅ 修復點：用 regex 強制濾掉英文，只保留數字，防止編輯時抓不到正確編號
+                // 強制濾掉英文，只保留數字，防止編輯時抓不到正確編號
                 const numPart = String(p.id).replace(/\D/g, ''); 
                 
                 const epCodeSel = document.getElementById('ep-code'); epCodeSel.innerHTML = '';
                 const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
                 
-                // 去除重複的代號，保持乾淨
+                // 確保所有被使用的前綴都能出現，避免選單空白
                 const uniquePrefixes = [...new Set(Object.keys(settings).map(k => k.split('_')[0]))];
                 uniquePrefixes.sort().forEach(pref => epCodeSel.add(new Option(pref, pref)));
                 epCodeSel.value = prefix;
@@ -2010,7 +1952,7 @@
 
                 const prefix = document.getElementById('ep-code').value;
                 const rawNum = document.getElementById('ep-num').value;
-                // ✅ 修復點：透過 formatIdSafely 強制產生對的 ID
+                // ✅ 透過 formatIdSafely 強制產生對的 ID (如：把 II001 洗白成 I001)
                 const finalId = formatIdSafely(prefix, rawNum);
 
                 const p = { 
@@ -2026,7 +1968,7 @@
                 if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } else { DATA.projects.push(p); }
                 localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
                 
-                // ✅ 局部熱更新，避免全域畫面閃爍
+                // ✅ 局部熱更新，避免全域畫面閃爍導致的 Line 通知卡頓感
                 if (curTab === 'wei' || curTab === 'chiu') {
                     const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
                     renderKanban(who, false);
@@ -2055,7 +1997,7 @@
 
         function updateZoneFromClientName() { const code = document.getElementById('ep-code').value; const clientName = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + (clientName ? "_" + clientName : ""); }
         
-        // ✅ 修復點：熱更新狀態不鎖死全域 UI，使得發送 Line 通知時極度流暢
+        // ✅ 熱更新狀態不鎖死全域 UI，使得發送 Line 通知時極度流暢
         function doUpdate(cat, zone, id, status, hours=0, fromDrag=false) { 
             markLocalEdit();
             const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone); 
@@ -2429,9 +2371,9 @@
 
         function openSettings(type) { document.getElementById('st-type').value = type; document.getElementById('setting-title').innerText = (type==='Type') ? "管理類型" : "管理製作人"; document.getElementById('st-input').value = ''; renderSettingList(); document.getElementById('modal-settings').style.display = 'flex'; }
         function renderSettingList() { const type = document.getElementById('st-type').value; const list = (curCat==='video') ? (type==='Type' ? DATA.config.videoTypes : DATA.config.videoProducers) : (type==='Type' ? DATA.config.imageTypes : DATA.config.imageProducers); let html = ''; list.forEach(item => { html += `<div class="setting-item"><span>${item}</span><div class="setting-actions"><i onclick="editSettingItem('${item}')" class="fas fa-pen text-sm"></i><i onclick="deleteSettingItem('${item}')" class="fas fa-trash-alt text-sm"></i></div></div>`; }); document.getElementById('st-list').innerHTML = html; }
-        function addSettingItem() { const val = document.getElementById('st-input').value; const type = document.getElementById('st-type').value; if(!val) return; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); document.getElementById('st-input').value = ''; }
-        function deleteSettingItem(val) { if(!confirm("確定刪除此選項嗎？")) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
-        function editSettingItem(oldVal) { const newVal = prompt("請輸入新名稱：", oldVal); if (!newVal || newVal === oldVal) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => { if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
+        function addSettingItem() { const val = document.getElementById('st-input').value; const type = document.getElementById('st-type').value; if(!val) return; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK' || res.status === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); document.getElementById('st-input').value = ''; }
+        function deleteSettingItem(val) { if(!confirm("確定刪除此選項嗎？")) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK' || res.status === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
+        function editSettingItem(oldVal) { const newVal = prompt("請輸入新名稱：", oldVal); if (!newVal || newVal === oldVal) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => { if(res === 'OK' || res.status === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
 
         function openHoursModal(cat, zone, id) { 
             document.getElementById('hours-cat').value = cat; 
@@ -2450,7 +2392,6 @@
                 return showToast("請輸入工時再送出", "error"); 
             }
             
-            // ✅ 修復點：加入視覺按鈕回饋，防止連點
             const btn = e ? e.currentTarget : document.querySelector('#modal-hours button.bg-black');
             if(btn) { btn.dataset.origin = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 送出中'; btn.disabled = true; }
 

@@ -1771,24 +1771,40 @@
             document.getElementById('modal-zone').style.display = 'flex';
         }
 
-        function confirmZoneModal(e) {
+       function confirmZoneModal(e) {
+            const btn = e ? e.currentTarget : null;
             const prefix = document.getElementById('modal-code').value;
             const name = document.getElementById('modal-name').value.trim();
             const origZone = document.getElementById('edit-orig-name').value;
             
             if(!name) return showToast("請輸入客戶名稱", "error");
             
+            if(btn) { btn.dataset.origin = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 處理中...'; btn.disabled = true; }
+
             const newZone = `${prefix}_${name}`;
             const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings;
             
-            if(origZone && origZone !== newZone) { delete settings[origZone]; }
-            if(!settings[newZone]) settings[newZone] = "000";
-            
-            renderZoneOptions();
-            document.getElementById('i-zone').value = newZone;
-            updateClientName();
-            closeModal('modal-zone');
-            showToast("✅ 已設定客戶，建立專案後將同步雲端");
+            // ✅ 呼叫 API 真正建立分頁！
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader-msg').innerText = "建立客戶專屬資料庫中...";
+
+            callAPI('createZone', { cat: curCat, zone: newZone, oldZone: origZone }, (res) => {
+                document.getElementById('loader').style.display = 'none';
+                if(btn) { btn.innerText = btn.dataset.origin; btn.disabled = false; }
+
+                if (res === "OK" || res === true || (res && res.status === "OK")) {
+                    if(origZone && origZone !== newZone) { delete settings[origZone]; }
+                    if(!settings[newZone]) settings[newZone] = "000";
+                    
+                    renderZoneOptions();
+                    document.getElementById('i-zone').value = newZone;
+                    updateClientName();
+                    closeModal('modal-zone');
+                    showToast("✅ 客戶已建立並同步雲端！");
+                } else {
+                    showToast("客戶建立失敗：" + (res.msg || JSON.stringify(res)), "error");
+                }
+            });
         }
 
         function setProjectType(type) { 

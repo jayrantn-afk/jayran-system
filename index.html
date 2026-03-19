@@ -2025,13 +2025,24 @@
 
         function updateZoneFromClientName() { const code = document.getElementById('ep-code').value; const clientName = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + (clientName ? "_" + clientName : ""); }
         
-        // ✅ 熱更新狀態不鎖死全域 UI，使得發送 Line 通知時極度流暢
+   // ✅ 熱更新狀態不鎖死全域 UI，使得發送 Line 通知時極度流暢
         function doUpdate(cat, zone, id, status, hours=0, fromDrag=false) { 
             markLocalEdit();
             const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone); 
+            let useUpdateProject = false;
+
             if (p) { 
                 p.status = status; 
                 if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours); 
+                
+                // 🌟 當點擊「已完成」時，自動將該專案的結束日期壓成「今天」，確保業績算在當月
+                if (status === '已完成' || status === '已結案') {
+                    const todayStr = getLocalDateString(new Date());
+                    p.end = todayStr;
+                    if (!p.start) p.start = todayStr;
+                    useUpdateProject = true; // 改了日期，改呼叫 updateProject 完整存回
+                }
+
                 localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
                 
                 // 針對當前畫面進行輕量化局部刷新，不阻塞整個瀏覽器
@@ -2049,9 +2060,14 @@
                     }
                 }
             } 
-            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {}); 
+            
+            // 根據是否修改了日期，決定呼叫哪個 API 儲存
+            if (useUpdateProject) {
+                callAPI('updateProject', { payload: p, originId: id, originZone: zone }, (res) => {});
+            } else {
+                callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {}); 
+            }
         }
-
         function handleKanbanSearch() {
             const query = document.getElementById('kanban-search').value.trim().toLowerCase();
             const normalView = document.getElementById('kb-normal-view'); 
@@ -2187,13 +2203,14 @@
             const selectedMonth = document.getElementById('db-month-filter').value; 
             currentFilteredProjects = DATA.projects;
             
-            if (selectedMonth !== 'all') {
+        if (selectedMonth !== 'all') {
                 currentFilteredProjects = DATA.projects.filter(p => {
-                    let dateStr = p.start || p.end; 
+                    // 🌟 將判斷基準改為優先看「結束日期 (p.end)」。當月完成就會算在當月。
+                    let dateStr = p.end || p.start; 
                     if (!dateStr) return false; 
-                    let firstDate = dateStr.split(' to ')[0];
+                    let targetDate = dateStr.includes(' to ') ? dateStr.split(' to ')[1] || dateStr.split(' to ')[0] : dateStr;
                     try { 
-                        let d = new Date(firstDate); 
+                        let d = new Date(targetDate); 
                         if (isNaN(d.getTime())) return false; 
                         return (d.getMonth() + 1).toString() === selectedMonth; 
                     } catch(e) { return false; }

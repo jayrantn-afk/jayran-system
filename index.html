@@ -2061,11 +2061,22 @@
                 }
             } 
             
+          // --- 杰冉優化：建立純淨的 payload，避免帶入前端附加的屬性 (如 unifiedStatus) 導致後端寫入崩潰 ---
+            const cleanP = p ? { 
+                category: p.category, zone: p.zone, id: p.id, client: p.client, 
+                name: p.name, producer: p.producer, type: p.type, hours: p.hours, 
+                start: p.start, end: p.end, note: p.note, tag: p.tag, status: p.status, link: p.link || "" 
+            } : null;
+
             // 根據是否修改了日期，決定呼叫哪個 API 儲存
-            if (useUpdateProject) {
-                callAPI('updateProject', { payload: p, originId: id, originZone: zone }, (res) => {});
+            if (useUpdateProject && cleanP) {
+                // 1. 先呼叫 updateStatus，確保能順利觸發後端的 LINE 狀態通知
+                callAPI('updateStatus', { cat: cat, zone: zone, id: id, status: status, hours: hours }, (res) => {
+                    // 2. 成功後再呼叫 updateProject，把「結束日期更新為今天」的純淨資料安全寫入
+                    callAPI('updateProject', { payload: cleanP, originId: id, originZone: zone }, (res2) => {});
+                });
             } else {
-                callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:hours }, (res) => {}); 
+                callAPI('updateStatus', { cat: cat, zone: zone, id: id, status: status, hours: hours }, (res) => {}); 
             }
         }
         function handleKanbanSearch() {

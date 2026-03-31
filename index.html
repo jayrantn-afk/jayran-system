@@ -2068,10 +2068,10 @@
                     showToast("狀態更新失敗，已自動還原：" + (errMsg || "網路異常"), "error");
                 };
 
-                // 根據是否修改了日期，決定呼叫哪個 API 儲存
+              // 根據是否修改了日期，決定呼叫哪個 API 儲存
                 if (useUpdateProject && cleanP) {
                     // 1. 先呼叫 updateStatus，確保能順利觸發後端的 LINE 狀態通知
-                    callAPI('updateStatus', { cat: actualCat, zone: zone, id: id, status: status, hours: hours }, (res) => {
+                    callAPI('updateStatus', { cat: actualCat, zone: zone, id: id, status: status, hours: parseFloat(hours) || 0 }, (res) => {
                         if (res && res.error) return rollback(res.msg);
                         // 2. 成功後再呼叫 updateProject，把「結束日期更新為今天」的純淨資料安全寫入
                         callAPI('updateProject', { payload: cleanP, originId: id, originZone: zone }, (res2) => {
@@ -2079,7 +2079,7 @@
                         });
                     });
                 } else {
-                    callAPI('updateStatus', { cat: actualCat, zone: zone, id: id, status: status, hours: hours }, (res) => {
+                    callAPI('updateStatus', { cat: actualCat, zone: zone, id: id, status: status, hours: parseFloat(hours) || 0 }, (res) => {
                         if (res && res.error) rollback(res.msg);
                     }); 
                 }
@@ -2471,13 +2471,13 @@
             const btn = e ? e.currentTarget : document.querySelector('#modal-hours button.bg-black');
             if(btn) { btn.dataset.origin = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 送出中'; btn.disabled = true; }
 
-            try {
+           try {
                 doUpdate(
                     document.getElementById('hours-cat').value, 
                     document.getElementById('hours-zone').value, 
                     document.getElementById('hours-id').value, 
                     '客戶審核', 
-                    h
+                    parseFloat(h) || 0
                 ); 
                 closeModal('modal-hours'); 
                 showToast("✅ 已成功送審");

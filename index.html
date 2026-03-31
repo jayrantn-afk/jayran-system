@@ -2068,19 +2068,17 @@
                     showToast("狀態更新失敗，已自動還原：" + (errMsg || "網路異常"), "error");
                 };
 
-          // 根據是否修改了日期，決定呼叫哪個 API 儲存
+         // 🌟 匠人修復：完全還原最原始的 Payload 結構 (cat: cat, hours: hours)
+                // 避免任何自定義參數造成後端 LINE 機器人辨識異常
                 if (useUpdateProject && cleanP) {
-                    // 1. 先呼叫 updateStatus，確保能順利觸發後端的 LINE 狀態通知
-                    // 杰冉修復：將 hours 強制轉為 String 傳遞，避免後端 LINE 機器人處理字串時當機
-                    callAPI('updateStatus', { cat: actualCat, zone: zone, id: id, status: status, hours: String(hours) }, (res) => {
+                    callAPI('updateStatus', { cat: cat, zone: zone, id: id, status: status, hours: hours }, (res) => {
                         if (res && res.error) return rollback(res.msg);
-                        // 2. 成功後再呼叫 updateProject，把「結束日期更新為今天」的純淨資料安全寫入
                         callAPI('updateProject', { payload: cleanP, originId: id, originZone: zone }, (res2) => {
                             if (res2 && res2.error) rollback(res2.msg);
                         });
                     });
                 } else {
-                    callAPI('updateStatus', { cat: actualCat, zone: zone, id: id, status: status, hours: String(hours) }, (res) => {
+                    callAPI('updateStatus', { cat: cat, zone: zone, id: id, status: status, hours: hours }, (res) => {
                         if (res && res.error) rollback(res.msg);
                     }); 
                 }
@@ -2472,13 +2470,14 @@
             const btn = e ? e.currentTarget : document.querySelector('#modal-hours button.bg-black');
             if(btn) { btn.dataset.origin = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 送出中'; btn.disabled = true; }
 
-           try {
+        try {
+                // 🌟 匠人修復：捨棄所有型態轉換，直接傳遞最原始的輸入字串 h
                 doUpdate(
                     document.getElementById('hours-cat').value, 
                     document.getElementById('hours-zone').value, 
                     document.getElementById('hours-id').value, 
                     '客戶審核', 
-                    parseFloat(h) || 0
+                    h
                 ); 
                 closeModal('modal-hours'); 
                 showToast("✅ 已成功送審");

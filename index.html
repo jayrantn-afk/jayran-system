@@ -1731,7 +1731,78 @@
                 else { showToast("設定失敗", "error"); }
             });
         }
+// =========================================================
+        // 🌟 新增與編輯客戶區域 (連動 GAS 建立實體試算表分頁)
+        // =========================================================
+        function openZoneModal(mode) {
+            document.getElementById('edit-orig-name').value = '';
+            document.getElementById('modal-name').value = '';
+            
+            const codeSel = document.getElementById('modal-code');
+            codeSel.innerHTML = '';
+            
+            const isVideo = (curCat === 'video');
+            const startChar = isVideo ? 65 : 97; // A=65, a=97
+            const endChar = isVideo ? 90 : 122;  // Z=90, z=122
+            
+            const settings = isVideo ? DATA.videoSettings : DATA.imageSettings;
+            const usedPrefixes = Object.keys(settings || {}).map(k => k.split('_')[0]);
 
+            let currentEditPrefix = "";
+            if(mode === 'edit') {
+                const currentZone = document.getElementById('i-zone').value;
+                if(!currentZone) return showToast("請先選擇要編輯的客戶", "error");
+                currentEditPrefix = currentZone.split('_')[0];
+                const name = currentZone.includes('_') ? currentZone.substring(currentZone.indexOf('_') + 1) : '';
+                
+                document.getElementById('modal-name').value = name;
+                document.getElementById('edit-orig-name').value = currentZone;
+                document.getElementById('modal-title').innerText = "編輯客戶設定";
+            } else {
+                document.getElementById('modal-title').innerText = "新增客戶設定";
+            }
+
+            for(let i = startChar; i <= endChar; i++) {
+                const letter = String.fromCharCode(i);
+                if (!usedPrefixes.includes(letter) || letter === currentEditPrefix) {
+                    codeSel.add(new Option(letter, letter));
+                }
+            }
+            if (mode === 'edit' && currentEditPrefix) { codeSel.value = currentEditPrefix; }
+            document.getElementById('modal-zone').style.display = 'flex';
+        }
+
+        function confirmZoneModal() {
+            const prefix = document.getElementById('modal-code').value;
+            const name = document.getElementById('modal-name').value.trim();
+            const origZone = document.getElementById('edit-orig-name').value;
+            
+            if(!name) return showToast("請輸入客戶名稱", "error");
+
+            const newZone = `${prefix}_${name}`;
+            const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings;
+            
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader-msg').innerText = "建立客戶專屬資料庫中...";
+
+            // 呼叫 GAS 建立試算表分頁 (保留超級備份庫的結構)
+            callAPI('createZone', { cat: curCat, zone: newZone, oldZone: origZone }, (res) => {
+                document.getElementById('loader').style.display = 'none';
+
+                if (res === "OK" || res === true || (res && res.status === "OK")) {
+                    if(origZone && origZone !== newZone) { delete settings[origZone]; }
+                    if(!settings[newZone]) settings[newZone] = "000";
+                    
+                    renderZoneOptions();
+                    document.getElementById('i-zone').value = newZone;
+                    updateClientName();
+                    closeModal('modal-zone');
+                    showToast("✅ 客戶已建立並同步雲端！");
+                } else {
+                    showToast("客戶建立失敗：" + (res.msg || JSON.stringify(res)), "error");
+                }
+            });
+        }
         function setProjectType(type) { 
             curCat = type; 
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active')); 

@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>杰冉影像工作室</title>
+    <title>杰冉影像工作室 (Firebase Pro)</title>
     
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -193,6 +196,7 @@
     <div id="toast-container"></div>
 
     <div id="client-portal-view" class="hidden">
+        
         <div id="portal-loader" class="fixed inset-0 z-[9999999] flex flex-col justify-center items-center transition-opacity duration-300" style="background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);">
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-6 bg-white border-4 border-slate-700 animate-pulse object-cover">
             <div class="text-3xl font-black tracking-widest text-white mb-2">JAYRAN <span class="text-blue-500">STUDIO</span></div>
@@ -220,12 +224,17 @@
             </div>
 
             <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 md:p-8 rounded-2xl border border-slate-700 mb-8 shadow-2xl relative overflow-hidden">
-                <div id="butler-year-watermark" class="absolute right-0 bottom-0 translate-x-1/8 translate-y-1/4 text-[120px] md:text-[180px] font-black text-white/5 tracking-tighter select-none pointer-events-none z-0 leading-none">2026</div>
+                <div id="butler-year-watermark" class="absolute right-0 bottom-0 translate-x-1/8 translate-y-1/4 text-[120px] md:text-[180px] font-black text-white/5 tracking-tighter select-none pointer-events-none z-0 leading-none">
+                    2026
+                </div>
+
                 <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 translate-x-1/2 -translate-y-1/2 z-0"></div>
                 <div class="flex flex-col md:flex-row items-center gap-6 relative z-10">
+                    
                     <div class="bg-slate-700/50 p-1.5 rounded-full border-2 border-slate-500/50 flex justify-center items-center overflow-hidden w-24 h-24 md:w-32 md:h-32 shrink-0 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
                         <img src="https://lh3.googleusercontent.com/d/11r2xCwR6c5jqM1d0lrQnqh7p1kw4-DtK" alt="專屬管家" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=專屬+管家&background=1e293b&color=3b82f6';">
                     </div>
+
                     <div class="text-center md:text-left flex-1 flex flex-col justify-center h-full min-h-[6rem] md:min-h-[8rem]">
                         <h2 class="text-xl md:text-2xl font-black text-white mb-2 tracking-widest">您的專屬管家</h2>
                         <p class="text-gray-400 text-sm md:text-base mb-4 leading-relaxed">
@@ -269,12 +278,15 @@
                     <h3 class="text-gray-200 font-bold text-lg tracking-widest">專案進度列表</h3>
                 </div>
             </div>
+            
             <div id="portal-project-list" class="space-y-4"></div>
+
             <div id="portal-load-more-container" class="mt-8 text-center hidden">
                 <button onclick="loadMorePortalProjects()" class="bg-slate-800 text-gray-300 hover:bg-slate-700 hover:text-white px-8 py-3 rounded-full font-bold transition shadow-lg text-sm border border-slate-600">
                     ⬇️ 載入更多歷史專案 (還有 <span id="portal-remain-count">0</span> 筆)
                 </button>
             </div>
+            
         </div>
     </div>
 
@@ -321,7 +333,9 @@
                         <button id="btn-memo-add" onclick="addMemoItem()" class="w-full bg-black text-white text-lg py-3 rounded-lg font-bold hover:bg-gray-800 transition">新增貼文</button>
                     </div>
                 </div>
-                <div id="memo-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
+                <div id="memo-list" class="panel-scroll-area">
+                    <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
+                </div>
             </div>
         </div>
 
@@ -333,7 +347,9 @@
                         <span onclick="closeModal('panel-pending')" class="cursor-pointer text-gray-400 hover:text-black text-2xl"><i class="fas fa-times"></i></span>
                     </div>
                 </div>
-                <div id="pending-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div></div>
+                <div id="pending-list" class="panel-scroll-area">
+                    <div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div>
+                </div>
             </div>
         </div>
 
@@ -354,7 +370,9 @@
                         <button id="btn-link-add" onclick="addLinkItem()" class="w-full bg-blue-600 text-white text-lg py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md transition">新增連結</button>
                     </div>
                 </div>
-                <div id="link-list" class="panel-scroll-area"><div class="text-center text-gray-400 text-sm py-4">載入中...</div></div>
+                <div id="link-list" class="panel-scroll-area">
+                    <div class="text-center text-gray-400 text-sm py-4">載入中...</div>
+                </div>
             </div>
         </div>
 
@@ -379,7 +397,7 @@
                 <input id="modal-name" class="clean-input mb-6 border border-gray-200 font-bold" placeholder="例如：台積電">
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-zone')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
-                    <button onclick="confirmZoneModal(event)" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">確認</button>
+                    <button onclick="confirmZoneModal()" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">確認</button>
                 </div>
             </div>
         </div>
@@ -403,7 +421,7 @@
                 </div>
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-leave')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
-                    <button onclick="confirmLeave(event)" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">送出</button>
+                    <button onclick="confirmLeave()" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">送出</button>
                 </div>
             </div>
         </div>
@@ -418,7 +436,7 @@
                 <input id="input-hours" type="number" step="0.5" class="clean-input mb-8 text-center font-bold text-3xl h-20 border border-gray-200" placeholder="1.5">
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-hours')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
-                    <button onclick="confirmSendReview(event)" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">送出</button>
+                    <button onclick="confirmSendReview()" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">送出</button>
                 </div>
             </div>
         </div>
@@ -445,7 +463,7 @@
                 <input id="c-link-url" class="clean-input mb-6 border border-gray-200 font-bold text-blue-600" placeholder="請貼上 Google Drive 等分享網址...">
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-client-link')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold hover:bg-gray-300 transition">取消</button>
-                    <button onclick="saveClientLink(event)" class="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-emerald-700 transition">儲存設定</button>
+                    <button onclick="saveClientLink()" class="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-emerald-700 transition">儲存設定</button>
                 </div>
             </div>
         </div>
@@ -503,7 +521,7 @@
                 </div>
                 <div class="flex gap-3">
                     <button onclick="closeModal('modal-edit-project')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
-                    <button onclick="confirmEditProject(event)" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">儲存變更</button>
+                    <button onclick="confirmEditProject()" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">儲存變更</button>
                 </div>
             </div>
         </div>
@@ -536,10 +554,12 @@
                             <input id="q-client-phone" class="clean-input border" placeholder="電話號碼">
                         </div>
                     </div>
+
                     <div class="mb-4 flex items-center justify-between">
                         <h4 class="font-bold text-lg text-gray-700">報價明細</h4>
                         <button onclick="addQuoteItem()" class="text-blue-600 font-bold text-sm hover:underline">+ 新增項目</button>
                     </div>
+
                     <div class="border rounded-xl overflow-hidden mb-6">
                         <table class="w-full text-sm">
                             <thead class="bg-gray-50 border-b">
@@ -554,6 +574,7 @@
                             <tbody id="quote-items-tbody"></tbody>
                         </table>
                     </div>
+
                     <div class="flex flex-col items-end gap-2 mb-8">
                         <div class="text-gray-500 font-bold text-lg">總計： NT$ <span id="q-subtotal" class="text-xl text-black">0</span></div>
                         <div class="flex items-center gap-3">
@@ -566,27 +587,31 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="mb-6">
                         <label class="block text-xs font-bold text-gray-500 mb-1">給客戶的備註 (顯示於報價單)</label>
                         <textarea id="q-note" class="clean-input h-16 border"></textarea>
                     </div>
-                    <button id="btn-save-quote" onclick="confirmSaveQuote(event)" class="w-full bg-black text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-gray-800 transition">產生報價單並存檔</button>
+
+                    <button id="btn-save-quote" onclick="confirmSaveQuote()" class="w-full bg-black text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-gray-800 transition">產生報價單並存檔</button>
                 </div>
             </div>
         </div>
 
         <div id="modal-quote-preview" class="modal-mask">
             <div class="absolute top-4 left-0 w-full flex justify-center gap-4 no-print z-50">
-                <button onclick="downloadQuoteImage(event)" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow-lg transition"><i class="fas fa-image mr-2"></i>下載為圖檔 (PNG)</button>
+                <button onclick="downloadQuoteImage()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow-lg transition"><i class="fas fa-image mr-2"></i>下載為圖檔 (PNG)</button>
                 <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-full font-bold shadow-lg transition"><i class="fas fa-print mr-2"></i>列印 / 存為 PDF</button>
                 <button onclick="closeModal('modal-quote-preview')" class="bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-full font-bold shadow-lg transition"><i class="fas fa-times mr-2"></i>關閉</button>
             </div>
+            
             <div class="modal-body !p-0 !m-0 !max-w-3xl w-full mt-20 relative overflow-visible bg-transparent box-shadow-none">
                 <div id="printable-quote" class="bg-white p-10 md:p-14 shadow-2xl mx-auto w-full text-black">
                     <div class="border-b-4 border-gray-800 pb-4 mb-8 flex justify-between items-end">
                         <h1 class="text-4xl font-black tracking-widest text-gray-800">報價單</h1>
                         <h2 class="text-xl font-bold text-gray-500">JAYRAN STUDIO</h2>
                     </div>
+                    
                     <div class="flex justify-between mb-8 text-sm">
                         <div class="space-y-1">
                             <p><span class="font-bold text-gray-500 inline-block w-20">客戶名稱：</span> <span id="pq-client" class="font-bold text-lg"></span></p>
@@ -599,6 +624,7 @@
                             <p><span class="font-bold text-gray-500">日期：</span> <span id="pq-date" class="font-mono"></span></p>
                         </div>
                     </div>
+
                     <table class="w-full mb-8 border-collapse">
                         <thead class="bg-gray-100 border-t-2 border-b-2 border-gray-300">
                             <tr>
@@ -610,6 +636,7 @@
                         </thead>
                         <tbody id="pq-items" class="text-sm"></tbody>
                     </table>
+
                     <div class="flex justify-end mb-8">
                         <div class="w-64 space-y-2">
                             <div class="flex justify-between text-gray-500">
@@ -626,6 +653,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="border-t pt-4 text-sm text-gray-500">
                         <p class="font-bold mb-1">注意事項：</p>
                         <p id="pq-note" class="whitespace-pre-wrap"></p>
@@ -651,7 +679,7 @@
                 <div onclick="switchTab('add')" id="nav-add" class="nav-item active admin-only"><i class="fas fa-plus mr-1"></i> 新增</div>
                 <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user mr-1"></i> 魏敏軒</div>
                 <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user mr-1"></i> 邱仁杰</div>
-                <div onclick="switchTab('quote')" id="nav-quote" class="nav-item bg-amber-50 text-amber-600 border border-amber-100 admin-only"><i class="fas fa-file-invoice-dollar mr-1"></i> 報價單</div>
+                <div onclick="switchTab('quote')" id="nav-quote" class="nav-item bg-amber-50 text-amber-600 border border-amber-100"><i class="fas fa-file-invoice-dollar mr-1"></i> 報價單</div>
                 <div onclick="switchTab('gan')" id="nav-gan" class="nav-item"><i class="fas fa-chart-bar mr-1"></i> 甘特圖</div>
                 <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item"><i class="fas fa-calendar-alt mr-1"></i> 行事曆</div>
                 <div onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item"><i class="fas fa-chart-pie mr-1"></i> 數據中心</div>
@@ -667,6 +695,7 @@
                         <i class="fas fa-plus mr-1"></i> 建立新報價單
                     </button>
                 </div>
+
                 <div class="clean-card">
                     <div class="table-container m-0">
                         <table class="excel-table">
@@ -715,6 +744,7 @@
                         <option value="all">年度總結</option><option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option><option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option><option value="9">9月</option><option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
                     </select>
                 </div>
+
                 <div class="grid grid-cols-3 gap-4 mb-6">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-center transform transition hover:scale-105">
                         <div class="text-xs text-gray-500 font-bold mb-1">總專案數</div>
@@ -729,6 +759,7 @@
                         <div class="text-3xl font-black text-blue-500" id="db-hours-count">0</div>
                     </div>
                 </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="clean-card flex flex-col items-center">
                         <h3 class="text-sm font-bold mb-4 w-full text-center text-gray-500"><i class="fas fa-hand-pointer text-blue-400"></i> 點擊區塊看明細</h3>
@@ -739,6 +770,7 @@
                         <div style="height: 240px; width: 100%;"><canvas id="chart-producer" class="cursor-pointer"></canvas></div>
                     </div>
                 </div>
+
                 <div id="db-detail-container" class="hidden clean-card border-t-4 border-black mt-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 id="db-detail-title" class="text-xl font-bold text-gray-800">專案明細</h3>
@@ -763,6 +795,7 @@
                         <div onclick="setProjectType('video')" id="btn-type-video" class="type-btn active">🎬 剪輯專案</div>
                         <div onclick="setProjectType('image')" id="btn-type-image" class="type-btn">🎨 圖文專案</div>
                     </div>
+
                     <h2 class="text-xl font-bold mb-4">建立新專案</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
@@ -775,8 +808,8 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">純數字編號 (系統會自動加上代號)</label>
-                            <input id="i-id" type="number" class="clean-input font-mono font-bold" placeholder="例如: 023">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">編號</label>
+                            <input id="i-id" class="clean-input font-mono font-bold" placeholder="">
                         </div>
                     </div>
                     <div class="mb-4">
@@ -787,6 +820,7 @@
                         <label id="lbl-name" class="block text-xs font-bold text-gray-500 mb-1">專案名稱</label>
                         <input id="i-name" class="clean-input" placeholder="輸入標題">
                     </div>
+                    
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-500 mb-1">製作人</label>
@@ -803,10 +837,12 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="mb-4 flex items-center gap-2">
                         <input type="checkbox" id="i-urgent" class="w-5 h-5 text-red-600 rounded focus:ring-red-500 cursor-pointer transition">
                         <label for="i-urgent" class="text-base font-bold text-red-600 cursor-pointer select-none">🔥 標記為急件</label>
                     </div>
+
                     <div class="mb-4">
                         <label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label>
                         <input id="i-date" class="clean-input text-center" placeholder="點擊選擇" autocomplete="off" readonly>
@@ -815,7 +851,7 @@
                         <label class="block text-xs font-bold text-gray-500 mb-1">備註</label>
                         <textarea id="i-note" class="clean-input h-20"></textarea>
                     </div>
-                    <button onclick="saveProject(event)" id="btn-create" class="w-full bg-black text-white py-4 rounded-lg font-bold text-lg shadow-xl hover:shadow-2xl transition hover:bg-gray-800">建立並同步</button>
+                    <button onclick="saveProject()" id="btn-create" class="w-full bg-black text-white py-4 rounded-lg font-bold text-lg shadow-xl hover:shadow-2xl transition hover:bg-gray-800">建立並同步</button>
                 </div>
             </div>
         </div>
@@ -918,17 +954,31 @@
                         <button onclick="openLeaveModal()" class="admin-only bg-black text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition hover:scale-105"><i class="fas fa-coffee mr-1"></i> 請假</button>
                     </div>
                 </div>
-                <div id="calendar-container"><div id="calendar"></div></div>
+                <div id="calendar-container">
+                    <div id="calendar"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // =========================================================
-        // ★ 核心變數與設定
+        // ★ 核心變數與 Firebase 設定
         // =========================================================
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxEK4TafDLSKqfn3QuJk2bwNpnWcPMcOoNt6nVmz2w4geyMoRL4Bx_ILVIAtBbGhVCV/exec'; 
         
+        // 🌟 匠人升級：啟動 Firebase 引擎
+        const firebaseConfig = {
+            apiKey: "AIzaSyC3iyQNiYHWjA9yPbMni27C7KENfIUHZu4",
+            authDomain: "jayran-pm.firebaseapp.com",
+            projectId: "jayran-pm",
+            storageBucket: "jayran-pm.firebasestorage.app",
+            messagingSenderId: "1027379707228",
+            appId: "1:1027379707228:web:9142240fd6ad34d47ed599"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         const LOGIN_KEY = 'JAYRAN_LOGIN_TIME';
         const SESSION_HOURS = 12;
 
@@ -947,11 +997,6 @@
         let portalChart = null;
         let portalTypeChart = null;
 
-        // 🌟 防禦型變數 (防止快取蓋掉剛建立的資料)
-        let lastLocalEditTime = 0;
-        function markLocalEdit() { lastLocalEditTime = Date.now(); }
-
-        // 🌟 報價單與 VIP 分頁變數
         let quoteVisibleCount = 3;
         let portalProjectsData = []; 
         let currentPortalClient = ''; 
@@ -984,77 +1029,88 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // ✅ 強悍的核心防呆：完美萃取純數字並加上前綴
-        function formatIdSafely(prefix, rawId) {
-            let nums = String(rawId).replace(/\D/g, ''); 
-            if (!nums) nums = '001';
-            return prefix + nums.padStart(3, '0');
-        }
-
         // =========================================================
-        // 🌟 網路層 API 連線
+        // 🌟 網路層 API 連線 (智慧攔截與分流)
         // =========================================================
         function callAPI(action, payload, onSuccess) {
-            if (!GAS_API_URL) return;
             
-            if (['initAllData', 'getHistory', 'getLeaves', 'getMemos', 'getLinks', 'getClientPortalData'].includes(action)) {
+            // 🌟 匠人魔法：把原本發給 GAS 的請求，全部攔截改為 Firebase Firestore 的高速讀寫！
+            if (action === 'initAllData') {
+                Promise.all([
+                    db.collection("projects").get(),
+                    db.collection("quotes").orderBy("date", "desc").get(),
+                    fetch(GAS_API_URL + '?action=initAllData').then(r => r.json()) // 暫時依賴 GAS 獲取 Config/設定，等後續全面轉移
+                ]).then(([projSnap, quoteSnap, gasData]) => {
+                    if (gasData && gasData.error) throw new Error(gasData.error);
+                    
+                    let newData = gasData;
+                    // 將 Firebase 讀取到的資料覆蓋上去
+                    newData.projects = projSnap.docs.map(d => d.data());
+                    newData.quotes = quoteSnap.docs.map(d => d.data());
+                    
+                    onSuccess(newData);
+                }).catch(e => {
+                    console.error(e);
+                    document.getElementById('loader-msg').innerHTML = `<div class="text-red-500 font-bold mt-4">系統連線失敗</div>`;
+                });
+                return;
+            }
+
+            if (action === 'addProject') {
+                const docId = `${payload.payload.category}_${payload.payload.zone.replace(/\s+/g, '')}_${payload.payload.id}`;
+                db.collection("projects").doc(docId).set(payload.payload)
+                  .then(() => onSuccess("OK"))
+                  .catch(e => onSuccess({ error: true, msg: e.message }));
+                return;
+            }
+
+            if (action === 'updateProject' || action === 'updateStatus') {
+                // 如果是狀態更新，只需傳送必要欄位
+                let p = payload.payload;
+                if (action === 'updateStatus') {
+                    p = DATA.projects.find(x => String(x.id) === String(payload.id) && x.zone === payload.zone);
+                    if(!p) return onSuccess({ error: true, msg: "找不到資料" });
+                }
+                
+                const docId = `${p.category}_${p.zone.replace(/\s+/g, '')}_${p.id}`;
+                db.collection("projects").doc(docId).set(p, { merge: true })
+                  .then(() => {
+                      onSuccess("OK");
+                      // 🌟 觸發 LINE 通知的條件
+                      if (action === 'updateStatus' && (payload.status === '客戶審核' || payload.status === '已完成')) {
+                          // 通知還是交給 GAS 處理
+                          fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateStatus', cat: payload.cat, zone: payload.zone, id: payload.id, status: payload.status, hours: payload.hours }) });
+                      }
+                  })
+                  .catch(e => onSuccess({ error: true, msg: e.message }));
+                return;
+            }
+
+            if (action === 'deleteProject') {
+                const docId = `${payload.cat}_${payload.zone.replace(/\s+/g, '')}_${payload.id}`;
+                db.collection("projects").doc(docId).delete()
+                  .then(() => onSuccess("OK"))
+                  .catch(e => onSuccess({ error: true, msg: e.message }));
+                return;
+            }
+
+            // 其餘尚未完全轉換的 API (如設定、連結、便利貼)，暫時透過原本的 GAS 處理
+            if (['getHistory', 'getLeaves', 'getMemos', 'getLinks', 'getClientPortalData'].includes(action)) {
                 let params = `?action=${action}`;
                 if(payload.cat) params += `&cat=${payload.cat}`; 
                 if(payload.zone) params += `&zone=${payload.zone}`;
                 if(payload.clientName) params += `&clientName=${encodeURIComponent(payload.clientName)}`;
                 
                 fetch(GAS_API_URL + params)
-                    .then(res => {
-                        if (!res.ok) throw new Error('HTTP 狀態碼異常');
-                        return res.json();
-                    })
+                    .then(res => res.json())
                     .then(data => onSuccess(data))
-                    .catch(e => {
-                        console.error("API GET 連線錯誤:", e);
-                        if (action === 'initAllData') {
-                            document.getElementById('loader-msg').innerHTML = `<div class="text-red-500 font-bold mt-4">系統連線失敗，請檢查網址</div>`;
-                        } else if (action === 'getClientPortalData') {
-                            document.getElementById('portal-loader').style.opacity = '0';
-                            setTimeout(() => {
-                                document.getElementById('portal-loader').style.display = 'none';
-                                document.getElementById('portal-content').classList.remove('hidden');
-                                document.getElementById('portal-project-list').innerHTML = `<div class="text-center text-red-400 font-bold py-6">資料庫連線失敗，請聯繫工作室</div>`;
-                            }, 300);
-                        } else {
-                            onSuccess({ error: true });
-                        }
-                    });
+                    .catch(e => { console.error(e); });
             } else {
                 const postData = { action: action, ...payload };
                 fetch(GAS_API_URL, { method: "POST", body: JSON.stringify(postData) })
-                .then(res => {
-                    if (!res.ok) throw new Error('HTTP 狀態碼異常');
-                    return res.json();
-                })
-                .then(data => {
-                    if (data && data.status === "error") {
-                        onSuccess({ error: true, msg: data.message || "後台處理失敗" });
-                        return;
-                    }
-                    if (data && data.error) {
-                        onSuccess({ error: true, msg: data.error });
-                        return;
-                    }
-                    let result = data;
-                    if (data && data.data !== undefined) result = data.data;
-                    onSuccess(result);
-                })
-                .catch(e => { 
-                    console.error("API POST 連線錯誤:", e);
-                    showToast("連線錯誤或後台拒絕寫入", "error"); 
-                    document.getElementById('loader').style.display = 'none'; 
-                    if (action === 'verifyLogin') { 
-                        const btn = document.getElementById('btn-login'); 
-                        btn.innerText = "進入系統"; 
-                        btn.disabled = false; 
-                    }
-                    onSuccess({ error: true, msg: "連線異常或後台錯誤" });
-                });
+                .then(res => res.json())
+                .then(data => onSuccess(data.data || data))
+                .catch(e => { console.error(e); showToast("連線錯誤", "error"); document.getElementById('loader').style.display = 'none'; });
             }
         }
 
@@ -1136,22 +1192,11 @@
             }
 
             document.getElementById('loader').style.display = 'flex';
-            const cachedData = localStorage.getItem('JAYRAN_SYSTEM_DATA');
-            if (cachedData) { 
-                try { 
-                    processDataUpdate(JSON.parse(cachedData), true); 
-                    document.getElementById('loader-msg').innerText = "背景同步最新資料中..."; 
-                } catch(e) {} 
-            }
             
             callAPI('initAllData', {}, (res) => {
                 if(res && res.error) { 
                     document.getElementById('loader-msg').innerHTML = `<span class="text-red-500">${res.error}</span>`; 
                 } else if(res) { 
-                    if (Date.now() - lastLocalEditTime < 8000) {
-                        console.log("Skipping background update to protect local unsynced edits.");
-                        return;
-                    }
                     localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(res)); 
                     processDataUpdate(res, false); 
                 }
@@ -1173,6 +1218,7 @@
             else if (curTab === 'dashboard') { renderDashboard(); }
             else if (curTab === 'vip') { renderVIPArea(); }
             else if (curTab === 'quote') { renderQuoteTable(); } 
+            else if (curTab === 'add') { /* do nothing */ }
 
             if (!isCache) {
                 document.getElementById('loader').style.display = 'none';
@@ -1230,7 +1276,7 @@
         // 🌟 VIP 尊榮影像管家看板
         // =========================================================
         function initClientPortal(clientName) {
-            currentPortalClient = clientName; 
+            currentPortalClient = clientName; // 儲存當前客戶名稱供載入更多使用
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
             
             const currentYear = new Date().getFullYear();
@@ -1463,7 +1509,7 @@
             document.getElementById('q-total').innerText = Math.round(finalTotal).toLocaleString();
         }
 
-        function confirmSaveQuote(e) {
+        function confirmSaveQuote() {
             const items = [];
             document.querySelectorAll('.q-item-row').forEach(row => { 
                 const name = row.querySelector('.q-item-name').value.trim(); 
@@ -1488,7 +1534,7 @@
 
             if (!form.clientName) return showToast("請輸入客戶名稱", "error");
 
-            const saveBtn = e ? e.currentTarget : document.getElementById('btn-save-quote');
+            const saveBtn = document.getElementById('btn-save-quote');
             const originalText = saveBtn.innerText;
             saveBtn.innerText = "🔄 產生中...";
             saveBtn.disabled = true;
@@ -1499,7 +1545,7 @@
                 document.getElementById('loader').style.display = 'none';
                 saveBtn.innerText = originalText;
                 saveBtn.disabled = false;
-                if(res && res.id) { 
+                if(res.id) { 
                     showToast("報價單已成功建立！"); 
                     closeModal('modal-quote-create'); 
                     if(!DATA.quotes) DATA.quotes = [];
@@ -1595,8 +1641,8 @@
             });
         }
 
-        function downloadQuoteImage(e) {
-            const btn = e.currentTarget;
+        function downloadQuoteImage() {
+            const btn = event.currentTarget;
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
             btn.disabled = true;
@@ -1685,7 +1731,7 @@
             });
         }
 
-        function saveClientLink(e) {
+        function saveClientLink() {
             const clientName = document.getElementById('c-link-clientname').value;
             const url = document.getElementById('c-link-url').value.trim();
             if(!url) return showToast("請輸入網址，或點擊取消", "error");
@@ -1693,81 +1739,8 @@
             document.getElementById('loader-msg').innerText = "雲端連結綁定中...";
             callAPI('setClientPortalLink', { clientName: clientName, url: url }, (res) => {
                 document.getElementById('loader').style.display = 'none';
-                if(res === 'OK' || res.status === 'OK' || res === true) { showToast(`已成功綁定【${clientName}】的專屬雲端！`); closeModal('modal-client-link'); } 
+                if(res === 'OK') { showToast(`已成功綁定【${clientName}】的專屬雲端！`); closeModal('modal-client-link'); } 
                 else { showToast("設定失敗", "error"); }
-            });
-        }
-
-        function openZoneModal(mode) {
-            document.getElementById('edit-orig-name').value = '';
-            document.getElementById('modal-name').value = '';
-            
-            const codeSel = document.getElementById('modal-code');
-            codeSel.innerHTML = '';
-            
-            const isVideo = (curCat === 'video');
-            const startChar = isVideo ? 65 : 97; // A=65, a=97
-            const endChar = isVideo ? 90 : 122;  // Z=90, z=122
-            
-            const settings = isVideo ? DATA.videoSettings : DATA.imageSettings;
-            const usedPrefixes = Object.keys(settings || {}).map(k => k.split('_')[0]);
-
-            let currentEditPrefix = "";
-            if(mode === 'edit') {
-                const currentZone = document.getElementById('i-zone').value;
-                if(!currentZone) return showToast("請先選擇要編輯的客戶", "error");
-                currentEditPrefix = currentZone.split('_')[0];
-                const name = currentZone.includes('_') ? currentZone.substring(currentZone.indexOf('_') + 1) : '';
-                
-                document.getElementById('modal-name').value = name;
-                document.getElementById('edit-orig-name').value = currentZone;
-                document.getElementById('modal-title').innerText = "編輯客戶設定";
-            } else {
-                document.getElementById('modal-title').innerText = "新增客戶設定";
-            }
-
-            for(let i = startChar; i <= endChar; i++) {
-                const letter = String.fromCharCode(i);
-                if (!usedPrefixes.includes(letter) || letter === currentEditPrefix) {
-                    codeSel.add(new Option(letter, letter));
-                }
-            }
-            if (mode === 'edit' && currentEditPrefix) { codeSel.value = currentEditPrefix; }
-            document.getElementById('modal-zone').style.display = 'flex';
-        }
-
-       function confirmZoneModal(e) {
-            const btn = e ? e.currentTarget : null;
-            const prefix = document.getElementById('modal-code').value;
-            const name = document.getElementById('modal-name').value.trim();
-            const origZone = document.getElementById('edit-orig-name').value;
-            
-            if(!name) return showToast("請輸入客戶名稱", "error");
-            
-            if(btn) { btn.dataset.origin = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 處理中...'; btn.disabled = true; }
-
-            const newZone = `${prefix}_${name}`;
-            const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-msg').innerText = "建立客戶專屬資料庫中...";
-
-            callAPI('createZone', { cat: curCat, zone: newZone, oldZone: origZone }, (res) => {
-                document.getElementById('loader').style.display = 'none';
-                if(btn) { btn.innerText = btn.dataset.origin; btn.disabled = false; }
-
-                if (res === "OK" || res === true || (res && res.status === "OK")) {
-                    if(origZone && origZone !== newZone) { delete settings[origZone]; }
-                    if(!settings[newZone]) settings[newZone] = "000";
-                    
-                    renderZoneOptions();
-                    document.getElementById('i-zone').value = newZone;
-                    updateClientName();
-                    closeModal('modal-zone');
-                    showToast("✅ 客戶已建立並同步雲端！");
-                } else {
-                    showToast("客戶建立失敗：" + (res.msg || JSON.stringify(res)), "error");
-                }
             });
         }
 
@@ -1816,15 +1789,9 @@
                     document.getElementById('i-client').value = realName; document.getElementById('i-client').readOnly = true; document.getElementById('i-client').classList.add('bg-gray-100'); document.getElementById('i-client').classList.remove('bg-white'); 
                 } 
                 let lastId = (DATA.ids) ? DATA.ids[z] : ""; let displayId = "001"; 
-                if (lastId && lastId !== "無" && lastId !== "無紀錄") { 
-                    const match = lastId.match(/\d+$/); 
-                    if (match) displayId = String(parseInt(match[0]) + 1).padStart(3, '0'); 
-                } 
-                document.getElementById('i-id').value = displayId;
-            } else { 
-                document.getElementById('i-client').value = ''; 
-                document.getElementById('i-id').value = ''; 
-            } 
+                if (lastId && lastId !== "無" && lastId !== "無紀錄") { const match = lastId.match(/\d+$/); if (match) displayId = match[0]; document.getElementById('i-id').placeholder = `最後編號: ${displayId}`; } 
+                else { document.getElementById('i-id').placeholder = `建議編號: 001`; } 
+            } else { document.getElementById('i-client').value = ''; document.getElementById('i-id').placeholder = ''; } 
         }
 
         function checkProducer() { 
@@ -1833,9 +1800,7 @@
             else { dateInput.placeholder = "點擊選擇"; dateInput.style.background = "#F5F5F7"; } 
         }
 
-        function saveProject(e) {
-            markLocalEdit();
-            const btn = e ? e.currentTarget : document.getElementById('btn-create');
+        function saveProject() {
             const zone = document.getElementById('i-zone').value;
             let idRaw = document.getElementById('i-id').value.trim();
             const client = document.getElementById('i-client').value;
@@ -1851,7 +1816,8 @@
             if (!idRaw) return showToast("請輸入編號", "error");
 
             const prefix = zone.split('_')[0];
-            const finalId = formatIdSafely(prefix, idRaw);
+            if (!isNaN(idRaw) && idRaw !== "") { idRaw = prefix + String(idRaw).padStart(3, '0'); } 
+            else if (!idRaw.toUpperCase().startsWith(prefix.toUpperCase())) { idRaw = prefix + idRaw; }
 
             const dates = dateStr.split(' to ');
             const start = dates[0] || ""; const end = dates[1] || dates[0] || "";
@@ -1861,22 +1827,15 @@
                 try { let d = new Date(start); let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0); if (d <= today) status = '製作中'; } catch(e) {}
             }
 
-            const payloadData = { category: curCat, zone: zone, id: finalId, client: client, name: name, producer: producer, type: type, start: start, end: end, note: note, tag: isUrgent ? 'Urgent' : '', status: status, hours: 0, link: "" };
+            const payloadData = { category: curCat, zone: zone, id: idRaw, client: client, name: name, producer: producer, type: type, start: start, end: end, note: note, tag: isUrgent ? 'Urgent' : '', status: status, hours: 0, link: "" };
 
-            const originalText = btn.innerText; btn.innerText = "寫入中..."; btn.disabled = true; 
+            const btn = document.getElementById('btn-create'); const originalText = btn.innerText; btn.innerText = "寫入中..."; btn.disabled = true; 
 
             callAPI('addProject', { payload: payloadData }, (res) => {
                 btn.innerText = originalText; btn.disabled = false;
-                
-                const isSuccess = res === "OK" || res === true || res === "success" || (res && (res.status === "OK" || res.status === "success"));
-                
-                if(isSuccess) {
+                if(res === "OK") {
                     if(!DATA.projects) DATA.projects = [];
                     DATA.projects.push(payloadData);
-                    
-                    if(!DATA.ids) DATA.ids = {};
-                    DATA.ids[zone] = finalId;
-
                     localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
                     processDataUpdate(DATA, true); 
                     
@@ -1885,203 +1844,15 @@
                     document.getElementById('i-note').value = ''; 
                     document.getElementById('i-urgent').checked = false; 
                     fp.clear(); 
-                    showToast(`✅ 專案 ${finalId} 建立成功並同步！`);
-                    updateClientName();
-                } else {
-                    let errorMsg = (res && res.msg) ? res.msg : JSON.stringify(res);
-                    if (errorMsg.includes("undefined") || errorMsg.includes("null") || errorMsg.includes("error")) {
-                        errorMsg = "請確認後台試算表是否已建立該代號的專屬分頁 (例如 J 分頁)";
-                    }
-                    showToast("寫入失敗：" + errorMsg, "error"); 
-                }
+                    showToast("專案已快速建立並同步！");
+                } else { showToast("寫入失敗：" + res, "error"); }
             });
         }
 
         function openEditProjectById(id, zone) {
             const p = DATA.projects.find(x => String(x.id) === String(id) && String(x.zone) === String(zone));
-            if (p) {
-                document.getElementById('ep-cat').value = p.category; document.getElementById('ep-origin-id').value = p.id; document.getElementById('ep-origin-zone').value = p.zone; 
-                const prefix = p.zone.split('_')[0]; 
-                const numPart = String(p.id).replace(/\D/g, ''); 
-                
-                const epCodeSel = document.getElementById('ep-code'); epCodeSel.innerHTML = '';
-                const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
-                
-                const uniquePrefixes = [...new Set(Object.keys(settings).map(k => k.split('_')[0]))];
-                uniquePrefixes.sort().forEach(pref => epCodeSel.add(new Option(pref, pref)));
-                epCodeSel.value = prefix;
-                
-                const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes; const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
-                const prodSel = document.getElementById('ep-producer'); prodSel.innerHTML = ''; producers.forEach(x => prodSel.add(new Option(x, x)));
-                const typeSel = document.getElementById('ep-type'); typeSel.innerHTML = ''; types.forEach(x => typeSel.add(new Option(x, x)));
-                setTimeout(() => { prodSel.value = p.producer; typeSel.value = p.type; }, 50);
-
-                document.getElementById('ep-num').value = numPart; updateEditClientInfo(); 
-                document.getElementById('ep-name').value = p.name; document.getElementById('ep-hours').value = p.hours || 0; 
-                if (p.start && p.end) { fpEdit.setDate([p.start, p.end]); } else { fpEdit.clear(); }
-                document.getElementById('ep-note').value = p.note; document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
-                document.getElementById('modal-edit-project').style.display = 'flex';
-            } else {
-                showToast("找不到專案資料", "error");
-            }
-        }
-
-        // /* --- 杰冉優化：編輯後若寫入失敗，提供完美的 Rollback 讓記憶體復原 --- */
-        function confirmEditProject(e) {
-            markLocalEdit();
-            const btn = e ? e.currentTarget : document.querySelector('#modal-edit-project button.bg-black');
-            if (btn) { btn.dataset.originalText = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 儲存中'; btn.disabled = true; }
-
-            try {
-                const dateVal = document.getElementById('ep-date').value; const dates = dateVal.split(' to ');
-                const originId = document.getElementById('ep-origin-id').value; const originZone = document.getElementById('ep-origin-zone').value;
-                const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone));
-                
-                if (targetIdx === -1) {
-                    if (btn) { btn.innerHTML = btn.dataset.originalText; btn.disabled = false; }
-                    return showToast("找不到原專案", "error");
-                }
-
-                // 🌟 備份舊資料
-                const oldProjectStr = JSON.stringify(DATA.projects[targetIdx]);
-                let inheritedStatus = DATA.projects[targetIdx].status;
-
-                const prefix = document.getElementById('ep-code').value;
-                const rawNum = document.getElementById('ep-num').value;
-                const finalId = formatIdSafely(prefix, rawNum);
-
-                const p = { 
-                    category: document.getElementById('ep-cat').value, zone: document.getElementById('ep-zone').value, 
-                    id: finalId, client: document.getElementById('ep-client-display').value, 
-                    name: document.getElementById('ep-name').value, producer: document.getElementById('ep-producer').value, 
-                    type: document.getElementById('ep-type').value, hours: document.getElementById('ep-hours').value, 
-                    start: dates[0] || "", end: dates[1] || dates[0] || "", 
-                    note: document.getElementById('ep-note').value, tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '', 
-                    status: inheritedStatus, link: DATA.projects[targetIdx].link || "" 
-                };
-
-                DATA.projects[targetIdx] = p;
-                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
-                
-                const refreshUI = () => {
-                    if (curTab === 'wei' || curTab === 'chiu') {
-                        const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-                        renderKanban(who, false);
-                    } else if (curTab === 'gan') {
-                        const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-                        renderGantt(who);
-                    } else if (curTab === 'calendar') {
-                        renderCalendar();
-                    } else if (curTab === 'dashboard') {
-                        renderDashboard();
-                    }
-                };
-
-                refreshUI(); 
-                closeModal('modal-edit-project'); 
-                showToast("✅ 修改成功 (背景同步中)");
-                
-                callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {
-                    if (btn) { btn.innerHTML = btn.dataset.originalText; btn.disabled = false; }
-                    if (res && res.error) {
-                        // 🌟 如果背景同步失敗，執行回滾
-                        DATA.projects[targetIdx] = JSON.parse(oldProjectStr);
-                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-                        refreshUI();
-                        showToast("儲存失敗，已還原變更: " + res.msg, "error");
-                    }
-                });
-            } catch(err) {
-                showToast("儲存時發生錯誤", "error");
-                if (btn) { btn.innerHTML = btn.dataset.originalText; btn.disabled = false; }
-            } 
-        }
-
-        function updateEditClientInfo() {
-            const selectedCode = document.getElementById('ep-code').value; const cat = document.getElementById('ep-cat').value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = "";
-            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
-            if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById('ep-client-display').value = clientName; document.getElementById('ep-zone').value = foundZone; }
-        }
-
-        function updateZoneFromClientName() { const code = document.getElementById('ep-code').value; const clientName = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + (clientName ? "_" + clientName : ""); }
-        
-        // /* --- 杰冉優化：強悍的防呆回滾狀態更新。若斷線，必定通知並還原 --- */
-        function doUpdate(cat, zone, id, status, hours=0, fromDrag=false) { 
-            markLocalEdit();
-            const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone); 
-            if (!p) return showToast("找不到對應的專案，無法更新狀態", "error");
-
-            // 確保 Category 正確
-            const actualCat = p.category || cat;
-            let useUpdateProject = false;
-            
-            // 🌟 備份舊狀態以便失敗時回滾
-            const oldStatus = p.status;
-            const oldHours = p.hours;
-            const oldEnd = p.end;
-            const oldStart = p.start;
-
-            // --- 記憶體先行更新 ---
-            p.status = status; 
-            if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours); 
-            
-            if (status === '已完成' || status === '已結案') {
-                const todayStr = getLocalDateString(new Date());
-                p.end = todayStr;
-                if (!p.start) p.start = todayStr;
-                useUpdateProject = true; 
-            }
-
-            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
-            
-            // 局部刷新函式
-            const refreshUI = () => {
-                if (curTab === 'wei' || curTab === 'chiu') {
-                    const who = document.getElementById('nav-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';
-                    setTimeout(() => renderKanban(who, false), 50);
-                } else if (curTab === 'dashboard') {
-                    renderDashboard();
-                } else if (curTab === 'calendar') {
-                    renderCalendar();
-                } else if (curTab === 'gan') {
-                    const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰';renderGantt(who);
-                    }
-                };
-
-                if (!fromDrag) refreshUI();
-
-                // --- 杰冉優化：建立純淨的 payload，避免帶入前端附加的屬性 (如 unifiedStatus) 導致後端寫入崩潰 ---
-                const cleanP = p ? { 
-                    category: p.category, zone: p.zone, id: p.id, client: p.client, 
-                    name: p.name, producer: p.producer, type: p.type, hours: p.hours, 
-                    start: p.start, end: p.end, note: p.note, tag: p.tag, status: p.status, link: p.link || "" 
-                } : null;
-
-                // 失敗時的防呆回滾機制
-                const rollback = (errMsg) => {
-                    p.status = oldStatus;
-                    p.hours = oldHours;
-                    p.end = oldEnd;
-                    p.start = oldStart;
-                    localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-                    refreshUI();
-                    showToast("狀態更新失敗，已自動還原：" + (errMsg || "網路異常"), "error");
-                };
-
-         // 🌟 匠人修復：完全還原最原始的 Payload 結構 (cat: cat, hours: hours)
-                // 避免任何自定義參數造成後端 LINE 機器人辨識異常
-                if (useUpdateProject && cleanP) {
-                    callAPI('updateStatus', { cat: cat, zone: zone, id: id, status: status, hours: hours }, (res) => {
-                        if (res && res.error) return rollback(res.msg);
-                        callAPI('updateProject', { payload: cleanP, originId: id, originZone: zone }, (res2) => {
-                            if (res2 && res2.error) rollback(res2.msg);
-                        });
-                    });
-                } else {
-                    callAPI('updateStatus', { cat: cat, zone: zone, id: id, status: status, hours: hours }, (res) => {
-                        if (res && res.error) rollback(res.msg);
-                    }); 
-                }
+            if (p) openEditProject(p);
+            else showToast("找不到專案資料", "error");
         }
 
         function handleKanbanSearch() {
@@ -2117,19 +1888,15 @@
                 else if(p.status.includes('審')) badgeClass = 'sb-orange'; 
                 else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
 
-                const safeZone = p.zone ? p.zone.replace(/'/g, "\\'") : '';
-                const safeCat = p.category ? p.category.replace(/'/g, "\\'") : '';
-                const safeId = p.id ? String(p.id).replace(/'/g, "\\'") : '';
-
                 html += `
                 <tr>
                     <td class="font-mono text-xs text-gray-500">${p.id}</td>
-                    <td class="max-w-[200px] truncate font-bold text-gray-800" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
-                    <td class="text-gray-600 text-xs font-bold">${p.client}</td>
+                    <td class="max-w-[200px] truncate" title="${p.name}">${p.tag === 'Urgent' ? '🔥 ' : ''}${p.name}</td>
+                    <td class="text-gray-600 text-xs">${p.client}</td>
                     <td class="font-bold text-center">${p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : '<span class="text-teal-600">邱</span>'}</td>
                     <td><span class="status-badge ${badgeClass}">${p.status}</span></td>
                     <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start} ~ ${p.end}</td>
-                    <td class="admin-only"><button onclick="event.stopPropagation(); openEditProjectById('${safeId}', '${safeZone}')" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-xs font-bold transition text-gray-700">編輯</button></td>
+                    <td class="admin-only"><button onclick="openEditProjectById('${p.id}', '${p.zone}')" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-xs font-bold transition text-gray-700">編輯</button></td>
                 </tr>`;
             });
             tbody.innerHTML = html;
@@ -2156,20 +1923,16 @@
                     else if(p.status.includes('審')) badgeClass = 'sb-orange'; 
                     else if(p.status === '已完成' || p.status === '已結案') badgeClass = 'sb-green';
                     
-                    const safeZone = p.zone ? p.zone.replace(/'/g, "\\'") : '';
-                    const safeCat = p.category ? p.category.replace(/'/g, "\\'") : '';
-                    const safeId = p.id ? String(p.id).replace(/'/g, "\\'") : '';
-
                     let actionBtns = '';
                     if (role !== 'GUEST') {
                         if (p.status === '製作中') { 
-                            actionBtns = `<button onclick="event.stopPropagation(); openHoursModal('${safeCat}','${safeZone}','${safeId}')" class="text-orange-600 hover:text-orange-800 font-bold mr-2 px-2 py-1 rounded bg-orange-50 transition">送審</button>`; 
+                            actionBtns = `<button onclick="openHoursModal('${p.category}','${p.zone}','${p.id}')" class="text-orange-600 hover:text-orange-800 font-bold mr-2">送審</button>`; 
                         } else if (p.status.includes('審')) { 
-                            actionBtns = `<button onclick="event.stopPropagation(); doUpdate('${safeCat}','${safeZone}','${safeId}','製作中')" class="text-gray-500 hover:text-gray-700 mr-2 px-2 py-1 rounded bg-gray-100 transition">退修</button><button onclick="event.stopPropagation(); doUpdate('${safeCat}','${safeZone}','${safeId}','已完成')" class="text-green-600 hover:text-green-800 font-bold px-2 py-1 rounded bg-green-50 transition">完成</button>`; 
+                            actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-gray-500 hover:text-gray-700 mr-2">退修</button><button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','已完成')" class="text-green-600 hover:text-green-800 font-bold">完成</button>`; 
                         } else if (p.status === '尚未進行') { 
-                            actionBtns = `<button onclick="event.stopPropagation(); doUpdate('${safeCat}','${safeZone}','${safeId}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 transition">開始</button>`; 
+                            actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold">開始</button>`; 
                         }
-                        actionBtns += `<button onclick="event.stopPropagation(); openEditProjectById('${safeId}', '${safeZone}')" class="ml-3 text-gray-400 hover:text-black transition" title="編輯"><i class="fas fa-pen"></i></button><button onclick="event.stopPropagation(); deleteProject('${safeCat}', '${safeZone}', '${safeId}')" class="ml-3 text-gray-300 hover:text-red-500 transition" title="刪除"><i class="fas fa-trash"></i></button>`;
+                        actionBtns += `<button onclick="openEditProjectById('${p.id}', '${p.zone}')" class="ml-2 text-gray-400 hover:text-black" title="編輯"><i class="fas fa-pen"></i></button><button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-3 text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>`;
                     }
 
                     return `
@@ -2209,9 +1972,8 @@
                                     else if (evt.to.id === 'kb-review') newStatus = '客戶審核'; 
                                     else if (evt.to.id === 'kb-done') newStatus = '已完成';
                                     
-                                    doUpdate(cat, zone, pId, newStatus, 0, true); 
+                                    doUpdate(cat, zone, pId, newStatus, 0); 
                                     showToast(`✅ 狀態已自動更新為：${newStatus}`);
-                                    setTimeout(() => { renderKanban(producer, false); }, 150);
                                 }
                             }
                         }));
@@ -2227,14 +1989,13 @@
             const selectedMonth = document.getElementById('db-month-filter').value; 
             currentFilteredProjects = DATA.projects;
             
-        if (selectedMonth !== 'all') {
+            if (selectedMonth !== 'all') {
                 currentFilteredProjects = DATA.projects.filter(p => {
-                    // 🌟 將判斷基準改為優先看「結束日期 (p.end)」。當月完成就會算在當月。
-                    let dateStr = p.end || p.start; 
+                    let dateStr = p.start || p.end; 
                     if (!dateStr) return false; 
-                    let targetDate = dateStr.includes(' to ') ? dateStr.split(' to ')[1] || dateStr.split(' to ')[0] : dateStr;
+                    let firstDate = dateStr.split(' to ')[0];
                     try { 
-                        let d = new Date(targetDate); 
+                        let d = new Date(firstDate); 
                         if (isNaN(d.getTime())) return false; 
                         return (d.getMonth() + 1).toString() === selectedMonth; 
                     } catch(e) { return false; }
@@ -2404,19 +2165,13 @@
                     if (i === gridStartDay) {
                         let span = Math.max(1, (gridEndDay - gridStartDay) + 1);
                         let prefix = (pStartObj < monthStart) ? '← ' : ''; let suffix = (pEndObj > monthEnd) ? ' →' : '';
-                        
-                        const safeId = p.id ? String(p.id).replace(/'/g, "\\'") : '';
-                        const safeZone = p.zone ? String(p.zone).replace(/'/g, "\\'") : '';
-                        
-                        let clickAction = !isGuest ? `onclick="openEditProjectById('${safeId}', '${safeZone}')"` : ''; let cursorStyle = isGuest ? 'default' : 'pointer';
+                        let clickAction = !isGuest ? `onclick="openEditProjectById('${p.id}', '${p.zone}')"` : ''; let cursorStyle = isGuest ? 'default' : 'pointer';
                         content = `<div class="gantt-bar" ${clickAction} title="${p.name} (${p.status})" style="width:calc(${span * 100}% + ${span - 1}px); background:${color}; cursor:${cursorStyle};">${prefix}${p.name}${suffix}</div>`;
                     }
                     bars += `<td class="gantt-grid-cell ${bg}" ${i === gridStartDay ? 'style="overflow:visible;"' : ''}>${content}</td>`;
                 }
                 
-                const safeId = p.id ? String(p.id).replace(/'/g, "\\'") : '';
-                const safeZone = p.zone ? String(p.zone).replace(/'/g, "\\'") : '';
-                let rowClickAction = !isGuest ? `onclick="openEditProjectById('${safeId}', '${safeZone}')"` : ''; let rowCursorStyle = isGuest ? 'default' : 'pointer';
+                let rowClickAction = !isGuest ? `onclick="openEditProjectById('${p.id}', '${p.zone}')"` : ''; let rowCursorStyle = isGuest ? 'default' : 'pointer';
                 
                 body += `<tr class="gantt-row"><td class="gantt-col-fixed" title="${p.name} (${p.status})" ${rowClickAction} style="cursor:${rowCursorStyle};"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
             });
@@ -2427,11 +2182,71 @@
         function filterCalendar(who) { calendarFilter = who; document.querySelectorAll('.cal-filter-btn').forEach(b => b.classList.remove('active')); if(who==='all') document.getElementById('btn-cal-all').classList.add('active'); else if(who==='魏敏軒') document.getElementById('btn-cal-wei').classList.add('active'); else document.getElementById('btn-cal-chiu').classList.add('active'); renderCalendar(); }
         function deleteProject(category, zone, id) { 
             if (!confirm(`確定要刪除專案 ${id} 嗎？`)) return; 
-            markLocalEdit();
             DATA.projects = DATA.projects.filter(p => !(String(p.id) === String(id) && p.zone === zone)); 
             localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
             processDataUpdate(DATA, true); 
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => {}); 
+        }
+
+        function openEditProject(p) {
+            document.getElementById('ep-cat').value = p.category; document.getElementById('ep-origin-id').value = p.id; document.getElementById('ep-origin-zone').value = p.zone; 
+            const prefix = p.zone.split('_')[0]; const numPart = String(p.id).replace(prefix, ''); 
+            const epCodeSel = document.getElementById('ep-code'); epCodeSel.innerHTML = '';
+            const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
+            Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); epCodeSel.value = prefix;
+            
+            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes; const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
+            const prodSel = document.getElementById('ep-producer'); prodSel.innerHTML = ''; producers.forEach(x => prodSel.add(new Option(x, x)));
+            const typeSel = document.getElementById('ep-type'); typeSel.innerHTML = ''; types.forEach(x => typeSel.add(new Option(x, x)));
+            setTimeout(() => { prodSel.value = p.producer; typeSel.value = p.type; }, 50);
+
+            document.getElementById('ep-num').value = numPart; updateEditClientInfo(); 
+            document.getElementById('ep-name').value = p.name; document.getElementById('ep-hours').value = p.hours || 0; 
+            if (p.start && p.end) { fpEdit.setDate([p.start, p.end]); } else { fpEdit.clear(); }
+            document.getElementById('ep-note').value = p.note; document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
+            document.getElementById('modal-edit-project').style.display = 'flex';
+        }
+
+        function confirmEditProject() {
+            const dateVal = document.getElementById('ep-date').value; const dates = dateVal.split(' to ');
+            const originId = document.getElementById('ep-origin-id').value; const originZone = document.getElementById('ep-origin-zone').value;
+            const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone));
+            let inheritedStatus = '尚未進行'; if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; }
+
+            const p = { 
+                category: document.getElementById('ep-cat').value, zone: document.getElementById('ep-zone').value, 
+                id: document.getElementById('ep-num').value, client: document.getElementById('ep-client-display').value, 
+                name: document.getElementById('ep-name').value, producer: document.getElementById('ep-producer').value, 
+                type: document.getElementById('ep-type').value, hours: document.getElementById('ep-hours').value, 
+                start: dates[0] || "", end: dates[1] || dates[0] || "", 
+                note: document.getElementById('ep-note').value, tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '', 
+                status: inheritedStatus, link: "" 
+            };
+
+            const prefix = p.zone.split('_')[0];
+            if (!isNaN(p.id) && p.id !== "") { p.id = prefix + String(p.id).padStart(3, '0'); } else if (!p.id.toUpperCase().startsWith(prefix.toUpperCase())) { p.id = prefix + p.id; }
+            if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } else { DATA.projects.push(p); }
+            closeModal('modal-edit-project'); localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); showToast("修改成功 (背景同步中)");
+            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {});
+        }
+
+        function updateEditClientInfo() {
+            const selectedCode = document.getElementById('ep-code').value; const cat = document.getElementById('ep-cat').value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = "";
+            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
+            if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById('ep-client-display').value = clientName; document.getElementById('ep-zone').value = foundZone; }
+        }
+
+        function updateZoneFromClientName() { const code = document.getElementById('ep-code').value; const clientName = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + (clientName ? "_" + clientName : ""); }
+        
+        function doUpdate(cat, zone, id, status, hours=0) { 
+            const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone); 
+            if (p) { 
+                p.status = status; 
+                if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours); 
+                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
+                processDataUpdate(DATA, true); 
+            } 
+            callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:parseFloat(hours) || 0 }, (res) => {}); 
         }
 
         function openHistory() {
@@ -2446,48 +2261,12 @@
 
         function openSettings(type) { document.getElementById('st-type').value = type; document.getElementById('setting-title').innerText = (type==='Type') ? "管理類型" : "管理製作人"; document.getElementById('st-input').value = ''; renderSettingList(); document.getElementById('modal-settings').style.display = 'flex'; }
         function renderSettingList() { const type = document.getElementById('st-type').value; const list = (curCat==='video') ? (type==='Type' ? DATA.config.videoTypes : DATA.config.videoProducers) : (type==='Type' ? DATA.config.imageTypes : DATA.config.imageProducers); let html = ''; list.forEach(item => { html += `<div class="setting-item"><span>${item}</span><div class="setting-actions"><i onclick="editSettingItem('${item}')" class="fas fa-pen text-sm"></i><i onclick="deleteSettingItem('${item}')" class="fas fa-trash-alt text-sm"></i></div></div>`; }); document.getElementById('st-list').innerHTML = html; }
-        function addSettingItem() { const val = document.getElementById('st-input').value; const type = document.getElementById('st-type').value; if(!val) return; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK' || res === true || (res && res.status === 'OK')) { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); document.getElementById('st-input').value = ''; }
-        function deleteSettingItem(val) { if(!confirm("確定刪除此選項嗎？")) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK' || res === true || (res && res.status === 'OK')) { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
-        function editSettingItem(oldVal) { const newVal = prompt("請輸入新名稱：", oldVal); if (!newVal || newVal === oldVal) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => { if(res === 'OK' || res === true || (res && res.status === 'OK')) { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
+        function addSettingItem() { const val = document.getElementById('st-input').value; const type = document.getElementById('st-type').value; if(!val) return; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'add', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); document.getElementById('st-input').value = ''; }
+        function deleteSettingItem(val) { if(!confirm("確定刪除此選項嗎？")) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'delete', cat: curCat, type: type, val: val, oldVal: null }, (res) => { if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast(res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
+        function editSettingItem(oldVal) { const newVal = prompt("請輸入新名稱：", oldVal); if (!newVal || newVal === oldVal) return; const type = document.getElementById('st-type').value; document.getElementById('loader').style.display = 'flex'; callAPI('manageConfig', { act: 'edit', cat: curCat, type: type, val: newVal, oldVal: oldVal }, (res) => { if(res === 'OK') { callAPI('initAllData', {}, (data) => { DATA = data; document.getElementById('loader').style.display = 'none'; renderSettingList(); renderDynamicOptions(); }); } else { showToast("編輯失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } }); }
 
-        function openHoursModal(cat, zone, id) { 
-            document.getElementById('hours-cat').value = cat; 
-            document.getElementById('hours-zone').value = zone; 
-            document.getElementById('hours-id').value = id; 
-            document.getElementById('input-hours').value = ''; 
-            document.getElementById('modal-hours').style.display = 'flex'; 
-            setTimeout(() => { document.getElementById('input-hours').focus() }, 100);
-        }
-        
-        function confirmSendReview(e) { 
-            markLocalEdit();
-            const h = document.getElementById('input-hours').value; 
-            if(!h) {
-                document.getElementById('input-hours').focus();
-                return showToast("請輸入工時再送出", "error"); 
-            }
-            
-            const btn = e ? e.currentTarget : document.querySelector('#modal-hours button.bg-black');
-            if(btn) { btn.dataset.origin = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 送出中'; btn.disabled = true; }
-
-        try {
-                // 🌟 匠人修復：捨棄所有型態轉換，直接傳遞最原始的輸入字串 h
-                doUpdate(
-                    document.getElementById('hours-cat').value, 
-                    document.getElementById('hours-zone').value, 
-                    document.getElementById('hours-id').value, 
-                    '客戶審核', 
-                    h
-                ); 
-                closeModal('modal-hours'); 
-                showToast("✅ 已成功送審");
-            } catch(err) {
-                showToast("發生錯誤", "error");
-            } finally {
-                if(btn) { btn.innerHTML = btn.dataset.origin; btn.disabled = false; }
-            }
-        }
-        
+        function openHoursModal(cat, zone, id) { document.getElementById('hours-cat').value = cat; document.getElementById('hours-zone').value = zone; document.getElementById('hours-id').value = id; document.getElementById('input-hours').value = ''; document.getElementById('modal-hours').style.display = 'flex'; }
+        function confirmSendReview() { const h = document.getElementById('input-hours').value; if(!h) return showToast("請輸入工時", "error"); closeModal('modal-hours'); doUpdate(document.getElementById('hours-cat').value, document.getElementById('hours-zone').value, document.getElementById('hours-id').value, '客戶審核', h); }
         function togglePanel(type) { document.getElementById('panel-' + type).style.display = 'flex'; if (type === 'memo') loadMemos(); if (type === 'link') loadLinks(); if (type === 'pending') loadPending(); }
 
         function loadPending() {
@@ -2496,19 +2275,19 @@
             if (pendingList.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待分派項目</div>'; return; }
             let html = '';
             pendingList.forEach((p, idx) => {
-                const prefix = p.zone ? p.zone.split('_')[0] : ''; const numPart = p.id ? String(p.id).replace(/\D/g, '') : '';
+                const prefix = p.zone ? p.zone.split('_')[0] : ''; const numPart = p.id ? String(p.id).replace(prefix, '') : '';
                 html += `
                 <div id="p-item-${idx}" class="pending-item">
                     <div id="p-display-${idx}">
                         <div class="pending-name">${p.id} ${p.name}</div><div class="pending-meta text-xs text-gray-500 mb-4">${p.client}</div>
                         <div class="absolute top-3 right-3 text-gray-400 hover:text-black cursor-pointer flex gap-3 text-lg"><i class="fas fa-pen" onclick='enablePendingEdit(${idx})'></i><i class="fas fa-trash-alt text-red-300 hover:text-red-600 cursor-pointer" onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')"></i></div>
-                        <div class="flex gap-2"><select id="p-assign-maker-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1"><option value="">選擇製作人...</option><option>魏敏軒</option><option>邱仁杰</option></select><input id="p-assign-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="補填日期" autocomplete="off"><button onclick="confirmAssign('${p.category}', '${p.zone}', '${p.id}', ${idx}, event)" class="bg-black text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-gray-800">確認</button></div>
+                        <div class="flex gap-2"><select id="p-assign-maker-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1"><option value="">選擇製作人...</option><option>魏敏軒</option><option>邱仁杰</option></select><input id="p-assign-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="補填日期" autocomplete="off"><button onclick="confirmAssign('${p.category}', '${p.zone}', '${p.id}', ${idx})" class="bg-black text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-gray-800">確認</button></div>
                     </div>
                     <div id="p-edit-${idx}" class="hidden">
                         <input type="hidden" id="pe-origin-id-${idx}" value="${p.id}"><input type="hidden" id="pe-origin-zone-${idx}" value="${p.zone}"><input type="hidden" id="pe-cat-${idx}" value="${p.category}"><input type="hidden" id="pe-type-${idx}" value="${p.type}"><input type="hidden" id="pe-note-${idx}" value="${p.note}"><input type="hidden" id="pe-tag-${idx}" value="${p.tag}">
                         <div class="flex gap-2 mb-2"><select id="pe-code-${idx}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center" onchange="updatePendingEditClient(${idx})"></select><input id="pe-num-${idx}" value="${numPart}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center"><div class="flex-1"></div><div class="cursor-pointer text-gray-400 hover:text-red-500 text-xl pt-1" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></div></div>
                         <input id="pe-name-${idx}" value="${p.name}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-2 font-bold" placeholder="專案名稱"><input id="pe-client-${idx}" value="${p.client}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-3 text-gray-500" placeholder="客戶名稱">
-                        <div class="flex gap-2"><select id="pe-producer-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1"><option value="尚未暫定">尚未暫定</option><option>魏敏軒</option><option>邱仁杰</option></select><input id="pe-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="日期" autocomplete="off"><button onclick="savePendingEdit(${idx}, event)" class="bg-blue-600 text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-800">保存</button></div>
+                        <div class="flex gap-2"><select id="pe-producer-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1"><option value="尚未暫定">尚未暫定</option><option>魏敏軒</option><option>邱仁杰</option></select><input id="pe-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="日期" autocomplete="off"><button onclick="savePendingEdit(${idx})" class="bg-blue-600 text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-800">保存</button></div>
                     </div>
                 </div>`;
             });
@@ -2519,132 +2298,40 @@
         function enablePendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.add('hidden'); document.getElementById(`p-edit-${idx}`).classList.remove('hidden'); const cat = document.getElementById(`pe-cat-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; const codeSel = document.getElementById(`pe-code-${idx}`); const originZone = document.getElementById(`pe-origin-zone-${idx}`).value; const prefix = originZone.split('_')[0]; codeSel.innerHTML = ''; Object.keys(settings).sort().forEach(k => { codeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); codeSel.value = prefix; }
         function cancelPendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.remove('hidden'); document.getElementById(`p-edit-${idx}`).classList.add('hidden'); }
         function updatePendingEditClient(idx) { const cat = document.getElementById(`pe-cat-${idx}`).value; const selectedCode = document.getElementById(`pe-code-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = ""; for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } } if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById(`pe-client-${idx}`).value = clientName; } }
-        function savePendingEdit(idx, e) {
-            markLocalEdit();
-            const btn = e ? e.currentTarget : null;
-            if(btn) { btn.dataset.origin = btn.innerText; btn.innerText = '儲存中...'; btn.disabled = true; }
-
+        function savePendingEdit(idx) {
             const dateVal = document.getElementById(`pe-date-${idx}`).value; const dates = dateVal.split(' to '); const selectedCode = document.getElementById(`pe-code-${idx}`).value; const cat = document.getElementById(`pe-cat-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let newZone = "";
             for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { newZone = key; break; } }
             if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
-            
-            let rawId = document.getElementById(`pe-num-${idx}`).value; 
-            const formattedId = formatIdSafely(selectedCode, rawId);
-
-            if(!formattedId) {
-                if(btn) { btn.innerText = btn.dataset.origin; btn.disabled = false; }
-                return showToast("請確認編號正確", "error");
-            }
-
-            const p = { category: cat, zone: newZone, id: formattedId, client: document.getElementById(`pe-client-${idx}`).value, name: document.getElementById(`pe-name-${idx}`).value, producer: document.getElementById(`pe-producer-${idx}`).value, type: document.getElementById(`pe-type-${idx}`).value, start: dates[0] || "", end: dates[1] || dates[0] || "", note: document.getElementById(`pe-note-${idx}`).value, tag: document.getElementById(`pe-tag-${idx}`).value };
+            let rawId = document.getElementById(`pe-num-${idx}`).value; if (!isNaN(rawId) && rawId !== "") { rawId = selectedCode + String(rawId).padStart(3, '0'); } else if (!rawId.toUpperCase().startsWith(selectedCode.toUpperCase())) { rawId = selectedCode + rawId; }
+            const p = { category: cat, zone: newZone, id: rawId, client: document.getElementById(`pe-client-${idx}`).value, name: document.getElementById(`pe-name-${idx}`).value, producer: document.getElementById(`pe-producer-${idx}`).value, type: document.getElementById(`pe-type-${idx}`).value, start: dates[0] || "", end: dates[1] || dates[0] || "", note: document.getElementById(`pe-note-${idx}`).value, tag: document.getElementById(`pe-tag-${idx}`).value };
             const originId = document.getElementById(`pe-origin-id-${idx}`).value; const originZone = document.getElementById(`pe-origin-zone-${idx}`).value;
-            
             document.getElementById('loader').style.display = 'flex';
-            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => { 
-                if (res === "OK" || res === true || (res && res.status === "OK")) { 
-                    callAPI('initAllData', {}, (data) => { 
-                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); 
-                        processDataUpdate(data, false); 
-                        showToast("儲存成功！");
-                    }); 
-                } else { 
-                    showToast("保存失敗：" + res, "error"); 
-                    document.getElementById('loader').style.display = 'none'; 
-                    if(btn) { btn.innerText = btn.dataset.origin; btn.disabled = false; }
-                } 
-            });
+            callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => { if (res === "OK") { callAPI('initAllData', {}, (data) => { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); }); } else { showToast("保存失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } });
         }
-        
-        function confirmAssign(cat, zone, id, idx, e) {
-            markLocalEdit();
-            const btn = e ? e.currentTarget : null;
-            const maker = document.getElementById(`p-assign-maker-${idx}`).value; 
-            const date = document.getElementById(`p-assign-date-${idx}`).value; 
-            
-            if(!maker || !date) return showToast("請選擇製作人與日期", "error");
-            
-            if(btn) { btn.dataset.origin = btn.innerText; btn.innerText = '處理中...'; btn.disabled = true; }
-
+        function confirmAssign(cat, zone, id, idx) {
+            const maker = document.getElementById(`p-assign-maker-${idx}`).value; const date = document.getElementById(`p-assign-date-${idx}`).value; if(!maker || !date) return showToast("請選擇製作人與日期", "error");
             const dates = date.split(' to '); const startDate = dates[0]; const endDate = dates[1] || dates[0]; const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(id) && String(x.zone) === String(zone));
             if (targetIdx !== -1) {
                 DATA.projects[targetIdx].producer = maker; DATA.projects[targetIdx].start = startDate; DATA.projects[targetIdx].end = endDate; let newStatus = '尚未進行';
                 try { let d = new Date(startDate); let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0); if (d <= today) newStatus = '製作中'; } catch(e) {}
                 DATA.projects[targetIdx].status = newStatus; localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); showToast("專案分派成功");
             }
-            callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {
-                if(btn) { btn.innerText = btn.dataset.origin; btn.disabled = false; }
-            });
+            callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {});
         }
 
-        function loadMemos() { callAPI('getMemos', {}, (list) => { const container = document.getElementById('memo-list'); const badge = document.getElementById('memo-badge'); if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; } if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待辦事項</div>'; return; } let html = ''; list.forEach(m => { const colorClass = (m.owner === '邱仁杰')? 'chiu' : ''; const mStr = encodeURIComponent(JSON.stringify(m)); html += `<div class="memo-item ${colorClass}"><div class="memo-content">${m.content}</div><div class="memo-meta"><span><i class="fas fa-user-circle"></i> ${m.owner}</span><span><i class="far fa-clock"></i> ${m.date}</span></div><div class="memo-actions text-lg"><i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i><i onclick="finishMemo(${m.idx}, this)" class="memo-icon far fa-check-circle text-green-500" title="完成"></i><i onclick="deleteMemo(${m.idx}, this)" class="memo-icon fas fa-trash-alt memo-del" title="刪除"></i></div></div>`; }); container.innerHTML = html; }); }
+        function loadMemos() { callAPI('getMemos', {}, (list) => { const container = document.getElementById('memo-list'); const badge = document.getElementById('memo-badge'); if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; } if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待辦事項</div>'; return; } let html = ''; list.forEach(m => { const colorClass = (m.owner === '邱仁杰') ? 'chiu' : ''; const mStr = encodeURIComponent(JSON.stringify(m)); html += `<div class="memo-item ${colorClass}"><div class="memo-content">${m.content}</div><div class="memo-meta"><span><i class="fas fa-user-circle"></i> ${m.owner}</span><span><i class="far fa-clock"></i> ${m.date}</span></div><div class="memo-actions text-lg"><i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i><i onclick="finishMemo(${m.idx}, this)" class="memo-icon far fa-check-circle text-green-500" title="完成"></i><i onclick="deleteMemo(${m.idx}, this)" class="memo-icon fas fa-trash-alt memo-del" title="刪除"></i></div></div>`; }); container.innerHTML = html; }); }
         function deleteMemo(idx, el) { if(!confirm("確定刪除此便利貼嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteMemo', { idx:idx }, (res) => { showToast("已刪除待辦"); loadMemos(); }); }
         function editMemoMode(m) { editingMemoIdx = m.idx; document.getElementById('m-content').value = m.content; document.getElementById('m-owner').value = m.owner; if(m.date) fpMemo.setDate(m.date); const btn = document.getElementById('btn-memo-add'); btn.innerText = "更新貼文"; btn.classList.add('bg-blue-600'); btn.onclick = updateMemoItem; }
-        
-        function updateMemoItem(e) { 
-            const btn = e ? e.currentTarget : document.getElementById('btn-memo-add');
-            const content = document.getElementById('m-content').value; 
-            const owner = document.getElementById('m-owner').value; 
-            const date = document.getElementById('m-date').value; 
-            if(!content) return showToast("請輸入內容", "error"); 
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 處理中';
-            btn.disabled = true;
-            document.getElementById('m-content').value = ''; 
-            callAPI('editMemo', { idx: editingMemoIdx, item: {content: content, owner: owner, date: date} }, (res) => { editingMemoIdx = null; showToast("貼文已更新"); loadMemos(); btn.innerText = "新增貼文"; btn.classList.remove('bg-blue-600'); btn.disabled = false; btn.onclick = addMemoItem; }); 
-        }
-
-        function addMemoItem(e) { 
-            const btn = e ? e.currentTarget : document.getElementById('btn-memo-add');
-            const content = document.getElementById('m-content').value; 
-            const owner = document.getElementById('m-owner').value; 
-            const date = document.getElementById('m-date').value; 
-            if(!content) return showToast("請輸入內容", "error"); 
-            
-            const originalText = btn.innerText;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 儲存中';
-            btn.disabled = true;
-            document.getElementById('m-content').value = ''; 
-            callAPI('addMemo', { item: {content: content, owner: owner, date: date} }, (res) => { showToast("已新增待辦"); loadMemos(); btn.innerText = originalText; btn.disabled = false; }); 
-        }
-        
+        function updateMemoItem() { const content = document.getElementById('m-content').value; const owner = document.getElementById('m-owner').value; const date = document.getElementById('m-date').value; if(!content) return showToast("請輸入內容", "error"); document.getElementById('m-content').value = ''; document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 更新中...</div>'; const btn = document.getElementById('btn-memo-add'); btn.innerText = "新增貼文"; btn.classList.remove('bg-blue-600'); btn.onclick = addMemoItem; callAPI('editMemo', { idx: editingMemoIdx, item: {content: content, owner: owner, date: date} }, (res) => { editingMemoIdx = null; showToast("貼文已更新"); loadMemos(); }); }
+        function addMemoItem() { const content = document.getElementById('m-content').value; const owner = document.getElementById('m-owner').value; const date = document.getElementById('m-date').value; if(!content) return showToast("請輸入內容", "error"); document.getElementById('m-content').value = ''; document.getElementById('memo-list').innerHTML = '<div class="text-center text-gray-400 text-sm py-4"><i class="fas fa-spinner fa-spin"></i> 儲存中...</div>'; callAPI('addMemo', { item: {content: content, owner: owner, date: date} }, (res) => { showToast("已新增待辦"); loadMemos(); }); }
         function finishMemo(idx, el) { if(!confirm("確定完成此事項並封存嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('completeMemo', { idx:idx }, (res) => { showToast("事項已完成封存"); loadMemos(); }); }
 
         function loadLinks() { callAPI('getLinks', {}, (list) => { const container = document.getElementById('link-list'); if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">尚無連結</div>'; return; } const groups = {}; const folderDatalist = document.getElementById('folder-options'); folderDatalist.innerHTML = ''; list.forEach(l => { let folder = "未分類"; let displayName = l.client; if (l.client.includes('::')) { const parts = l.client.split('::'); folder = parts[0]; displayName = parts[1]; } if (!groups[folder]) groups[folder] = []; groups[folder].push({...l, displayName: displayName, originalClient: l.client, folder: folder}); }); let html = ''; for (let folder in groups) { if (folder !== "未分類") { folderDatalist.appendChild(new Option(folder)); } html += `<details class="mb-3 group link-folder"><summary class="font-bold text-lg cursor-pointer bg-gray-100 p-3 rounded-xl flex items-center justify-between outline-none hover:bg-gray-200 transition select-none border border-gray-200"><div class="flex items-center gap-3"><i class="fas fa-folder-open text-blue-500"></i> ${folder} <span class="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded-full">${groups[folder].length}</span></div><div class="flex gap-2 items-center"><i class="fas fa-pen text-gray-400 hover:text-black p-2" title="重新命名資料夾" onclick="renameFolder('${folder}')"></i><i class="fas fa-chevron-down text-gray-400 transition-transform duration-200 group-open:rotate-180"></i></div></summary><div class="pt-3 pl-2 pr-2">`; groups[folder].forEach(l => { const lData = {idx: l.idx, folder: l.folder, name: l.displayName, url: l.url, original: l.originalClient}; const lStr = encodeURIComponent(JSON.stringify(lData)); html += `<div class="bg-[#2D3748] text-white p-3 rounded-lg mb-2 flex justify-between items-center cursor-pointer hover:bg-[#1A202C] transition shadow-sm" onclick="window.open('${l.url}','_blank')"><div class="flex-1 truncate flex items-center gap-3"><i class="fas fa-link text-gray-400"></i> ${l.displayName}</div><div class="flex gap-4 ml-2" onclick="event.stopPropagation()"><i onclick="editLinkMode(JSON.parse(decodeURIComponent('${lStr}')))" class="fas fa-pen text-gray-400 hover:text-white transition" title="編輯"></i><i onclick="removeLink(${l.idx}, this)" class="fas fa-trash-alt text-gray-400 hover:text-red-400 transition" title="刪除"></i></div></div>`; }); html += `</div></details>`; } container.innerHTML = html; }); }
         function renameFolder(oldName) { event.preventDefault(); const newName = prompt(`請輸入「${oldName}」的新名稱：\n(若輸入空白則取消)`, oldName); if (newName && newName !== oldName) { document.getElementById('link-list').innerHTML = '<div class="text-center text-gray-400 py-4"><i class="fas fa-spinner fa-spin"></i> 更新資料夾中...</div>'; callAPI('renameLinkFolder', { oldFolder: oldName, newFolder: newName }, (res) => { showToast("資料夾已重新命名"); loadLinks(); }); } }
         function editLinkMode(l) { editingLinkIdx = l.idx; document.getElementById('l-folder').value = (l.folder === "未分類") ? "" : l.folder; document.getElementById('l-name').value = l.name; document.getElementById('l-url').value = l.url; const btn = document.getElementById('btn-link-add'); btn.innerText = "更新連結"; btn.onclick = updateLinkItem; }
-        
-        function updateLinkItem(e) { 
-            const btn = e ? e.currentTarget : document.getElementById('btn-link-add');
-            const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); 
-            const clientString = folder ? `${folder}::${name}` : name; 
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> 更新中..."; btn.disabled = true; 
-            callAPI('editLink', { idx: editingLinkIdx, client: clientString, url: url }, (res) => { btn.innerText = "新增內部連結"; btn.disabled = false; btn.onclick = addLinkItem; editingLinkIdx = null; document.getElementById('l-folder').value = ''; document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("連結已更新"); loadLinks(); }); 
-        }
-
-        function addLinkItem(e) { 
-            const btn = e ? e.currentTarget : document.getElementById('btn-link-add');
-            const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); 
-            const clientString = folder ? `${folder}::${name}` : name; 
-            const originalText = btn.innerText; btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> 儲存中..."; btn.disabled = true; 
-            callAPI('addLink', { client: clientString, url: url }, (res) => { btn.innerText = originalText; btn.disabled = false; if (res !== "OK" && res.status !== "OK" && res !== true) { showToast("錯誤", "error"); } else { document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("已新增連結"); loadLinks(); } }); 
-        }
+        function updateLinkItem() { const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); const clientString = folder ? `${folder}::${name}` : name; const btn = document.getElementById('btn-link-add'); btn.innerText = "更新中..."; btn.disabled = true; callAPI('editLink', { idx: editingLinkIdx, client: clientString, url: url }, (res) => { btn.innerText = "新增內部連結"; btn.disabled = false; btn.onclick = addLinkItem; editingLinkIdx = null; document.getElementById('l-folder').value = ''; document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("連結已更新"); loadLinks(); }); }
+        function addLinkItem() { const folder = document.getElementById('l-folder').value.trim(); const name = document.getElementById('l-name').value.trim(); const url = document.getElementById('l-url').value.trim(); if(!name || !url) return showToast("請至少輸入「名稱」與「網址」", "error"); const clientString = folder ? `${folder}::${name}` : name; const btn = document.getElementById('btn-link-add'); const originalText = btn.innerText; btn.innerText = "儲存中..."; btn.disabled = true; callAPI('addLink', { client: clientString, url: url }, (res) => { btn.innerText = originalText; btn.disabled = false; if (res !== "OK") { showToast(res, "error"); } else { document.getElementById('l-name').value = ''; document.getElementById('l-url').value = ''; showToast("已新增連結"); loadLinks(); } }); }
         function removeLink(idx, el) { if(!confirm("確定刪除此連結嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteLink', { idx:idx }, (res) => { showToast("已刪除連結"); loadLinks(); }); }
-
-        function openLeaveModal() { document.getElementById('leave-reason').value = ''; document.getElementById('modal-leave').style.display = 'flex'; }
-        
-        function confirmLeave(e) {
-            const btn = e ? e.currentTarget : null;
-            const i = { name:document.getElementById('leave-name').value, start:document.getElementById('leave-date').value.split(' to ')[0], end:document.getElementById('leave-date').value.split(' to ')[1]||document.getElementById('leave-date').value.split(' to ')[0], reason:document.getElementById('leave-reason').value };
-            if(!i.start) return showToast("請選擇日期", "error");
-
-            if(btn) { btn.dataset.origin = btn.innerText; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 送出中'; btn.disabled = true; }
-            
-            if(!DATA.leaves) DATA.leaves = [];
-            DATA.leaves.push(i); renderCalendar(); closeModal('modal-leave'); showToast("✅ 請假已送出");
-            
-            fetch(GAS_API_URL, { method:'POST', body:JSON.stringify({action:'addLeave', item:i}) })
-            .then(() => { if(btn) { btn.innerText = btn.dataset.origin; btn.disabled = false; } })
-            .catch(() => { if(btn) { btn.innerText = btn.dataset.origin; btn.disabled = false; } });
-        }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     </script>

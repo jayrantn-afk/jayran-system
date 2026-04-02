@@ -256,15 +256,20 @@
                     <h3 id="portal-chart-title" class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">合作狀態分佈</h3>
                     <div style="height: 160px; width: 100%;"><canvas id="portal-chart"></canvas></div>
                 </div>
-                <div class="flex flex-col justify-between gap-4">
-                    <div class="portal-card flex-1 flex flex-col justify-center items-center">
-                        <div class="text-sm text-gray-400 font-bold mb-1 tracking-widest">已交付專案</div>
-                        <div class="text-5xl font-black text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]" id="portal-done-count">0</div>
+           <div class="flex flex-col justify-between gap-3">
+                    <div class="portal-card flex-1 flex flex-col justify-center items-center py-4">
+                        <div class="text-xs text-gray-400 font-bold mb-1 tracking-widest">已交付</div>
+                        <div class="text-4xl font-black text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.2)]" id="portal-done-count">0</div>
                     </div>
-                    <div class="portal-card flex-1 flex flex-col justify-center items-center">
-                        <div class="text-sm text-gray-400 font-bold mb-1 tracking-widest">製作 / 審核中</div>
-                        <div class="text-5xl font-black text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.2)]" id="portal-process-count">0</div>
+                    <div class="portal-card flex-1 flex flex-col justify-center items-center py-4">
+                        <div class="text-xs text-gray-400 font-bold mb-1 tracking-widest">審核中</div>
+                        <div class="text-4xl font-black text-orange-400 drop-shadow-[0_0_10px_rgba(249,115,22,0.2)]" id="portal-review-count">0</div>
                     </div>
+                    <div class="portal-card flex-1 flex flex-col justify-center items-center py-4">
+                        <div class="text-xs text-gray-400 font-bold mb-1 tracking-widest">製作中</div>
+                        <div class="text-4xl font-black text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.2)]" id="portal-process-count">0</div>
+                    </div>
+                </div>
                 </div>
                 <div class="portal-card flex flex-col items-center justify-center min-h-[220px]">
                     <h3 class="text-gray-300 font-bold mb-4 w-full text-center tracking-widest text-sm">專案服務矩陣分析</h3>
@@ -440,7 +445,20 @@
                 </div>
             </div>
         </div>
-
+<div id="modal-finish" class="modal-mask">
+            <div class="modal-body text-center">
+                <h3 class="text-2xl font-black mb-2">確認交件時間</h3>
+                <p class="text-gray-500 text-sm font-bold mb-6">請確認或調整實際完成日期</p>
+                <input type="hidden" id="finish-cat">
+                <input type="hidden" id="finish-zone">
+                <input type="hidden" id="finish-id">
+                <input id="finish-date" class="clean-input mb-8 text-center font-bold text-xl border border-gray-200" placeholder="YYYY-MM-DD" autocomplete="off">
+                <div class="flex gap-3">
+                    <button onclick="closeModal('modal-finish')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
+                    <button onclick="confirmFinish()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-green-700 transition">確認完成</button>
+                </div>
+            </div>
+        </div>
         <div id="modal-settings" class="modal-mask">
             <div class="modal-body w-[350px]">
                 <h3 id="setting-title" class="text-xl font-black mb-4">管理選單</h3>
@@ -1272,22 +1290,19 @@
             }, 300); 
         }
 
-        // =========================================================
-        // 🌟 VIP 尊榮影像管家看板
+       // =========================================================
+        // 🌟 VIP 尊榮影像管家看板 (純 Firebase 高速版)
         // =========================================================
         function initClientPortal(clientName) {
-            currentPortalClient = clientName; // 儲存當前客戶名稱供載入更多使用
+            currentPortalClient = clientName;
             document.getElementById('portal-client-name').innerText = `專屬協作空間：${clientName}`;
-            
             const currentYear = new Date().getFullYear();
             const chartTitle = document.getElementById('portal-chart-title');
             if(chartTitle) chartTitle.innerText = `${currentYear} 合作狀態分佈`;
-            
-            if(document.getElementById('butler-year-watermark')) {
-                document.getElementById('butler-year-watermark').innerText = currentYear;
-            }
+            if(document.getElementById('butler-year-watermark')) document.getElementById('butler-year-watermark').innerText = currentYear;
 
-            callAPI('getClientPortalData', { clientName: clientName }, (res) => {
+            // 🌟 匠人升級：直接向 Firebase 請求資料，秒速回傳，不再經過 GAS！
+            db.collection("projects").where("client", "==", clientName).get().then(snap => {
                 document.getElementById('portal-loader').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('portal-loader').style.display = 'none';
@@ -1295,50 +1310,54 @@
                     document.getElementById('portal-content').classList.add('fade-in');
                 }, 300);
 
-                if (!res) return;
-
-                if (res.globalLink) {
-                    document.getElementById('portal-global-link').href = res.globalLink;
-                    document.getElementById('portal-global-link-container').classList.remove('hidden');
-                } else {
-                    document.getElementById('portal-global-link-container').classList.add('hidden');
-                }
-
-                if (!res.projects || res.projects.length === 0) {
+                let projects = snap.docs.map(d => d.data());
+                
+                if (projects.length === 0) {
                     document.getElementById('portal-project-list').innerHTML = `<div class="text-center text-gray-500 font-bold py-10 bg-[#1e293b]/50 rounded-2xl border border-slate-700/50">目前查無「${clientName}」的相關專案資料</div>`;
                     return;
                 }
 
-                if(document.getElementById('portal-done-count')) document.getElementById('portal-done-count').innerText = res.totalDone;
-                if(document.getElementById('portal-process-count')) document.getElementById('portal-process-count').innerText = res.totalProcess;
+                // 重新精準計算三個狀態
+                let totalDone = 0, totalReview = 0, totalProcess = 0;
+                projects.forEach(p => {
+                    if (p.status === '已完成' || p.status === '已結案') totalDone++;
+                    else if (p.status.includes('審')) totalReview++;
+                    else totalProcess++;
+                });
+
+                if(document.getElementById('portal-done-count')) document.getElementById('portal-done-count').innerText = totalDone;
+                if(document.getElementById('portal-review-count')) document.getElementById('portal-review-count').innerText = totalReview;
+                if(document.getElementById('portal-process-count')) document.getElementById('portal-process-count').innerText = totalProcess;
+                if(document.getElementById('portal-active-count')) document.getElementById('portal-active-count').innerText = totalReview + totalProcess;
                 
-                if(document.getElementById('portal-active-count')) document.getElementById('portal-active-count').innerText = res.totalProcess;
-                
+                // 排序並找出最近交件日
+                projects.sort((a, b) => {
+                    let dateA = (a.end || a.start || ""); let dateB = (b.end || b.start || "");
+                    return new Date(dateB) - new Date(dateA); // 降序，新的在上面
+                });
+
+                let ongoingProjects = projects.filter(p => p.status !== '已完成' && p.status !== '已結案' && (p.end || p.start));
                 let closestDate = "近期無待交專案";
-                let ongoingProjects = res.projects.filter(p => p.status !== '已完成' && p.status !== '已結案' && p.rawEnd);
                 if (ongoingProjects.length > 0) {
-                    ongoingProjects.sort((a, b) => new Date(a.rawEnd) - new Date(b.rawEnd));
-                    closestDate = formatDateStringForClient(ongoingProjects[0].rawEnd);
+                    ongoingProjects.sort((a, b) => new Date(a.end || a.start) - new Date(b.end || b.start)); 
+                    closestDate = formatDateStringForClient(ongoingProjects[0].end || ongoingProjects[0].start);
                 }
                 if(document.getElementById('portal-closest-date')) document.getElementById('portal-closest-date').innerText = closestDate;
 
+                // 圓餅圖 (分為三塊顏色)
                 const ctx = document.getElementById('portal-chart'); 
                 if (portalChart) portalChart.destroy();
                 portalChart = new Chart(ctx, { 
                     type: 'doughnut', 
                     data: { 
-                        labels: ['已交付', '製作/審核中'], 
+                        labels: ['已交付', '審核中', '製作中'], 
                         datasets: [{ 
-                            data: [res.totalDone, res.totalProcess], 
-                            backgroundColor: ['#34d399', '#3b82f6'], 
-                            borderWidth: 0, 
-                            hoverOffset: 4 
+                            data: [totalDone, totalReview, totalProcess], 
+                            backgroundColor: ['#34d399', '#fb923c', '#3b82f6'], 
+                            borderWidth: 0, hoverOffset: 4 
                         }] 
                     }, 
-                    options: { 
-                        responsive: true, maintainAspectRatio: false, 
-                        plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } } 
-                    } 
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } } } 
                 });
 
                 const ctxType = document.getElementById('portal-type-chart');
@@ -1348,38 +1367,21 @@
                     data: {
                         labels: ['總專案數'],
                         datasets: [{
-                            label: '專案數量',
-                            data: [res.totalDone + res.totalProcess],
-                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                            borderColor: 'rgb(59, 130, 246)',
-                            borderWidth: 1,
-                            borderRadius: 6
+                            label: '專案數量', data: [projects.length], backgroundColor: 'rgba(59, 130, 246, 0.7)', borderColor: 'rgb(59, 130, 246)', borderWidth: 1, borderRadius: 6
                         }]
                     },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { 
-                            x: { beginAtZero: true, ticks: { stepSize: 1, color: '#cbd5e1' }, grid: { color: 'rgba(51, 65, 85, 0.5)' } },
-                            y: { ticks: { color: '#cbd5e1' }, grid: { display: false } }
-                        }
-                    }
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1, color: '#cbd5e1' }, grid: { color: 'rgba(51, 65, 85, 0.5)' } }, y: { ticks: { color: '#cbd5e1' }, grid: { display: false } } } }
                 });
 
-                let html = '';
-                res.projects.forEach(p => {
-                    html += buildProjectCard(p);
-                });
-                document.getElementById('portal-project-list').innerHTML = html;
-
-                const remain = (res.totalDone + res.totalProcess) - 3;
-                const btnContainer = document.getElementById('portal-load-more-container');
-                if (remain > 0) {
-                    btnContainer.classList.remove('hidden');
-                    document.getElementById('portal-remain-count').innerText = remain;
-                } else {
-                    btnContainer.classList.add('hidden');
+                portalProjectsData = projects; // 全域存起來給載入更多使用
+                renderPortalProjectsList(3); // 初始顯示 3 筆
+            });
+            
+            // 抓取全域下載連結 (維持由 GAS 獲取)
+            callAPI('getClientPortalData', { clientName: clientName }, (res) => {
+                if (res && res.globalLink) {
+                    document.getElementById('portal-global-link').href = res.globalLink;
+                    document.getElementById('portal-global-link-container').classList.remove('hidden');
                 }
             });
         }
@@ -1393,19 +1395,10 @@
         }
 
         function buildProjectCard(p) {
-            let badgeClass = 'text-gray-400 bg-gray-800 border-gray-700'; 
-            let dotColor = 'bg-gray-500';
-            
-            if (p.status === '已完成' || p.status === '已結案') { 
-                badgeClass = 'text-emerald-400 bg-emerald-900/40 border border-emerald-800'; 
-                dotColor = 'bg-emerald-500'; 
-            } else if (p.status === '製作中') { 
-                badgeClass = 'text-blue-400 bg-blue-900/40 border border-blue-800'; 
-                dotColor = 'bg-blue-500'; 
-            } else if (p.status.includes('審')) { 
-                badgeClass = 'text-amber-400 bg-amber-900/40 border border-amber-800'; 
-                dotColor = 'bg-amber-500'; 
-            }
+            let badgeClass = 'text-gray-400 bg-gray-800 border-gray-700'; let dotColor = 'bg-gray-500';
+            if (p.status === '已完成' || p.status === '已結案') { badgeClass = 'text-emerald-400 bg-emerald-900/40 border border-emerald-800'; dotColor = 'bg-emerald-500'; } 
+            else if (p.status === '製作中') { badgeClass = 'text-blue-400 bg-blue-900/40 border border-blue-800'; dotColor = 'bg-blue-500'; } 
+            else if (p.status.includes('審')) { badgeClass = 'text-amber-400 bg-amber-900/40 border border-amber-800'; dotColor = 'bg-amber-500'; }
             
             return `
             <div class="bg-[#1e293b]/80 backdrop-blur-md rounded-2xl p-5 border border-slate-700/50 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-slate-500 transition duration-300 transform hover:-translate-y-1">
@@ -1419,36 +1412,31 @@
                 </div>
                 <div class="flex items-center">
                     <span class="px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-2 shadow-inner ${badgeClass}">
-                        <span class="w-2 h-2 rounded-full ${dotColor} ${p.status !== '已完成' ? 'animate-pulse' : ''}"></span>
-                        ${p.status}
+                        <span class="w-2 h-2 rounded-full ${dotColor} ${p.status !== '已完成' ? 'animate-pulse' : ''}"></span>${p.status}
                     </span>
                 </div>
             </div>`;
         }
 
-        let isFetchingMore = false;
-        function loadMorePortalProjects() {
-            if (isFetchingMore) return;
-            isFetchingMore = true;
+        // 🌟 純前端瞬間載入更多資料！
+        function renderPortalProjectsList(limit) {
+            let html = '';
+            const visibleProjects = portalProjectsData.slice(0, limit);
+            visibleProjects.forEach(p => {
+                p.date = p.start && p.end && p.start !== p.end ? `${p.start} ~ ${p.end}` : (p.end || p.start || '');
+                html += buildProjectCard(p);
+            });
+            document.getElementById('portal-project-list').innerHTML = html;
             
             const btnContainer = document.getElementById('portal-load-more-container');
-            const btn = btnContainer.querySelector('button');
-            const originalHTML = btn.innerHTML;
-            
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 正在讀取剩下的資料...';
-            btn.disabled = true;
-
-            callAPI('getClientPortalMore', { clientName: currentPortalClient }, (res) => {
-                if (res && res.projects) {
-                    let html = '';
-                    res.projects.forEach(p => {
-                        html += buildProjectCard(p);
-                    });
-                    document.getElementById('portal-project-list').insertAdjacentHTML('beforeend', html);
-                }
+            const remain = portalProjectsData.length - limit;
+            if (remain > 0) {
+                btnContainer.classList.remove('hidden');
+                document.getElementById('portal-remain-count').innerText = remain;
+                btnContainer.querySelector('button').setAttribute('onclick', `renderPortalProjectsList(${limit + 10})`);
+            } else {
                 btnContainer.classList.add('hidden');
-                isFetchingMore = false;
-            });
+            }
         }
 
         // =========================================================
@@ -1927,9 +1915,9 @@
                     if (role !== 'GUEST') {
                         if (p.status === '製作中') { 
                             actionBtns = `<button onclick="openHoursModal('${p.category}','${p.zone}','${p.id}')" class="text-orange-600 hover:text-orange-800 font-bold mr-2">送審</button>`; 
-                        } else if (p.status.includes('審')) { 
-                            actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-gray-500 hover:text-gray-700 mr-2">退修</button><button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','已完成')" class="text-green-600 hover:text-green-800 font-bold">完成</button>`; 
-                        } else if (p.status === '尚未進行') { 
+                        }else if (p.status.includes('審')) { 
+                            actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-gray-500 hover:text-gray-700 mr-2">退修</button><button onclick="openFinishModal('${p.category}','${p.zone}','${p.id}','${p.end || ''}')" class="text-green-600 hover:text-green-800 font-bold">完成</button>`; 
+                            } else if (p.status === '尚未進行') { 
                             actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold">開始</button>`; 
                         }
                         actionBtns += `<button onclick="openEditProjectById('${p.id}', '${p.zone}')" class="ml-2 text-gray-400 hover:text-black" title="編輯"><i class="fas fa-pen"></i></button><button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="ml-3 text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>`;
@@ -2238,15 +2226,42 @@
 
         function updateZoneFromClientName() { const code = document.getElementById('ep-code').value; const clientName = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + (clientName ? "_" + clientName : ""); }
         
-        function doUpdate(cat, zone, id, status, hours=0) { 
+    function doUpdate(cat, zone, id, status, hours=0, explicitEndDate=null) { 
             const p = DATA.projects.find(x => String(x.id) === String(id) && x.zone === zone); 
             if (p) { 
                 p.status = status; 
                 if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours); 
+                
+                // 🌟 新增：如果狀態是完成，處理結束日期
+                if (status === '已完成' || status === '已結案') {
+                    p.end = explicitEndDate || getLocalDateString(new Date());
+                    if (!p.start) p.start = p.end;
+                }
+
                 localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
                 processDataUpdate(DATA, true); 
             } 
             callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:parseFloat(hours) || 0 }, (res) => {}); 
+        }
+
+        // 🌟 新增：確認完成日期的彈窗控制邏輯
+        function openFinishModal(cat, zone, id, currentEnd) {
+            document.getElementById('finish-cat').value = cat;
+            document.getElementById('finish-zone').value = zone;
+            document.getElementById('finish-id').value = id;
+            document.getElementById('finish-date').value = currentEnd || getLocalDateString(new Date());
+            flatpickr("#finish-date", { dateFormat: "Y-m-d", disableMobile: "true" });
+            document.getElementById('modal-finish').style.display = 'flex';
+        }
+
+        function confirmFinish() {
+            const cat = document.getElementById('finish-cat').value;
+            const zone = document.getElementById('finish-zone').value;
+            const id = document.getElementById('finish-id').value;
+            const endDate = document.getElementById('finish-date').value;
+            if (!endDate) return showToast("請選擇完成日期", "error");
+            closeModal('modal-finish');
+            doUpdate(cat, zone, id, '已完成', 0, endDate);
         }
 
         function openHistory() {

@@ -1874,13 +1874,19 @@
             const selectedMonth = document.getElementById('db-month-filter').value; 
             currentFilteredProjects = DATA.projects;
             
-            if (selectedMonth !== 'all') {
+        if (selectedMonth !== 'all') {
                 currentFilteredProjects = DATA.projects.filter(p => {
-                    let dateStr = p.start || p.end; 
-                    if (!dateStr) return false; 
-                    let firstDate = dateStr.split(' to ')[0];
+                    // 🌟 匠人修正：以「結束日期 (完成日)」為優先歸類月份，若無才退而求其次看開始日期
+                    let targetDateStr = p.end || p.start; 
+                    if (!targetDateStr) return false; 
+                    
+                    // 確保若日期字串有包含 ' to ' 或 '~'，一律取「最後一個」日期
+                    let finalDate = targetDateStr;
+                    if (targetDateStr.includes(' to ')) finalDate = targetDateStr.split(' to ').pop().trim();
+                    else if (targetDateStr.includes('~')) finalDate = targetDateStr.split('~').pop().trim();
+                    
                     try { 
-                        let d = new Date(firstDate); 
+                        let d = new Date(finalDate); 
                         if (isNaN(d.getTime())) return false; 
                         return (d.getMonth() + 1).toString() === selectedMonth; 
                     } catch(e) { return false; }

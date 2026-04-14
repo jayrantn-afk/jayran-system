@@ -1085,10 +1085,14 @@
                 return;
             }
 
-            if (action === 'addProject') {
+           if (action === 'addProject') {
                 const docId = `${payload.payload.category}_${payload.payload.zone.replace(/\s+/g, '')}_${payload.payload.id}`;
                 db.collection("projects").doc(docId).set(payload.payload)
-                  .then(() => onSuccess("OK"))
+                  .then(() => {
+                      onSuccess("OK");
+                      // 🌟 背景同步到 GAS，讓試算表有資料，後續 LINE 才能找得到！
+                      fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'addProject', payload: payload.payload }) }).catch(e=>{});
+                  })
                   .catch(e => onSuccess({ error: true, msg: e.message }));
                 return;
             }
@@ -1104,8 +1108,11 @@
                 db.collection("projects").doc(docId).set(p, { merge: true })
                   .then(() => {
                       onSuccess("OK");
-                      if (action === 'updateStatus' && (payload.status === '客戶審核' || payload.status === '已完成')) {
-                          fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateStatus', cat: payload.cat, zone: payload.zone, id: payload.id, status: payload.status, hours: payload.hours }) });
+                      // 🌟 狀態或內容更新時，背景同步給 GAS 觸發 LINE 通知
+                      if (action === 'updateStatus') {
+                          fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateStatus', cat: payload.cat, zone: payload.zone, id: payload.id, status: payload.status, hours: payload.hours }) }).catch(e=>{});
+                      } else {
+                          fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateProject', payload: p, originId: payload.originId, originZone: payload.originZone }) }).catch(e=>{});
                       }
                   })
                   .catch(e => onSuccess({ error: true, msg: e.message }));
@@ -1115,7 +1122,11 @@
             if (action === 'deleteProject') {
                 const docId = `${payload.cat}_${payload.zone.replace(/\s+/g, '')}_${payload.id}`;
                 db.collection("projects").doc(docId).delete()
-                  .then(() => onSuccess("OK"))
+                  .then(() => {
+                      onSuccess("OK");
+                      // 🌟 刪除時也一併清空舊試算表的資料
+                      fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'deleteProject', cat: payload.cat, zone: payload.zone, id: payload.id }) }).catch(e=>{});
+                  })
                   .catch(e => onSuccess({ error: true, msg: e.message }));
                 return;
             }

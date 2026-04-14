@@ -1431,15 +1431,16 @@
             navigator.clipboard.writeText(url).then(() => showToast("已複製客戶專屬傳送門連結！"));
         }
 
-        function openClientLinkModal(clientName) {
+       function openClientLinkModal(clientName) {
             document.getElementById('c-link-target').innerText = "為【" + clientName + "】設定統一的雲端檔案下載點。";
             document.getElementById('c-link-clientname').value = clientName;
             document.getElementById('c-link-url').placeholder = "資料載入中...";
             document.getElementById('c-link-url').value = '';
             document.getElementById('modal-client-link').style.display = 'flex';
             
-            callAPI('getClientPortalData', { clientName: clientName }, (res) => {
-                if(res && res.globalLink) { document.getElementById('c-link-url').value = res.globalLink; }
+            // 🌟 極速讀取 Firebase 中的舊設定
+            db.collection("clientSettings").doc(clientName).get().then(doc => {
+                if(doc.exists && doc.data().globalLink) { document.getElementById('c-link-url').value = doc.data().globalLink; }
                 document.getElementById('c-link-url').placeholder = "請貼上 Google Drive 等分享網址...";
             });
         }
@@ -1448,16 +1449,24 @@
             const clientName = document.getElementById('c-link-clientname').value;
             const url = document.getElementById('c-link-url').value.trim();
             if(!url) return showToast("請輸入網址，或點擊取消", "error");
-            document.getElementById('loader').style.display = 'flex'; 
-            document.getElementById('loader-msg').innerText = "雲端連結綁定中...";
-            callAPI('setClientPortalLink', { clientName: clientName, url: url }, (res) => {
-                document.getElementById('loader').style.display = 'none';
-                if(res === 'OK' || res === true || (res && res.status === 'OK')) { 
-                    showToast(`已成功綁定【${clientName}】的專屬雲端！`); 
-                    closeModal('modal-client-link'); 
-                } else { 
-                    showToast("設定失敗", "error"); 
-                }
+            
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "儲存中...";
+            btn.disabled = true;
+
+            // 🌟 極速寫入 Firebase
+            db.collection("clientSettings").doc(clientName).set({ globalLink: url }, { merge: true })
+            .then(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+                showToast(`已成功綁定【${clientName}】的專屬雲端！`); 
+                closeModal('modal-client-link');
+            })
+            .catch(e => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+                showToast("設定失敗：" + e.message, "error");
             });
         }
 
@@ -1541,12 +1550,13 @@
                 renderPortalProjectsList(3); 
             });
             
-            callAPI('getClientPortalData', { clientName: clientName }, (res) => {
-                if (res && res.globalLink) {
-                    document.getElementById('portal-global-link').href = res.globalLink;
+          // 🌟 匠人升級：直接從 Firebase 讀取專屬連結，與畫面同步瞬間彈出！
+            db.collection("clientSettings").doc(clientName).get().then(doc => {
+                if (doc.exists && doc.data().globalLink) {
+                    document.getElementById('portal-global-link').href = doc.data().globalLink;
                     document.getElementById('portal-global-link-container').classList.remove('hidden');
                 }
-            });
+            }).catch(e => console.warn("讀取雲端連結失敗:", e));
         }
         
         function formatDateStringForClient(dateStr) {

@@ -1580,7 +1580,230 @@
                 btnContainer.classList.add('hidden');
             }
         }
+// =========================================================
+        // 🌟 報價單前端邏輯 (匠人修復補回)
+        // =========================================================
+        function openCreateQuote() {
+            document.getElementById('modal-quote-create').style.display = 'flex';
+            document.getElementById('quote-items-tbody').innerHTML = '';
+            document.getElementById('q-client-name').value = '';
+            document.getElementById('q-client-tax').value = '';
+            document.getElementById('q-client-contact').value = '';
+            document.getElementById('q-client-phone').value = '';
+            document.getElementById('q-note').value = '';
+            addQuoteItem(); 
+            renderClientDatalist(); 
+            calculateQuoteTotal();
+        }
 
+        function renderClientDatalist() {
+            const list = document.getElementById('client-list-data');
+            const clients = [...new Set(DATA.projects.map(p => p.client).filter(c => c))];
+            list.innerHTML = clients.map(c => `<option value="${c}">`).join('');
+        }
+
+        function addQuoteItem() {
+            const tbody = document.getElementById('quote-items-tbody');
+            const tr = document.createElement('tr');
+            tr.className = "q-item-row border-b last:border-0 transition";
+            tr.innerHTML = `
+                <td class="p-2"><input class="w-full p-2 bg-transparent outline-none q-item-name font-bold" placeholder="例如：品牌形象影片剪輯"></td>
+                <td class="p-2 text-center"><input type="number" value="1" class="w-16 p-2 text-center bg-white border rounded-lg q-item-qty font-bold" oninput="calculateQuoteTotal()"></td>
+                <td class="p-2 text-right"><input type="number" class="w-28 p-2 text-right bg-white border rounded-lg q-item-price font-bold" placeholder="0" oninput="calculateQuoteTotal()"></td>
+                <td class="p-2 text-right font-mono font-bold text-gray-700 q-item-sub">0</td>
+                <td class="p-2 text-center text-red-300 hover:text-red-500 cursor-pointer" onclick="this.parentElement.remove();calculateQuoteTotal();"><i class="fas fa-trash-alt"></i></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function calculateQuoteTotal() {
+            let subtotal = 0;
+            document.querySelectorAll('.q-item-row').forEach(row => { 
+                const qty = parseFloat(row.querySelector('.q-item-qty').value) || 0; 
+                const price = parseFloat(row.querySelector('.q-item-price').value) || 0; 
+                const total = qty * price; 
+                row.querySelector('.q-item-sub').innerText = total.toLocaleString(); 
+                subtotal += total; 
+            });
+            document.getElementById('q-subtotal').innerText = subtotal.toLocaleString();
+            
+            const taxMode = document.getElementById('q-tax-mode').value; 
+            let finalTotal = subtotal;
+            let taxVal = 0;
+            if (taxMode === 'excl') {
+                taxVal = Math.round(subtotal * 0.05);
+                finalTotal = subtotal + taxVal;
+            }
+            
+            document.getElementById('q-total').innerText = Math.round(finalTotal).toLocaleString();
+        }
+
+        function confirmSaveQuote() {
+            const items = [];
+            document.querySelectorAll('.q-item-row').forEach(row => { 
+                const name = row.querySelector('.q-item-name').value.trim(); 
+                const qty = row.querySelector('.q-item-qty').value; 
+                const price = row.querySelector('.q-item-price').value; 
+                if(name) items.push({ name: name, qty: qty, price: price }); 
+            });
+
+            if (items.length === 0) return showToast("請至少填寫一個報價項目", "error");
+
+            const form = { 
+                clientName: document.getElementById('q-client-name').value.trim(), 
+                clientTaxId: document.getElementById('q-client-tax').value.trim(), 
+                clientContact: document.getElementById('q-client-contact').value.trim(), 
+                clientPhone: document.getElementById('q-client-phone').value.trim(), 
+                totalAmount: document.getElementById('q-total').innerText.replace(/,/g, ''), 
+                taxMode: document.getElementById('q-tax-mode').value, 
+                itemsJson: JSON.stringify(items), 
+                note: document.getElementById('q-note').value, 
+                currentUrl: window.location.href.split('?')[0] 
+            };
+
+            if (!form.clientName) return showToast("請輸入客戶名稱", "error");
+
+            const saveBtn = document.getElementById('btn-save-quote');
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = "🔄 產生中...";
+            saveBtn.disabled = true;
+            document.getElementById('loader').style.display = 'flex'; 
+            document.getElementById('loader-msg').innerText = "產生報價單並同步雲端中...";
+            
+            callAPI('saveQuote', { form: form }, (res) => {
+                document.getElementById('loader').style.display = 'none';
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+                if(res.id) { 
+                    showToast("報價單已成功建立！"); 
+                    closeModal('modal-quote-create'); 
+                    if(!DATA.quotes) DATA.quotes = [];
+                    DATA.quotes.unshift(res); 
+                    renderQuoteTable();
+                } else { showToast("建立失敗", "error"); }
+            });
+        }
+
+        function renderQuoteTable() {
+            const tbody = document.getElementById('quote-history-tbody');
+            if(!DATA.quotes || DATA.quotes.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-6 font-bold">尚無報價單紀錄</td></tr>'; 
+                document.getElementById('quote-load-more-container').classList.add('hidden');
+                return; 
+            }
+            
+            const visibleData = DATA.quotes.slice(0, quoteVisibleCount);
+            tbody.innerHTML = visibleData.map(q => `
+                <tr class="border-b hover:bg-amber-50 transition">
+                    <td class="font-mono text-amber-600 font-bold">${q.id}</td>
+                    <td class="text-xs text-gray-400 font-mono">${q.date}</td>
+                    <td class="font-bold text-gray-800">${q.client}</td>
+                    <td class="text-blue-600 font-bold text-lg">NT$ ${Number(q.amount.replace(' 元','')).toLocaleString()}</td>
+                    <td class="admin-only text-right whitespace-nowrap">
+                        <button onclick="copyToClipboard('${q.link}')" class="bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold transition mr-2"><i class="fas fa-copy mr-1"></i> 連結</button>
+                        <button onclick="openQuotePreview('${q.id}')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm mr-2"><i class="fas fa-file-invoice mr-1"></i> 預覽 / 下載</button>
+                        <button onclick="deleteQuote('${q.id}')" class="text-gray-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+
+            const remain = DATA.quotes.length - quoteVisibleCount;
+            const moreContainer = document.getElementById('quote-load-more-container');
+            if (remain > 0) {
+                moreContainer.classList.remove('hidden');
+                document.getElementById('quote-remain-count').innerText = remain;
+            } else {
+                moreContainer.classList.add('hidden');
+            }
+        }
+
+        function loadMoreQuotes() { quoteVisibleCount += 10; renderQuoteTable(); }
+
+        function openQuotePreview(id) {
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader-msg').innerText = "載入報價單明細中...";
+            
+            callAPI('getQuoteDetail', {id: id}, (res) => {
+                document.getElementById('loader').style.display = 'none';
+                if(!res || !res.json) return showToast("無法取得明細", "error");
+                
+                try {
+                    const detail = JSON.parse(res.json);
+                    document.getElementById('pq-id').innerText = res.id;
+                    document.getElementById('pq-date').innerText = res.date;
+                    document.getElementById('pq-client').innerText = detail.clientName || '無';
+                    document.getElementById('pq-contact').innerText = detail.clientContact || '無';
+                    document.getElementById('pq-phone').innerText = detail.clientPhone || '無';
+                    document.getElementById('pq-tax').innerText = detail.clientTaxId || '無';
+                    document.getElementById('pq-note').innerText = detail.note || '無';
+                    
+                    let items = JSON.parse(detail.itemsJson || '[]');
+                    let tbody = document.getElementById('pq-items');
+                    let subtotal = 0;
+                    tbody.innerHTML = items.map(itm => {
+                        let total = parseFloat(itm.qty) * parseFloat(itm.price);
+                        subtotal += total;
+                        return `<tr>
+                            <td class="border border-gray-300 p-2">${itm.name}</td>
+                            <td class="border border-gray-300 p-2 text-center">${itm.qty}</td>
+                            <td class="border border-gray-300 p-2 text-right">${Number(itm.price).toLocaleString()}</td>
+                            <td class="border border-gray-300 p-2 text-right">${total.toLocaleString()}</td>
+                        </tr>`;
+                    }).join('');
+                    
+                    document.getElementById('pq-subtotal').innerText = subtotal.toLocaleString();
+                    
+                    let taxVal = 0;
+                    let taxLabel = "稅金 (免稅)：";
+                    if (detail.taxMode === 'excl') {
+                        taxVal = Math.round(subtotal * 0.05);
+                        taxLabel = "稅金 (5%)：";
+                    }
+                    document.getElementById('pq-tax-label').innerText = taxLabel;
+                    document.getElementById('pq-tax-val').innerText = taxVal.toLocaleString();
+                    document.getElementById('pq-total-final').innerText = (subtotal + taxVal).toLocaleString();
+
+                    document.getElementById('modal-quote-preview').style.display = 'flex';
+                } catch(e) {
+                    showToast("明細解析失敗", "error");
+                }
+            });
+        }
+
+        function downloadQuoteImage() {
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>處理中...';
+            btn.disabled = true;
+
+            const el = document.getElementById('printable-quote');
+            html2canvas(el, { scale: 2, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `報價單_${document.getElementById('pq-id').innerText}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }).catch(() => {
+                showToast("圖檔轉換失敗", "error");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => showToast("已複製連結，可發送給客戶")); }
+
+        function deleteQuote(id) { 
+            if(!confirm("確定刪除這份報價單記錄嗎？此動作無法復原。")) return; 
+            document.getElementById('loader').style.display = 'flex'; 
+            document.getElementById('loader-msg').innerText = "刪除中..."; 
+            callAPI('deleteQuote', { id: id }, (res) => { 
+                document.getElementById('loader').style.display = 'none'; 
+                showToast("已刪除單據"); 
+                DATA.quotes = DATA.quotes.filter(q => q.id !== id);
+                renderQuoteTable(); 
+            }); 
+        }
         // =========================================================
         // 🌟 專案建立與表單操作
         // =========================================================

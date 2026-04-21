@@ -1098,6 +1098,7 @@
         let quoteVisibleCount = 3;
         let portalProjectsData = []; 
         let currentPortalClient = ''; 
+        let editingQuoteId = null; // 紀錄目前是否正在編輯特定的報價單
 
         document.addEventListener('DOMContentLoaded', function() {
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
@@ -1730,14 +1731,21 @@
 // =========================================================
         // 🌟 報價單前端邏輯 (匠人修復補回)
         // =========================================================
-      function openCreateQuote() {
-            document.getElementById('modal-quote-create').style.display = 'flex';
-            document.getElementById('quote-items-tbody').innerHTML = '';
-            document.getElementById('q-client-name').value = '';
-            document.getElementById('q-client-tax').value = '';
-            document.getElementById('q-client-contact').value = '';
-            document.getElementById('q-client-phone').value = '';
-            document.getElementById('q-note').value = '';
+     function openCreateQuote() {
+            // 🌟 匠人修復：重置編輯狀態與標題
+            if (typeof editingQuoteId !== 'undefined') {
+                editingQuoteId = null;
+            }
+            document.getElementById('modal-quote-create').querySelector('h3').innerText = "📝 建立報價單";
+            document.getElementById('btn-save-quote').innerText = "產生報價單並存檔";
+
+            document.getElementById('modal-quote-create').style.display = 'flex';
+            document.getElementById('quote-items-tbody').innerHTML = '';
+            document.getElementById('q-client-name').value = '';
+            document.getElementById('q-client-tax').value = '';
+            document.getElementById('q-client-contact').value = '';
+            document.getElementById('q-client-phone').value = '';
+            document.getElementById('q-note').value = '';
             
             // 🌟 自動預設今天為報價日，14天後為有效日
             const today = new Date();
@@ -1746,10 +1754,10 @@
             document.getElementById('q-date').value = getLocalDateString(today);
             document.getElementById('q-valid-date').value = getLocalDateString(validDate);
 
-            addQuoteItem(); 
-            renderClientDatalist(); 
-            calculateQuoteTotal();
-        }
+            addQuoteItem(); 
+            renderClientDatalist(); 
+            calculateQuoteTotal();
+        }
 
         function renderClientDatalist() {
             const list = document.getElementById('client-list-data');
@@ -1804,19 +1812,16 @@
 
             if (items.length === 0) return showToast("請至少填寫一個報價項目", "error");
 
-          const form = { 
+            const form = { 
                 clientName: document.getElementById('q-client-name').value.trim(), 
                 clientTaxId: document.getElementById('q-client-tax').value.trim(), 
                 clientContact: document.getElementById('q-client-contact').value.trim(), 
                 clientPhone: document.getElementById('q-client-phone').value.trim(), 
-                
-                // 🌟 匠人綁定：寫入我方資訊
                 ourName: document.getElementById('q-our-name').value.trim(),
                 ourTaxId: document.getElementById('q-our-tax').value.trim(),
                 ourEmail: document.getElementById('q-our-email').value.trim(),
                 ourPhone: document.getElementById('q-our-phone').value.trim(),
                 ourExt: document.getElementById('q-our-ext').value.trim(),
-
                 totalAmount: document.getElementById('q-total').innerText.replace(/,/g, ''), 
                 taxMode: document.getElementById('q-tax-mode').value, 
                 itemsJson: JSON.stringify(items), 
@@ -1829,35 +1834,124 @@
             if (!form.clientName) return showToast("請輸入客戶名稱", "error");
 
             const saveBtn = document.getElementById('btn-save-quote');
-            const originalText = saveBtn.innerText;
-            saveBtn.innerText = "🔄 產生中...";
+            saveBtn.innerText = "🔄 處理中...";
             saveBtn.disabled = true;
             document.getElementById('loader').style.display = 'flex'; 
-            document.getElementById('loader-msg').innerText = "產生報價單並同步雲端中...";
-            
-            callAPI('saveQuote', { form: form }, (res) => {
-                document.getElementById('loader').style.display = 'none';
-                saveBtn.innerText = originalText;
-                saveBtn.disabled = false;
-                if(res.id) { 
-                    showToast("報價單已成功建立！"); 
-                    closeModal('modal-quote-create'); 
-                    if(!DATA.quotes) DATA.quotes = [];
+            document.getElementById('loader-msg').innerText = "同步資料中...";
+
+            // 如果是編輯模式，直接更新 Firebase
+            if (typeof editingQuoteId !== 'undefined' && editingQuoteId) {
+                const updatedData = {
+                    id: editingQuoteId,
+                    date: form.quoteDate,
+                    client: form.clientName,
+                    amount: form.totalAmount.toString(),
+                    json: JSON.stringify(form)
+                };
+
+                db.collection("quotes").doc(editingQuoteId).set(updatedData, { merge: true })
+                .then(() => {
+                    // 同步到 GAS
+                    fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'saveQuote', form: form, updateId: editingQuoteId }) });
                     
-                    // 🌟 匠人修復：手動補齊前端顯示所需的資料，避免 undefined 導致表格崩潰
-                    const newQuote = {
-                        id: res.id,
-                        date: form.quoteDate || getLocalDateString(new Date()),
-                        client: form.clientName,
-                        amount: form.totalAmount.toString(),
-                        link: window.location.href.split('?')[0] + '?quote=' + res.id
-                    };
-                    DATA.quotes.unshift(newQuote); 
-                    renderQuoteTable();
-                } else { showToast("建立失敗", "error"); }
-            });
+                    // 更新本地顯示
+                    const idx = DATA.quotes.findIndex(q => q.id === editingQuoteId);
+                    if (idx !== -1) DATA.quotes[idx] = updatedData;
+                    
+                    finishQuoteSave("報價單已更新！");
+                });
+            } else {
+                // 新增模式：先請 GAS 產生編號
+                callAPI('saveQuote', { form: form }, (res) => {
+                    if(res && res.id) {
+                        const newData = {
+                            id: res.id,
+                            date: form.quoteDate,
+                            client: form.clientName,
+                            amount: form.totalAmount.toString(),
+                            json: JSON.stringify(form)
+                        };
+                        // 🌟 重要：立刻寫入 Firebase，防止背景同步時消失！
+                        db.collection("quotes").doc(res.id).set(newData).then(() => {
+                            if(!DATA.quotes) DATA.quotes = [];
+                            DATA.quotes.unshift(newData);
+                            finishQuoteSave("報價單已成功建立！");
+                        });
+                    } else { 
+                        showToast("建立失敗", "error");
+                        document.getElementById('loader').style.display = 'none';
+                        saveBtn.disabled = false;
+                        saveBtn.innerText = "產生報價單並存檔";
+                    }
+                });
+            }
+        }
+        function finishQuoteSave(msg) {
+            document.getElementById('loader').style.display = 'none';
+            const saveBtn = document.getElementById('btn-save-quote');
+            saveBtn.disabled = false;
+            saveBtn.innerText = "產生報價單並存檔";
+            showToast(msg);
+            closeModal('modal-quote-create');
+            renderQuoteTable();
+            editingQuoteId = null;
         }
 
+        // 🌟 匠人新增：宣告編輯變數與打開編輯模式
+        let editingQuoteId = null; 
+
+        function openEditQuote(id) {
+            editingQuoteId = id;
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loader-msg').innerText = "正在讀取原始資料...";
+
+            callAPI('getQuoteDetail', {id: id}, (res) => {
+                document.getElementById('loader').style.display = 'none';
+                if(!res || !res.json) return showToast("無法取得資料", "error");
+                
+                const detail = JSON.parse(res.json);
+                
+                // 開啟視窗並改變標題
+                document.getElementById('modal-quote-create').style.display = 'flex';
+                document.getElementById('modal-quote-create').querySelector('h3').innerText = "✏️ 編輯報價單 (" + id + ")";
+                document.getElementById('btn-save-quote').innerText = "儲存報價單變更";
+
+                // 填入我方資訊
+                document.getElementById('q-our-name').value = detail.ourName || '';
+                document.getElementById('q-our-tax').value = detail.ourTaxId || '';
+                document.getElementById('q-our-email').value = detail.ourEmail || '';
+                document.getElementById('q-our-phone').value = detail.ourPhone || '';
+                document.getElementById('q-our-ext').value = detail.ourExt || '';
+
+                // 填入客戶資訊
+                document.getElementById('q-client-name').value = detail.clientName || '';
+                document.getElementById('q-client-tax').value = detail.clientTaxId || '';
+                document.getElementById('q-client-contact').value = detail.clientContact || '';
+                document.getElementById('q-client-phone').value = detail.clientPhone || '';
+                document.getElementById('q-date').value = detail.quoteDate || '';
+                document.getElementById('q-valid-date').value = detail.validDate || '';
+                document.getElementById('q-note').value = detail.note || '';
+                document.getElementById('q-tax-mode').value = detail.taxMode || 'zero';
+
+                // 填入明細項目
+                const tbody = document.getElementById('quote-items-tbody');
+                tbody.innerHTML = '';
+                const items = JSON.parse(detail.itemsJson || '[]');
+                items.forEach(itm => {
+                    const tr = document.createElement('tr');
+                    tr.className = "q-item-row border-b last:border-0 transition";
+                    tr.innerHTML = `
+                        <td class="p-2"><input class="w-full p-2 bg-transparent outline-none q-item-name font-bold" value="${itm.name}"></td>
+                        <td class="p-2 text-center"><input type="number" value="${itm.qty}" class="w-16 p-2 text-center bg-white border rounded-lg q-item-qty font-bold" oninput="calculateQuoteTotal()"></td>
+                        <td class="p-2 text-right"><input type="number" value="${itm.price}" class="w-28 p-2 text-right bg-white border rounded-lg q-item-price font-bold" oninput="calculateQuoteTotal()"></td>
+                        <td class="p-2 text-right font-mono font-bold text-gray-700 q-item-sub">0</td>
+                        <td class="p-2 text-center text-red-300 hover:text-red-500 cursor-pointer" onclick="this.parentElement.remove();calculateQuoteTotal();"><i class="fas fa-trash-alt"></i></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                calculateQuoteTotal();
+            });
+        }
         function renderQuoteTable() {
             const tbody = document.getElementById('quote-history-tbody');
             if(!DATA.quotes || DATA.quotes.length === 0) { 
@@ -1867,14 +1961,17 @@
             }
             
             const visibleData = DATA.quotes.slice(0, quoteVisibleCount);
-            tbody.innerHTML = visibleData.map(q => `
+           tbody.innerHTML = visibleData.map(q => `
                <tr class="border-b hover:bg-amber-50 transition">
                     <td class="font-mono text-amber-600 font-bold whitespace-nowrap">${q.id}</td>
                     <td class="text-xs text-gray-400 font-mono whitespace-nowrap">${q.date || '-'}</td>
                     <td class="font-bold text-gray-800 whitespace-nowrap">${q.client || '-'}</td>
                     <td class="text-blue-600 font-bold text-lg whitespace-nowrap">NT$ ${Number(String(q.amount || '0').replace(' 元','')).toLocaleString()}</td>
                     <td class="admin-only text-right whitespace-nowrap">
-                        <button onclick="copyQuoteLink('${q.id}')" class="bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold transition mr-2"><i class="fas fa-copy mr-1"></i> 複製客戶連結</button>
+                        <button onclick="openEditQuote('${q.id}')" class="text-blue-400 hover:text-blue-600 p-2 transition mr-1" title="編輯內容">
+                            <i class="fas fa-pen-nib"></i>
+                        </button>
+                        <button onclick="copyQuoteLink('${q.id}')" class="bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold transition mr-2"><i class="fas fa-copy mr-1"></i> 複製連結</button>
                         <button onclick="openQuotePreview('${q.id}')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm mr-2"><i class="fas fa-file-invoice mr-1"></i> 預覽 / 下載</button>
                         <button onclick="deleteQuote('${q.id}')" class="text-gray-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
                     </td>

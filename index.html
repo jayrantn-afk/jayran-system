@@ -167,16 +167,16 @@
        /* 🌟 訪客模式防護網 */
         .guest-mode .admin-only { display: none !important; }
 
-        /* 🌟 專屬報價單客戶檢視模式 (匠人修復：純淨隔離，不干擾後台) */
+        /* 🌟 專屬報價單客戶檢視模式 (匠人修復：純淨隔離，解決跑版問題) */
         body.guest-quote-mode .header-fixed-area, 
         body.guest-quote-mode .segmented-nav, 
         body.guest-quote-mode .fab-container, 
         body.guest-quote-mode .fab-left-container,
         body.guest-quote-mode .page-scroll-container { display: none !important; }
-        body.guest-quote-mode #modal-quote-preview { background: #F3F4F6; backdrop-filter: none; align-items: flex-start; padding-top: 40px; overflow-y: auto; display: flex !important; }
-        body.guest-quote-mode #modal-quote-preview .modal-body { box-shadow: none; background: transparent; padding: 0; margin-top: 0; }
-        body.guest-quote-mode .no-print { margin-bottom: 20px; position: relative; }
-
+        
+        body.guest-quote-mode #modal-quote-preview { background: #F3F4F6; backdrop-filter: none; align-items: flex-start; justify-content: center; padding-top: 40px; overflow-y: auto; display: flex !important; }
+        body.guest-quote-mode #modal-quote-preview .modal-body { box-shadow: none; background: transparent; padding: 0; margin: 0 auto; display: block; width: 100%; max-width: 800px; }
+        body.guest-quote-mode .no-print { margin-bottom: 20px; position: relative; width: 100%; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         /* 🌟 列印與 PDF 專用 CSS */
         @media print {
             body * { visibility: hidden; }
@@ -679,23 +679,40 @@
             
             <div class="modal-body !p-0 !m-0 !max-w-3xl w-full mt-20 relative overflow-visible bg-transparent box-shadow-none">
                 <div id="printable-quote" class="bg-white p-10 md:p-14 shadow-2xl mx-auto w-full text-black">
-                    <div class="border-b-4 border-gray-800 pb-4 mb-8 flex justify-between items-end">
+                 <div class="border-b-4 border-gray-800 pb-4 mb-8 flex justify-between items-end">
                         <h1 class="text-4xl font-black tracking-widest text-gray-800">報價單</h1>
-                        <h2 class="text-xl font-bold text-gray-500">JAYRAN STUDIO</h2>
+                        <h2 class="text-xl font-black text-gray-500 tracking-wider">QUOTATION</h2>
                     </div>
                     
-                    <div class="flex justify-between mb-8 text-sm">
-                        <div class="space-y-1">
-                            <p><span class="font-bold text-gray-500 inline-block w-20">客戶名稱：</span> <span id="pq-client" class="font-bold text-lg"></span></p>
-                            <p><span class="font-bold text-gray-500 inline-block w-20">聯絡窗口：</span> <span id="pq-contact"></span></p>
-                            <p><span class="font-bold text-gray-500 inline-block w-20">聯絡電話：</span> <span id="pq-phone"></span></p>
-                            <p><span class="font-bold text-gray-500 inline-block w-20">統一編號：</span> <span id="pq-tax"></span></p>
+                    <div class="flex flex-col md:flex-row justify-between gap-8 mb-10 text-sm">
+                        <div class="flex-1 space-y-2">
+                            <div class="text-xs font-black text-gray-400 mb-2 tracking-widest border-b border-gray-200 pb-1">TO: 客戶資訊</div>
+                            <p class="flex"><span class="font-bold text-gray-500 w-20 shrink-0">客戶名稱：</span> <span id="pq-client" class="font-bold text-lg text-gray-900"></span></p>
+                            <p class="flex"><span class="font-bold text-gray-500 w-20 shrink-0">聯絡窗口：</span> <span id="pq-contact" class="font-bold text-gray-800"></span></p>
+                            <p class="flex"><span class="font-bold text-gray-500 w-20 shrink-0">聯絡電話：</span> <span id="pq-phone" class="font-bold text-gray-800"></span></p>
+                            <p class="flex"><span class="font-bold text-gray-500 w-20 shrink-0">統一編號：</span> <span id="pq-tax" class="font-bold text-gray-800"></span></p>
                         </div>
-                        <div class="text-right space-y-1">
-                            <p><span class="font-bold text-gray-500">單號：</span> <span id="pq-id" class="font-mono text-gray-800"></span></p>
-                            <p><span class="font-bold text-gray-500">報價日期：</span> <span id="pq-date" class="font-mono text-gray-800"></span></p>
-                            <p><span class="font-bold text-gray-500">有效日期：</span> <span id="pq-valid-date" class="font-mono text-gray-800"></span></p>
-                        </div>
+                        
+                        <div class="flex-1 flex flex-col md:items-end md:text-right space-y-1.5">
+                            <div class="text-xs font-black text-gray-400 mb-2 tracking-widest border-b border-gray-200 pb-1 w-full text-left md:text-right">FROM: 報價單位</div>
+                            <p class="w-full"><span id="pq-our-name" class="font-black text-lg text-gray-900 block">杰冉影像工作室</span></p>
+                            <p class="w-full"><span class="font-bold text-gray-500">統一編號：</span> <span id="pq-our-tax" class="font-bold text-gray-800"></span></p>
+                            <p class="w-full"><span class="font-bold text-gray-500">聯絡電話：</span> <span id="pq-our-phone" class="font-bold text-gray-800"></span> <span id="pq-our-ext" class="font-bold text-gray-800"></span></p>
+                            <p class="w-full"><span class="font-bold text-gray-500">E-mail：</span> <span id="pq-our-email" class="font-bold text-gray-800"></span></p>
+                            
+                            <div class="mt-2 w-full md:w-auto text-left bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+                                    <span class="font-bold text-gray-500">報價單號：</span> 
+                                    <span id="pq-id" class="font-mono font-bold text-gray-900 text-right"></span>
+                                    
+                                    <span class="font-bold text-gray-500">報價日期：</span> 
+                                    <span id="pq-date" class="font-mono font-bold text-gray-900 text-right"></span>
+                                    
+                                    <span class="font-bold text-gray-500">有效日期：</span> 
+                                    <span id="pq-valid-date" class="font-mono font-bold text-gray-900 text-right"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <table class="w-full mb-8 border-collapse">
@@ -939,12 +956,20 @@
                     </div>
                 </div>
                 
-                <div id="kb-search-results" class="hidden flex-grow overflow-auto bg-white rounded-xl border border-gray-200 shadow-sm mb-10">
+               <div id="kb-search-results" class="hidden flex-grow overflow-auto bg-white rounded-xl border border-gray-200 shadow-sm mb-10">
                     <div class="p-3 bg-gray-100 font-bold text-gray-600 border-b border-gray-200">🔍 搜尋結果</div>
                     <div class="overflow-x-auto">
                         <table class="excel-table">
                             <thead>
-                                <tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>製作人</th><th>狀態</th><th>日期</th><th class="admin-only">操作</th></tr>
+                                <tr>
+                                    <th class="whitespace-nowrap">ID</th>
+                                    <th class="whitespace-nowrap">專案名稱</th>
+                                    <th class="whitespace-nowrap">客戶</th>
+                                    <th class="whitespace-nowrap">製作人</th>
+                                    <th class="whitespace-nowrap">狀態</th>
+                                    <th class="whitespace-nowrap">日期</th>
+                                    <th class="admin-only whitespace-nowrap">操作</th>
+                                </tr>
                             </thead>
                             <tbody id="kb-search-tbody"></tbody>
                         </table>

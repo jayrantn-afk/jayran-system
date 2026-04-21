@@ -177,34 +177,25 @@
         body.guest-quote-mode #modal-quote-preview { background: #F3F4F6; backdrop-filter: none; align-items: flex-start; justify-content: center; padding-top: 40px; overflow-y: auto; display: flex !important; }
         body.guest-quote-mode #modal-quote-preview .modal-body { box-shadow: none; background: transparent; padding: 0; margin: 0 auto; display: block; width: 100%; max-width: 800px; }
         body.guest-quote-mode .no-print { margin-bottom: 20px; position: relative; width: 100%; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-      /* 🌟 列印與 PDF 專用 CSS (匠人修復：解決 PDF 跳頁與留白問題) */
+     /* 🌟 列印與 PDF 專用 CSS (匠人修復：消除網址標題、強制同一頁) */
         @media print {
-            @page { margin: 10mm; size: auto; } /* 縮小列印邊距，爭取一頁顯示 */
-            body { background: white; }
+            /* 1. 設定 margin: 0 強制隱藏瀏覽器預設的「網頁標題、日期、網址、頁碼」 */
+            @page { margin: 0; size: A4; } 
+            
             body * { visibility: hidden; }
             
-            /* 讓預覽視窗在列印時回歸正常文檔流，取消絕對定位的干擾 */
-            #modal-quote-preview { 
-                position: absolute; left: 0; top: 0; width: 100%; 
-                background: white; margin: 0; padding: 0; 
-                display: block !important; 
-            }
-            body.guest-quote-mode #modal-quote-preview .modal-body,
-            #modal-quote-preview .modal-body {
-                width: 100% !important; max-width: none !important; 
-                margin: 0 !important; padding: 0 !important; display: block !important;
+            /* 2. 解除絕對定位，回歸正常排版，避免跳頁 */
+            #modal-quote-preview { position: relative !important; left: auto; top: auto; width: 100%; display: block !important; padding: 0; margin: 0; }
+            #modal-quote-preview .modal-body, body.guest-quote-mode #modal-quote-preview .modal-body { 
+                width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; display: block !important; box-shadow: none !important; background: transparent;
             }
             
             #printable-quote, #printable-quote * { visibility: visible; }
-            #printable-quote { 
-                position: relative; left: 0; top: 0; width: 100%; 
-                padding: 0 !important; margin: 0 !important; box-shadow: none !important; 
-            }
+            /* 因為 @page 沒有邊距，用 padding 將內容向內推 15mm 避免被印表機切邊 */
+            #printable-quote { position: relative !important; left: auto; top: auto; width: 100%; padding: 15mm !important; margin: 0 !important; box-shadow: none !important; }
             
-            /* 強制核心區塊不換頁，杜絕 Chrome Flexbox 列印斷層 Bug */
-            #printable-quote > div, table, tr, td, th { 
-                page-break-inside: avoid; break-inside: avoid; 
-            }
+            /* 3. 警告印表機：表格和區塊不准從中間切斷跳頁 */
+            #printable-quote > div, table, tr, td, th { page-break-inside: avoid; break-inside: avoid; }
             
             .no-print { display: none !important; }
         }

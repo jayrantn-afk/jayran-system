@@ -559,11 +559,11 @@
                     </div>
                 </div>
                 <div class="panel-scroll-area">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5 mb-6">
                         <div>
                             <label class="text-xs font-bold text-gray-400 mb-1 block">客戶名稱</label>
                             <input id="q-client-name" list="client-list-data" class="clean-input font-bold border" placeholder="輸入或選擇客戶...">
-                            <datalist id="client-list-data"></datalist>
+                            <datalist id="client-list-data" style="display: none !important;"></datalist>
                         </div>
                         <div>
                             <label class="text-xs font-bold text-gray-400 mb-1 block">客戶統編</label>
@@ -573,23 +573,19 @@
                             <label class="text-xs font-bold text-gray-400 mb-1 block">聯絡人</label>
                             <input id="q-client-contact" class="clean-input border" placeholder="聯絡窗口姓名">
                         </div>
-                      <div>
-                            <label class="text-xs font-bold text-gray-400 mb-1 block">聯絡電話</label>
-                            <input id="q-client-phone" class="clean-input border" placeholder="電話號碼">
-                        </div>
-                    </div>
-                    
-                    <!-- 🌟 匠人新增：報價日期與有效日期 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div>
-                            <label class="text-xs font-bold text-blue-500 mb-1 block">報價單日期</label>
-                            <input id="q-date" class="clean-input border border-blue-200 bg-blue-50/50" autocomplete="off">
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-orange-500 mb-1 block">有效期限</label>
-                            <input id="q-valid-date" class="clean-input border border-orange-200 bg-orange-50/50" autocomplete="off">
-                        </div>
-                    </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 mb-1 block">聯絡電話</label>
+                            <input id="q-client-phone" class="clean-input border" placeholder="電話號碼">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-blue-500 mb-1 block">報價單日期</label>
+                            <input id="q-date" class="clean-input border border-blue-200 bg-blue-50/50" autocomplete="off">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-orange-500 mb-1 block">有效期限</label>
+                            <input id="q-valid-date" class="clean-input border border-orange-200 bg-orange-50/50" autocomplete="off">
+                        </div>
+                    </div>
 
                     <div class="mb-4 flex items-center justify-between">
                         <h4 class="font-bold text-lg text-gray-700">報價明細</h4>
@@ -611,22 +607,31 @@
                         </table>
                     </div>
 
-                    <div class="flex flex-col items-end gap-2 mb-8">
-                        <div class="text-gray-500 font-bold text-lg">總計： NT$ <span id="q-subtotal" class="text-xl text-black">0</span></div>
-                        <div class="flex items-center gap-3">
-                            <select id="q-tax-mode" onchange="calculateQuoteTotal()" class="text-sm p-2 rounded-lg border font-bold">
-                                <option value="zero">免稅 (不另加稅金)</option>
-                                <option value="excl">未稅 (外加5%營業稅)</option>
-                            </select>
-                            <div class="font-black text-blue-600 text-xl border-l-2 pl-3">
-                                最終金額： NT$ <span id="q-total" class="text-3xl">0</span>
+                   <div class="flex flex-col md:flex-row gap-6 mb-8 bg-gray-50 p-5 rounded-xl border border-gray-100">
+                        <div class="flex-1 flex flex-col">
+                            <label class="block text-xs font-bold text-gray-500 mb-2">給客戶的備註 (顯示於報價單)</label>
+                            <textarea id="q-note" class="clean-input flex-1 min-h-[100px] border border-gray-200 bg-white resize-none" placeholder="輸入注意事項..."></textarea>
+                        </div>
+                        
+                        <div class="w-full md:w-80 flex flex-col justify-center space-y-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                            <div class="flex justify-between items-center text-gray-500 font-bold text-lg border-b border-gray-100 pb-3">
+                                <span>小計：</span>
+                                <span>NT$ <span id="q-subtotal" class="text-xl text-black">0</span></span>
+                            </div>
+                            
+                            <div class="flex flex-col gap-2">
+                                <label class="text-xs font-bold text-gray-400">選擇稅金計算方式</label>
+                                <select id="q-tax-mode" onchange="calculateQuoteTotal()" class="w-full text-sm p-2.5 rounded-lg border border-gray-200 font-bold bg-gray-50 outline-none focus:border-blue-400 transition">
+                                    <option value="zero">免稅 (不另加稅金)</option>
+                                    <option value="excl">未稅 (外加5%營業稅)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex justify-between items-center bg-blue-50/50 p-3 rounded-lg border border-blue-100 mt-2">
+                                <span class="font-bold text-blue-800 text-sm">最終金額：</span>
+                                <span class="font-black text-blue-600 text-2xl">NT$ <span id="q-total">0</span></span>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="mb-6">
-                        <label class="block text-xs font-bold text-gray-500 mb-1">給客戶的備註 (顯示於報價單)</label>
-                        <textarea id="q-note" class="clean-input h-16 border"></textarea>
                     </div>
 
                     <button id="btn-save-quote" onclick="confirmSaveQuote()" class="w-full bg-black text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-gray-800 transition">產生報價單並存檔</button>

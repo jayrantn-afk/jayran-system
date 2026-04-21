@@ -563,13 +563,25 @@
                             <label class="text-xs font-bold text-gray-400 mb-1 block">聯絡人</label>
                             <input id="q-client-contact" class="clean-input border" placeholder="聯絡窗口姓名">
                         </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-400 mb-1 block">聯絡電話</label>
-                            <input id="q-client-phone" class="clean-input border" placeholder="電話號碼">
-                        </div>
-                    </div>
+                      <div>
+                            <label class="text-xs font-bold text-gray-400 mb-1 block">聯絡電話</label>
+                            <input id="q-client-phone" class="clean-input border" placeholder="電話號碼">
+                        </div>
+                    </div>
+                    
+                    <!-- 🌟 匠人新增：報價日期與有效日期 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="text-xs font-bold text-blue-500 mb-1 block">報價單日期</label>
+                            <input id="q-date" class="clean-input border border-blue-200 bg-blue-50/50" autocomplete="off">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-orange-500 mb-1 block">有效期限</label>
+                            <input id="q-valid-date" class="clean-input border border-orange-200 bg-orange-50/50" autocomplete="off">
+                        </div>
+                    </div>
 
-                    <div class="mb-4 flex items-center justify-between">
+                    <div class="mb-4 flex items-center justify-between">
                         <h4 class="font-bold text-lg text-gray-700">報價明細</h4>
                         <button onclick="addQuoteItem()" class="text-blue-600 font-bold text-sm hover:underline">+ 新增項目</button>
                     </div>
@@ -634,9 +646,10 @@
                             <p><span class="font-bold text-gray-500 inline-block w-20">統一編號：</span> <span id="pq-tax"></span></p>
                         </div>
                         <div class="text-right space-y-1">
-                            <p><span class="font-bold text-gray-500">單號：</span> <span id="pq-id" class="font-mono"></span></p>
-                            <p><span class="font-bold text-gray-500">日期：</span> <span id="pq-date" class="font-mono"></span></p>
-                        </div>
+                            <p><span class="font-bold text-gray-500">單號：</span> <span id="pq-id" class="font-mono text-gray-800"></span></p>
+                            <p><span class="font-bold text-gray-500">報價日期：</span> <span id="pq-date" class="font-mono text-gray-800"></span></p>
+                            <p><span class="font-bold text-gray-500">有效日期：</span> <span id="pq-valid-date" class="font-mono text-gray-800"></span></p>
+                        </div>
                     </div>
 
                     <table class="w-full mb-8 border-collapse">
@@ -1019,10 +1032,12 @@
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-            fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-            flatpickr("#finish-date", { dateFormat: "Y-m-d", disableMobile: "true" });
-        });
-
+           fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+            flatpickr("#finish-date", { dateFormat: "Y-m-d", disableMobile: "true" });
+            // 🌟 綁定報價單的日期選擇器
+            flatpickr("#q-date", { dateFormat: "Y-m-d", disableMobile: "true" });
+            flatpickr("#q-valid-date", { dateFormat: "Y-m-d", disableMobile: "true" });
+        });
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") { document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none'); }
             if (event.key === "Enter" && document.getElementById('login-overlay').style.display !== 'none') { checkLogin(); }
@@ -1155,11 +1170,31 @@
             }
         }
 
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const portalClient = urlParams.get('client');
-            
-            if (portalClient) {
+   window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const portalClient = urlParams.get('client');
+            const quoteId = urlParams.get('quote'); // 🌟 抓取分享的報價單 ID
+            
+            // 🌟 如果是客戶點擊報價單連結進來
+            if (quoteId) {
+                document.getElementById('admin-view').style.display = 'none';
+                document.getElementById('login-overlay').style.display = 'none';
+                
+                document.getElementById('loader').style.display = 'flex';
+                document.getElementById('loader-msg').innerText = "載入報價單中...";
+
+                callAPI('getQuoteDetail', {id: quoteId}, (res) => {
+                    document.getElementById('loader').style.display = 'none';
+                    if(!res || !res.json) {
+                        document.body.innerHTML = '<div style="text-align:center; padding:50px; font-size:24px; font-weight:bold; color:#DC2626;">找不到該報價單，可能已被移除或網址有誤。</div>';
+                        return;
+                    }
+                    renderClientQuoteView(res); // 呼叫專屬顯示畫面
+                });
+                return; // 中止後續登入邏輯
+            }
+
+            if (portalClient) {
                 document.getElementById('admin-view').style.display = 'none'; 
                 document.getElementById('login-overlay').style.display = 'none'; 
                 document.getElementById('client-portal-view').classList.remove('hidden'); 
@@ -1624,18 +1659,26 @@
 // =========================================================
         // 🌟 報價單前端邏輯 (匠人修復補回)
         // =========================================================
-        function openCreateQuote() {
-            document.getElementById('modal-quote-create').style.display = 'flex';
-            document.getElementById('quote-items-tbody').innerHTML = '';
-            document.getElementById('q-client-name').value = '';
-            document.getElementById('q-client-tax').value = '';
-            document.getElementById('q-client-contact').value = '';
-            document.getElementById('q-client-phone').value = '';
-            document.getElementById('q-note').value = '';
-            addQuoteItem(); 
-            renderClientDatalist(); 
-            calculateQuoteTotal();
-        }
+      function openCreateQuote() {
+            document.getElementById('modal-quote-create').style.display = 'flex';
+            document.getElementById('quote-items-tbody').innerHTML = '';
+            document.getElementById('q-client-name').value = '';
+            document.getElementById('q-client-tax').value = '';
+            document.getElementById('q-client-contact').value = '';
+            document.getElementById('q-client-phone').value = '';
+            document.getElementById('q-note').value = '';
+            
+            // 🌟 自動預設今天為報價日，14天後為有效日
+            const today = new Date();
+            const validDate = new Date();
+            validDate.setDate(today.getDate() + 14);
+            document.getElementById('q-date').value = getLocalDateString(today);
+            document.getElementById('q-valid-date').value = getLocalDateString(validDate);
+
+            addQuoteItem(); 
+            renderClientDatalist(); 
+            calculateQuoteTotal();
+        }
 
         function renderClientDatalist() {
             const list = document.getElementById('client-list-data');
@@ -1690,17 +1733,20 @@
 
             if (items.length === 0) return showToast("請至少填寫一個報價項目", "error");
 
-            const form = { 
-                clientName: document.getElementById('q-client-name').value.trim(), 
-                clientTaxId: document.getElementById('q-client-tax').value.trim(), 
-                clientContact: document.getElementById('q-client-contact').value.trim(), 
-                clientPhone: document.getElementById('q-client-phone').value.trim(), 
-                totalAmount: document.getElementById('q-total').innerText.replace(/,/g, ''), 
-                taxMode: document.getElementById('q-tax-mode').value, 
-                itemsJson: JSON.stringify(items), 
-                note: document.getElementById('q-note').value, 
-                currentUrl: window.location.href.split('?')[0] 
-            };
+           const form = { 
+                clientName: document.getElementById('q-client-name').value.trim(), 
+                clientTaxId: document.getElementById('q-client-tax').value.trim(), 
+                clientContact: document.getElementById('q-client-contact').value.trim(), 
+                clientPhone: document.getElementById('q-client-phone').value.trim(), 
+                totalAmount: document.getElementById('q-total').innerText.replace(/,/g, ''), 
+                taxMode: document.getElementById('q-tax-mode').value, 
+                itemsJson: JSON.stringify(items), 
+                note: document.getElementById('q-note').value,
+                // 🌟 新增的日期
+                quoteDate: document.getElementById('q-date').value,
+                validDate: document.getElementById('q-valid-date').value,
+                currentUrl: window.location.href.split('?')[0] 
+            };
 
             if (!form.clientName) return showToast("請輸入客戶名稱", "error");
 
@@ -1740,11 +1786,11 @@
                     <td class="text-xs text-gray-400 font-mono">${q.date}</td>
                     <td class="font-bold text-gray-800">${q.client}</td>
                     <td class="text-blue-600 font-bold text-lg">NT$ ${Number(q.amount.replace(' 元','')).toLocaleString()}</td>
-                    <td class="admin-only text-right whitespace-nowrap">
-                        <button onclick="copyToClipboard('${q.link}')" class="bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold transition mr-2"><i class="fas fa-copy mr-1"></i> 連結</button>
-                        <button onclick="openQuotePreview('${q.id}')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm mr-2"><i class="fas fa-file-invoice mr-1"></i> 預覽 / 下載</button>
-                        <button onclick="deleteQuote('${q.id}')" class="text-gray-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
-                    </td>
+                 <td class="admin-only text-right whitespace-nowrap">
+                        <button onclick="copyQuoteLink('${q.id}')" class="bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold transition mr-2"><i class="fas fa-copy mr-1"></i> 複製客戶連結</button>
+                        <button onclick="openQuotePreview('${q.id}')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm mr-2"><i class="fas fa-file-invoice mr-1"></i> 預覽 / 下載</button>
+                        <button onclick="deleteQuote('${q.id}')" class="text-gray-300 hover:text-red-500 transition px-2"><i class="fas fa-trash"></i></button>
+                    </td>
                 </tr>
             `).join('');
 
@@ -1802,13 +1848,92 @@
                     }
                     document.getElementById('pq-tax-label').innerText = taxLabel;
                     document.getElementById('pq-tax-val').innerText = taxVal.toLocaleString();
-                    document.getElementById('pq-total-final').innerText = (subtotal + taxVal).toLocaleString();
+                   // 🌟 寫入新增加的日期
+                    document.getElementById('pq-date').innerText = detail.quoteDate || res.date;
+                    document.getElementById('pq-valid-date').innerText = detail.validDate || '-';
+                    
+                    document.getElementById('pq-total-final').innerText = (subtotal + taxVal).toLocaleString();
 
-                    document.getElementById('modal-quote-preview').style.display = 'flex';
-                } catch(e) {
-                    showToast("明細解析失敗", "error");
+                    document.getElementById('modal-quote-preview').style.display = 'flex';
+                } catch(e) {
+                    showToast("明細解析失敗", "error");
+                }
+            });
+        }
+
+        // =========================================================
+        // 🌟 匠人新增：報價單連結與客戶專屬檢視
+        // =========================================================
+        function copyQuoteLink(id) {
+            // 前端直接組裝正確的專屬報價單參數網址
+            const url = window.location.href.split('?')[0] + '?quote=' + id;
+            navigator.clipboard.writeText(url).then(() => showToast("已複製專屬報價單連結，可直接傳送給客戶！"));
+        }
+
+        function renderClientQuoteView(res) {
+            try {
+                const detail = JSON.parse(res.json);
+                document.getElementById('pq-id').innerText = res.id;
+                document.getElementById('pq-date').innerText = detail.quoteDate || res.date;
+                document.getElementById('pq-valid-date').innerText = detail.validDate || '-';
+                document.getElementById('pq-client').innerText = detail.clientName || '無';
+                document.getElementById('pq-contact').innerText = detail.clientContact || '無';
+                document.getElementById('pq-phone').innerText = detail.clientPhone || '無';
+                document.getElementById('pq-tax').innerText = detail.clientTaxId || '無';
+                document.getElementById('pq-note').innerText = detail.note || '無';
+                
+                let items = JSON.parse(detail.itemsJson || '[]');
+                let tbody = document.getElementById('pq-items');
+                let subtotal = 0;
+                tbody.innerHTML = items.map(itm => {
+                    let total = parseFloat(itm.qty) * parseFloat(itm.price);
+                    subtotal += total;
+                    return `<tr>
+                        <td class="border border-gray-300 p-3">${itm.name}</td>
+                        <td class="border border-gray-300 p-3 text-center">${itm.qty}</td>
+                        <td class="border border-gray-300 p-3 text-right">${Number(itm.price).toLocaleString()}</td>
+                        <td class="border border-gray-300 p-3 text-right font-bold">${total.toLocaleString()}</td>
+                    </tr>`;
+                }).join('');
+                
+                document.getElementById('pq-subtotal').innerText = subtotal.toLocaleString();
+                let taxVal = 0;
+                let taxLabel = "稅金 (免稅)：";
+                if (detail.taxMode === 'excl') {
+                    taxVal = Math.round(subtotal * 0.05);
+                    taxLabel = "稅金 (5%)：";
                 }
-            });
+                document.getElementById('pq-tax-label').innerText = taxLabel;
+                document.getElementById('pq-tax-val').innerText = taxVal.toLocaleString();
+                document.getElementById('pq-total-final').innerText = (subtotal + taxVal).toLocaleString();
+
+                // 🌟 客戶視圖佈局優化
+                const modal = document.getElementById('modal-quote-preview');
+                modal.classList.remove('modal-mask'); // 移除原本的半透明遮罩
+                modal.style.position = 'fixed';
+                modal.style.inset = '0';
+                modal.style.background = '#F3F4F6'; // 舒適的淺灰背景
+                modal.style.zIndex = '999999';
+                modal.style.display = 'block'; 
+                modal.style.overflowY = 'auto'; // 允許客戶上下滑動檢視
+                modal.style.padding = '20px';
+
+                // 隱藏關閉按鈕，讓客戶不能跳回後台系統，但保留下載為圖檔及列印 PDF
+                const topButtons = modal.querySelector('.no-print');
+                topButtons.style.position = 'relative';
+                topButtons.style.top = '0';
+                topButtons.style.marginBottom = '20px';
+                const closeBtn = topButtons.querySelector('button:nth-child(3)');
+                if(closeBtn) closeBtn.style.display = 'none';
+
+                // 讓報價單卡片置中對齊
+                const bodyDiv = modal.querySelector('.modal-body');
+                bodyDiv.style.margin = '0 auto';
+                bodyDiv.style.marginTop = '10px';
+
+            } catch(e) {
+                document.body.innerHTML = '<div style="text-align:center; padding:50px; font-size:24px; font-weight:bold; color:#DC2626;">報價單資料解析失敗，請通知管理員。</div>';
+            }
         }
 
         function downloadQuoteImage() {

@@ -1886,7 +1886,7 @@
                 });
             }
         }
-        function finishQuoteSave(msg) {
+       function finishQuoteSave(msg) {
             document.getElementById('loader').style.display = 'none';
             const saveBtn = document.getElementById('btn-save-quote');
             saveBtn.disabled = false;
@@ -1896,9 +1896,6 @@
             renderQuoteTable();
             editingQuoteId = null;
         }
-
-        // 🌟 匠人新增：宣告編輯變數與打開編輯模式
-        let editingQuoteId = null; 
 
         function openEditQuote(id) {
             editingQuoteId = id;

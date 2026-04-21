@@ -164,8 +164,18 @@
 
         .q-item-row:hover { background-color: #fefce8; }
 
-        /* 🌟 訪客模式防護網 */
-        .guest-mode .admin-only { display: none !important; }
+       /* 🌟 訪客模式防護網 */
+        .guest-mode .admin-only { display: none !important; }
+
+        /* 🌟 專屬報價單客戶檢視模式 (匠人修復：純淨隔離，不干擾後台) */
+        body.guest-quote-mode .header-fixed-area, 
+        body.guest-quote-mode .segmented-nav, 
+        body.guest-quote-mode .fab-container, 
+        body.guest-quote-mode .fab-left-container,
+        body.guest-quote-mode .page-scroll-container { display: none !important; }
+        body.guest-quote-mode #modal-quote-preview { background: #F3F4F6; backdrop-filter: none; align-items: flex-start; padding-top: 40px; overflow-y: auto; display: flex !important; }
+        body.guest-quote-mode #modal-quote-preview .modal-body { box-shadow: none; background: transparent; padding: 0; margin-top: 0; }
+        body.guest-quote-mode .no-print { margin-bottom: 20px; position: relative; }
 
         /* 🌟 列印與 PDF 專用 CSS */
         @media print {
@@ -1176,11 +1186,11 @@
             const quoteId = urlParams.get('quote'); // 🌟 抓取分享的報價單 ID
             
             // 🌟 如果是客戶點擊報價單連結進來
-            if (quoteId) {
-                document.getElementById('admin-view').style.display = 'none';
-                document.getElementById('login-overlay').style.display = 'none';
-                
-                document.getElementById('loader').style.display = 'flex';
+            if (quoteId) {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.body.classList.add('guest-quote-mode'); // 🌟 匠人修復：套用專屬 CSS，不強制隱藏 admin-view 破壞結構
+                
+                document.getElementById('loader').style.display = 'flex';
                 document.getElementById('loader-msg').innerText = "載入報價單中...";
 
                 callAPI('getQuoteDetail', {id: quoteId}, (res) => {
@@ -1758,17 +1768,26 @@
             document.getElementById('loader-msg').innerText = "產生報價單並同步雲端中...";
             
             callAPI('saveQuote', { form: form }, (res) => {
-                document.getElementById('loader').style.display = 'none';
-                saveBtn.innerText = originalText;
-                saveBtn.disabled = false;
-                if(res.id) { 
-                    showToast("報價單已成功建立！"); 
-                    closeModal('modal-quote-create'); 
-                    if(!DATA.quotes) DATA.quotes = [];
-                    DATA.quotes.unshift(res); 
-                    renderQuoteTable();
-                } else { showToast("建立失敗", "error"); }
-            });
+                document.getElementById('loader').style.display = 'none';
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+                if(res.id) { 
+                    showToast("報價單已成功建立！"); 
+                    closeModal('modal-quote-create'); 
+                    if(!DATA.quotes) DATA.quotes = [];
+                    
+                    // 🌟 匠人修復：手動補齊前端顯示所需的資料，避免 undefined 導致表格崩潰
+                    const newQuote = {
+                        id: res.id,
+                        date: form.quoteDate || getLocalDateString(new Date()),
+                        client: form.clientName,
+                        amount: form.totalAmount.toString(),
+                        link: window.location.href.split('?')[0] + '?quote=' + res.id
+                    };
+                    DATA.quotes.unshift(newQuote); 
+                    renderQuoteTable();
+                } else { showToast("建立失敗", "error"); }
+            });
         }
 
         function renderQuoteTable() {
@@ -1781,11 +1800,11 @@
             
             const visibleData = DATA.quotes.slice(0, quoteVisibleCount);
             tbody.innerHTML = visibleData.map(q => `
-                <tr class="border-b hover:bg-amber-50 transition">
-                    <td class="font-mono text-amber-600 font-bold">${q.id}</td>
-                    <td class="text-xs text-gray-400 font-mono">${q.date}</td>
-                    <td class="font-bold text-gray-800">${q.client}</td>
-                    <td class="text-blue-600 font-bold text-lg">NT$ ${Number(q.amount.replace(' 元','')).toLocaleString()}</td>
+               <tr class="border-b hover:bg-amber-50 transition">
+                    <td class="font-mono text-amber-600 font-bold">${q.id}</td>
+                    <td class="text-xs text-gray-400 font-mono">${q.date || '-'}</td>
+                    <td class="font-bold text-gray-800">${q.client || '-'}</td>
+                    <td class="text-blue-600 font-bold text-lg">NT$ ${Number(String(q.amount || '0').replace(' 元','')).toLocaleString()}</td>
                  <td class="admin-only text-right whitespace-nowrap">
                         <button onclick="copyQuoteLink('${q.id}')" class="bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold transition mr-2"><i class="fas fa-copy mr-1"></i> 複製客戶連結</button>
                         <button onclick="openQuotePreview('${q.id}')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm mr-2"><i class="fas fa-file-invoice mr-1"></i> 預覽 / 下載</button>
@@ -1907,31 +1926,13 @@
                 document.getElementById('pq-tax-val').innerText = taxVal.toLocaleString();
                 document.getElementById('pq-total-final').innerText = (subtotal + taxVal).toLocaleString();
 
-                // 🌟 客戶視圖佈局優化
-                const modal = document.getElementById('modal-quote-preview');
-                modal.classList.remove('modal-mask'); // 移除原本的半透明遮罩
-                modal.style.position = 'fixed';
-                modal.style.inset = '0';
-                modal.style.background = '#F3F4F6'; // 舒適的淺灰背景
-                modal.style.zIndex = '999999';
-                modal.style.display = 'block'; 
-                modal.style.overflowY = 'auto'; // 允許客戶上下滑動檢視
-                modal.style.padding = '20px';
-
+               // 🌟 客戶視圖佈局優化 (匠人修復：移除污染源，不再用 JS 破壞原本樣式，全交由 CSS 處理)
+                const modal = document.getElementById('modal-quote-preview');
                 // 隱藏關閉按鈕，讓客戶不能跳回後台系統，但保留下載為圖檔及列印 PDF
-                const topButtons = modal.querySelector('.no-print');
-                topButtons.style.position = 'relative';
-                topButtons.style.top = '0';
-                topButtons.style.marginBottom = '20px';
-                const closeBtn = topButtons.querySelector('button:nth-child(3)');
-                if(closeBtn) closeBtn.style.display = 'none';
+                const closeBtn = modal.querySelector('.no-print button:nth-child(3)');
+                if(closeBtn) closeBtn.style.display = 'none';
 
-                // 讓報價單卡片置中對齊
-                const bodyDiv = modal.querySelector('.modal-body');
-                bodyDiv.style.margin = '0 auto';
-                bodyDiv.style.marginTop = '10px';
-
-            } catch(e) {
+            } catch(e) {
                 document.body.innerHTML = '<div style="text-align:center; padding:50px; font-size:24px; font-weight:bold; color:#DC2626;">報價單資料解析失敗，請通知管理員。</div>';
             }
         }

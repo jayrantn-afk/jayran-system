@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>杰冉影像工作室 - 請款系統</title>
+    <title>杰冉影像工作室 - 請款系統 V6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         :root { --a4-width: 210mm; --a4-height: 297mm; }
-        body { background-color: #f8f9fa; }
+        body { background-color: #f0f2f5; }
         .a4-container {
             width: var(--a4-width); height: var(--a4-height);
             background: white; box-shadow: 0 0 20px rgba(0,0,0,0.1);
@@ -20,10 +20,6 @@
         }
         body.vendor-mode .editor-sidebar { display: none; }
         body.vendor-mode .preview-area { width: 100%; padding: 20px 0; background-color: #525659; }
-        
-        table { table-layout: fixed; width: 100%; }
-        th, td { word-wrap: break-word; overflow: hidden; }
-
         .toast {
             visibility: hidden; min-width: 200px; background-color: #333; color: #fff;
             text-align: center; border-radius: 4px; padding: 10px; position: fixed;
@@ -38,89 +34,98 @@
     <div class="w-1/2 h-full overflow-y-auto p-6 bg-white border-r editor-sidebar">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-xl font-bold border-l-4 border-blue-600 pl-3">杰冉請款管理系統</h1>
-            <button onclick="generateShareLink()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold shadow hover:bg-blue-700">🔗 生成廠商查看連結</button>
+            <button onclick="generateShareLink()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold shadow hover:bg-blue-700">🔗 生成廠商連結</button>
         </div>
         
         <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded border">
             <div>
-                <label class="block text-xs font-bold text-gray-400 mb-1">客戶抬頭 / 廠商名稱</label>
-                <input type="text" id="clientName" class="w-full border rounded p-2 text-sm" placeholder="請輸入完整的公司名稱" oninput="updatePreview()">
+                <label class="block text-[10px] font-bold text-gray-400 mb-1">客戶抬頭 / 廠商名稱</label>
+                <input type="text" id="clientName" class="w-full border rounded p-2 text-sm" placeholder="請輸入公司名稱" oninput="updatePreview()">
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-1">請款日期</label>
+                    <label class="block text-[10px] font-bold text-gray-400 mb-1">請款日期</label>
                     <input type="date" id="invoiceDate" class="w-full border rounded p-2 text-sm" oninput="updatePreview()">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-1">請款單號</label>
-                    <input type="text" id="invoiceNo" class="w-full border rounded p-2 text-sm" placeholder="例如: 20260507-01" oninput="updatePreview()">
+                    <label class="block text-[10px] font-bold text-gray-400 mb-1">請款單號</label>
+                    <input type="text" id="invoiceNo" class="w-full border rounded p-2 text-sm" placeholder="20260507-01" oninput="updatePreview()">
                 </div>
             </div>
         </div>
 
         <div class="flex justify-between items-center mb-2 px-1">
-            <h2 class="font-bold">費用清單明細</h2>
-            <button onclick="addRow()" class="text-blue-600 text-sm font-bold">+ 新增一行</button>
+            <h2 class="font-bold text-sm">費用清單明細</h2>
+            <button onclick="addRow()" class="text-blue-600 text-xs font-bold hover:underline">+ 新增項目</button>
         </div>
         
-        <div class="flex gap-2 mb-2 px-1 text-[10px] font-bold text-gray-400 uppercase">
-            <div class="w-8 text-center">#</div>
-            <div class="w-28">日期</div>
-            <div class="w-24">類別</div>
+        <div class="flex gap-1 mb-2 px-1 text-[10px] font-bold text-gray-400 text-center">
+            <div class="w-24">日期</div>
+            <div class="w-20">類別</div>
             <div class="flex-grow">項目描述</div>
-            <div class="w-12 text-center">數量</div>
-            <div class="w-24">單價</div>
+            <div class="w-10">數量</div>
+            <div class="w-20">單價</div>
+            <div class="w-6"></div>
         </div>
-
         <div id="itemsContainer" class="space-y-2 mb-6"></div>
 
-        <div class="bg-blue-50 p-3 rounded mb-6 flex items-center">
+        <div class="flex items-center mb-6 px-1">
             <input type="checkbox" id="taxToggle" class="h-4 w-4" onchange="updatePreview()">
             <label for="taxToggle" class="ml-2 text-sm font-bold text-blue-700">計算 5% 營業稅</label>
         </div>
 
-        <div class="space-y-3">
-            <div class="p-3 border-2 border-dashed rounded bg-gray-50">
-                <p class="text-xs font-bold text-gray-500 mb-2">附件上傳 (發票、證明文件)</p>
-                <input type="file" id="fileInput" multiple accept="image/*,application/pdf" class="text-xs w-full">
+        <div class="space-y-3 mb-8">
+            <div class="p-3 border-2 border-dashed rounded bg-gray-50 text-center">
+                <p class="text-[10px] font-bold text-gray-400 mb-2">附件證明上傳</p>
+                <input type="file" id="fileInput" multiple accept="image/*,application/pdf" class="text-xs">
             </div>
-            <button onclick="exportToZip()" class="w-full bg-gray-800 text-white py-3 rounded font-bold hover:bg-black transition">打包下載 (PDF + PNG + 附件)</button>
+            <div class="flex gap-2">
+                <button onclick="exportToZip()" class="flex-grow bg-gray-800 text-white py-3 rounded font-bold hover:bg-black transition text-sm">打包下載並存檔</button>
+                <button onclick="saveToHistory()" class="px-4 bg-blue-100 text-blue-700 rounded font-bold hover:bg-blue-200 transition text-sm">僅存檔</button>
+            </div>
+        </div>
+
+        <div class="border-t pt-6">
+            <h3 class="text-sm font-bold text-gray-500 mb-3 flex items-center">
+                <span class="mr-2">📁</span> 先前請款紀錄
+            </h3>
+            <div id="historyList" class="space-y-2">
+                </div>
         </div>
     </div>
 
     <div class="w-1/2 h-full flex justify-center overflow-y-auto p-6 preview-area">
-        
         <div id="vendorActions" class="fixed top-4 right-4 flex gap-2" style="display:none;">
-            <button onclick="window.print()" class="bg-white px-4 py-2 rounded shadow font-bold text-sm">列印單據</button>
-            <button onclick="exportToZip()" class="bg-blue-600 text-white px-4 py-2 rounded shadow font-bold text-sm">下載附件包</button>
+            <button onclick="window.print()" class="bg-white px-4 py-2 rounded shadow font-bold text-sm">列印</button>
+            <button onclick="exportToZip()" class="bg-blue-600 text-white px-4 py-2 rounded shadow font-bold text-sm">下載檔案包</button>
         </div>
 
         <div id="invoicePreview" class="a4-container flex flex-col text-black">
             <div class="border-b-2 border-black pb-4 mb-6 flex justify-between items-end">
                 <div>
                     <h1 class="text-2xl font-bold tracking-tighter">杰冉影像工作室</h1>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Jayran Studio Production</p>
+                    <p class="text-[9px] text-gray-400 uppercase tracking-widest">Jayran Studio Production</p>
                 </div>
-                <div class="text-right text-[11px] leading-tight">
+                <div class="text-right text-[11px]">
                     <p>日期：<span id="prevDate"></span></p>
                     <p>單號：<span id="prevNo"></span></p>
                 </div>
             </div>
 
             <div class="mb-6">
-                <p class="text-[10px] font-bold text-gray-400 mb-1">客戶名稱 / CLIENT</p>
-                <h2 class="text-lg font-bold border-b border-gray-200 pb-1" id="prevClient"></h2>
+                <p class="text-[9px] font-bold text-gray-400 mb-1 uppercase">Customer / 客戶抬頭</p>
+                <h2 class="text-lg font-bold border-b border-gray-100 pb-1" id="prevClient"></h2>
             </div>
 
-            <table class="mb-6 text-[12px]">
+            <table class="mb-6 text-[12px] w-full">
                 <thead>
                     <tr class="border-b-2 border-black text-left">
-                        <th class="py-2 w-[30px]">#</th>
-                        <th class="py-2 w-[80px]">日期</th>
-                        <th class="py-2 w-[70px]">類別</th>
+                        <th class="py-2 w-8">#</th>
+                        <th class="py-2 w-20">日期</th>
+                        <th class="py-2 w-16">類別</th>
                         <th class="py-2">項目內容描述</th>
-                        <th class="py-2 w-[40px] text-center">數量</th>
-                        <th class="py-2 w-[100px] text-right">小計</th>
+                        <th class="py-2 w-10 text-center">數量</th>
+                        <th class="py-2 w-24 text-right">小計</th>
                     </tr>
                 </thead>
                 <tbody id="prevItems"></tbody>
@@ -130,29 +135,20 @@
 
             <div class="flex justify-end mb-10">
                 <div class="w-48 text-[12px] space-y-1">
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">金額小計</span>
-                        <span id="prevSubtotal"></span>
-                    </div>
-                    <div class="flex justify-between" id="taxRow" style="display:none;">
-                        <span class="text-gray-500">營業稅 (5%)</span>
-                        <span id="prevTax"></span>
-                    </div>
-                    <div class="flex justify-between pt-2 border-t border-black font-bold text-[14px]">
-                        <span>總計金額</span>
-                        <span id="prevTotal"></span>
-                    </div>
+                    <div class="flex justify-between text-gray-500"><span>小計</span><span id="prevSubtotal"></span></div>
+                    <div class="flex justify-between text-gray-500" id="taxRow" style="display:none;"><span>營業稅 (5%)</span><span id="prevTax"></span></div>
+                    <div class="flex justify-between pt-2 border-t border-black font-bold text-[15px]"><span>總計金額</span><span id="prevTotal"></span></div>
                 </div>
             </div>
 
             <div class="border-t-2 border-black pt-4">
-                <p class="text-[11px] font-bold mb-2">【 匯款帳修資訊 】</p>
+                <p class="text-[10px] font-bold mb-2 tracking-widest">【 匯款資訊 】</p>
                 <div class="grid grid-cols-2 gap-y-1 text-[11px]">
                     <p>銀行：中國信託 (822) 台南分行</p>
                     <p>戶名：杰冉影像工作室 魏敏軒</p>
                     <div class="col-span-2">
-                        帳號：<span id="bankAccount" onclick="copyAccount()" class="bg-yellow-100 px-1 font-bold cursor-pointer hover:bg-yellow-200" title="點擊複製帳號">000000000000</span>
-                        <span class="text-[9px] text-gray-400 ml-2">(點擊帳號數字即可複製)</span>
+                        帳號：<span id="bankAccount" onclick="copyAccount()" class="bg-yellow-100 px-1 font-bold cursor-pointer hover:bg-yellow-200" title="點擊複製">000000000000</span>
+                        <span class="text-[9px] text-gray-400 ml-1">(點擊複製)</span>
                     </div>
                 </div>
             </div>
@@ -170,14 +166,8 @@
             
             if (dataParam) {
                 try {
-                    // 使用更穩定的解碼方式
                     const decoded = JSON.parse(decodeURIComponent(escape(atob(dataParam))));
-                    document.getElementById('clientName').value = decoded.c || "";
-                    document.getElementById('invoiceDate').value = decoded.d || "";
-                    document.getElementById('invoiceNo').value = decoded.n || "";
-                    document.getElementById('taxToggle').checked = decoded.t || false;
-                    items = decoded.i || [];
-                    
+                    loadDataToUI(decoded);
                     document.getElementById('bodyTag').classList.add('vendor-mode');
                     document.getElementById('vendorActions').style.display = 'flex';
                 } catch (e) { console.error("解析失敗", e); }
@@ -187,6 +177,7 @@
             }
             renderInputs();
             updatePreview();
+            renderHistory();
         };
 
         function addRow() {
@@ -214,24 +205,23 @@
             container.innerHTML = '';
             items.forEach((item, idx) => {
                 const div = document.createElement('div');
-                div.className = "flex gap-1 items-center bg-white p-1 rounded border shadow-sm";
+                div.className = "flex gap-1 items-center bg-white p-1 rounded border shadow-sm mb-1";
                 div.innerHTML = `
-                    <span class="w-6 text-center text-[10px] text-gray-300">${idx+1}</span>
-                    <input type="date" class="w-28 border rounded p-1 text-[10px]" value="${item.date}" oninput="handleUpdate(${item.id}, 'date', this.value)">
-                    <input type="text" class="w-24 border rounded p-1 text-[10px]" placeholder="類別" value="${item.cat}" oninput="handleUpdate(${item.id}, 'cat', this.value)">
-                    <input type="text" class="flex-grow border rounded p-1 text-[10px]" placeholder="描述" value="${item.desc}" oninput="handleUpdate(${item.id}, 'desc', this.value)">
+                    <input type="date" class="w-24 border rounded p-1 text-[10px]" value="${item.date}" oninput="handleUpdate(${item.id}, 'date', this.value)">
+                    <input type="text" class="w-20 border rounded p-1 text-[10px]" placeholder="類別" value="${item.cat}" oninput="handleUpdate(${item.id}, 'cat', this.value)">
+                    <input type="text" class="flex-grow border rounded p-1 text-[10px]" placeholder="項目描述" value="${item.desc}" oninput="handleUpdate(${item.id}, 'desc', this.value)">
                     <input type="number" class="w-10 border rounded p-1 text-[10px] text-center" value="${item.qty}" oninput="handleUpdate(${item.id}, 'qty', this.value)">
                     <input type="number" class="w-20 border rounded p-1 text-[10px] text-right" value="${item.price}" oninput="handleUpdate(${item.id}, 'price', this.value)">
-                    <button onclick="removeRow(${item.id})" class="text-red-300 px-1 text-xs">✕</button>
+                    <button onclick="removeRow(${item.id})" class="text-red-300 px-1 text-xs hover:text-red-600">✕</button>
                 `;
                 container.appendChild(div);
             });
         }
 
         function updatePreview() {
-            document.getElementById('prevClient').innerText = document.getElementById('clientName').value || "尚未輸入公司名稱";
+            document.getElementById('prevClient').innerText = document.getElementById('clientName').value || "＿＿＿＿＿＿";
             document.getElementById('prevDate').innerText = document.getElementById('invoiceDate').value.replace(/-/g, '/');
-            document.getElementById('prevNo').innerText = document.getElementById('invoiceNo').value || "系統自動生成";
+            document.getElementById('prevNo').innerText = document.getElementById('invoiceNo').value || "尚未設定";
 
             const tbody = document.getElementById('prevItems');
             tbody.innerHTML = '';
@@ -241,10 +231,10 @@
                 const total = item.qty * item.price;
                 subtotal += total;
                 tbody.innerHTML += `
-                    <tr class="border-b border-gray-100">
-                        <td class="py-2 text-gray-400">${idx+1}</td>
+                    <tr class="border-b border-gray-50">
+                        <td class="py-2 text-gray-400 text-[10px]">${idx+1}</td>
                         <td class="py-2">${item.date.replace(/-/g, '/')}</td>
-                        <td class="py-2 font-bold">${item.cat}</td>
+                        <td class="py-2 font-bold text-blue-600 text-[11px]">${item.cat}</td>
                         <td class="py-2">${item.desc}</td>
                         <td class="py-2 text-center">${item.qty}</td>
                         <td class="py-2 text-right font-bold">NT$ ${total.toLocaleString()}</td>
@@ -262,13 +252,90 @@
             document.getElementById('prevTotal').innerText = "NT$ " + grandTotal.toLocaleString();
         }
 
+        // 歷史紀錄功能
+        function saveToHistory() {
+            const client = document.getElementById('clientName').value;
+            if (!client) { alert("請輸入廠商名稱再存檔！"); return; }
+            
+            const data = {
+                id: Date.now(),
+                c: client,
+                d: document.getElementById('invoiceDate').value,
+                n: document.getElementById('invoiceNo').value,
+                t: document.getElementById('taxToggle').checked,
+                i: items,
+                total: document.getElementById('prevTotal').innerText
+            };
+
+            let history = JSON.parse(localStorage.getItem('jayran_history') || '[]');
+            history.unshift(data);
+            if (history.length > 20) history.pop(); // 最多存20筆
+            localStorage.setItem('jayran_history', JSON.stringify(history));
+            
+            renderHistory();
+            showToast("紀錄已儲存");
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            const history = JSON.parse(localStorage.getItem('jayran_history') || '[]');
+            container.innerHTML = history.length ? '' : '<p class="text-xs text-gray-400 text-center">尚無紀錄</p>';
+
+            history.forEach(data => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-3 rounded border shadow-sm flex justify-between items-center text-xs group";
+                div.innerHTML = `
+                    <div class="flex-grow cursor-pointer" onclick="loadRecord(${data.id})">
+                        <p class="font-bold text-gray-700">${data.c}</p>
+                        <p class="text-gray-400 text-[10px]">${data.d} | ${data.total}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="loadRecord(${data.id})" class="text-blue-500 hover:underline">編輯</button>
+                        <button onclick="deleteRecord(${data.id})" class="text-red-300 hover:text-red-600 font-bold">✕</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function loadRecord(id) {
+            const history = JSON.parse(localStorage.getItem('jayran_history') || '[]');
+            const data = history.find(d => d.id === id);
+            if (data && confirm("載入此紀錄將覆蓋目前正在輸入的內容，確定嗎？")) {
+                loadDataToUI(data);
+                renderInputs();
+                updatePreview();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function deleteRecord(id) {
+            if (confirm("確定要刪除這筆紀錄嗎？")) {
+                let history = JSON.parse(localStorage.getItem('jayran_history') || '[]');
+                history = history.filter(d => d.id !== id);
+                localStorage.setItem('jayran_history', JSON.stringify(history));
+                renderHistory();
+            }
+        }
+
+        function loadDataToUI(data) {
+            document.getElementById('clientName').value = data.c || "";
+            document.getElementById('invoiceDate').value = data.d || "";
+            document.getElementById('invoiceNo').value = data.n || "";
+            document.getElementById('taxToggle').checked = data.t || false;
+            items = data.i || [];
+        }
+
         function copyAccount() {
             const acc = document.getElementById('bankAccount').innerText;
-            navigator.clipboard.writeText(acc).then(() => {
-                const t = document.getElementById('toast');
-                t.classList.add('show');
-                setTimeout(() => t.classList.remove('show'), 2000);
-            });
+            navigator.clipboard.writeText(acc).then(() => showToast("帳號已複製"));
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
         }
 
         function generateShareLink() {
@@ -279,21 +346,16 @@
                 t: document.getElementById('taxToggle').checked,
                 i: items
             };
-            // 修正編碼邏輯，確保中文字與資料能正確傳遞
             const str = unescape(encodeURIComponent(JSON.stringify(data)));
             const encoded = btoa(str);
             const url = window.location.origin + window.location.pathname + '?data=' + encoded;
-            
-            navigator.clipboard.writeText(url).then(() => {
-                alert("廠商專屬連結已複製！\n廠商開啟後會直接看到精美請款單。");
-            });
+            navigator.clipboard.writeText(url).then(() => alert("廠商連結已複製！"));
         }
 
         async function exportToZip() {
             const el = document.getElementById('invoicePreview');
             const canvas = await html2canvas(el, { scale: 2 });
             const img = canvas.toDataURL("image/png");
-
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             pdf.addImage(img, 'PNG', 0, 0, 210, 297);
@@ -305,14 +367,13 @@
 
             const files = document.getElementById('fileInput').files;
             if (files.length > 0) {
-                const folder = zip.folder("相關附件證明");
-                for (let i = 0; i < files.length; i++) {
-                    folder.file(files[i].name, files[i]);
-                }
+                const folder = zip.folder("相關附件");
+                for (let i = 0; i < files.length; i++) { folder.file(files[i].name, files[i]); }
             }
 
             zip.generateAsync({type:"blob"}).then(content => {
                 saveAs(content, `杰冉請款資料包_${client}.zip`);
+                saveToHistory(); // 下載完自動存檔
             });
         }
     </script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>杰冉影像工作室 - 專業請款系統</title>
+    <title>杰冉影像工作室 - 請款系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,183 +11,186 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         :root { --a4-width: 210mm; --a4-height: 297mm; }
-        body { background-color: #f3f4f6; transition: all 0.3s; }
+        body { background-color: #f8f9fa; }
         .a4-container {
             width: var(--a4-width); height: var(--a4-height);
-            background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            padding: 20mm; box-sizing: border-box;
+            background: white; box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 15mm 20mm; box-sizing: border-box;
             position: relative; overflow: hidden; margin: auto;
         }
-        /* 廠商瀏覽模式：隱藏編輯區，背景變深 */
-        body.vendor-mode { background-color: #333; overflow-y: auto; }
         body.vendor-mode .editor-sidebar { display: none; }
-        body.vendor-mode .preview-area { width: 100%; padding: 40px 0; }
+        body.vendor-mode .preview-area { width: 100%; padding: 20px 0; background-color: #525659; }
         
+        table { table-layout: fixed; width: 100%; }
+        th, td { word-wrap: break-word; overflow: hidden; }
+
         .toast {
-            visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
-            text-align: center; border-radius: 8px; padding: 12px; position: fixed;
-            z-index: 50; left: 50%; bottom: 30px; transform: translateX(-50%);
-            opacity: 0; transition: opacity 0.3s, bottom 0.3s;
+            visibility: hidden; min-width: 200px; background-color: #333; color: #fff;
+            text-align: center; border-radius: 4px; padding: 10px; position: fixed;
+            z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%);
+            opacity: 0; transition: opacity 0.3s;
         }
-        .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+        .toast.show { visibility: visible; opacity: 1; }
     </style>
 </head>
 <body class="h-screen flex font-sans text-gray-800" id="bodyTag">
 
-    <div class="w-1/2 h-full overflow-y-auto p-8 bg-white border-r shadow-xl editor-sidebar z-10">
+    <div class="w-1/2 h-full overflow-y-auto p-6 bg-white border-r editor-sidebar">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-blue-600">杰冉請款系統</h1>
-            <div class="space-x-2">
-                <button onclick="generateShareLink()" class="bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-600 shadow">🔗 生成廠商連結</button>
-            </div>
+            <h1 class="text-xl font-bold border-l-4 border-blue-600 pl-3">杰冉請款管理系統</h1>
+            <button onclick="generateShareLink()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold shadow hover:bg-blue-700">🔗 生成廠商查看連結</button>
         </div>
         
-        <div class="grid grid-cols-2 gap-4 mb-6 bg-gray-50 p-4 rounded-xl">
-            <div class="col-span-2">
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">廠商公司名稱</label>
-                <input type="text" id="clientName" class="w-full border-2 border-gray-200 rounded-lg p-2 focus:border-blue-400 outline-none" placeholder="例如：某某有限公司" oninput="updatePreview()">
-            </div>
+        <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded border">
             <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">請款日期</label>
-                <input type="date" id="invoiceDate" class="w-full border-2 border-gray-200 rounded-lg p-2" oninput="updatePreview()">
+                <label class="block text-xs font-bold text-gray-400 mb-1">客戶抬頭 / 廠商名稱</label>
+                <input type="text" id="clientName" class="w-full border rounded p-2 text-sm" placeholder="請輸入完整的公司名稱" oninput="updatePreview()">
             </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">請款單號</label>
-                <input type="text" id="invoiceNo" class="w-full border-2 border-gray-200 rounded-lg p-2" placeholder="INV-2026..." oninput="updatePreview()">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-1">請款日期</label>
+                    <input type="date" id="invoiceDate" class="w-full border rounded p-2 text-sm" oninput="updatePreview()">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-1">請款單號</label>
+                    <input type="text" id="invoiceNo" class="w-full border rounded p-2 text-sm" placeholder="例如: 20260507-01" oninput="updatePreview()">
+                </div>
             </div>
         </div>
 
-        <div class="mb-2 flex justify-between items-center px-2">
-            <h2 class="text-lg font-bold text-gray-700">費用清單</h2>
-            <button onclick="addRow()" class="text-blue-500 font-bold hover:underline">+ 新增</button>
+        <div class="flex justify-between items-center mb-2 px-1">
+            <h2 class="font-bold">費用清單明細</h2>
+            <button onclick="addRow()" class="text-blue-600 text-sm font-bold">+ 新增一行</button>
         </div>
         
-        <div class="flex gap-2 mb-2 px-2 text-xs font-black text-gray-400 uppercase">
-            <div class="w-6 text-center">#</div>
-            <div class="w-24">項目類別</div>
-            <div class="flex-grow">詳細項目描述</div>
+        <div class="flex gap-2 mb-2 px-1 text-[10px] font-bold text-gray-400 uppercase">
+            <div class="w-8 text-center">#</div>
+            <div class="w-28">日期</div>
+            <div class="w-24">類別</div>
+            <div class="flex-grow">項目描述</div>
             <div class="w-12 text-center">數量</div>
             <div class="w-24">單價</div>
         </div>
 
-        <div id="itemsContainer" class="space-y-2 mb-6">
-            </div>
+        <div id="itemsContainer" class="space-y-2 mb-6"></div>
 
-        <div class="bg-blue-50 p-4 rounded-xl mb-6">
-            <label class="flex items-center cursor-pointer">
-                <input type="checkbox" id="taxToggle" class="form-checkbox h-5 w-5 text-blue-600" onchange="updatePreview()">
-                <span class="ml-3 font-bold text-blue-800">開啟 5% 營業稅計算</span>
-            </label>
+        <div class="bg-blue-50 p-3 rounded mb-6 flex items-center">
+            <input type="checkbox" id="taxToggle" class="h-4 w-4" onchange="updatePreview()">
+            <label for="taxToggle" class="ml-2 text-sm font-bold text-blue-700">計算 5% 營業稅</label>
         </div>
 
-        <div class="space-y-4">
-            <div class="border-2 border-dashed border-gray-200 p-4 rounded-xl bg-gray-50">
-                <label class="block text-sm font-bold mb-2">📸 上傳附件證明 (發票/證明)</label>
-                <input type="file" id="fileInput" multiple accept="image/*,application/pdf" class="w-full text-sm">
+        <div class="space-y-3">
+            <div class="p-3 border-2 border-dashed rounded bg-gray-50">
+                <p class="text-xs font-bold text-gray-500 mb-2">附件上傳 (發票、證明文件)</p>
+                <input type="file" id="fileInput" multiple accept="image/*,application/pdf" class="text-xs w-full">
             </div>
-
-            <button onclick="exportToZip()" class="w-full bg-gray-900 text-white font-black py-4 rounded-xl hover:bg-black transition shadow-xl flex justify-center items-center text-lg">
-                🚀 打包下載所有檔案 (PDF/PNG/附件)
-            </button>
+            <button onclick="exportToZip()" class="w-full bg-gray-800 text-white py-3 rounded font-bold hover:bg-black transition">打包下載 (PDF + PNG + 附件)</button>
         </div>
     </div>
 
-    <div class="w-1/2 h-full bg-gray-100 flex justify-center overflow-y-auto p-8 relative preview-area" id="previewArea">
+    <div class="w-1/2 h-full flex justify-center overflow-y-auto p-6 preview-area">
         
-        <div id="vendorActions" class="fixed top-6 right-6 z-50 flex gap-3" style="display:none;">
-            <button onclick="window.print()" class="bg-white text-black px-6 py-3 rounded-full font-bold shadow-2xl border hover:bg-gray-100">🖨️ 直接列印</button>
-            <button onclick="exportToZip()" class="bg-blue-600 text-white px-6 py-3 rounded-full font-bold shadow-2xl hover:bg-blue-700">📥 下載完整資料包</button>
+        <div id="vendorActions" class="fixed top-4 right-4 flex gap-2" style="display:none;">
+            <button onclick="window.print()" class="bg-white px-4 py-2 rounded shadow font-bold text-sm">列印單據</button>
+            <button onclick="exportToZip()" class="bg-blue-600 text-white px-4 py-2 rounded shadow font-bold text-sm">下載附件包</button>
         </div>
 
-        <div id="invoicePreview" class="a4-container flex flex-col">
-            <div class="border-b-4 border-gray-900 pb-4 mb-8 flex justify-between items-end">
+        <div id="invoicePreview" class="a4-container flex flex-col text-black">
+            <div class="border-b-2 border-black pb-4 mb-6 flex justify-between items-end">
                 <div>
-                    <h1 class="text-4xl font-black text-gray-900">杰冉影像工作室</h1>
-                    <p class="text-sm font-bold tracking-[0.3em] text-gray-400 mt-1 uppercase">Jayran Studio Production</p>
+                    <h1 class="text-2xl font-bold tracking-tighter">杰冉影像工作室</h1>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Jayran Studio Production</p>
                 </div>
-                <div class="text-right text-xs font-bold text-gray-500 leading-relaxed">
-                    <p>INVOICE DATE / <span id="prevDate" class="text-gray-900 ml-1"></span></p>
-                    <p>INVOICE NO. / <span id="prevNo" class="text-gray-900 ml-1"></span></p>
+                <div class="text-right text-[11px] leading-tight">
+                    <p>日期：<span id="prevDate"></span></p>
+                    <p>單號：<span id="prevNo"></span></p>
                 </div>
             </div>
 
-            <div class="mb-10">
-                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">To Client / 受文者</p>
-                <h2 class="text-2xl font-black text-gray-900 border-b-2 border-gray-100 pb-2 inline-block min-w-[300px]" id="prevClient"></h2>
+            <div class="mb-6">
+                <p class="text-[10px] font-bold text-gray-400 mb-1">客戶名稱 / CLIENT</p>
+                <h2 class="text-lg font-bold border-b border-gray-200 pb-1" id="prevClient"></h2>
             </div>
 
-            <table class="w-full text-left mb-8">
+            <table class="mb-6 text-[12px]">
                 <thead>
-                    <tr class="border-b-2 border-gray-900 text-xs font-black uppercase tracking-tighter">
-                        <th class="py-3 px-1 w-8">#</th>
-                        <th class="py-3 px-2 w-24">Category 類別</th>
-                        <th class="py-3 px-2">Description 描述</th>
-                        <th class="py-3 px-2 text-center w-12">Qty</th>
-                        <th class="py-3 px-2 text-right w-32">Amount 總計</th>
+                    <tr class="border-b-2 border-black text-left">
+                        <th class="py-2 w-[30px]">#</th>
+                        <th class="py-2 w-[80px]">日期</th>
+                        <th class="py-2 w-[70px]">類別</th>
+                        <th class="py-2">項目內容描述</th>
+                        <th class="py-2 w-[40px] text-center">數量</th>
+                        <th class="py-2 w-[100px] text-right">小計</th>
                     </tr>
                 </thead>
-                <tbody id="prevItems" class="text-sm">
-                    </tbody>
+                <tbody id="prevItems"></tbody>
             </table>
 
             <div class="flex-grow"></div>
 
-            <div class="flex justify-end mb-12">
-                <div class="w-72 space-y-2">
-                    <div class="flex justify-between text-xs font-bold text-gray-400">
-                        <span>SUBTOTAL 小計</span>
-                        <span id="prevSubtotal" class="text-gray-900">NT$ 0</span>
+            <div class="flex justify-end mb-10">
+                <div class="w-48 text-[12px] space-y-1">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">金額小計</span>
+                        <span id="prevSubtotal"></span>
                     </div>
-                    <div class="flex justify-between text-xs font-bold text-gray-400" id="taxRow" style="display:none;">
-                        <span>TAX 營業稅 (5%)</span>
-                        <span id="prevTax" class="text-gray-900">NT$ 0</span>
+                    <div class="flex justify-between" id="taxRow" style="display:none;">
+                        <span class="text-gray-500">營業稅 (5%)</span>
+                        <span id="prevTax"></span>
                     </div>
-                    <div class="flex justify-between pt-4 border-t-2 border-gray-900 font-black text-xl">
-                        <span>TOTAL 總額</span>
-                        <span id="prevTotal">NT$ 0</span>
+                    <div class="flex justify-between pt-2 border-t border-black font-bold text-[14px]">
+                        <span>總計金額</span>
+                        <span id="prevTotal"></span>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gray-900 text-white p-6 rounded-2xl cursor-pointer hover:scale-[1.02] transition-transform" onclick="copyBankInfo()">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-xs font-black tracking-widest text-gray-400">PAYMENT METHOD 匯款資訊</span>
-                    <span class="text-[10px] bg-white/20 px-2 py-1 rounded">點擊複製</span>
-                </div>
-                <div class="grid grid-cols-2 gap-y-2 text-sm">
-                    <p class="text-gray-400">銀行 / <span class="text-white font-bold">中國信託 (822)</span></p>
-                    <p class="text-gray-400">分行 / <span class="text-white font-bold">台南分行</span></p>
-                    <p class="text-gray-400">戶名 / <span class="text-white font-bold">杰冉影像工作室 魏敏軒</span></p>
-                    <p class="text-gray-400">帳號 / <span id="bankAccount" class="text-white font-black tracking-widest">000000000000</span></p>
+            <div class="border-t-2 border-black pt-4">
+                <p class="text-[11px] font-bold mb-2">【 匯款帳修資訊 】</p>
+                <div class="grid grid-cols-2 gap-y-1 text-[11px]">
+                    <p>銀行：中國信託 (822) 台南分行</p>
+                    <p>戶名：杰冉影像工作室 魏敏軒</p>
+                    <div class="col-span-2">
+                        帳號：<span id="bankAccount" onclick="copyAccount()" class="bg-yellow-100 px-1 font-bold cursor-pointer hover:bg-yellow-200" title="點擊複製帳號">000000000000</span>
+                        <span class="text-[9px] text-gray-400 ml-2">(點擊帳號數字即可複製)</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="toast">銀行資訊已複製到剪貼簿！</div>
+    <div id="toast" class="toast">帳號已複製！</div>
 
     <script>
         let items = [];
 
         window.onload = () => {
-            // 檢查 URL 是否有資料 (廠商檢視模式)
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
             
             if (dataParam) {
-                loadFromURL(dataParam);
-                document.getElementById('bodyTag').classList.add('vendor-mode');
-                document.getElementById('vendorActions').style.display = 'flex';
+                try {
+                    // 使用更穩定的解碼方式
+                    const decoded = JSON.parse(decodeURIComponent(escape(atob(dataParam))));
+                    document.getElementById('clientName').value = decoded.c || "";
+                    document.getElementById('invoiceDate').value = decoded.d || "";
+                    document.getElementById('invoiceNo').value = decoded.n || "";
+                    document.getElementById('taxToggle').checked = decoded.t || false;
+                    items = decoded.i || [];
+                    
+                    document.getElementById('bodyTag').classList.add('vendor-mode');
+                    document.getElementById('vendorActions').style.display = 'flex';
+                } catch (e) { console.error("解析失敗", e); }
             } else {
                 document.getElementById('invoiceDate').valueAsDate = new Date();
                 addRow();
-                updatePreview();
             }
+            renderInputs();
+            updatePreview();
         };
 
         function addRow() {
-            const id = Date.now();
-            items.push({ id, cat: '', desc: '', qty: 1, price: 0 });
+            items.push({ id: Date.now(), date: '', cat: '', desc: '', qty: 1, price: 0 });
             renderInputs();
             updatePreview();
         }
@@ -210,24 +213,25 @@
             const container = document.getElementById('itemsContainer');
             container.innerHTML = '';
             items.forEach((item, idx) => {
-                const row = document.createElement('div');
-                row.className = "flex gap-2 items-center bg-white p-2 rounded-lg border shadow-sm";
-                row.innerHTML = `
-                    <span class="w-6 text-center text-xs font-bold text-gray-300">${idx+1}</span>
-                    <input type="text" class="w-24 border rounded p-1 text-xs" placeholder="類別" value="${item.cat}" oninput="handleUpdate(${item.id}, 'cat', this.value)">
-                    <input type="text" class="flex-grow border rounded p-1 text-xs" placeholder="詳細描述" value="${item.desc}" oninput="handleUpdate(${item.id}, 'desc', this.value)">
-                    <input type="number" class="w-12 border rounded p-1 text-xs text-center" value="${item.qty}" oninput="handleUpdate(${item.id}, 'qty', this.value)">
-                    <input type="number" class="w-24 border rounded p-1 text-xs text-right" value="${item.price}" oninput="handleUpdate(${item.id}, 'price', this.value)">
-                    <button onclick="removeRow(${item.id})" class="text-red-300 hover:text-red-600 px-1">✕</button>
+                const div = document.createElement('div');
+                div.className = "flex gap-1 items-center bg-white p-1 rounded border shadow-sm";
+                div.innerHTML = `
+                    <span class="w-6 text-center text-[10px] text-gray-300">${idx+1}</span>
+                    <input type="date" class="w-28 border rounded p-1 text-[10px]" value="${item.date}" oninput="handleUpdate(${item.id}, 'date', this.value)">
+                    <input type="text" class="w-24 border rounded p-1 text-[10px]" placeholder="類別" value="${item.cat}" oninput="handleUpdate(${item.id}, 'cat', this.value)">
+                    <input type="text" class="flex-grow border rounded p-1 text-[10px]" placeholder="描述" value="${item.desc}" oninput="handleUpdate(${item.id}, 'desc', this.value)">
+                    <input type="number" class="w-10 border rounded p-1 text-[10px] text-center" value="${item.qty}" oninput="handleUpdate(${item.id}, 'qty', this.value)">
+                    <input type="number" class="w-20 border rounded p-1 text-[10px] text-right" value="${item.price}" oninput="handleUpdate(${item.id}, 'price', this.value)">
+                    <button onclick="removeRow(${item.id})" class="text-red-300 px-1 text-xs">✕</button>
                 `;
-                container.appendChild(row);
+                container.appendChild(div);
             });
         }
 
         function updatePreview() {
-            document.getElementById('prevClient').innerText = document.getElementById('clientName').value || "＿＿＿＿＿＿";
+            document.getElementById('prevClient').innerText = document.getElementById('clientName').value || "尚未輸入公司名稱";
             document.getElementById('prevDate').innerText = document.getElementById('invoiceDate').value.replace(/-/g, '/');
-            document.getElementById('prevNo').innerText = document.getElementById('invoiceNo').value || "＿＿＿＿＿＿";
+            document.getElementById('prevNo').innerText = document.getElementById('invoiceNo').value || "系統自動生成";
 
             const tbody = document.getElementById('prevItems');
             tbody.innerHTML = '';
@@ -237,12 +241,13 @@
                 const total = item.qty * item.price;
                 subtotal += total;
                 tbody.innerHTML += `
-                    <tr class="border-b border-gray-50">
-                        <td class="py-4 px-1 text-gray-400 font-bold">${idx+1}</td>
-                        <td class="py-4 px-2 font-bold text-blue-600 text-xs">${item.cat}</td>
-                        <td class="py-4 px-2 font-medium">${item.desc}</td>
-                        <td class="py-4 px-2 text-center text-gray-500">${item.qty}</td>
-                        <td class="py-4 px-2 text-right font-black">NT$ ${total.toLocaleString()}</td>
+                    <tr class="border-b border-gray-100">
+                        <td class="py-2 text-gray-400">${idx+1}</td>
+                        <td class="py-2">${item.date.replace(/-/g, '/')}</td>
+                        <td class="py-2 font-bold">${item.cat}</td>
+                        <td class="py-2">${item.desc}</td>
+                        <td class="py-2 text-center">${item.qty}</td>
+                        <td class="py-2 text-right font-bold">NT$ ${total.toLocaleString()}</td>
                     </tr>
                 `;
             });
@@ -257,7 +262,15 @@
             document.getElementById('prevTotal').innerText = "NT$ " + grandTotal.toLocaleString();
         }
 
-        // 生成分享連結 (核心功能)
+        function copyAccount() {
+            const acc = document.getElementById('bankAccount').innerText;
+            navigator.clipboard.writeText(acc).then(() => {
+                const t = document.getElementById('toast');
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 2000);
+            });
+        }
+
         function generateShareLink() {
             const data = {
                 c: document.getElementById('clientName').value,
@@ -266,64 +279,40 @@
                 t: document.getElementById('taxToggle').checked,
                 i: items
             };
-            // 將物件轉為 Base64 字串
-            const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-            const shareURL = window.location.origin + window.location.pathname + '?data=' + encodedData;
+            // 修正編碼邏輯，確保中文字與資料能正確傳遞
+            const str = unescape(encodeURIComponent(JSON.stringify(data)));
+            const encoded = btoa(str);
+            const url = window.location.origin + window.location.pathname + '?data=' + encoded;
             
-            navigator.clipboard.writeText(shareURL).then(() => {
-                alert("廠商專屬超連結已生成並複製！\n你可以直接傳給廠商在線上查看。");
-            });
-        }
-
-        function loadFromURL(encodedData) {
-            try {
-                const data = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
-                document.getElementById('clientName').value = data.c;
-                document.getElementById('invoiceDate').value = data.d;
-                document.getElementById('invoiceNo').value = data.n;
-                document.getElementById('taxToggle').checked = data.t;
-                items = data.i;
-                renderInputs();
-                updatePreview();
-            } catch (e) {
-                console.error("資料載入失敗");
-            }
-        }
-
-        function copyBankInfo() {
-            const info = `【杰冉影像工作室 匯款資訊】\n銀行：中國信託 (822) 台南分行\n戶名：杰冉影像工作室 魏敏軒\n帳號：000000000000`;
-            navigator.clipboard.writeText(info).then(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2500);
+            navigator.clipboard.writeText(url).then(() => {
+                alert("廠商專屬連結已複製！\n廠商開啟後會直接看到精美請款單。");
             });
         }
 
         async function exportToZip() {
-            const previewEl = document.getElementById('invoicePreview');
-            const client = document.getElementById('clientName').value || "廠商";
-            const canvas = await html2canvas(previewEl, { scale: 2 });
-            const imgData = canvas.toDataURL("image/png");
+            const el = document.getElementById('invoicePreview');
+            const canvas = await html2canvas(el, { scale: 2 });
+            const img = canvas.toDataURL("image/png");
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-            const pdfBlob = pdf.output('blob');
-
+            pdf.addImage(img, 'PNG', 0, 0, 210, 297);
+            
             const zip = new JSZip();
-            zip.file(`杰冉請款單_${client}.pdf`, pdfBlob);
-            zip.file(`杰冉請款單_${client}.png`, imgData.split(',')[1], {base64: true});
+            const client = document.getElementById('clientName').value || "廠商";
+            zip.file(`杰冉請款單_${client}.pdf`, pdf.output('blob'));
+            zip.file(`杰冉請款單_${client}.png`, img.split(',')[1], {base64: true});
 
             const files = document.getElementById('fileInput').files;
             if (files.length > 0) {
-                const folder = zip.folder("附件證明");
+                const folder = zip.folder("相關附件證明");
                 for (let i = 0; i < files.length; i++) {
                     folder.file(files[i].name, files[i]);
                 }
             }
 
             zip.generateAsync({type:"blob"}).then(content => {
-                saveAs(content, `杰冉影像工作室_請款包_${client}.zip`);
+                saveAs(content, `杰冉請款資料包_${client}.zip`);
             });
         }
     </script>

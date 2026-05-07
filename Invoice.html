@@ -95,10 +95,31 @@
         <input type="file" id="fileInput" multiple accept="image/*,application/pdf" class="w-full border p-2 rounded mb-2">
         <p class="text-sm text-gray-500 mb-6">這些檔案在下載時會被打包進同一個 ZIP 資料夾內。</p>
 
-        <button onclick="exportToZip()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition shadow-lg flex justify-center items-center">
+        <button onclick="exportToZip()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition shadow-lg flex justify-center items-center mb-8">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-            打包下載 (PDF + PNG + 附件)
+            打包下載並儲存紀錄 (PDF + PNG + 附件)
         </button>
+
+        <div class="bg-gray-50 border rounded-lg p-4 shadow-inner">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-bold text-gray-700">📜 歷史請款紀錄</h2>
+                <span class="text-xs text-gray-500">資料儲存於本機瀏覽器</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left border-collapse bg-white">
+                    <thead class="bg-gray-200 text-gray-700">
+                        <tr>
+                            <th class="p-2 border">請款日期</th>
+                            <th class="p-2 border">廠商名稱</th>
+                            <th class="p-2 border text-right">總金額</th>
+                            <th class="p-2 border text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="w-1/2 h-full bg-gray-200 flex justify-center overflow-y-auto p-8 relative">
@@ -177,6 +198,7 @@
             document.getElementById('invoiceDate').valueAsDate = new Date();
             addRow(); // 預設給一列
             updatePreview();
+            renderHistory(); // 載入歷史紀錄
         };
 
         // 新增列
@@ -279,6 +301,87 @@
             });
         }
 
+        // ★★★ 歷史紀錄功能邏輯 ★★★
+        function saveToHistory() {
+            const clientName = document.getElementById('clientName').value;
+            const invoiceDate = document.getElementById('invoiceDate').value;
+            const invoiceNo = document.getElementById('invoiceNo').value;
+            const totalText = document.getElementById('prevTotal').innerText;
+            const hasTax = document.getElementById('taxToggle').checked;
+
+            // 如果沒有填寫廠商或完全沒填費用，就不存入紀錄
+            if (!clientName || items.every(i => !i.desc && i.price === 0)) return;
+
+            const record = {
+                id: Date.now(),
+                date: invoiceDate,
+                client: clientName,
+                invoiceNo: invoiceNo,
+                total: totalText,
+                hasTax: hasTax,
+                savedItems: JSON.parse(JSON.stringify(items)) // 深度拷貝當下的明細陣列
+            };
+
+            // 讀取舊紀錄，加入新紀錄，存回 LocalStorage
+            let history = JSON.parse(localStorage.getItem('jayran_invoice_history') || '[]');
+            history.unshift(record); // 把新的紀錄加到最前面
+            localStorage.setItem('jayran_invoice_history', JSON.stringify(history));
+            
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('jayran_invoice_history') || '[]');
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+
+            if(history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">尚無請款紀錄</td></tr>';
+                return;
+            }
+
+            history.forEach(record => {
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-2 border">${record.date}</td>
+                        <td class="p-2 border font-medium">${record.client}</td>
+                        <td class="p-2 border text-right">${record.total}</td>
+                        <td class="p-2 border text-center">
+                            <button onclick="loadRecord(${record.id})" class="text-blue-500 hover:text-blue-700 font-bold px-1" title="載入這筆紀錄修改">載入</button>
+                            <span class="text-gray-300">|</span>
+                            <button onclick="deleteRecord(${record.id})" class="text-red-500 hover:text-red-700 px-1" title="刪除">刪除</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function loadRecord(id) {
+            if(!confirm("確定要載入這筆紀錄嗎？這將會覆蓋你目前正在輸入的內容。")) return;
+            
+            const history = JSON.parse(localStorage.getItem('jayran_invoice_history') || '[]');
+            const record = history.find(r => r.id === id);
+            
+            if(record) {
+                document.getElementById('clientName').value = record.client;
+                document.getElementById('invoiceDate').value = record.date;
+                document.getElementById('invoiceNo').value = record.invoiceNo;
+                document.getElementById('taxToggle').checked = record.hasTax;
+                items = record.savedItems; // 恢復儲存的明細
+                
+                renderInputTable();
+                updatePreview();
+            }
+        }
+
+        function deleteRecord(id) {
+            if(!confirm("確定要刪除這筆紀錄嗎？此動作無法復原。")) return;
+            let history = JSON.parse(localStorage.getItem('jayran_invoice_history') || '[]');
+            history = history.filter(r => r.id !== id);
+            localStorage.setItem('jayran_invoice_history', JSON.stringify(history));
+            renderHistory();
+        }
+
         // 打包下載 (PDF + PNG + 附件)
         async function exportToZip() {
             const previewEl = document.getElementById('invoicePreview');
@@ -318,6 +421,9 @@
             zip.generateAsync({type:"blob"}).then(function(content) {
                 saveAs(content, `${baseFileName}_完整請款資料.zip`);
             });
+
+            // 6. 執行完下載後，自動將這次輸入的資料存入歷史紀錄！
+            saveToHistory();
         }
     </script>
 </body>

@@ -510,23 +510,24 @@
             <div class="modal-body w-[450px]">
                 <h3 class="text-2xl font-black mb-6">編輯專案內容</h3>
                 <input type="hidden" id="ep-cat">
-                <input type="hidden" id="ep-zone">
                 <input type="hidden" id="ep-origin-id">
                 <input type="hidden" id="ep-origin-zone"> 
-                <div class="grid grid-cols-4 gap-2 mb-4 items-end">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label class="text-xs text-gray-500 font-bold block mb-1">代號</label>
-                        <select id="ep-code" class="clean-select font-bold text-center px-1 border border-gray-200" onchange="updateEditClientInfo()"></select>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">區域 / 客戶</label>
+                        <select id="ep-zone-select" class="clean-select font-bold border border-gray-200" onchange="updateEditClientName()"></select>
                     </div>
-                    <div class="col-span-2">
-                        <label class="text-xs text-gray-500 font-bold block mb-1">客戶 (可編輯)</label>
-                        <input id="ep-client-display" class="clean-input bg-white text-black font-bold text-sm border border-gray-200" oninput="updateZoneFromClientName()">
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱</label>
+                            <input id="ep-client" class="clean-input bg-gray-100 text-black font-bold border border-gray-200">
+                        </div>
+                        <div class="w-20 shrink-0">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">數字</label>
+                            <input id="ep-num" class="clean-input font-bold text-center px-1 border border-gray-200" placeholder="001">
+                        </div>
                     </div>
-                    <div>
-                        <label class="text-xs text-gray-500 font-bold block mb-1">數字</label>
-                        <input id="ep-num" class="clean-input font-bold text-center px-1 border border-gray-200" placeholder="001">
-                    </div>
-                </div> 
+                </div>
                 <div class="mb-4">
                     <label class="text-xs text-gray-500 font-bold">製作人</label>
                     <select id="ep-producer" class="clean-select font-bold border border-gray-200"></select>
@@ -2699,23 +2700,55 @@
             callAPI('deleteProject', { cat: category, zone: zone, id: id }, (res) => {}); 
         }
 
-        function openEditProject(p) {
-            document.getElementById('ep-cat').value = p.category; document.getElementById('ep-origin-id').value = p.id; document.getElementById('ep-origin-zone').value = p.zone; 
-            const prefix = p.zone.split('_')[0]; const numPart = String(p.id).replace(prefix, ''); 
-            const epCodeSel = document.getElementById('ep-code'); epCodeSel.innerHTML = '';
-            const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            Object.keys(settings).sort().forEach(k => { epCodeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); epCodeSel.value = prefix;
+function openEditProject(p) {
+            document.getElementById('ep-cat').value = p.category; 
+            document.getElementById('ep-origin-id').value = p.id; 
+            document.getElementById('ep-origin-zone').value = p.zone; 
             
-            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes; const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
+            const zoneSel = document.getElementById('ep-zone-select'); 
+            zoneSel.innerHTML = '';
+            const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
+            Object.keys(settings).sort().forEach(k => { zoneSel.add(new Option(k, k)); }); 
+            zoneSel.value = p.zone;
+            
+            const prefix = p.zone.split('_')[0]; 
+            const numPart = String(p.id).replace(prefix, ''); 
+            document.getElementById('ep-num').value = numPart;
+            
+            updateEditClientName();
+            document.getElementById('ep-client').value = p.client; // 🌟 匠人修復：保留專案原本的真實客戶名稱
+            
+            const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes; 
+            const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
             const prodSel = document.getElementById('ep-producer'); prodSel.innerHTML = ''; producers.forEach(x => prodSel.add(new Option(x, x)));
             const typeSel = document.getElementById('ep-type'); typeSel.innerHTML = ''; types.forEach(x => typeSel.add(new Option(x, x)));
             setTimeout(() => { prodSel.value = p.producer; typeSel.value = p.type; }, 50);
 
-            document.getElementById('ep-num').value = numPart; updateEditClientInfo(); 
-            document.getElementById('ep-name').value = p.name; document.getElementById('ep-hours').value = p.hours || 0; 
+            document.getElementById('ep-name').value = p.name; 
+            document.getElementById('ep-hours').value = p.hours || 0; 
             if (p.start && p.end) { fpEdit.setDate([p.start, p.end]); } else { fpEdit.clear(); }
-            document.getElementById('ep-note').value = p.note; document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
+            document.getElementById('ep-note').value = p.note; 
+            document.getElementById('ep-urgent').checked = (p.tag === 'Urgent');
             document.getElementById('modal-edit-project').style.display = 'flex';
+        }
+
+        // 🌟 匠人替換：捨棄舊版錯誤邏輯，改用與首頁新增完全相同的安全判斷機制
+        function updateEditClientName() {
+            const z = document.getElementById('ep-zone-select').value;
+            const clientInput = document.getElementById('ep-client');
+            if (z) { 
+                const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z; 
+                if (z.toUpperCase().startsWith('Z')) { 
+                    clientInput.readOnly = false; 
+                    clientInput.classList.remove('bg-gray-100'); 
+                    clientInput.classList.add('bg-white'); 
+                } else { 
+                    clientInput.value = realName; 
+                    clientInput.readOnly = true; 
+                    clientInput.classList.add('bg-gray-100'); 
+                    clientInput.classList.remove('bg-white'); 
+                } 
+            }
         }
 
         function confirmEditProject() {
@@ -2725,30 +2758,27 @@
             let inheritedStatus = '尚未進行'; if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; }
 
             const p = { 
-                category: document.getElementById('ep-cat').value, zone: document.getElementById('ep-zone').value, 
-                id: document.getElementById('ep-num').value, client: document.getElementById('ep-client-display').value, 
-                name: document.getElementById('ep-name').value, producer: document.getElementById('ep-producer').value, 
-                type: document.getElementById('ep-type').value, hours: document.getElementById('ep-hours').value, 
+                category: document.getElementById('ep-cat').value, 
+                zone: document.getElementById('ep-zone-select').value, 
+                id: document.getElementById('ep-num').value, 
+                client: document.getElementById('ep-client').value, 
+                name: document.getElementById('ep-name').value, 
+                producer: document.getElementById('ep-producer').value, 
+                type: document.getElementById('ep-type').value, 
+                hours: document.getElementById('ep-hours').value, 
                 start: dates[0] || "", end: dates[1] || dates[0] || "", 
-                note: document.getElementById('ep-note').value, tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '', 
+                note: document.getElementById('ep-note').value, 
+                tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '', 
                 status: inheritedStatus, link: "" 
             };
 
             const prefix = p.zone.split('_')[0];
             if (!isNaN(p.id) && p.id !== "") { p.id = prefix + String(p.id).padStart(3, '0'); } else if (!p.id.toUpperCase().startsWith(prefix.toUpperCase())) { p.id = prefix + p.id; }
+            
             if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } else { DATA.projects.push(p); }
             closeModal('modal-edit-project'); localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); showToast("修改成功 (背景同步中)");
             callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {});
         }
-
-        function updateEditClientInfo() {
-            const selectedCode = document.getElementById('ep-code').value; const cat = document.getElementById('ep-cat').value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = "";
-            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } }
-            if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById('ep-client-display').value = clientName; document.getElementById('ep-zone').value = foundZone; }
-        }
-
-        function updateZoneFromClientName() { const code = document.getElementById('ep-code').value; const clientName = document.getElementById('ep-client-display').value; document.getElementById('ep-zone').value = code + (clientName ? "_" + clientName : ""); }
-        
         function openHistory() {
             const z = document.getElementById('i-zone').value; if(!z) return showToast("請先選擇客戶", "error");
             document.getElementById('hist-title').innerText = z; document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>'; document.getElementById('modal-preview').style.display = 'flex';

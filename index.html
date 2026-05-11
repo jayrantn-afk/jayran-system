@@ -2222,10 +2222,30 @@
                 } else { 
                     document.getElementById('i-client').value = realName; document.getElementById('i-client').readOnly = true; document.getElementById('i-client').classList.add('bg-gray-100'); document.getElementById('i-client').classList.remove('bg-white'); 
                 } 
-                let lastId = (DATA.ids) ? DATA.ids[z] : ""; let displayId = "001"; 
-                if (lastId && lastId !== "無" && lastId !== "無紀錄") { const match = lastId.match(/\d+$/); if (match) displayId = match[0]; document.getElementById('i-id').placeholder = `最後編號: ${displayId}`; } 
-                else { document.getElementById('i-id').placeholder = `建議編號: 001`; } 
-            } else { document.getElementById('i-client').value = ''; document.getElementById('i-id').placeholder = ''; } 
+                
+                // 🌟 匠人修復：即時計算當前所有專案的最大編號，保證 100% 精準
+                let maxNum = 0;
+                if (DATA && DATA.projects) {
+                    DATA.projects.forEach(p => {
+                        if (p.zone === z && p.id) {
+                            const match = String(p.id).match(/\d+$/); // 抓取尾部的數字
+                            if (match) {
+                                const num = parseInt(match[0], 10);
+                                if (num > maxNum) maxNum = num;
+                            }
+                        }
+                    });
+                }
+                
+                if (maxNum > 0) {
+                    document.getElementById('i-id').placeholder = `最後編號: ${String(maxNum).padStart(3, '0')}`;
+                } else {
+                    document.getElementById('i-id').placeholder = `建議編號: 001`;
+                }
+            } else { 
+                document.getElementById('i-client').value = ''; 
+                document.getElementById('i-id').placeholder = ''; 
+            } 
         }
 
         function checkProducer() { 
@@ -2249,9 +2269,14 @@
             if (!name) return showToast("請輸入專案名稱", "error");
             if (!idRaw) return showToast("請輸入編號", "error");
 
-            const prefix = zone.split('_')[0];
+           const prefix = zone.split('_')[0];
             if (!isNaN(idRaw) && idRaw !== "") { idRaw = prefix + String(idRaw).padStart(3, '0'); } 
             else if (!idRaw.toUpperCase().startsWith(prefix.toUpperCase())) { idRaw = prefix + idRaw; }
+
+            // 🌟 匠人新增：嚴格防呆！檢查編號是否已經存在於該客戶的專案中
+            if (DATA.projects && DATA.projects.some(p => p.zone === zone && String(p.id).toUpperCase() === String(idRaw).toUpperCase())) {
+                return showToast(`編號 ${idRaw} 已經存在於此客戶的專案中，請更換！`, "error");
+            }
 
             const dates = dateStr.split(' to ');
             const start = dates[0] || ""; const end = dates[1] || dates[0] || "";

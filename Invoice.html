@@ -3,30 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>杰冉影像工作室 - 請款系統 V7</title>
+    <title>杰冉工作室 - 請款系統 V8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        :root { --a4-width: 210mm; --a4-height: 297mm; }
-        body { background-color: #f0f2f5; }
+        :root { 
+            --a4-width: 210mm; 
+            --a4-height: 297mm; 
+        }
+        body { 
+            background-color: #f3f4f6; 
+        }
+        /* A4 容器優化：min-height 代替固定 height，允許隨著明細自動延伸，避免內容裁切 */
         .a4-container {
-            width: var(--a4-width); height: var(--a4-height);
-            background: white; box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            padding: 15mm 20mm; box-sizing: border-box;
-            position: relative; overflow: hidden; margin: auto;
+            width: var(--a4-width); 
+            min-height: var(--a4-height); 
+            height: auto;
+            background: white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 20mm 20mm; 
+            box-sizing: border-box;
+            position: relative; 
+            margin: auto;
+            display: flex;
+            flex-direction: column;
         }
         body.vendor-mode .editor-sidebar { display: none; }
-        body.vendor-mode .preview-area { width: 100%; padding: 20px 0; background-color: #525659; }
+        body.vendor-mode .preview-area { width: 100%; padding: 40px 0; background-color: #374151; }
+        
+        /* 吐司提示框 */
         .toast {
-            visibility: hidden; min-width: 200px; background-color: #333; color: #fff;
-            text-align: center; border-radius: 4px; padding: 10px; position: fixed;
-            z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%);
-            opacity: 0; transition: opacity 0.3s;
+            visibility: hidden; 
+            min-width: 220px; 
+            background-color: rgba(17, 24, 39, 0.95); 
+            color: #fff;
+            text-align: center; 
+            border-radius: 12px; 
+            padding: 12px 24px; 
+            position: fixed;
+            z-index: 1000; 
+            left: 50%; 
+            bottom: 40px; 
+            transform: translateX(-50%);
+            opacity: 0; 
+            transition: opacity 0.3s, transform 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-weight: 700;
+            font-size: 14px;
         }
-        .toast.show { visibility: visible; opacity: 1; }
+        .toast.show { 
+            visibility: visible; 
+            opacity: 1; 
+            transform: translate(-50%, -10px);
+        }
         /* 強制表格對齊 */
         table { table-layout: fixed; width: 100%; }
         th, td { word-wrap: break-word; vertical-align: middle; }
@@ -34,35 +66,43 @@
 </head>
 <body class="h-screen flex font-sans text-gray-800" id="bodyTag">
 
-    <div class="w-1/2 h-full overflow-y-auto p-6 bg-white border-r editor-sidebar">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-bold border-l-4 border-blue-600 pl-3">杰冉影像工作室系統</h1>
-            <button onclick="generateShareLink()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold shadow hover:bg-blue-700">🔗 生成廠商連結</button>
+    <!-- 左側控制面板 -->
+    <div class="w-1/2 h-full overflow-y-auto p-6 bg-white border-r border-gray-200 editor-sidebar">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <div class="flex items-center gap-2">
+                <span class="text-xl font-black tracking-wider text-gray-900 border-l-4 border-blue-600 pl-3">JAYRAN STUDIO</span>
+                <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">請款系統 V8</span>
+            </div>
+            <button onclick="generateShareLink()" class="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-xs font-bold shadow-md hover:bg-blue-700 transition duration-200 flex items-center gap-1">
+                <i class="fas fa-link"></i> 生成廠商連結
+            </button>
         </div>
         
-        <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded border">
+        <!-- 基本資訊設定 -->
+        <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
             <div>
-                <label class="block text-[10px] font-bold text-gray-400 mb-1">客戶抬頭 / 廠商名稱</label>
-                <input type="text" id="clientName" class="w-full border rounded p-2 text-sm" placeholder="請輸入完整公司抬頭" oninput="updatePreview()">
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">客戶抬頭 / 廠商名稱</label>
+                <input type="text" id="clientName" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm font-bold focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="請輸入完整公司抬頭" oninput="updatePreview()">
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 mb-1">請款日期</label>
-                    <input type="date" id="invoiceDate" class="w-full border rounded p-2 text-sm" oninput="updatePreview()">
+                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">請款日期</label>
+                    <input type="date" id="invoiceDate" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm font-bold focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" oninput="updatePreview()">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 mb-1">請款單號</label>
-                    <input type="text" id="invoiceNo" class="w-full border rounded p-2 text-sm" placeholder="例如: 20260507-01" oninput="updatePreview()">
+                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">請款單號</label>
+                    <input type="text" id="invoiceNo" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm font-bold focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" placeholder="例如: 20260507-01" oninput="updatePreview()">
                 </div>
             </div>
         </div>
 
-        <div class="flex justify-between items-center mb-2 px-1">
-            <h2 class="font-bold text-sm">明細設定</h2>
-            <button onclick="addRow()" class="text-blue-600 text-xs font-bold hover:underline">+ 增加項目</button>
+        <!-- 明細表單 -->
+        <div class="flex justify-between items-center mb-3 px-1">
+            <h2 class="font-black text-sm text-gray-700">明細設定</h2>
+            <button onclick="addRow()" class="text-blue-600 text-xs font-bold hover:text-blue-800 hover:underline transition">+ 增加項目</button>
         </div>
         
-        <div class="flex gap-1 mb-2 px-1 text-[10px] font-bold text-gray-400 text-center uppercase">
+        <div class="flex gap-1 mb-2 px-2 text-[10px] font-bold text-gray-400 text-center uppercase tracking-wider">
             <div class="w-24">日期</div>
             <div class="w-20">類別</div>
             <div class="flex-grow">詳細描述</div>
@@ -70,91 +110,122 @@
             <div class="w-20">單價</div>
             <div class="w-6"></div>
         </div>
-        <div id="itemsContainer" class="space-y-2 mb-6"></div>
+        
+        <div id="itemsContainer" class="space-y-2 mb-6 max-h-[300px] overflow-y-auto pr-1"></div>
 
         <div class="flex items-center mb-6 px-1">
-            <input type="checkbox" id="taxToggle" class="h-4 w-4" onchange="updatePreview()">
-            <label for="taxToggle" class="ml-2 text-sm font-bold text-blue-700">計算 5% 營業稅</label>
+            <input type="checkbox" id="taxToggle" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" onchange="updatePreview()">
+            <label for="taxToggle" class="ml-2 text-sm font-bold text-blue-700 select-none">計算 5% 營業稅</label>
         </div>
 
-        <div class="space-y-3 mb-8">
-            <div class="p-3 border-2 border-dashed rounded bg-gray-50 text-center">
-                <p class="text-[10px] font-bold text-gray-400 mb-2">附件檔案選取 (每次下載前需選取)</p>
-                <input type="file" id="fileInput" multiple accept="image/*,application/pdf" class="text-xs">
+        <!-- 附件與功能按鈕 -->
+        <div class="space-y-4 mb-8">
+            <div class="p-4 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 text-center hover:border-blue-400 transition duration-200">
+                <p class="text-[11px] font-bold text-gray-400 mb-2">附件檔案選取 (每次下載前需選取)</p>
+                <input type="file" id="fileInput" multiple accept="image/*,application/pdf" class="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 file:cursor-pointer hover:file:bg-blue-100">
             </div>
-            <div class="flex gap-2">
-                <button onclick="exportToZip()" class="flex-grow bg-gray-800 text-white py-3 rounded font-bold hover:bg-black transition text-sm">打包下載並存檔</button>
-                <button onclick="saveToHistory()" class="px-4 bg-blue-100 text-blue-700 rounded font-bold hover:bg-blue-200 transition text-sm">儲存紀錄</button>
+            <div class="flex gap-3">
+                <button onclick="exportToZip()" class="flex-grow bg-gray-900 text-white py-3 px-4 rounded-xl font-bold hover:bg-black transition text-sm shadow-md flex items-center justify-center gap-1">
+                    <i class="fas fa-file-archive"></i> 打包下載並存檔
+                </button>
+                <button onclick="saveToHistory()" class="px-5 bg-blue-50 text-blue-700 rounded-xl font-bold hover:bg-blue-100 transition text-sm border border-blue-100">
+                    儲存紀錄
+                </button>
             </div>
         </div>
 
+        <!-- 歷史紀錄 -->
         <div class="border-t pt-6">
-            <h3 class="text-sm font-bold text-gray-500 mb-3 flex items-center">📁 先前請款歷史</h3>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                <i class="fas fa-history text-gray-400"></i> 先前請款歷史
+            </h3>
             <div id="historyList" class="space-y-2"></div>
         </div>
     </div>
 
+    <!-- 右側 A4 預覽畫面 -->
     <div class="w-1/2 h-full flex justify-center overflow-y-auto p-6 preview-area">
-        <div id="vendorActions" class="fixed top-4 right-4 flex gap-2" style="display:none;">
-            <button onclick="window.print()" class="bg-white px-4 py-2 rounded shadow font-bold text-sm">列印單據</button>
-            <button onclick="exportToZip()" class="bg-blue-600 text-white px-4 py-2 rounded shadow font-bold text-sm">下載所有檔案</button>
+        <div id="vendorActions" class="fixed top-4 right-4 flex gap-2 z-[500]" style="display:none;">
+            <button onclick="window.print()" class="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2.5 rounded-lg shadow-lg font-bold text-sm transition flex items-center gap-1">
+                <i class="fas fa-print"></i> 列印單據
+            </button>
+            <button onclick="exportToZip()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg shadow-lg font-bold text-sm transition flex items-center gap-1">
+                <i class="fas fa-download"></i> 下載所有檔案
+            </button>
         </div>
 
+        <!-- A4 請款單主要容器 -->
         <div id="invoicePreview" class="a4-container flex flex-col text-black">
-            <div class="border-b-2 border-black pb-4 mb-8 flex justify-between items-end">
+            <!-- 抬頭與日期單號 -->
+            <div class="border-b-4 border-gray-900 pb-4 mb-8 flex justify-between items-end">
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tighter">杰冉影像工作室</h1>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Jayran Studio Production</p>
+                    <h1 class="text-4.5xl font-black tracking-tight text-gray-950">杰冉工作室</h1>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Jayran Studio Production</p>
                 </div>
-                <div class="text-right text-[12px] leading-relaxed">
-                    <p>請款日期：<span id="prevDate"></span></p>
-                    <p>單據編號：<span id="prevNo"></span></p>
+                <div class="text-right text-[11px] leading-relaxed font-semibold text-gray-600">
+                    <p>請款日期：<span id="prevDate" class="font-mono text-gray-900"></span></p>
+                    <p>單據編號：<span id="prevNo" class="font-mono text-gray-900"></span></p>
                 </div>
             </div>
 
-            <div class="mb-8">
-                <p class="text-[11px] font-bold text-gray-400 mb-1">客戶抬頭 / CLIENT NAME</p>
-                <h2 class="text-xl font-bold border-b-2 border-gray-100 pb-1" id="prevClient"></h2>
+            <!-- 客戶公司抬頭 -->
+            <div class="mb-6">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">客戶抬頭 / CLIENT NAME</p>
+                <h2 class="text-xl font-bold border-b-2 border-gray-100 pb-2 text-gray-900" id="prevClient"></h2>
             </div>
 
-            <table class="mb-10 text-[13px] w-full">
+            <!-- 請款明細表格 -->
+            <table class="mb-6 text-[12px] w-full">
                 <thead>
-                    <tr class="border-b-2 border-black text-left">
-                        <th class="py-2 w-8">#</th>
-                        <th class="py-2 w-24">日期</th>
-                        <th class="py-2 w-20">類別</th>
-                        <th class="py-2">明細項目內容</th>
-                        <th class="py-2 w-12 text-center">數量</th>
-                        <th class="py-2 w-28 text-right">小計</th>
+                    <tr class="border-b-2 border-gray-900 text-left text-gray-400 text-[10px] uppercase font-bold tracking-wider">
+                        <th class="py-2.5 w-8">#</th>
+                        <th class="py-2.5 w-24">日期</th>
+                        <th class="py-2.5 w-20">類別</th>
+                        <th class="py-2.5">明細項目內容</th>
+                        <th class="py-2.5 w-12 text-center">數量</th>
+                        <th class="py-2.5 w-28 text-right">小計</th>
                     </tr>
                 </thead>
                 <tbody id="prevItems"></tbody>
             </table>
 
-            <div class="flex-grow"></div>
+            <!-- 彈性空間佔位：當明細較少時推擠最底下，當明細多時維持最小安全間隔，防止重疊 -->
+            <div class="flex-grow min-h-[50px]"></div>
 
-            <div class="flex justify-end mb-12">
-                <div class="w-56 text-[13px] space-y-1">
-                    <div class="flex justify-between text-gray-500"><span>金額小計</span><span id="prevSubtotal"></span></div>
-                    <div class="flex justify-between text-gray-500" id="taxRow" style="display:none;"><span>營業稅 (5%)</span><span id="prevTax"></span></div>
-                    <div class="flex justify-between pt-3 border-t-2 border-black font-bold text-[18px]"><span>總計金額</span><span id="prevTotal"></span></div>
+            <!-- 請款總計金額區 -->
+            <div class="flex justify-end mb-8">
+                <div class="w-60 text-[12px] space-y-2 border-t border-gray-100 pt-4">
+                    <div class="flex justify-between text-gray-500">
+                        <span class="font-bold">金額小計</span>
+                        <span id="prevSubtotal" class="font-mono font-bold text-gray-800"></span>
+                    </div>
+                    <div class="flex justify-between text-gray-500" id="taxRow" style="display:none;">
+                        <span class="font-bold">營業稅 (5%)</span>
+                        <span id="prevTax" class="font-mono font-bold text-gray-800"></span>
+                    </div>
+                    <div class="flex justify-between pt-3 border-t-2 border-gray-900 font-bold text-[18px] text-gray-950">
+                        <span>總計金額</span>
+                        <span id="prevTotal" class="font-mono text-xl"></span>
+                    </div>
                 </div>
             </div>
 
-            <div class="border-t-2 border-black pt-4">
-                <p class="text-[13px] font-bold mb-3 tracking-widest">【 匯款資訊 】</p>
-                <div class="grid grid-cols-2 gap-y-2 text-[14px]">
-                    <p>銀行：<span class="font-bold">中國信託 (822)</span></p>
-                    <p>戶名：<span class="font-bold">邱仁杰</span></p>
-                    <div class="col-span-2 text-[15px]">
-                        帳號：<span id="bankAccount" onclick="copyAccount()" class="bg-yellow-100 px-2 py-0.5 rounded font-bold cursor-pointer hover:bg-yellow-200 transition" title="點擊複製帳號">115540355582</span>
-                        <span class="text-[10px] text-gray-400 ml-2">(點擊帳號數字即可複製)</span>
+            <!-- 匯款資訊與備註 -->
+            <div class="border-t-2 border-gray-900 pt-5 mt-auto">
+                <p class="text-[12px] font-black tracking-widest text-gray-900 mb-3 uppercase">【 匯款資訊 】</p>
+                <div class="grid grid-cols-2 gap-y-2.5 text-[13px] text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <p>銀行：<span class="font-bold text-gray-900">中國信託 (822)</span></p>
+                    <p>戶名：<span class="font-bold text-gray-900">邱仁杰</span></p>
+                    <div class="col-span-2">
+                        帳號：<span id="bankAccount" onclick="copyAccount()" class="bg-yellow-100 px-2.5 py-1 rounded font-mono font-bold text-gray-900 cursor-pointer hover:bg-yellow-200 transition duration-150 inline-block" title="點擊複製帳號">115540355582</span>
+                        <span class="text-[10px] text-gray-400 ml-2 font-bold"></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 提示框元件 -->
     <div id="toast" class="toast">帳號已複製！</div>
 
     <script>
@@ -166,11 +237,17 @@
             
             if (dataParam) {
                 try {
-                    const decoded = JSON.parse(decodeURIComponent(escape(atob(dataParam))));
+                    // ★ 關鍵修復：替換 URL 中被瀏覽器解讀為空格的 Base64 安全符號 '+'
+                    const base64Safe = dataParam.replace(/ /g, '+');
+                    const decoded = JSON.parse(decodeURIComponent(escape(atob(base64Safe))));
+                    
                     loadDataToUI(decoded);
                     document.getElementById('bodyTag').classList.add('vendor-mode');
                     document.getElementById('vendorActions').style.display = 'flex';
-                } catch (e) { console.error("解析失敗", e); }
+                } catch (e) { 
+                    console.error("解析失敗", e); 
+                    showToast("廠商連結資料解析失敗！", "error");
+                }
             } else {
                 document.getElementById('invoiceDate').valueAsDate = new Date();
                 addRow();
@@ -187,7 +264,12 @@
         }
 
         function removeRow(id) {
-            items = items.filter(i => i.id !== id);
+            // 保留至少一列避免完全清空
+            if (items.length <= 1) {
+                items = [{ id: Date.now(), date: '', cat: '', desc: '', qty: 1, price: 0 }];
+            } else {
+                items = items.filter(i => i.id !== id);
+            }
             renderInputs();
             updatePreview();
         }
@@ -205,14 +287,16 @@
             container.innerHTML = '';
             items.forEach((item, idx) => {
                 const div = document.createElement('div');
-                div.className = "flex gap-1 items-center bg-white p-1 rounded border shadow-sm mb-1";
+                div.className = "flex gap-1.5 items-center bg-white p-2 rounded-xl border border-gray-100 shadow-sm mb-1";
                 div.innerHTML = `
-                    <input type="date" class="w-24 border rounded p-1 text-[10px]" value="${item.date}" oninput="handleUpdate(${item.id}, 'date', this.value)">
-                    <input type="text" class="w-20 border rounded p-1 text-[10px]" placeholder="類別" value="${item.cat}" oninput="handleUpdate(${item.id}, 'cat', this.value)">
-                    <input type="text" class="flex-grow border rounded p-1 text-[10px]" placeholder="詳細描述" value="${item.desc}" oninput="handleUpdate(${item.id}, 'desc', this.value)">
-                    <input type="number" class="w-10 border rounded p-1 text-[10px] text-center" value="${item.qty}" oninput="handleUpdate(${item.id}, 'qty', this.value)">
-                    <input type="number" class="w-20 border rounded p-1 text-[10px] text-right" value="${item.price}" oninput="handleUpdate(${item.id}, 'price', this.value)">
-                    <button onclick="removeRow(${item.id})" class="text-red-300 px-1 text-xs hover:text-red-600">✕</button>
+                    <input type="date" class="w-24 border border-gray-200 rounded-lg p-1.5 text-[11px] font-bold focus:border-blue-500 outline-none transition" value="${item.date}" oninput="handleUpdate(${item.id}, 'date', this.value)">
+                    <input type="text" class="w-20 border border-gray-200 rounded-lg p-1.5 text-[11px] font-bold focus:border-blue-500 outline-none transition" placeholder="類別" value="${item.cat}" oninput="handleUpdate(${item.id}, 'cat', this.value)">
+                    <input type="text" class="flex-grow border border-gray-200 rounded-lg p-1.5 text-[11px] font-bold focus:border-blue-500 outline-none transition" placeholder="詳細描述" value="${item.desc}" oninput="handleUpdate(${item.id}, 'desc', this.value)">
+                    <input type="number" class="w-10 border border-gray-200 rounded-lg p-1.5 text-[11px] font-bold text-center focus:border-blue-500 outline-none transition" value="${item.qty}" oninput="handleUpdate(${item.id}, 'qty', this.value)">
+                    <input type="number" class="w-20 border border-gray-200 rounded-lg p-1.5 text-[11px] font-bold text-right focus:border-blue-500 outline-none transition" value="${item.price}" oninput="handleUpdate(${item.id}, 'price', this.value)">
+                    <button onclick="removeRow(${item.id})" class="text-gray-300 hover:text-red-500 px-2 transition">
+                        <i class="fas fa-trash-alt text-xs"></i>
+                    </button>
                 `;
                 container.appendChild(div);
             });
@@ -231,14 +315,16 @@
             items.forEach((item, idx) => {
                 const total = item.qty * item.price;
                 subtotal += total;
+                
+                // 更簡潔大氣的表格線
                 tbody.innerHTML += `
-                    <tr class="border-b border-gray-50">
-                        <td class="py-3 text-gray-400 text-[10px]">${idx+1}</td>
-                        <td class="py-3">${item.date.replace(/-/g, '/')}</td>
-                        <td class="py-3 font-bold text-blue-600">${item.cat}</td>
-                        <td class="py-3">${item.desc}</td>
-                        <td class="py-3 text-center">${item.qty}</td>
-                        <td class="py-3 text-right font-bold">NT$ ${total.toLocaleString()}</td>
+                    <tr class="border-b border-gray-100 text-gray-800">
+                        <td class="py-3 text-gray-400 font-mono text-[10px]">${idx+1}</td>
+                        <td class="py-3 font-medium font-mono text-gray-500">${item.date.replace(/-/g, '/')}</td>
+                        <td class="py-3 font-black text-blue-600">${item.cat}</td>
+                        <td class="py-3 font-semibold">${item.desc}</td>
+                        <td class="py-3 text-center font-bold font-mono">${item.qty}</td>
+                        <td class="py-3 text-right font-bold font-mono text-gray-900">NT$ ${total.toLocaleString()}</td>
                     </tr>
                 `;
             });
@@ -279,19 +365,19 @@
         function renderHistory() {
             const container = document.getElementById('historyList');
             const history = JSON.parse(localStorage.getItem('jayran_history') || '[]');
-            container.innerHTML = history.length ? '' : '<p class="text-xs text-gray-400 text-center">目前尚無歷史紀錄</p>';
+            container.innerHTML = history.length ? '' : '<p class="text-xs text-gray-400 text-center py-4 font-bold">目前尚無歷史紀錄</p>';
 
             history.forEach(data => {
                 const div = document.createElement('div');
-                div.className = "bg-white p-3 rounded border shadow-sm flex justify-between items-center text-xs group";
+                div.className = "bg-white p-3.5 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center text-xs group hover:border-blue-200 transition";
                 div.innerHTML = `
                     <div class="flex-grow cursor-pointer" onclick="loadRecord(${data.id})">
-                        <p class="font-bold text-gray-700">${data.c}</p>
-                        <p class="text-gray-400 text-[10px]">${data.d} | ${data.total}</p>
+                        <p class="font-black text-gray-800 text-sm">${data.c}</p>
+                        <p class="text-gray-400 text-[10px] mt-1 font-bold font-mono">${data.d} | ${data.total}</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="loadRecord(${data.id})" class="text-blue-500 font-bold hover:underline">編輯</button>
-                        <button onclick="deleteRecord(${data.id})" class="text-red-300 hover:text-red-600 font-bold">✕</button>
+                        <button onclick="deleteRecord(${data.id})" class="text-gray-300 hover:text-red-500 transition">✕</button>
                     </div>
                 `;
                 container.appendChild(div);
@@ -328,14 +414,25 @@
 
         function copyAccount() {
             const acc = document.getElementById('bankAccount').innerText;
-            navigator.clipboard.writeText(acc).then(() => showToast("帳號已成功複製"));
+            // 由於可能運作於 Iframe，雙重保障剪貼簿寫入方式
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(acc).then(() => showToast("帳號已成功複製"));
+            } else {
+                const tempInput = document.createElement("input");
+                tempInput.value = acc;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                showToast("帳號已成功複製");
+            }
         }
 
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
+            setTimeout(() => t.classList.remove('show'), 2500);
         }
 
         function generateShareLink() {
@@ -346,23 +443,53 @@
                 t: document.getElementById('taxToggle').checked,
                 i: items
             };
+            
+            // ★ 解決中文字與 Base64 URL 傳輸安全問題
             const str = unescape(encodeURIComponent(JSON.stringify(data)));
             const encoded = btoa(str);
-            const url = window.location.origin + window.location.pathname + '?data=' + encoded;
-            navigator.clipboard.writeText(url).then(() => alert("廠商連結已複製成功！"));
+            
+            // ★ 使用 encodeURIComponent 以確保 + 號等不會在傳輸中被流失
+            const url = window.location.origin + window.location.pathname + '?data=' + encodeURIComponent(encoded);
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(() => alert("廠商請款連結已成功生成並複製！"));
+            } else {
+                const tempInput = document.createElement("input");
+                tempInput.value = url;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                alert("廠商請款連結已成功生成並複製！");
+            }
         }
 
         async function exportToZip() {
             const el = document.getElementById('invoicePreview');
-            const canvas = await html2canvas(el, { scale: 2 });
+            
+            // 1. 取得預覽畫面真實寬高（mm 比例），徹底防止硬塞入標準 A4 導致拉伸變形
+            const widthPx = el.offsetWidth;
+            const heightPx = el.offsetHeight;
+            
+            const canvas = await html2canvas(el, { 
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: "#ffffff"
+            });
             const img = canvas.toDataURL("image/png");
+            
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(img, 'PNG', 0, 0, 210, 297);
+            const pdfWidth = 210; // 統一寬度為 210mm (標準 A4 寬度)
+            const pdfHeight = (heightPx / widthPx) * pdfWidth; // 動態計算比例高度，不截斷、不壓縮
+
+            const pdf = new jsPDF('p', 'mm', [pdfWidth, pdfHeight]);
+            pdf.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight);
             
             const zip = new JSZip();
             const client = document.getElementById('clientName').value || "廠商";
-            const dateStr = document.getElementById('invoiceDate').value.replace(/-/g, '');
+            const rawDate = document.getElementById('invoiceDate').value || "";
+            const dateStr = rawDate.replace(/-/g, '');
             const filenameBase = `杰冉請款單_${client}_${dateStr}`;
 
             zip.file(`${filenameBase}.pdf`, pdf.output('blob'));

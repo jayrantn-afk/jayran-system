@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -35,7 +34,7 @@
         #client-portal-view { position: fixed; inset: 0; background: #14141A; z-index: 999999; color: white; overflow-y: auto; padding: 0; }
         .portal-card { background: #1C1C22; backdrop-filter: none; border-radius: 16px; padding: 24px; box-shadow: none; border: 1px solid rgba(255,255,255,0.06); }
 
-        /* --- 側邊欄導覽 (改版：仿參考圖的紫藍漸層感) --- */
+        /* --- 側邊欄導覽 --- */
         .sidebar { width: 232px; flex-shrink: 0; height: 100vh; background: rgba(255,255,255,0.65); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid rgba(108,92,231,0.10); display: flex; flex-direction: column; padding: 20px 14px; box-sizing: border-box; }
         .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 22px 10px; }
         .sidebar-brand-logo { width: 34px; height: 34px; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
@@ -51,7 +50,7 @@
         .sidebar-logout:hover { background: #FEE2E2; color: #DC2626; }
         .main-content { flex-grow: 1; height: 100vh; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
 
-        /* --- 快速前往磁磚 (仿參考圖的彩色漸層卡片) --- */
+        /* --- 快速前往磁磚 --- */
         .quick-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 16px 0 20px 0; }
         .quick-tile { border-radius: 18px; padding: 20px; cursor: pointer; display: flex; flex-direction: column; gap: 16px; transition: 0.2s; border: 1px solid rgba(255,255,255,0.6); }
         .quick-tile:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(108,92,231,0.15); }
@@ -204,7 +203,7 @@
        /* 🌟 訪客模式防護網 */
         .guest-mode .admin-only { display: none !important; }
 
-        /* 🌟 專屬報價單客戶檢視模式 (匠人修復：純淨隔離，解決跑版問題) */
+        /* 🌟 專屬報價單客戶檢視模式 */
         body.guest-quote-mode .header-fixed-area, 
         body.guest-quote-mode .segmented-nav, 
         body.guest-quote-mode .fab-container, 
@@ -214,26 +213,17 @@
         body.guest-quote-mode #modal-quote-preview { background: #F3F4F6; backdrop-filter: none; align-items: flex-start; justify-content: center; padding-top: 40px; overflow-y: auto; display: flex !important; }
         body.guest-quote-mode #modal-quote-preview .modal-body { box-shadow: none; background: transparent; padding: 0; margin: 0 auto; display: block; width: 100%; max-width: 800px; }
         body.guest-quote-mode .no-print { margin-bottom: 20px; position: relative; width: 100%; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-     /* 🌟 列印與 PDF 專用 CSS (匠人修復：消除網址標題、強制同一頁) */
+        
         @media print {
-            /* 1. 設定 margin: 0 強制隱藏瀏覽器預設的「網頁標題、日期、網址、頁碼」 */
             @page { margin: 0; size: A4; } 
-            
             body * { visibility: hidden; }
-            
-            /* 2. 解除絕對定位，回歸正常排版，避免跳頁 */
             #modal-quote-preview { position: relative !important; left: auto; top: auto; width: 100%; display: block !important; padding: 0; margin: 0; }
             #modal-quote-preview .modal-body, body.guest-quote-mode #modal-quote-preview .modal-body { 
                 width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; display: block !important; box-shadow: none !important; background: transparent;
             }
-            
             #printable-quote, #printable-quote * { visibility: visible; }
-            /* 因為 @page 沒有邊距，用 padding 將內容向內推 15mm 避免被印表機切邊 */
             #printable-quote { position: relative !important; left: auto; top: auto; width: 100%; padding: 15mm !important; margin: 0 !important; box-shadow: none !important; }
-            
-            /* 3. 警告印表機：表格和區塊不准從中間切斷跳頁 */
             #printable-quote > div, table, tr, td, th { page-break-inside: avoid; break-inside: avoid; }
-            
             .no-print { display: none !important; }
         }
         
@@ -254,9 +244,13 @@
     </style>
 </head>
 <body>
+    <!-- 全站共用 Datalist (供客戶名稱自動完成) -->
+    <datalist id="client-list-data"></datalist>
+
     <div id="toast-container"></div>
 
     <div id="client-portal-view" class="hidden">
+        <!-- 保持原有客戶傳送門代碼不變 -->
         <div id="portal-loader" class="fixed inset-0 z-[9999999] flex flex-col justify-center items-center transition-opacity duration-300" style="background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);">
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full mb-6 bg-white border-4 border-slate-700 object-cover">
             <div class="text-3xl font-black tracking-widest text-white mb-2">JAYRAN <span class="text-blue-500">STUDIO</span></div>
@@ -375,6 +369,7 @@
         </div>
         
         <div id="panel-memo" class="modal-mask">
+            <!-- 保持團隊便利貼不變 -->
             <div class="float-panel">
                 <div class="panel-header-area">
                     <div class="flex justify-between items-center mb-6">
@@ -413,6 +408,7 @@
         </div>
 
         <div id="panel-link" class="modal-mask">
+            <!-- 保持內部連結庫不變 -->
             <div class="float-panel">
                 <div class="panel-header-area">
                     <div class="flex justify-between items-center mb-6">
@@ -437,27 +433,10 @@
 
         <div id="modal-preview" class="modal-mask">
             <div class="modal-body">
-                <h3 class="text-xl font-black mb-2">專案歷史紀錄</h3>
+                <h3 class="text-xl font-black mb-2">客戶歷史紀錄</h3>
                 <p id="hist-title" class="text-sm text-gray-500 mb-4"></p>
                 <div id="hist-list" class="mb-6 max-h-60 overflow-y-auto">載入中...</div>
                 <button onclick="closeModal('modal-preview')" class="w-full bg-gray-200 py-3 rounded-lg font-bold">關閉</button>
-            </div>
-        </div>
-
-        <div id="modal-zone" class="modal-mask">
-            <div class="modal-body">
-                <h3 id="modal-title" class="text-xl font-black mb-4">區域設定</h3>
-                <input type="hidden" id="edit-orig-name">
-                <div class="mb-4" id="div-code-select">
-                    <label class="block text-xs font-bold text-gray-500 mb-1">代號</label>
-                    <select id="modal-code" class="clean-select font-mono border border-gray-200"></select>
-                </div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱</label>
-                <input id="modal-name" class="clean-input mb-6 border border-gray-200 font-bold" placeholder="例如：台積電">
-                <div class="flex gap-3">
-                    <button onclick="closeModal('modal-zone')" class="flex-1 bg-gray-200 py-3 rounded-lg font-bold">取消</button>
-                    <button onclick="confirmZoneModal()" class="flex-1 bg-black text-white py-3 rounded-lg font-bold shadow-md">確認</button>
-                </div>
             </div>
         </div>
 
@@ -542,28 +521,25 @@
             </div>
         </div>
 
+        <!-- 🌟 編輯專案 Modal (已簡化為直接輸入編號) -->
         <div id="modal-edit-project" class="modal-mask">
             <div class="modal-body w-[450px]">
                 <h3 class="text-2xl font-black mb-6">編輯專案內容</h3>
                 <input type="hidden" id="ep-cat">
                 <input type="hidden" id="ep-origin-id">
                 <input type="hidden" id="ep-origin-zone"> 
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">區域 / 客戶</label>
-                        <select id="ep-zone-select" class="clean-select font-bold border border-gray-200" onchange="updateEditClientName()"></select>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">完整編號</label>
+                        <input id="ep-id" class="clean-input font-mono font-bold border border-gray-200 uppercase" placeholder="如: A001">
                     </div>
-                    <div class="flex gap-2">
-                        <div class="flex-1">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱</label>
-                            <input id="ep-client" class="clean-input bg-gray-100 text-black font-bold border border-gray-200">
-                        </div>
-                        <div class="w-20 shrink-0">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">數字</label>
-                            <input id="ep-num" class="clean-input font-bold text-center px-1 border border-gray-200" placeholder="001">
-                        </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱</label>
+                        <input id="ep-client" class="clean-input font-bold border border-gray-200 bg-white" list="client-list-data" placeholder="輸入或選擇客戶">
                     </div>
                 </div>
+                
                 <div class="mb-4">
                     <label class="text-xs text-gray-500 font-bold">製作人</label>
                     <select id="ep-producer" class="clean-select font-bold border border-gray-200"></select>
@@ -602,6 +578,7 @@
         </div>
 
         <div id="modal-quote-create" class="modal-mask">
+            <!-- 保持報價單不變 -->
             <div class="float-panel !max-w-4xl" style="max-width: 800px; width: 95%;">
                 <div class="panel-header-area">
                     <div class="flex justify-between items-center mb-6">
@@ -644,7 +621,6 @@
                             <div>
                                 <label class="text-xs font-bold text-gray-400 mb-1 block">客戶名稱 <span class="text-red-500">*</span></label>
                                 <input id="q-client-name" list="client-list-data" class="clean-input font-bold border border-gray-300 focus:border-emerald-500" placeholder="輸入或選擇客戶...">
-                                <datalist id="client-list-data" style="display: none !important;"></datalist>
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-gray-400 mb-1 block">客戶統編</label>
@@ -722,6 +698,7 @@
         </div>
 
         <div id="modal-quote-preview" class="modal-mask">
+            <!-- 保持報價單列印預覽不變 -->
             <div class="absolute top-4 left-0 w-full flex justify-center gap-4 no-print z-50">
                 <button onclick="downloadQuoteImage()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow-lg transition"><i class="fas fa-image mr-2"></i>下載為圖檔 (PNG)</button>
                 <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-full font-bold shadow-lg transition"><i class="fas fa-print mr-2"></i>列印 / 存為 PDF</button>
@@ -827,6 +804,7 @@
         <div class="main-content">
 
         <div id="p-quote" class="hidden page-scroll-container fade-in">
+            <!-- 保持報價單列表不變 -->
             <div class="max-w-6xl mx-auto">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-3xl font-black border-l-8 border-amber-500 pl-4">📜 報價單管理中心</h2>
@@ -876,6 +854,7 @@
         </div>
 
         <div id="p-dashboard" class="hidden page-scroll-container fade-in">
+            <!-- 保持營運數據中心不變 -->
             <div class="max-w-5xl mx-auto">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <h2 class="text-3xl font-black px-2 border-l-8 border-black pl-4">📊 營運數據中心</h2>
@@ -928,6 +907,7 @@
         </div>
 
         <div id="p-add" class="page-scroll-container fade-in">
+            <!-- 🌟 新增專案 (已簡化為單一輸入框) -->
             <div class="max-w-5xl mx-auto">
                 <div class="quick-tiles">
                     <div class="quick-tile qt-purple" onclick="switchTab('wei')">
@@ -956,23 +936,18 @@
                     <h2 class="text-xl font-bold mb-4">建立新專案</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">區域 / 客戶</label>
-                            <div class="flex gap-2">
-                                <select id="i-zone" onchange="updateClientName()" class="clean-select font-bold flex-grow"></select>
-                                <div onclick="openHistory()" class="icon-btn btn-gray" title="預覽"><i class="fas fa-eye"></i></div>
-                                <div onclick="openZoneModal('new')" class="icon-btn btn-black" title="新增"><i class="fas fa-plus"></i></div>
-                                <div onclick="openZoneModal('edit')" class="icon-btn btn-gray" title="編輯"><i class="fas fa-pen"></i></div>
-                            </div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">完整編號 (如：A001)</label>
+                            <input id="i-id" class="clean-input font-mono font-bold uppercase" placeholder="例如：A001">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1">編號</label>
-                            <input id="i-id" class="clean-input font-mono font-bold" placeholder="">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱</label>
+                            <div class="flex gap-2">
+                                <input id="i-client" class="clean-input font-bold bg-white text-black flex-grow" list="client-list-data" placeholder="輸入或選擇客戶">
+                                <div onclick="openHistoryByClient()" class="icon-btn btn-gray" title="預覽此客戶歷史專案"><i class="fas fa-eye"></i></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="mb-4">
-                        <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱 (顯示用/散客分組判斷)</label>
-                        <input id="i-client" class="clean-input bg-gray-100 text-black font-bold">
-                    </div>
+                    
                     <div class="mb-4">
                         <label id="lbl-name" class="block text-xs font-bold text-gray-500 mb-1">專案名稱</label>
                         <input id="i-name" class="clean-input" placeholder="輸入標題">
@@ -1014,6 +989,7 @@
         </div>
 
         <div id="p-kanban" class="hidden page-scroll-container fade-in">
+            <!-- 保持看板不變 -->
             <div class="max-w-full mx-auto flex flex-col h-full">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <h2 id="kb-title" class="text-3xl font-black px-2 border-l-8 border-black pl-4"></h2>
@@ -1094,6 +1070,7 @@
         </div>
 
         <div id="p-gantt" class="hidden page-scroll-container fade-in">
+            <!-- 保持甘特圖不變 -->
             <div class="max-w-full flex flex-col">
                 <div class="flex gap-2 mb-3 px-2 items-center justify-between shrink-0 flex-wrap">
                     <h2 id="gan-title" class="text-2xl font-black">甘特圖</h2>
@@ -1117,6 +1094,7 @@
         </div>
 
         <div id="p-calendar" class="hidden page-scroll-container fade-in">
+            <!-- 保持行事曆不變 -->
             <div class="max-w-full flex flex-col">
                 <div class="flex flex-wrap gap-2 justify-between items-center mb-3 px-2 shrink-0">
                     <h2 class="text-2xl font-black">行事曆</h2>
@@ -1179,17 +1157,24 @@
         let quoteVisibleCount = 3;
         let portalProjectsData = []; 
         let currentPortalClient = ''; 
-        let editingQuoteId = null; // 紀錄目前是否正在編輯特定的報價單
+        let editingQuoteId = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-           fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+            fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
             flatpickr("#finish-date", { dateFormat: "Y-m-d", disableMobile: "true" });
-            // 🌟 綁定報價單的日期選擇器
             flatpickr("#q-date", { dateFormat: "Y-m-d", disableMobile: "true" });
             flatpickr("#q-valid-date", { dateFormat: "Y-m-d", disableMobile: "true" });
+            
+            // 加入強制轉大寫邏輯
+            document.getElementById('i-id').addEventListener('input', function(e) {
+                e.target.value = e.target.value.toUpperCase();
+            });
+            document.getElementById('ep-id').addEventListener('input', function(e) {
+                e.target.value = e.target.value.toUpperCase();
+            });
         });
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") { document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none'); }
@@ -1212,13 +1197,11 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-     function callAPI(action, payload, onSuccess) {
+        function callAPI(action, payload, onSuccess) {
             if (action === 'initAllData') {
-                // 1. 讀取本地暫存的 GAS 設定檔（避免畫面一開始沒有選項）
                 const localDataStr = localStorage.getItem('JAYRAN_SYSTEM_DATA');
                 let localData = localDataStr ? JSON.parse(localDataStr) : { ids: {}, videoSettings: {}, imageSettings: {}, config: { videoTypes:[], imageTypes:[], videoProducers:[], imageProducers:[] }, leaves: [], memos: [], links: [] };
 
-                // 2. 🌟 匠人極速優化：只等待 Firebase 的資料 (毫秒級回傳)
                 Promise.all([
                     db.collection("projects").get().catch(e => { console.warn("Firebase Projects:", e); return null; }),
                     db.collection("quotes").orderBy("date", "desc").get().catch(e => { console.warn("Firebase Quotes:", e); return null; })
@@ -1227,22 +1210,18 @@
                     if (projSnap) newData.projects = projSnap.docs.map(d => d.data());
                     if (quoteSnap) newData.quotes = quoteSnap.docs.map(d => d.data());
                     
-                    // 👉 3. Firebase 資料一到，立刻解除載入畫面，速度提升至少 10 倍！
                     onSuccess(newData);
 
-                    // 👉 4. 讓龜速的 GAS 在「背景」偷偷去抓最新的下拉選單與設定，不卡住使用者畫面
                     fetch(GAS_API_URL + '?action=initAllData')
                         .then(r => r.json())
                         .then(gasData => {
                             if (gasData && !gasData.error) {
-                                // 將 Firebase 的最新專案資料合進去，避免被舊資料蓋掉
                                 gasData.projects = newData.projects; 
                                 gasData.quotes = newData.quotes;
                                 localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(gasData));
                                 DATA = gasData; 
-                                // 背景更新完畢後，偷偷刷新選項即可
                                 renderDynamicOptions(); 
-                                renderZoneOptions();
+                                renderClientDatalist();
                             }
                         }).catch(e => console.warn("GAS 背景延遲載入失敗:", e));
 
@@ -1253,11 +1232,10 @@
                 return;
             }
 
-           if (action === 'addProject') {
+            if (action === 'addProject') {
                 const docId = `${payload.payload.category}_${payload.payload.zone.replace(/\s+/g, '')}_${payload.payload.id}`;
                 const docRef = db.collection("projects").doc(docId);
 
-                // 🌟 匠人修復：改用 transaction 做「讀取+寫入」原子操作，杜絕兩人同時搶同一個編號
                 db.runTransaction(function(transaction) {
                     return transaction.get(docRef).then(function(doc) {
                         if (doc.exists) { throw new Error("DUPLICATE_ID"); }
@@ -1265,7 +1243,6 @@
                     });
                 }).then(() => {
                     onSuccess("OK");
-                    // 🌟 背景同步到 GAS，讓試算表有資料，後續 LINE 才能找得到！
                     fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'addProject', payload: payload.payload }) }).catch(e=>{});
                 }).catch(e => {
                     if (e.message === "DUPLICATE_ID") {
@@ -1285,7 +1262,6 @@
                 }
 
                 const docId = `${p.category}_${p.zone.replace(/\s+/g, '')}_${p.id}`;
-                // 🌟 匠人修復：判斷編號/客戶是否有變更(等於要換一份新文件)
                 const hasOrigin = (action === 'updateProject' && payload.originId && payload.originZone);
                 const originDocId = hasOrigin ? `${p.category}_${String(payload.originZone).replace(/\s+/g, '')}_${payload.originId}` : docId;
                 const docRef = db.collection("projects").doc(docId);
@@ -1294,12 +1270,10 @@
                     docRef.set(p, { merge: true })
                       .then(() => {
                           onSuccess("OK");
-                          // 🌟 狀態或內容更新時，背景同步給 GAS 觸發 LINE 通知
                           if (action === 'updateStatus') {
                               fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateStatus', cat: payload.cat, zone: payload.zone, id: payload.id, status: payload.status, hours: payload.hours }) }).catch(e=>{});
                           } else {
                               fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateProject', payload: p, originId: payload.originId, originZone: payload.originZone }) }).catch(e=>{});
-                              // 🌟 匠人修復：編號或客戶有變更時，把舊的那一筆刪掉，避免留下幽靈重複資料
                               if (originDocId !== docId) {
                                   db.collection("projects").doc(originDocId).delete().catch(e=>{});
                               }
@@ -1309,7 +1283,6 @@
                 };
 
                 if (originDocId !== docId) {
-                    // 編號/客戶有變更，等於要換一個新的文件，先確認新編號沒被別人占用
                     docRef.get().then(doc => {
                         if (doc.exists) {
                             onSuccess({ error: true, duplicate: true, msg: `編號 ${p.id} 已經被其他專案使用，請更換` });
@@ -1328,7 +1301,6 @@
                 db.collection("projects").doc(docId).delete()
                   .then(() => {
                       onSuccess("OK");
-                      // 🌟 刪除時也一併清空舊試算表的資料
                       fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'deleteProject', cat: payload.cat, zone: payload.zone, id: payload.id }) }).catch(e=>{});
                   })
                   .catch(e => onSuccess({ error: true, msg: e.message }));
@@ -1359,15 +1331,14 @@
             }
         }
 
-   window.onload = function() {
+        window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const portalClient = urlParams.get('client');
-            const quoteId = urlParams.get('quote'); // 🌟 抓取分享的報價單 ID
+            const quoteId = urlParams.get('quote'); 
             
-            // 🌟 如果是客戶點擊報價單連結進來
             if (quoteId) {
                 document.getElementById('login-overlay').style.display = 'none';
-                document.body.classList.add('guest-quote-mode'); // 🌟 匠人修復：套用專屬 CSS，不強制隱藏 admin-view 破壞結構
+                document.body.classList.add('guest-quote-mode'); 
                 
                 document.getElementById('loader').style.display = 'flex';
                 document.getElementById('loader-msg').innerText = "載入報價單中...";
@@ -1378,9 +1349,9 @@
                         document.body.innerHTML = '<div style="text-align:center; padding:50px; font-size:24px; font-weight:bold; color:#DC2626;">找不到該報價單，可能已被移除或網址有誤。</div>';
                         return;
                     }
-                    renderClientQuoteView(res); // 呼叫專屬顯示畫面
+                    renderClientQuoteView(res); 
                 });
-                return; // 中止後續登入邏輯
+                return; 
             }
 
             if (portalClient) {
@@ -1467,8 +1438,8 @@
 
         function processDataUpdate(res, isCache) {
             DATA = res; 
-            renderZoneOptions(); 
             renderDynamicOptions(); 
+            renderClientDatalist();
             loadMemos(); 
             loadLinks(); 
             loadPending();
@@ -1480,7 +1451,6 @@
             else if (curTab === 'dashboard') { renderDashboard(); }
             else if (curTab === 'vip') { renderVIPArea(); }
             else if (curTab === 'quote') { renderQuoteTable(); } 
-            else if (curTab === 'add') { /* do nothing */ }
 
             if (!isCache) {
                 document.getElementById('loader').style.display = 'none';
@@ -1491,6 +1461,13 @@
             } else { 
                 document.getElementById('loader').style.display = 'none'; 
             }
+        }
+
+        function renderClientDatalist() {
+            const list = document.getElementById('client-list-data');
+            if(!list) return;
+            const clients = [...new Set(DATA.projects.map(p => p.client).filter(c => c))];
+            list.innerHTML = clients.map(c => `<option value="${c}">`).join('');
         }
 
         function switchTab(tab) { 
@@ -1520,7 +1497,7 @@
             }
 
             setTimeout(() => {
-                if (tab === 'add') { renderDynamicOptions(); } 
+                if (tab === 'add') { renderDynamicOptions(); renderClientDatalist(); } 
                 else if (tab === 'wei') { document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); renderKanban('魏敏軒'); } 
                 else if (tab === 'chiu') { document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); renderKanban('邱仁杰'); } 
                 else if (tab === 'gan') { renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); } 
@@ -1535,106 +1512,24 @@
         }
 
         // =========================================================
-        // 🌟 新增與編輯客戶區域 (連動 GAS)
-        // =========================================================
-        function openZoneModal(mode) {
-            document.getElementById('edit-orig-name').value = '';
-            document.getElementById('modal-name').value = '';
-            
-            const codeSel = document.getElementById('modal-code');
-            codeSel.innerHTML = '';
-            
-            const isVideo = (curCat === 'video');
-            const startChar = isVideo ? 65 : 97; 
-            const endChar = isVideo ? 90 : 122;  
-            
-            const settings = isVideo ? DATA.videoSettings : DATA.imageSettings;
-            const usedPrefixes = Object.keys(settings || {}).map(k => k.split('_')[0]);
-
-            let currentEditPrefix = "";
-            if(mode === 'edit') {
-                const currentZone = document.getElementById('i-zone').value;
-                if(!currentZone) return showToast("請先選擇要編輯的客戶", "error");
-                currentEditPrefix = currentZone.split('_')[0];
-                const name = currentZone.includes('_') ? currentZone.substring(currentZone.indexOf('_') + 1) : '';
-                
-                document.getElementById('modal-name').value = name;
-                document.getElementById('edit-orig-name').value = currentZone;
-                document.getElementById('modal-title').innerText = "編輯客戶設定";
-            } else {
-                document.getElementById('modal-title').innerText = "新增客戶設定";
-            }
-
-            for(let i = startChar; i <= endChar; i++) {
-                const letter = String.fromCharCode(i);
-                if (!usedPrefixes.includes(letter) || letter === currentEditPrefix) {
-                    codeSel.add(new Option(letter, letter));
-                }
-            }
-            if (mode === 'edit' && currentEditPrefix) { codeSel.value = currentEditPrefix; }
-            document.getElementById('modal-zone').style.display = 'flex';
-        }
-
-        function confirmZoneModal() {
-            const prefix = document.getElementById('modal-code').value;
-            const name = document.getElementById('modal-name').value.trim();
-            const origZone = document.getElementById('edit-orig-name').value;
-            
-            if(!name) return showToast("請輸入客戶名稱", "error");
-
-            const newZone = `${prefix}_${name}`;
-            const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-msg').innerText = "建立客戶專屬資料庫中...";
-
-            callAPI('createZone', { cat: curCat, zone: newZone, oldZone: origZone }, (res) => {
-                document.getElementById('loader').style.display = 'none';
-
-                if (res === "OK" || res === true || (res && res.status === "OK")) {
-                    if(origZone && origZone !== newZone) { delete settings[origZone]; }
-                    if(!settings[newZone]) settings[newZone] = "000";
-                    
-                    renderZoneOptions();
-                    document.getElementById('i-zone').value = newZone;
-                    updateClientName();
-                    closeModal('modal-zone');
-                    showToast("✅ 客戶已建立並同步雲端！");
-                } else {
-                    showToast("客戶建立失敗：" + (res.msg || JSON.stringify(res)), "error");
-                }
-            });
-        }
-
-        // =========================================================
         // 🌟 VIP 尊榮影像管家看板 (純 Firebase 高速版)
         // =========================================================
         function renderVIPArea() {
             if(!DATA.projects) return;
             const clientMap = {};
             
-            // 🌟 匠人防護：強制將 Firebase 可能的空值轉為字串，避免 .trim() 當機
             DATA.projects.forEach(p => {
-                let zName = p.zone ? String(p.zone) : "";
                 let cName = p.client ? String(p.client).trim() : "";
-                
+                let zName = p.zone ? String(p.zone) : "";
                 if (!cName && !zName) return;
                 
-                let mainName = "未命名";
-                if (zName.toUpperCase().startsWith('Z')) { 
-                    mainName = cName ? cName : `未命名散客_${p.id}`; 
-                } 
-                else if (zName.includes('_')) { 
-                    const parts = zName.split('_'); 
-                    mainName = parts.length >= 2 ? parts[1].trim() : zName; 
-                } 
-                else { 
-                    mainName = cName ? cName : "未命名"; 
-                }
+                let mainName = cName || (zName.includes('_') ? zName.split('_')[1] : zName);
+                if (!mainName) mainName = "未命名";
                 
                 if (!clientMap[mainName]) { clientMap[mainName] = { count: 0, prefixes: new Set() }; }
                 clientMap[mainName].count++;
                 if (zName) { clientMap[mainName].prefixes.add(zName.split('_')[0]); }
+                else if (p.id) { clientMap[mainName].prefixes.add(String(p.id).match(/^[A-Za-z]+/)?.[0] || 'Z'); }
             });
 
             const tbody = document.getElementById('vip-client-tbody');
@@ -1673,7 +1568,6 @@
             document.getElementById('c-link-url').value = '';
             document.getElementById('modal-client-link').style.display = 'flex';
             
-            // 🌟 極速讀取 Firebase 中的舊設定
             db.collection("clientSettings").doc(clientName).get().then(doc => {
                 if(doc.exists && doc.data().globalLink) { document.getElementById('c-link-url').value = doc.data().globalLink; }
                 document.getElementById('c-link-url').placeholder = "請貼上 Google Drive 等分享網址...";
@@ -1690,7 +1584,6 @@
             btn.innerText = "儲存中...";
             btn.disabled = true;
 
-            // 🌟 極速寫入 Firebase
             db.collection("clientSettings").doc(clientName).set({ globalLink: url }, { merge: true })
             .then(() => {
                 btn.innerText = originalText;
@@ -1785,7 +1678,6 @@
                 renderPortalProjectsList(3); 
             });
             
-          // 🌟 匠人升級：直接從 Firebase 讀取專屬連結，與畫面同步瞬間彈出！
             db.collection("clientSettings").doc(clientName).get().then(doc => {
                 if (doc.exists && doc.data().globalLink) {
                     document.getElementById('portal-global-link').href = doc.data().globalLink;
@@ -1845,11 +1737,11 @@
                 btnContainer.classList.add('hidden');
             }
         }
-// =========================================================
-        // 🌟 報價單前端邏輯 (匠人修復補回)
+
+        // =========================================================
+        // 🌟 報價單前端邏輯
         // =========================================================
    function openCreateQuote() {
-            // 🌟 匠人修復：重置編輯狀態與標題
             if (typeof editingQuoteId !== 'undefined') {
                 editingQuoteId = null;
             }
@@ -1859,7 +1751,6 @@
             document.getElementById('modal-quote-create').style.display = 'flex';
             document.getElementById('quote-items-tbody').innerHTML = '';
             
-            // 🌟 匠人修復：重置所有我方與客戶的欄位
             document.getElementById('q-our-name').value = '杰冉影像工作室';
             document.getElementById('q-our-tax').value = '';
             document.getElementById('q-our-email').value = '';
@@ -1872,7 +1763,6 @@
             document.getElementById('q-client-phone').value = '';
             document.getElementById('q-note').value = '';
             
-            // 🌟 自動預設今天為報價日，14天後為有效日
             const today = new Date();
             const validDate = new Date();
             validDate.setDate(today.getDate() + 14);
@@ -1880,14 +1770,7 @@
             document.getElementById('q-valid-date').value = getLocalDateString(validDate);
 
             addQuoteItem(); 
-            renderClientDatalist(); 
             calculateQuoteTotal();
-        }
-
-        function renderClientDatalist() {
-            const list = document.getElementById('client-list-data');
-            const clients = [...new Set(DATA.projects.map(p => p.client).filter(c => c))];
-            list.innerHTML = clients.map(c => `<option value="${c}">`).join('');
         }
 
         function addQuoteItem() {
@@ -1964,7 +1847,6 @@
             document.getElementById('loader').style.display = 'flex'; 
             document.getElementById('loader-msg').innerText = "同步資料中...";
 
-            // 如果是編輯模式，直接更新 Firebase
             if (typeof editingQuoteId !== 'undefined' && editingQuoteId) {
                 const updatedData = {
                     id: editingQuoteId,
@@ -1976,17 +1858,14 @@
 
                 db.collection("quotes").doc(editingQuoteId).set(updatedData, { merge: true })
                 .then(() => {
-                    // 同步到 GAS
                     fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'saveQuote', form: form, updateId: editingQuoteId }) });
                     
-                    // 更新本地顯示
                     const idx = DATA.quotes.findIndex(q => q.id === editingQuoteId);
                     if (idx !== -1) DATA.quotes[idx] = updatedData;
                     
                     finishQuoteSave("報價單已更新！");
                 });
             } else {
-                // 新增模式：先請 GAS 產生編號
                 callAPI('saveQuote', { form: form }, (res) => {
                     if(res && res.id) {
                         const newData = {
@@ -1996,7 +1875,6 @@
                             amount: form.totalAmount.toString(),
                             json: JSON.stringify(form)
                         };
-                        // 🌟 重要：立刻寫入 Firebase，防止背景同步時消失！
                         db.collection("quotes").doc(res.id).set(newData).then(() => {
                             if(!DATA.quotes) DATA.quotes = [];
                             DATA.quotes.unshift(newData);
@@ -2033,19 +1911,16 @@
                 
                 const detail = JSON.parse(res.json);
                 
-                // 開啟視窗並改變標題
                 document.getElementById('modal-quote-create').style.display = 'flex';
                 document.getElementById('modal-quote-create').querySelector('h3').innerText = "✏️ 編輯報價單 (" + id + ")";
                 document.getElementById('btn-save-quote').innerText = "儲存報價單變更";
 
-                // 填入我方資訊
                 document.getElementById('q-our-name').value = detail.ourName || '';
                 document.getElementById('q-our-tax').value = detail.ourTaxId || '';
                 document.getElementById('q-our-email').value = detail.ourEmail || '';
                 document.getElementById('q-our-phone').value = detail.ourPhone || '';
                 document.getElementById('q-our-ext').value = detail.ourExt || '';
 
-                // 填入客戶資訊
                 document.getElementById('q-client-name').value = detail.clientName || '';
                 document.getElementById('q-client-tax').value = detail.clientTaxId || '';
                 document.getElementById('q-client-contact').value = detail.clientContact || '';
@@ -2055,7 +1930,6 @@
                 document.getElementById('q-note').value = detail.note || '';
                 document.getElementById('q-tax-mode').value = detail.taxMode || 'zero';
 
-                // 填入明細項目
                 const tbody = document.getElementById('quote-items-tbody');
                 tbody.innerHTML = '';
                 const items = JSON.parse(detail.itemsJson || '[]');
@@ -2112,7 +1986,6 @@
 
         function loadMoreQuotes() { quoteVisibleCount += 10; renderQuoteTable(); }
 
-       // 🌟 匠人修復：改由本地緩存秒速讀取，徹底解決編輯後資料消失或延遲問題
         function openQuotePreview(id) {
             const quoteObj = DATA.quotes.find(q => q.id === id);
             
@@ -2163,11 +2036,9 @@
                 document.getElementById('modal-quote-preview').style.display = 'flex';
             };
 
-            // 如果本地有剛存好的資料，直接秒開
             if (quoteObj && quoteObj.json) {
                 renderData(JSON.parse(quoteObj.json), quoteObj.date);
             } else {
-                // 如果是舊的沒暫存，才去後台撈
                 document.getElementById('loader').style.display = 'flex';
                 document.getElementById('loader-msg').innerText = "載入報價單明細中...";
                 callAPI('getQuoteDetail', {id: id}, (res) => {
@@ -2178,11 +2049,7 @@
             }
         }
 
-        // =========================================================
-        // 🌟 匠人新增：報價單連結與客戶專屬檢視
-        // =========================================================
         function copyQuoteLink(id) {
-            // 前端直接組裝正確的專屬報價單參數網址
             const url = window.location.href.split('?')[0] + '?quote=' + id;
             navigator.clipboard.writeText(url).then(() => showToast("已複製專屬報價單連結，可直接傳送給客戶！"));
         }
@@ -2199,7 +2066,6 @@
                 document.getElementById('pq-phone').innerText = detail.clientPhone || '無';
                 document.getElementById('pq-tax').innerText = detail.clientTaxId || '無';
                 
-                // 🌟 匠人綁定：渲染我方資訊
                 document.getElementById('pq-our-name').innerText = detail.ourName || '杰冉影像工作室';
                 document.getElementById('pq-our-tax').innerText = detail.ourTaxId || '無';
                 document.getElementById('pq-our-phone').innerText = detail.ourPhone || '無';
@@ -2233,9 +2099,7 @@
                 document.getElementById('pq-tax-val').innerText = taxVal.toLocaleString();
                 document.getElementById('pq-total-final').innerText = (subtotal + taxVal).toLocaleString();
 
-               // 🌟 客戶視圖佈局優化 (匠人修復：移除污染源，不再用 JS 破壞原本樣式，全交由 CSS 處理)
                 const modal = document.getElementById('modal-quote-preview');
-                // 隱藏關閉按鈕，讓客戶不能跳回後台系統，但保留下載為圖檔及列印 PDF
                 const closeBtn = modal.querySelector('.no-print button:nth-child(3)');
                 if(closeBtn) closeBtn.style.display = 'none';
 
@@ -2278,8 +2142,9 @@
                 renderQuoteTable(); 
             }); 
         }
+
         // =========================================================
-        // 🌟 專案建立與表單操作
+        // 🌟 專案建立與表單操作 (已更新為單一編號輸入)
         // =========================================================
         function setProjectType(type) { 
             curCat = type; 
@@ -2287,8 +2152,26 @@
             document.getElementById('btn-type-' + type).classList.add('active'); 
             document.getElementById('i-name').placeholder = (type === 'video') ? "輸入影片標題" : "輸入圖文標題"; 
             document.getElementById('lbl-name').innerText = (type === 'video') ? "影片名稱" : "圖文名稱"; 
-            document.getElementById('i-id').placeholder = "建議編號: 001"; 
-            renderZoneOptions(); renderDynamicOptions(); 
+            
+            // 計算推薦編號
+            let maxNum = 0;
+            if (DATA && DATA.projects) {
+                DATA.projects.forEach(p => {
+                    if (p.category === type && p.id) {
+                        const match = String(p.id).match(/\d+$/);
+                        if (match) {
+                            const num = parseInt(match[0], 10);
+                            if (num > maxNum) maxNum = num;
+                        }
+                    }
+                });
+            }
+            if (maxNum > 0) {
+                document.getElementById('i-id').placeholder = `最後編號: ${String(maxNum).padStart(3, '0')}`;
+            } else {
+                document.getElementById('i-id').placeholder = `例如：A001`;
+            }
+            renderDynamicOptions(); 
         }
         
         function renderDynamicOptions() { 
@@ -2308,49 +2191,6 @@
             fillSelect('i-type', types); fillSelect('i-producer', producers, '尚未暫定'); fillSelect('ep-type', types); fillSelect('ep-producer', producers); 
         }
 
-        function renderZoneOptions() { 
-            const sel = document.getElementById('i-zone'); 
-            sel.innerHTML = '<option value="">請選擇</option>'; 
-            const settings = (curCat === 'video') ? DATA.videoSettings : DATA.imageSettings; 
-            if (settings) { Object.keys(settings).sort().forEach(k => { const op = document.createElement('option'); op.value = k; op.text = k; sel.add(op); }); } 
-            updateClientName(); 
-        }
-
-        function updateClientName() { 
-            const z = document.getElementById('i-zone').value; 
-            if (z) { 
-                const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z; 
-                if (z.toUpperCase().startsWith('Z')) { 
-                    document.getElementById('i-client').value = ''; document.getElementById('i-client').readOnly = false; document.getElementById('i-client').classList.remove('bg-gray-100'); document.getElementById('i-client').classList.add('bg-white'); 
-                } else { 
-                    document.getElementById('i-client').value = realName; document.getElementById('i-client').readOnly = true; document.getElementById('i-client').classList.add('bg-gray-100'); document.getElementById('i-client').classList.remove('bg-white'); 
-                } 
-                
-                // 🌟 匠人修復：即時計算當前所有專案的最大編號，保證 100% 精準
-                let maxNum = 0;
-                if (DATA && DATA.projects) {
-                    DATA.projects.forEach(p => {
-                        if (p.zone === z && p.id) {
-                            const match = String(p.id).match(/\d+$/); // 抓取尾部的數字
-                            if (match) {
-                                const num = parseInt(match[0], 10);
-                                if (num > maxNum) maxNum = num;
-                            }
-                        }
-                    });
-                }
-                
-                if (maxNum > 0) {
-                    document.getElementById('i-id').placeholder = `最後編號: ${String(maxNum).padStart(3, '0')}`;
-                } else {
-                    document.getElementById('i-id').placeholder = `建議編號: 001`;
-                }
-            } else { 
-                document.getElementById('i-client').value = ''; 
-                document.getElementById('i-id').placeholder = ''; 
-            } 
-        }
-
         function checkProducer() { 
             const prod = document.getElementById('i-producer').value; const dateInput = document.getElementById('i-date'); 
             if (prod === '尚未暫定') { dateInput.placeholder = "日期可留空"; dateInput.style.background = "#eef"; } 
@@ -2358,9 +2198,8 @@
         }
 
         function saveProject() {
-            const zone = document.getElementById('i-zone').value;
-            let idRaw = document.getElementById('i-id').value.trim();
-            const client = document.getElementById('i-client').value;
+            let idRaw = document.getElementById('i-id').value.trim().toUpperCase();
+            let client = document.getElementById('i-client').value.trim();
             const name = document.getElementById('i-name').value.trim();
             const producer = document.getElementById('i-producer').value;
             const type = document.getElementById('i-type').value;
@@ -2368,15 +2207,15 @@
             const dateStr = document.getElementById('i-date').value;
             const note = document.getElementById('i-note').value;
 
-            if (!zone) return showToast("請選擇區域 / 客戶", "error");
+            if (!idRaw) return showToast("請輸入完整編號", "error");
+            if (!client) return showToast("請輸入客戶名稱", "error");
             if (!name) return showToast("請輸入專案名稱", "error");
-            if (!idRaw) return showToast("請輸入編號", "error");
 
-           const prefix = zone.split('_')[0];
-            if (!isNaN(idRaw) && idRaw !== "") { idRaw = prefix + String(idRaw).padStart(3, '0'); } 
-            else if (!idRaw.toUpperCase().startsWith(prefix.toUpperCase())) { idRaw = prefix + idRaw; }
+            let prefixMatch = idRaw.match(/^[A-Z]+/);
+            let prefix = prefixMatch ? prefixMatch[0] : 'Z';
+            const zone = `${prefix}_${client}`;
 
-            // 🌟 匠人新增：嚴格防呆！檢查編號是否已經存在於該客戶的專案中
+            // 防呆檢查：該客戶底下是否已經有這個編號
             if (DATA.projects && DATA.projects.some(p => p.zone === zone && String(p.id).toUpperCase() === String(idRaw).toUpperCase())) {
                 return showToast(`編號 ${idRaw} 已經存在於此客戶的專案中，請更換！`, "error");
             }
@@ -2408,12 +2247,10 @@
                     fp.clear(); 
                     showToast("專案已快速建立並同步！");
                 } else if (res && res.duplicate) {
-                    // 🌟 匠人修復：真正撞號時，把 Firestore 最新資料抓回來，避免馬上再犯同一個號
                     showToast(res.msg, "error");
                     db.collection("projects").get().then(snap => {
                         DATA.projects = snap.docs.map(d => d.data());
                         localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
-                        updateClientName();
                     });
                 } else { showToast("寫入失敗：" + (res && res.msg ? res.msg : res), "error"); }
             });
@@ -2501,7 +2338,6 @@
                         if (p.status === '製作中') { 
                             actionBtns = `<button onclick="openHoursModal('${p.category}','${p.zone}','${p.id}')" class="text-orange-600 hover:text-orange-800 font-bold mr-2 px-2 py-1 rounded bg-orange-50 transition">送審</button>`; 
                         } else if (p.status.includes('審')) { 
-                            // 🌟 點擊完成時，會觸發 openFinishModal
                             actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-gray-500 hover:text-gray-700 mr-2 px-2 py-1 rounded bg-gray-100 transition">退修</button><button onclick="openFinishModal('${p.category}','${p.zone}','${p.id}','${p.end || ''}')" class="text-green-600 hover:text-green-800 font-bold px-2 py-1 rounded bg-green-50 transition">完成</button>`; 
                         } else if (p.status === '尚未進行') { 
                             actionBtns = `<button onclick="doUpdate('${p.category}','${p.zone}','${p.id}','製作中')" class="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 transition">開始</button>`; 
@@ -2562,7 +2398,6 @@
                 p.status = status; 
                 if (hours > 0) p.hours = (parseFloat(p.hours) || 0) + parseFloat(hours); 
                 
-                // 🌟 如果狀態是完成，處理結束日期
                 if (status === '已完成' || status === '已結案') {
                     p.end = explicitEndDate || getLocalDateString(new Date());
                     if (!p.start) p.start = p.end;
@@ -2574,7 +2409,6 @@
             callAPI('updateStatus', { cat:cat, zone:zone, id:id, status:status, hours:parseFloat(hours) || 0 }, (res) => {}); 
         }
 
-        // 🌟 新增：確認完成日期的彈窗控制邏輯
         function openFinishModal(cat, zone, id, currentEnd) {
             document.getElementById('finish-cat').value = cat;
             document.getElementById('finish-zone').value = zone;
@@ -2594,9 +2428,6 @@
             doUpdate(cat, zone, id, '已完成', 0, endDate);
         }
 
-        // =========================================================
-        // 🌟 其他輔助功能 (圖表、報表、請假等)
-        // =========================================================
         function renderDashboard() {
             if(!DATA.projects) return;
             document.getElementById('db-detail-container').classList.add('hidden');
@@ -2606,11 +2437,9 @@
             
         if (selectedMonth !== 'all') {
                 currentFilteredProjects = DATA.projects.filter(p => {
-                    // 🌟 匠人修正：以「結束日期 (完成日)」為優先歸類月份，若無才退而求其次看開始日期
                     let targetDateStr = p.end || p.start; 
                     if (!targetDateStr) return false; 
                     
-                    // 確保若日期字串有包含 ' to ' 或 '~'，一律取「最後一個」日期
                     let finalDate = targetDateStr;
                     if (targetDateStr.includes(' to ')) finalDate = targetDateStr.split(' to ').pop().trim();
                     else if (targetDateStr.includes('~')) finalDate = targetDateStr.split('~').pop().trim();
@@ -2806,7 +2635,6 @@
             });
             container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
 
-            // 🌟 匠人新增：畫面一開就自動捲到「今天」那一格，避免每次都要手動滑到最右邊找今天在哪
             setTimeout(() => {
                 const todayHeaderCell = container.querySelector('th.gantt-today');
                 if (todayHeaderCell) {
@@ -2833,18 +2661,8 @@ function openEditProject(p) {
             document.getElementById('ep-origin-id').value = p.id; 
             document.getElementById('ep-origin-zone').value = p.zone; 
             
-            const zoneSel = document.getElementById('ep-zone-select'); 
-            zoneSel.innerHTML = '';
-            const settings = (p.category === 'video') ? DATA.videoSettings : DATA.imageSettings;
-            Object.keys(settings).sort().forEach(k => { zoneSel.add(new Option(k, k)); }); 
-            zoneSel.value = p.zone;
-            
-            const prefix = p.zone.split('_')[0]; 
-            const numPart = String(p.id).replace(prefix, ''); 
-            document.getElementById('ep-num').value = numPart;
-            
-            updateEditClientName();
-            document.getElementById('ep-client').value = p.client; // 🌟 匠人修復：保留專案原本的真實客戶名稱
+            document.getElementById('ep-id').value = p.id;
+            document.getElementById('ep-client').value = p.client; 
             
             const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes; 
             const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers;
@@ -2860,36 +2678,26 @@ function openEditProject(p) {
             document.getElementById('modal-edit-project').style.display = 'flex';
         }
 
-        // 🌟 匠人替換：捨棄舊版錯誤邏輯，改用與首頁新增完全相同的安全判斷機制
-        function updateEditClientName() {
-            const z = document.getElementById('ep-zone-select').value;
-            const clientInput = document.getElementById('ep-client');
-            if (z) { 
-                const realName = z.includes('_') ? z.substring(z.indexOf('_') + 1) : z; 
-                if (z.toUpperCase().startsWith('Z')) { 
-                    clientInput.readOnly = false; 
-                    clientInput.classList.remove('bg-gray-100'); 
-                    clientInput.classList.add('bg-white'); 
-                } else { 
-                    clientInput.value = realName; 
-                    clientInput.readOnly = true; 
-                    clientInput.classList.add('bg-gray-100'); 
-                    clientInput.classList.remove('bg-white'); 
-                } 
-            }
-        }
-
         function confirmEditProject() {
             const dateVal = document.getElementById('ep-date').value; const dates = dateVal.split(' to ');
             const originId = document.getElementById('ep-origin-id').value; const originZone = document.getElementById('ep-origin-zone').value;
             const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone));
             let inheritedStatus = '尚未進行'; if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; }
 
+            let idRaw = document.getElementById('ep-id').value.trim().toUpperCase();
+            let client = document.getElementById('ep-client').value.trim();
+            if(!idRaw) return showToast("請輸入完整編號", "error");
+            if(!client) return showToast("請輸入客戶名稱", "error");
+
+            let prefixMatch = idRaw.match(/^[A-Z]+/);
+            let prefix = prefixMatch ? prefixMatch[0] : 'Z';
+            let newZone = `${prefix}_${client}`;
+
             const p = { 
                 category: document.getElementById('ep-cat').value, 
-                zone: document.getElementById('ep-zone-select').value, 
-                id: document.getElementById('ep-num').value, 
-                client: document.getElementById('ep-client').value, 
+                zone: newZone, 
+                id: idRaw, 
+                client: client, 
                 name: document.getElementById('ep-name').value, 
                 producer: document.getElementById('ep-producer').value, 
                 type: document.getElementById('ep-type').value, 
@@ -2900,21 +2708,25 @@ function openEditProject(p) {
                 status: inheritedStatus, link: "" 
             };
 
-            const prefix = p.zone.split('_')[0];
-            if (!isNaN(p.id) && p.id !== "") { p.id = prefix + String(p.id).padStart(3, '0'); } else if (!p.id.toUpperCase().startsWith(prefix.toUpperCase())) { p.id = prefix + p.id; }
-            
             if (targetIdx !== -1) { DATA.projects[targetIdx] = p; } else { DATA.projects.push(p); }
             closeModal('modal-edit-project'); localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); showToast("修改成功 (背景同步中)");
             callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => {});
         }
-        function openHistory() {
-            const z = document.getElementById('i-zone').value; if(!z) return showToast("請先選擇客戶", "error");
-            document.getElementById('hist-title').innerText = z; document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>'; document.getElementById('modal-preview').style.display = 'flex';
-            callAPI('getHistory', { cat: curCat, zone: z }, (list) => {
-                let html = list.length === 0 ? '<div class="text-center text-gray-400">尚無專案</div>' : '';
-                list.forEach(p => { let bg = '#888'; if(p.status === '製作中') bg = '#007AFF'; else if(p.status.includes('審')) bg = '#FF9500'; else if(p.status === '已完成') bg = '#34C759'; html += `<div class="mb-2 flex items-center justify-between border-b pb-2"><div class="flex items-center"><span class="font-bold text-gray-800 mr-2 w-16">${p.id}</span><span class="text-gray-600 mr-2 truncate w-32">${p.name}</span></div><span class="text-white text-xs px-2 py-1 rounded shadow-sm" style="background:${bg}">${p.status}</span></div>`; });
-                document.getElementById('hist-list').innerHTML = html;
-            });
+
+        function openHistoryByClient() {
+            const client = document.getElementById('i-client').value.trim();
+            if(!client) return showToast("請先輸入或選擇客戶名稱", "error");
+            
+            let list = DATA.projects.filter(p => p.client === client).sort((a,b) => new Date(b.start||0) - new Date(a.start||0));
+            if (list.length === 0) return showToast("找不到此客戶的歷史紀錄", "error");
+
+            document.getElementById('hist-title').innerText = client + " 歷史專案";
+            document.getElementById('hist-list').innerHTML = '<div class="text-center text-gray-400">讀取中...</div>';
+            document.getElementById('modal-preview').style.display = 'flex';
+
+            let html = '';
+            list.forEach(p => { let bg = '#888'; if(p.status === '製作中') bg = '#007AFF'; else if(p.status.includes('審')) bg = '#FF9500'; else if(p.status === '已完成' || p.status === '已結案') bg = '#34C759'; html += `<div class="mb-2 flex items-center justify-between border-b pb-2"><div class="flex items-center"><span class="font-bold text-gray-800 mr-2 w-16">${p.id}</span><span class="text-gray-600 mr-2 truncate w-32">${p.name}</span></div><span class="text-white text-xs px-2 py-1 rounded shadow-sm" style="background:${bg}">${p.status}</span></div>`; });
+            document.getElementById('hist-list').innerHTML = html;
         }
 
         function openSettings(type) { document.getElementById('st-type').value = type; document.getElementById('setting-title').innerText = (type==='Type') ? "管理類型" : "管理製作人"; document.getElementById('st-input').value = ''; renderSettingList(); document.getElementById('modal-settings').style.display = 'flex'; }
@@ -2977,7 +2789,6 @@ function openEditProject(p) {
             if (pendingList.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待分派項目</div>'; return; }
             let html = '';
             pendingList.forEach((p, idx) => {
-                const prefix = p.zone ? p.zone.split('_')[0] : ''; const numPart = p.id ? String(p.id).replace(prefix, '') : '';
                 html += `
                 <div id="p-item-${idx}" class="pending-item">
                     <div id="p-display-${idx}">
@@ -2987,8 +2798,15 @@ function openEditProject(p) {
                     </div>
                     <div id="p-edit-${idx}" class="hidden">
                         <input type="hidden" id="pe-origin-id-${idx}" value="${p.id}"><input type="hidden" id="pe-origin-zone-${idx}" value="${p.zone}"><input type="hidden" id="pe-cat-${idx}" value="${p.category}"><input type="hidden" id="pe-type-${idx}" value="${p.type}"><input type="hidden" id="pe-note-${idx}" value="${p.note}"><input type="hidden" id="pe-tag-${idx}" value="${p.tag}">
-                        <div class="flex gap-2 mb-2"><select id="pe-code-${idx}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center" onchange="updatePendingEditClient(${idx})"></select><input id="pe-num-${idx}" value="${numPart}" class="text-base p-2 border border-gray-200 rounded-lg w-20 font-bold text-center"><div class="flex-1"></div><div class="cursor-pointer text-gray-400 hover:text-red-500 text-xl pt-1" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></div></div>
-                        <input id="pe-name-${idx}" value="${p.name}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-2 font-bold" placeholder="專案名稱"><input id="pe-client-${idx}" value="${p.client}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-3 text-gray-500" placeholder="客戶名稱">
+                        
+                        <div class="flex gap-2 mb-2">
+                            <input id="pe-id-${idx}" value="${p.id}" class="text-base p-2 border border-gray-200 rounded-lg w-32 font-bold text-center font-mono uppercase" placeholder="完整編號">
+                            <div class="flex-1"></div>
+                            <div class="cursor-pointer text-gray-400 hover:text-red-500 text-xl pt-1" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></div>
+                        </div>
+
+                        <input id="pe-name-${idx}" value="${p.name}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-2 font-bold" placeholder="專案名稱">
+                        <input id="pe-client-${idx}" value="${p.client}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-3" placeholder="客戶名稱">
                         <div class="flex gap-2"><select id="pe-producer-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1"><option value="尚未暫定">尚未暫定</option><option>魏敏軒</option><option>邱仁杰</option></select><input id="pe-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="日期" autocomplete="off"><button onclick="savePendingEdit(${idx})" class="bg-blue-600 text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-800">保存</button></div>
                     </div>
                 </div>`;
@@ -2997,16 +2815,21 @@ function openEditProject(p) {
             setTimeout(() => { pendingList.forEach((p, idx) => { flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); }); }, 50);
         }
 
-        function enablePendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.add('hidden'); document.getElementById(`p-edit-${idx}`).classList.remove('hidden'); const cat = document.getElementById(`pe-cat-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; const codeSel = document.getElementById(`pe-code-${idx}`); const originZone = document.getElementById(`pe-origin-zone-${idx}`).value; const prefix = originZone.split('_')[0]; codeSel.innerHTML = ''; Object.keys(settings).sort().forEach(k => { codeSel.add(new Option(k.split('_')[0], k.split('_')[0])); }); codeSel.value = prefix; }
+        function enablePendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.add('hidden'); document.getElementById(`p-edit-${idx}`).classList.remove('hidden'); }
         function cancelPendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.remove('hidden'); document.getElementById(`p-edit-${idx}`).classList.add('hidden'); }
-        function updatePendingEditClient(idx) { const cat = document.getElementById(`pe-cat-${idx}`).value; const selectedCode = document.getElementById(`pe-code-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let foundZone = ""; for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { foundZone = key; break; } } if (foundZone) { const clientName = foundZone.includes('_') ? foundZone.substring(foundZone.indexOf('_') + 1) : foundZone; document.getElementById(`pe-client-${idx}`).value = clientName; } }
         
         function savePendingEdit(idx) {
-            const dateVal = document.getElementById(`pe-date-${idx}`).value; const dates = dateVal.split(' to '); const selectedCode = document.getElementById(`pe-code-${idx}`).value; const cat = document.getElementById(`pe-cat-${idx}`).value; const settings = (cat === 'video') ? DATA.videoSettings : DATA.imageSettings; let newZone = "";
-            for (let key in settings) { if (key.startsWith(selectedCode + "_") || key === selectedCode) { newZone = key; break; } }
-            if (!newZone) newZone = selectedCode + "_" + document.getElementById(`pe-client-${idx}`).value; 
-            let rawId = document.getElementById(`pe-num-${idx}`).value; if (!isNaN(rawId) && rawId !== "") { rawId = selectedCode + String(rawId).padStart(3, '0'); } else if (!rawId.toUpperCase().startsWith(selectedCode.toUpperCase())) { rawId = selectedCode + rawId; }
-            const p = { category: cat, zone: newZone, id: rawId, client: document.getElementById(`pe-client-${idx}`).value, name: document.getElementById(`pe-name-${idx}`).value, producer: document.getElementById(`pe-producer-${idx}`).value, type: document.getElementById(`pe-type-${idx}`).value, start: dates[0] || "", end: dates[1] || dates[0] || "", note: document.getElementById(`pe-note-${idx}`).value, tag: document.getElementById(`pe-tag-${idx}`).value };
+            const dateVal = document.getElementById(`pe-date-${idx}`).value; const dates = dateVal.split(' to '); 
+            const rawId = document.getElementById(`pe-id-${idx}`).value.trim().toUpperCase();
+            const client = document.getElementById(`pe-client-${idx}`).value.trim();
+            if(!rawId || !client) return showToast("編號與客戶為必填", "error");
+
+            const prefixMatch = rawId.match(/^[A-Z]+/);
+            const prefix = prefixMatch ? prefixMatch[0] : 'Z';
+            const newZone = `${prefix}_${client}`;
+            const cat = document.getElementById(`pe-cat-${idx}`).value;
+
+            const p = { category: cat, zone: newZone, id: rawId, client: client, name: document.getElementById(`pe-name-${idx}`).value, producer: document.getElementById(`pe-producer-${idx}`).value, type: document.getElementById(`pe-type-${idx}`).value, start: dates[0] || "", end: dates[1] || dates[0] || "", note: document.getElementById(`pe-note-${idx}`).value, tag: document.getElementById(`pe-tag-${idx}`).value };
             const originId = document.getElementById(`pe-origin-id-${idx}`).value; const originZone = document.getElementById(`pe-origin-zone-${idx}`).value;
             document.getElementById('loader').style.display = 'flex';
             callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => { if (res === "OK") { callAPI('initAllData', {}, (data) => { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); }); } else { showToast("保存失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } });

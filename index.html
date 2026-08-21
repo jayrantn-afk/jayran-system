@@ -68,7 +68,6 @@
             .sidebar-logout { padding: 10px 0; }
         }
 
-        
         .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 100px 20px; position: relative; overscroll-behavior-y: contain; }
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -250,7 +249,6 @@
     <div id="toast-container"></div>
 
     <div id="client-portal-view" class="hidden">
-        <!-- 保持原有客戶傳送門代碼不變 -->
         <div id="portal-loader" class="fixed inset-0 z-[9999999] flex flex-col justify-center items-center transition-opacity duration-300" style="background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);">
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full mb-6 bg-white border-4 border-slate-700 object-cover">
             <div class="text-3xl font-black tracking-widest text-white mb-2">JAYRAN <span class="text-blue-500">STUDIO</span></div>
@@ -369,7 +367,6 @@
         </div>
         
         <div id="panel-memo" class="modal-mask">
-            <!-- 保持團隊便利貼不變 -->
             <div class="float-panel">
                 <div class="panel-header-area">
                     <div class="flex justify-between items-center mb-6">
@@ -408,7 +405,6 @@
         </div>
 
         <div id="panel-link" class="modal-mask">
-            <!-- 保持內部連結庫不變 -->
             <div class="float-panel">
                 <div class="panel-header-area">
                     <div class="flex justify-between items-center mb-6">
@@ -521,7 +517,7 @@
             </div>
         </div>
 
-        <!-- 🌟 編輯專案 Modal (已簡化為直接輸入編號) -->
+        <!-- 🌟 編輯專案 Modal -->
         <div id="modal-edit-project" class="modal-mask">
             <div class="modal-body w-[450px]">
                 <h3 class="text-2xl font-black mb-6">編輯專案內容</h3>
@@ -578,7 +574,6 @@
         </div>
 
         <div id="modal-quote-create" class="modal-mask">
-            <!-- 保持報價單不變 -->
             <div class="float-panel !max-w-4xl" style="max-width: 800px; width: 95%;">
                 <div class="panel-header-area">
                     <div class="flex justify-between items-center mb-6">
@@ -698,7 +693,6 @@
         </div>
 
         <div id="modal-quote-preview" class="modal-mask">
-            <!-- 保持報價單列印預覽不變 -->
             <div class="absolute top-4 left-0 w-full flex justify-center gap-4 no-print z-50">
                 <button onclick="downloadQuoteImage()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow-lg transition"><i class="fas fa-image mr-2"></i>下載為圖檔 (PNG)</button>
                 <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-full font-bold shadow-lg transition"><i class="fas fa-print mr-2"></i>列印 / 存為 PDF</button>
@@ -804,7 +798,6 @@
         <div class="main-content">
 
         <div id="p-quote" class="hidden page-scroll-container fade-in">
-            <!-- 保持報價單列表不變 -->
             <div class="max-w-6xl mx-auto">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-3xl font-black border-l-8 border-amber-500 pl-4">📜 報價單管理中心</h2>
@@ -854,7 +847,6 @@
         </div>
 
         <div id="p-dashboard" class="hidden page-scroll-container fade-in">
-            <!-- 保持營運數據中心不變 -->
             <div class="max-w-5xl mx-auto">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <h2 class="text-3xl font-black px-2 border-l-8 border-black pl-4">📊 營運數據中心</h2>
@@ -907,7 +899,7 @@
         </div>
 
         <div id="p-add" class="page-scroll-container fade-in">
-            <!-- 🌟 新增專案 (已簡化為單一輸入框) -->
+            <!-- 🌟 新增專案 -->
             <div class="max-w-5xl mx-auto">
                 <div class="quick-tiles">
                     <div class="quick-tile qt-purple" onclick="switchTab('wei')">
@@ -989,7 +981,6 @@
         </div>
 
         <div id="p-kanban" class="hidden page-scroll-container fade-in">
-            <!-- 保持看板不變 -->
             <div class="max-w-full mx-auto flex flex-col h-full">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <h2 id="kb-title" class="text-3xl font-black px-2 border-l-8 border-black pl-4"></h2>
@@ -1070,7 +1061,6 @@
         </div>
 
         <div id="p-gantt" class="hidden page-scroll-container fade-in">
-            <!-- 保持甘特圖不變 -->
             <div class="max-w-full flex flex-col">
                 <div class="flex gap-2 mb-3 px-2 items-center justify-between shrink-0 flex-wrap">
                     <h2 id="gan-title" class="text-2xl font-black">甘特圖</h2>
@@ -1094,7 +1084,6 @@
         </div>
 
         <div id="p-calendar" class="hidden page-scroll-container fade-in">
-            <!-- 保持行事曆不變 -->
             <div class="max-w-full flex flex-col">
                 <div class="flex flex-wrap gap-2 justify-between items-center mb-3 px-2 shrink-0">
                     <h2 class="text-2xl font-black">行事曆</h2>
@@ -1168,7 +1157,7 @@
             flatpickr("#q-date", { dateFormat: "Y-m-d", disableMobile: "true" });
             flatpickr("#q-valid-date", { dateFormat: "Y-m-d", disableMobile: "true" });
             
-            // 加入強制轉大寫邏輯
+            // 強制轉大寫
             document.getElementById('i-id').addEventListener('input', function(e) {
                 e.target.value = e.target.value.toUpperCase();
             });

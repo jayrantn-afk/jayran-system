@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -21,21 +22,53 @@
     
     <style>
         /* --- 基礎架構 --- */
-        :root { --bg: #F5F5F7; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B; --accent: #007AFF; --radius: 12px; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--primary); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        #admin-view { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; }
+        :root {
+            --bg: #F5F4FF; --surface: #FFFFFF; --primary: #1D1D1F; --secondary: #86868B;
+            --accent: #6C5CE7; --border: rgba(0,0,0,0.07); --radius: 14px; --radius-sm: 10px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04); --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro TC", "Segoe UI", Roboto, sans-serif; background: radial-gradient(circle at 85% -10%, rgba(196,183,255,0.55) 0%, rgba(196,183,255,0) 45%), radial-gradient(circle at 0% 10%, rgba(195,217,255,0.45) 0%, rgba(195,217,255,0) 40%), linear-gradient(180deg, #F6F5FF 0%, #F3F6FF 55%, #F8F9FC 100%); color: var(--primary); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        #admin-view { display: flex; flex-direction: row; height: 100vh; width: 100vw; overflow: hidden; }
         #login-overlay { position: fixed; inset: 0; background: #111827; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; transition: opacity 0.5s ease; }
 
         /* --- VIP 客戶傳送門專用樣式 --- */
-        #client-portal-view { position: fixed; inset: 0; background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%); z-index: 999999; color: white; overflow-y: auto; padding: 0; }
-        .portal-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(51, 65, 85, 0.8); }
+        #client-portal-view { position: fixed; inset: 0; background: #14141A; z-index: 999999; color: white; overflow-y: auto; padding: 0; }
+        .portal-card { background: #1C1C22; backdrop-filter: none; border-radius: 16px; padding: 24px; box-shadow: none; border: 1px solid rgba(255,255,255,0.06); }
 
-        /* --- 導覽列與容器 --- */
-        .header-fixed-area { flex-shrink: 0; padding: 20px 20px 0 20px; background: rgba(245, 245, 247, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 50; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .segmented-nav { background: rgba(229, 229, 234, 0.6); padding: 4px; border-radius: 10px; display: flex; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .segmented-nav::-webkit-scrollbar { display: none; }
-        .nav-item { flex: 1; min-width: 85px; text-align: center; padding: 10px; font-size: 14px; font-weight: 700; color: var(--secondary); cursor: pointer; border-radius: 7px; transition: all 0.2s; white-space: nowrap; }
-        .nav-item.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        /* --- 側邊欄導覽 (改版：仿參考圖的紫藍漸層感) --- */
+        .sidebar { width: 232px; flex-shrink: 0; height: 100vh; background: rgba(255,255,255,0.65); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid rgba(108,92,231,0.10); display: flex; flex-direction: column; padding: 20px 14px; box-sizing: border-box; }
+        .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 22px 10px; }
+        .sidebar-brand-logo { width: 34px; height: 34px; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        .sidebar-brand-name { font-weight: 900; font-size: 16px; color: var(--primary); white-space: nowrap; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 3px; flex-grow: 1; overflow-y: auto; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--secondary); cursor: pointer; transition: 0.15s; white-space: nowrap; }
+        .sidebar-nav .nav-item i { width: 16px; text-align: center; font-size: 14px; flex-shrink: 0; }
+        .sidebar-nav .nav-item:hover { background: rgba(108,92,231,0.06); color: var(--primary); }
+        .sidebar-nav .nav-item.active { background: linear-gradient(135deg, #EDE9FF, #E3ECFF); color: #6C5CE7; font-weight: 800; box-shadow: 0 1px 3px rgba(108,92,231,0.15); }
+        .sidebar-footer { border-top: 1px solid rgba(0,0,0,0.06); padding-top: 14px; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .sidebar-user-greeting { font-size: 12px; font-weight: 700; color: var(--secondary); padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-logout { display: flex; align-items: center; gap: 8px; justify-content: center; background: #F5F5F7; color: #6B7280; border: none; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.15s; }
+        .sidebar-logout:hover { background: #FEE2E2; color: #DC2626; }
+        .main-content { flex-grow: 1; height: 100vh; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+
+        /* --- 快速前往磁磚 (仿參考圖的彩色漸層卡片) --- */
+        .quick-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 16px 0 20px 0; }
+        .quick-tile { border-radius: 18px; padding: 20px; cursor: pointer; display: flex; flex-direction: column; gap: 16px; transition: 0.2s; border: 1px solid rgba(255,255,255,0.6); }
+        .quick-tile:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(108,92,231,0.15); }
+        .qt-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 17px; color: #fff; background: rgba(255,255,255,0.35); }
+        .qt-label { font-weight: 800; font-size: 14px; color: #33314D; }
+        .qt-purple { background: linear-gradient(135deg, #E3DBFF, #CFC3FF); }
+        .qt-blue   { background: linear-gradient(135deg, #DCEBFF, #C3D9FF); }
+        .qt-pink   { background: linear-gradient(135deg, #FFE1EE, #FFC9DE); }
+        .qt-green  { background: linear-gradient(135deg, #DFF7E9, #C3EFD5); }
+        @media (max-width: 900px) { .quick-tiles { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            .sidebar { width: 68px; padding: 16px 8px; }
+            .sidebar-brand-name, .sidebar-user-greeting, .sidebar-logout span, .sidebar-nav .nav-item span { display: none; }
+            .sidebar-nav .nav-item { justify-content: center; padding: 12px 0; }
+            .sidebar-logout { padding: 10px 0; }
+        }
+
         
         .page-scroll-container { flex-grow: 1; overflow-y: auto; padding: 10px 20px 100px 20px; position: relative; overscroll-behavior-y: contain; }
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -46,9 +79,9 @@
         .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 10px; }
         
         /* --- 卡片與表單 --- */
-        .clean-card { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
-        .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: 8px; font-size: 15px; font-weight: 500; transition: 0.2s; }
-        .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,122,255,0.1); }
+        .clean-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+        .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; transition: 0.15s; }
+        .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(108,92,231,0.10); }
         .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; }
         .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; }
         .type-btn.active { background: #1D1D1F; color: white; }
@@ -63,18 +96,19 @@
         .excel-table tbody tr { border-bottom: 1px solid #F3F4F6; transition: background 0.1s; }
         .excel-table tbody tr:hover { background: #F9FAFB; }
         .excel-table td { padding: 12px 16px; vertical-align: middle; color: #1F2937; font-weight: 600; }
-        .table-container { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #E5E5E5; box-shadow: 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px; }
+        .table-container { overflow-x: auto; background: white; border-radius: var(--radius-sm); border: 1px solid var(--border); box-shadow: none; margin-bottom: 20px; }
         
         .sortable-ghost { opacity: 0.4; background: #E0F2FE !important; border: 2px dashed #0284C7; }
         .cursor-grab { cursor: grab; }
         .cursor-grab:active { cursor: grabbing; }
 
-        .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-        .sb-blue { background: #E0F2FE; color: #0284C7; }
-        .sb-orange { background: #FFEDD5; color: #EA580C; }
-        .sb-green { background: #DCFCE7; color: #16A34A; }
-        .sb-gray { background: #F3F4F6; color: #6B7280; }
-        .sb-red { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; background: #F5F5F7; color: var(--primary); border: 1px solid var(--border); }
+        .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+        .sb-blue::before   { background: #0071E3; }
+        .sb-orange::before { background: #FF9500; }
+        .sb-green::before  { background: #34C759; }
+        .sb-gray::before   { background: #A1A1A6; }
+        .sb-red::before    { background: #FF3B30; }
 
         details > summary { list-style: none; outline: none; }
         details > summary::-webkit-details-marker { display: none; }
@@ -82,26 +116,29 @@
         details[open] > summary i.fa-caret-right { transform: rotate(90deg); }
 
         /* --- 甘特圖 --- */
-        .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 180px); position: relative; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+        .gantt-wrapper { overflow: auto; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); width: 100%; height: calc(100vh - 175px); position: relative; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
         .gantt-table { width: 100%; border-collapse: collapse; min-width: 800px; table-layout: fixed; }
-        .gantt-header-cell { position: sticky; top: 0; background-color: #F8FAFC !important; z-index: 100; text-align: center; font-size: 11px; color: #475569; border: 1px solid #E2E8F0; padding: 8px 0; width: 34px; min-width: 34px; font-weight: 700; }
+        .gantt-header-cell { position: sticky; top: 0; background-color: #F8FAFC !important; z-index: 100; text-align: center; font-size: 11px; color: #475569; border: 1px solid #E2E8F0; padding: 6px 0; width: 38px; min-width: 38px; font-weight: 700; }
+        .gantt-header-cell .gantt-dow { font-size: 9px; color: #94A3B8; font-weight: 600; margin-top: 1px; }
+        .gantt-header-cell.gantt-weekend { background-color: #F1EDFF !important; }
+        .gantt-grid-cell.gantt-weekend { background-color: #FAF8FF; }
         .gantt-corner { position: sticky; top: 0; left: 0; background-color: #F8FAFC !important; z-index: 110; padding: 10px; text-align: left; font-weight: 800; font-size: 13px; color: #1E293B; border: 1px solid #E2E8F0; }
         .gantt-col-fixed { position: sticky; left: 0; background-color: #FFFFFF !important; z-index: 50; width: 220px; padding: 8px 10px; white-space: nowrap; overflow: hidden; border: 1px solid #E2E8F0; }
         .gantt-today { background-color: #FFF9C4 !important; color: #000; font-weight: 900; }
         .gantt-today-cell { background-color: #FEF9C3; } 
-        .gantt-row { height: 40px; }
+        .gantt-row { height: 44px; }
         .gantt-id { font-weight: 900; font-size: 12px; color: #333; margin-right: 6px; }
         .gantt-name { font-size: 12px; color: #444; font-weight: 500; }
         .gantt-grid-cell { border: 1px solid #F1F5F9; position: relative; padding: 0; }
-        .gantt-bar { position: absolute; top: 10px; left: 1px; height: 20px; border-radius: 6px; background: #007AFF; color: white; font-size: 10px; line-height: 20px; padding: 0 6px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; transition: 0.2s; font-weight: bold; }
+        .gantt-bar { position: absolute; top: 8px; left: 1px; height: 26px; border-radius: 7px; background: #007AFF; color: white; font-size: 11px; font-weight: 700; line-height: 26px; padding: 0 8px; white-space: nowrap; overflow: hidden; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; transition: 0.2s; }
         .gantt-bar:hover { transform: scaleY(1.15); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; }
         .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
         /* --- 行事曆 --- */
-        #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); flex-grow: 1; min-height: 600px; overflow: hidden; display: flex; flex-direction: column; }
-        #calendar { flex-grow: 1; width: 100%; min-height: 500px; }
-        .fc { height: 100% !important; } 
+        #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); overflow: hidden; }
+        .fc-day-sat .fc-daygrid-day-frame, .fc-day-sun .fc-daygrid-day-frame { background-color: rgba(108,92,231,0.03); }
+        #calendar { width: 100%; min-height: 460px; }
         .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; }
         .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; }
         .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; }
@@ -119,9 +156,9 @@
 
         /* --- 浮動按鈕與彈窗 --- */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
-        .fab-btn { width: 70px; height: 70px; background: #1D1D1F; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); position: relative; }
-        .fab-btn:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.3); }
-        .fab-btn.fab-link { background: #2D3748; } 
+        .fab-btn { width: 58px; height: 58px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.18); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; position: relative; }
+        .fab-btn:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+        .fab-btn.fab-link { background: var(--primary); } 
         .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: white; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 2px solid white; font-weight: bold; display: none; }
         .fab-left-container { position: fixed; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; }
         .fab-btn-small { width: 40px; height: 40px; font-size: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
@@ -165,7 +202,7 @@
         .q-item-row:hover { background-color: #fefce8; }
 
        /* 🌟 訪客模式防護網 */
-        .guest-mode .admin-only { display: none !important; }
+        .guest-mode .admin-only { display: none !important; }
 
         /* 🌟 專屬報價單客戶檢視模式 (匠人修復：純淨隔離，解決跑版問題) */
         body.guest-quote-mode .header-fixed-area, 
@@ -221,7 +258,7 @@
 
     <div id="client-portal-view" class="hidden">
         <div id="portal-loader" class="fixed inset-0 z-[9999999] flex flex-col justify-center items-center transition-opacity duration-300" style="background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);">
-            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full shadow-[0_0_30px_rgba(59,130,246,0.3)] mb-6 bg-white border-4 border-slate-700 animate-pulse object-cover">
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-24 h-24 rounded-full mb-6 bg-white border-4 border-slate-700 object-cover">
             <div class="text-3xl font-black tracking-widest text-white mb-2">JAYRAN <span class="text-blue-500">STUDIO</span></div>
             <div class="mt-4 text-blue-400 font-bold text-sm flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700 shadow-inner">
                 <i class="fas fa-circle-notch fa-spin"></i> 專屬資料安全加密傳輸中...
@@ -246,9 +283,8 @@
                 </a>
             </div>
 
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 md:p-8 rounded-2xl border border-slate-700 mb-8 shadow-2xl relative overflow-hidden">
-                <div id="butler-year-watermark" class="absolute right-0 bottom-0 translate-x-1/8 translate-y-1/4 text-[120px] md:text-[180px] font-black text-white/5 tracking-tighter select-none pointer-events-none z-0 leading-none">2026</div>
-                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 translate-x-1/2 -translate-y-1/2 z-0"></div>
+            <div class="bg-[#1C1C22] p-6 md:p-8 rounded-2xl border border-white/[0.06] mb-8 relative overflow-hidden">
+                <div id="butler-year-watermark" class="hidden">2026</div>
                 <div class="flex flex-col md:flex-row items-center gap-6 relative z-10">
                     <div class="bg-slate-700/50 p-1.5 rounded-full border-2 border-slate-500/50 flex justify-center items-center overflow-hidden w-24 h-24 md:w-32 md:h-32 shrink-0 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
                         <img src="https://lh3.googleusercontent.com/d/11r2xCwR6c5jqM1d0lrQnqh7p1kw4-DtK" alt="專屬管家" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=專屬+管家&background=1e293b&color=3b82f6';">
@@ -259,7 +295,7 @@
                             歡迎回來！目前杰冉影像正為您全力推進 <span class="text-blue-400 font-bold text-lg mx-1" id="portal-active-count">0</span> 件專案。
                         </p>
                         <div class="inline-flex items-center gap-3 bg-slate-800/80 px-5 py-3 rounded-xl border border-slate-600/50 shadow-inner self-center md:self-start">
-                            <i class="far fa-calendar-check text-emerald-400 text-xl md:text-2xl animate-pulse"></i>
+                            <i class="far fa-calendar-check text-emerald-400 text-xl md:text-2xl"></i>
                             <div class="flex flex-col text-left">
                                 <span class="text-xs text-gray-400 font-bold">近期最快預計交件日</span>
                                 <span class="text-lg md:text-xl font-black text-emerald-300 tracking-wider" id="portal-closest-date">計算中...</span>
@@ -331,7 +367,7 @@
 
         <div class="fab-container admin-only">
             <div onclick="togglePanel('link')" class="fab-btn fab-link" title="客戶連結庫"><i class="fas fa-link"></i></div>
-            <div onclick="togglePanel('pending')" class="fab-btn" title="待分派專案" style="background:#4B5563;"><i class="fas fa-user-clock"></i><span id="pending-badge" class="badge">0</span></div>
+            <div onclick="togglePanel('pending')" class="fab-btn" title="待分派專案"><i class="fas fa-user-clock"></i><span id="pending-badge" class="badge">0</span></div>
             <div onclick="togglePanel('memo')" class="fab-btn" title="團隊便利貼"><i class="fas fa-paste"></i><span id="memo-badge" class="badge">0</span></div>
         </div>
         <div class="fab-left-container admin-only">
@@ -633,7 +669,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-4 flex items-center justify-between">
+                    <div class="mb-4 flex items-center justify-between">
                         <h4 class="font-bold text-lg text-gray-700">報價明細</h4>
                         <button onclick="addQuoteItem()" class="text-blue-600 font-bold text-sm hover:underline">+ 新增項目</button>
                     </div>
@@ -767,30 +803,28 @@
             </div>
         </div>
 
-        <div class="header-fixed-area">
-            <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="w-10 h-10 rounded-full shadow-sm bg-white">
-                    <h1 class="text-2xl font-black text-black">杰冉影像工作室</h1>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div id="user-greeting" class="text-sm font-bold text-gray-500 hidden md:block"></div>
-                    <button onclick="logout()" class="bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600 px-4 py-2 rounded-xl text-sm font-bold transition shadow-sm">
-                        <i class="fas fa-sign-out-alt mr-1"></i> 登出
-                    </button>
-                </div>
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo">
+                <span class="sidebar-brand-name">杰冉影像</span>
             </div>
-            <div class="segmented-nav">
-                <div onclick="switchTab('add')" id="nav-add" class="nav-item active admin-only"><i class="fas fa-plus mr-1"></i> 新增</div>
-                <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user mr-1"></i> 魏敏軒</div>
-                <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user mr-1"></i> 邱仁杰</div>
-                <div onclick="switchTab('quote')" id="nav-quote" class="nav-item bg-amber-50 text-amber-600 border border-amber-100"><i class="fas fa-file-invoice-dollar mr-1"></i> 報價單</div>
-                <div onclick="switchTab('gan')" id="nav-gan" class="nav-item"><i class="fas fa-chart-bar mr-1"></i> 甘特圖</div>
-                <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item"><i class="fas fa-calendar-alt mr-1"></i> 行事曆</div>
-                <div onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item"><i class="fas fa-chart-pie mr-1"></i> 數據中心</div>
-                <div onclick="switchTab('vip')" id="nav-vip" class="nav-item bg-blue-50 text-blue-600 border border-blue-100"><i class="fas fa-crown mr-1"></i> 客戶專區</div>
+            <nav class="sidebar-nav">
+                <div onclick="switchTab('add')" id="nav-add" class="nav-item active admin-only"><i class="fas fa-plus"></i><span>新增</span></div>
+                <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user"></i><span>魏敏軒</span></div>
+                <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user"></i><span>邱仁杰</span></div>
+                <div onclick="switchTab('quote')" id="nav-quote" class="nav-item"><i class="fas fa-file-invoice-dollar"></i><span>報價單</span></div>
+                <div onclick="switchTab('gan')" id="nav-gan" class="nav-item"><i class="fas fa-chart-bar"></i><span>甘特圖</span></div>
+                <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item"><i class="fas fa-calendar-alt"></i><span>行事曆</span></div>
+                <div onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item"><i class="fas fa-chart-pie"></i><span>數據中心</span></div>
+                <div onclick="switchTab('vip')" id="nav-vip" class="nav-item"><i class="fas fa-crown"></i><span>客戶專區</span></div>
+            </nav>
+            <div class="sidebar-footer">
+                <div id="user-greeting" class="sidebar-user-greeting"></div>
+                <button onclick="logout()" class="sidebar-logout"><i class="fas fa-sign-out-alt"></i><span>登出</span></button>
             </div>
-        </div>
+        </aside>
+
+        <div class="main-content">
 
         <div id="p-quote" class="hidden page-scroll-container fade-in">
             <div class="max-w-6xl mx-auto">
@@ -895,6 +929,24 @@
 
         <div id="p-add" class="page-scroll-container fade-in">
             <div class="max-w-5xl mx-auto">
+                <div class="quick-tiles">
+                    <div class="quick-tile qt-purple" onclick="switchTab('wei')">
+                        <div class="qt-icon"><i class="fas fa-columns"></i></div>
+                        <div class="qt-label">看板任務</div>
+                    </div>
+                    <div class="quick-tile qt-blue" onclick="switchTab('gan')">
+                        <div class="qt-icon"><i class="fas fa-chart-bar"></i></div>
+                        <div class="qt-label">甘特圖排程</div>
+                    </div>
+                    <div class="quick-tile qt-pink" onclick="switchTab('quote')">
+                        <div class="qt-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                        <div class="qt-label">建立報價單</div>
+                    </div>
+                    <div class="quick-tile qt-green" onclick="switchTab('vip')">
+                        <div class="qt-icon"><i class="fas fa-crown"></i></div>
+                        <div class="qt-label">客戶專區</div>
+                    </div>
+                </div>
                 <div class="clean-card">
                     <div class="type-switch">
                         <div onclick="setProjectType('video')" id="btn-type-video" class="type-btn active">🎬 剪輯專案</div>
@@ -1042,8 +1094,8 @@
         </div>
 
         <div id="p-gantt" class="hidden page-scroll-container fade-in">
-            <div class="max-w-full h-full flex flex-col">
-                <div class="flex gap-2 mb-4 px-2 items-center justify-between shrink-0">
+            <div class="max-w-full flex flex-col">
+                <div class="flex gap-2 mb-3 px-2 items-center justify-between shrink-0 flex-wrap">
                     <h2 id="gan-title" class="text-2xl font-black">甘特圖</h2>
                     <div class="flex gap-2">
                         <button id="btn-gan-wei" onclick="renderGantt('魏敏軒')" class="gan-btn px-4 py-2 rounded-lg font-bold">魏敏軒</button>
@@ -1052,13 +1104,21 @@
                         <button class="icon-btn btn-gray" onclick="changeGanttMonth(1)"><i class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
+                <div class="flex items-center gap-4 mb-3 px-2 flex-wrap text-xs font-bold text-gray-500">
+                    <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#007AFF"></span>製作中</span>
+                    <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#FF9500"></span>審核中</span>
+                    <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#8E8E93"></span>尚未進行</span>
+                    <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#34C759"></span>已完成</span>
+                    <span class="text-gray-300">|</span>
+                    <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#FFF9C4"></span>今天</span>
+                </div>
                 <div id="gantt-chart" class="gantt-wrapper"></div>
             </div>
         </div>
 
         <div id="p-calendar" class="hidden page-scroll-container fade-in">
-            <div class="max-w-full h-full flex flex-col">
-                <div class="flex flex-wrap gap-2 justify-between items-center mb-4 px-2 shrink-0">
+            <div class="max-w-full flex flex-col">
+                <div class="flex flex-wrap gap-2 justify-between items-center mb-3 px-2 shrink-0">
                     <h2 class="text-2xl font-black">行事曆</h2>
                     <div class="flex gap-2 flex-wrap">
                         <button id="btn-cal-all" onclick="filterCalendar('all')" class="cal-filter-btn active">全部</button>
@@ -1067,10 +1127,16 @@
                         <button onclick="openLeaveModal()" class="admin-only bg-black text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition hover:scale-105"><i class="fas fa-coffee mr-1"></i> 請假</button>
                     </div>
                 </div>
+                <div class="flex items-center gap-4 mb-3 px-2 flex-wrap text-xs font-bold text-gray-500">
+                    <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#007AFF"></span>製作中</span>
+                    <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#FF9500"></span>審核中</span>
+                    <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#7C3AED"></span>請假</span>
+                </div>
                 <div id="calendar-container">
                     <div id="calendar"></div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 
@@ -1119,12 +1185,12 @@
             fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });
             fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-           fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-            flatpickr("#finish-date", { dateFormat: "Y-m-d", disableMobile: "true" });
+           fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+            flatpickr("#finish-date", { dateFormat: "Y-m-d", disableMobile: "true" });
             // 🌟 綁定報價單的日期選擇器
             flatpickr("#q-date", { dateFormat: "Y-m-d", disableMobile: "true" });
             flatpickr("#q-valid-date", { dateFormat: "Y-m-d", disableMobile: "true" });
-        });
+        });
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape") { document.querySelectorAll('.modal-mask').forEach(el => el.style.display = 'none'); }
             if (event.key === "Enter" && document.getElementById('login-overlay').style.display !== 'none') { checkLogin(); }
@@ -1189,13 +1255,25 @@
 
            if (action === 'addProject') {
                 const docId = `${payload.payload.category}_${payload.payload.zone.replace(/\s+/g, '')}_${payload.payload.id}`;
-                db.collection("projects").doc(docId).set(payload.payload)
-                  .then(() => {
-                      onSuccess("OK");
-                      // 🌟 背景同步到 GAS，讓試算表有資料，後續 LINE 才能找得到！
-                      fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'addProject', payload: payload.payload }) }).catch(e=>{});
-                  })
-                  .catch(e => onSuccess({ error: true, msg: e.message }));
+                const docRef = db.collection("projects").doc(docId);
+
+                // 🌟 匠人修復：改用 transaction 做「讀取+寫入」原子操作，杜絕兩人同時搶同一個編號
+                db.runTransaction(function(transaction) {
+                    return transaction.get(docRef).then(function(doc) {
+                        if (doc.exists) { throw new Error("DUPLICATE_ID"); }
+                        transaction.set(docRef, payload.payload);
+                    });
+                }).then(() => {
+                    onSuccess("OK");
+                    // 🌟 背景同步到 GAS，讓試算表有資料，後續 LINE 才能找得到！
+                    fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'addProject', payload: payload.payload }) }).catch(e=>{});
+                }).catch(e => {
+                    if (e.message === "DUPLICATE_ID") {
+                        onSuccess({ error: true, duplicate: true, msg: `編號 ${payload.payload.id} 剛好被別人搶先使用了，請重新整理後再試一次` });
+                    } else {
+                        onSuccess({ error: true, msg: e.message });
+                    }
+                });
                 return;
             }
 
@@ -1205,19 +1283,43 @@
                     p = DATA.projects.find(x => String(x.id) === String(payload.id) && x.zone === payload.zone);
                     if(!p) return onSuccess({ error: true, msg: "找不到資料" });
                 }
-                
+
                 const docId = `${p.category}_${p.zone.replace(/\s+/g, '')}_${p.id}`;
-                db.collection("projects").doc(docId).set(p, { merge: true })
-                  .then(() => {
-                      onSuccess("OK");
-                      // 🌟 狀態或內容更新時，背景同步給 GAS 觸發 LINE 通知
-                      if (action === 'updateStatus') {
-                          fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateStatus', cat: payload.cat, zone: payload.zone, id: payload.id, status: payload.status, hours: payload.hours }) }).catch(e=>{});
-                      } else {
-                          fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateProject', payload: p, originId: payload.originId, originZone: payload.originZone }) }).catch(e=>{});
-                      }
-                  })
-                  .catch(e => onSuccess({ error: true, msg: e.message }));
+                // 🌟 匠人修復：判斷編號/客戶是否有變更(等於要換一份新文件)
+                const hasOrigin = (action === 'updateProject' && payload.originId && payload.originZone);
+                const originDocId = hasOrigin ? `${p.category}_${String(payload.originZone).replace(/\s+/g, '')}_${payload.originId}` : docId;
+                const docRef = db.collection("projects").doc(docId);
+
+                const writeIt = () => {
+                    docRef.set(p, { merge: true })
+                      .then(() => {
+                          onSuccess("OK");
+                          // 🌟 狀態或內容更新時，背景同步給 GAS 觸發 LINE 通知
+                          if (action === 'updateStatus') {
+                              fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateStatus', cat: payload.cat, zone: payload.zone, id: payload.id, status: payload.status, hours: payload.hours }) }).catch(e=>{});
+                          } else {
+                              fetch(GAS_API_URL, { method: "POST", body: JSON.stringify({ action: 'updateProject', payload: p, originId: payload.originId, originZone: payload.originZone }) }).catch(e=>{});
+                              // 🌟 匠人修復：編號或客戶有變更時，把舊的那一筆刪掉，避免留下幽靈重複資料
+                              if (originDocId !== docId) {
+                                  db.collection("projects").doc(originDocId).delete().catch(e=>{});
+                              }
+                          }
+                      })
+                      .catch(e => onSuccess({ error: true, msg: e.message }));
+                };
+
+                if (originDocId !== docId) {
+                    // 編號/客戶有變更，等於要換一個新的文件，先確認新編號沒被別人占用
+                    docRef.get().then(doc => {
+                        if (doc.exists) {
+                            onSuccess({ error: true, duplicate: true, msg: `編號 ${p.id} 已經被其他專案使用，請更換` });
+                        } else {
+                            writeIt();
+                        }
+                    }).catch(e => onSuccess({ error: true, msg: e.message }));
+                } else {
+                    writeIt();
+                }
                 return;
             }
 
@@ -1258,16 +1360,16 @@
         }
 
    window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const portalClient = urlParams.get('client');
+            const urlParams = new URLSearchParams(window.location.search);
+            const portalClient = urlParams.get('client');
             const quoteId = urlParams.get('quote'); // 🌟 抓取分享的報價單 ID
-            
+            
             // 🌟 如果是客戶點擊報價單連結進來
-            if (quoteId) {
-                document.getElementById('login-overlay').style.display = 'none';
+            if (quoteId) {
+                document.getElementById('login-overlay').style.display = 'none';
                 document.body.classList.add('guest-quote-mode'); // 🌟 匠人修復：套用專屬 CSS，不強制隱藏 admin-view 破壞結構
-                
-                document.getElementById('loader').style.display = 'flex';
+                
+                document.getElementById('loader').style.display = 'flex';
                 document.getElementById('loader-msg').innerText = "載入報價單中...";
 
                 callAPI('getQuoteDetail', {id: quoteId}, (res) => {
@@ -1281,7 +1383,7 @@
                 return; // 中止後續登入邏輯
             }
 
-            if (portalClient) {
+            if (portalClient) {
                 document.getElementById('admin-view').style.display = 'none'; 
                 document.getElementById('login-overlay').style.display = 'none'; 
                 document.getElementById('client-portal-view').classList.remove('hidden'); 
@@ -2132,12 +2234,12 @@
                 document.getElementById('pq-total-final').innerText = (subtotal + taxVal).toLocaleString();
 
                // 🌟 客戶視圖佈局優化 (匠人修復：移除污染源，不再用 JS 破壞原本樣式，全交由 CSS 處理)
-                const modal = document.getElementById('modal-quote-preview');
+                const modal = document.getElementById('modal-quote-preview');
                 // 隱藏關閉按鈕，讓客戶不能跳回後台系統，但保留下載為圖檔及列印 PDF
-                const closeBtn = modal.querySelector('.no-print button:nth-child(3)');
-                if(closeBtn) closeBtn.style.display = 'none';
+                const closeBtn = modal.querySelector('.no-print button:nth-child(3)');
+                if(closeBtn) closeBtn.style.display = 'none';
 
-            } catch(e) {
+            } catch(e) {
                 document.body.innerHTML = '<div style="text-align:center; padding:50px; font-size:24px; font-weight:bold; color:#DC2626;">報價單資料解析失敗，請通知管理員。</div>';
             }
         }
@@ -2305,7 +2407,15 @@
                     document.getElementById('i-urgent').checked = false; 
                     fp.clear(); 
                     showToast("專案已快速建立並同步！");
-                } else { showToast("寫入失敗：" + res, "error"); }
+                } else if (res && res.duplicate) {
+                    // 🌟 匠人修復：真正撞號時，把 Firestore 最新資料抓回來，避免馬上再犯同一個號
+                    showToast(res.msg, "error");
+                    db.collection("projects").get().then(snap => {
+                        DATA.projects = snap.docs.map(d => d.data());
+                        localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
+                        updateClientName();
+                    });
+                } else { showToast("寫入失敗：" + (res && res.msg ? res.msg : res), "error"); }
             });
         }
 
@@ -2628,7 +2738,7 @@
             });
 
             calendar = new FullCalendar.Calendar(el, { 
-                initialView: 'dayGridMonth', locale: 'zh-tw', height: '100%', dayMaxEvents: 4, 
+                initialView: 'dayGridMonth', locale: 'zh-tw', aspectRatio: 1.65, dayMaxEvents: 4, 
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' }, 
                 buttonText: { today: '今天', month: '月', week: '週' }, events: events, 
                 eventClick: function(info) { 
@@ -2660,8 +2770,14 @@
             if (tasks.length === 0) { container.innerHTML = '<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl h-full flex items-center justify-center">本月無排程</div>'; return; }
 
             const daysInMonth = monthEnd.getDate();
+            const dowLabels = ['日','一','二','三','四','五','六'];
             let header = '<tr class="gantt-row"><th class="gantt-corner">ID / 專案</th>';
-            for (let i = 1; i <= daysInMonth; i++) { let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today' : ''; header += `<th class="gantt-header-cell ${bg}">${i}</th>`; } header += '</tr>';
+            for (let i = 1; i <= daysInMonth; i++) { 
+                const dow = new Date(curYear, curMonth, i).getDay();
+                const isWeekend = (dow === 0 || dow === 6);
+                let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today' : (isWeekend ? 'gantt-weekend' : '');
+                header += `<th class="gantt-header-cell ${bg}">${i}<div class="gantt-dow">${dowLabels[dow]}</div></th>`; 
+            } header += '</tr>';
 
             let body = ''; const isGuest = localStorage.getItem('JAYRAN_ROLE') === 'GUEST';
             
@@ -2672,7 +2788,9 @@
                 let gridStartDay = (pStartObj < monthStart) ? 1 : pStartObj.getDate(); let gridEndDay = (pEndObj > monthEnd) ? daysInMonth : pEndObj.getDate();
                 let bars = '';
                 for (let i = 1; i <= daysInMonth; i++) {
-                    let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today-cell' : ''; let content = '';
+                    const dow = new Date(curYear, curMonth, i).getDay();
+                    const isWeekend = (dow === 0 || dow === 6);
+                    let bg = (isCurrentMonth && i === todayDay) ? 'gantt-today-cell' : (isWeekend ? 'gantt-weekend' : ''); let content = '';
                     if (i === gridStartDay) {
                         let span = Math.max(1, (gridEndDay - gridStartDay) + 1);
                         let prefix = (pStartObj < monthStart) ? '← ' : ''; let suffix = (pEndObj > monthEnd) ? ' →' : '';
@@ -2687,6 +2805,16 @@
                 body += `<tr class="gantt-row"><td class="gantt-col-fixed" title="${p.name} (${p.status})" ${rowClickAction} style="cursor:${rowCursorStyle};"><div style="display:flex; align-items:center; gap:4px; overflow:hidden;"><span class="gantt-id">${p.id}</span><span class="gantt-name truncate flex-1 hover:text-blue-600 font-bold">${p.name}</span><span style="font-size:10px; color:${color}; font-weight:bold; white-space:nowrap;">(${p.status})</span></div></td>${bars}</tr>`;
             });
             container.innerHTML = `<table class="gantt-table"><thead>${header}</thead><tbody>${body}</tbody></table>`;
+
+            // 🌟 匠人新增：畫面一開就自動捲到「今天」那一格，避免每次都要手動滑到最右邊找今天在哪
+            setTimeout(() => {
+                const todayHeaderCell = container.querySelector('th.gantt-today');
+                if (todayHeaderCell) {
+                    container.scrollLeft = Math.max(0, todayHeaderCell.offsetLeft - (container.clientWidth / 2));
+                } else {
+                    container.scrollLeft = 0;
+                }
+            }, 30);
         }
 
         function changeGanttMonth(delta) { currentGanttDate.setMonth(currentGanttDate.getMonth() + delta); const who = document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'; renderGantt(who); }

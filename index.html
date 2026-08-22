@@ -378,16 +378,16 @@
         </div> 
     </div> 
 
-    <!-- 🌟 新版時間軸 待分派專案 Modal -->
+    <!-- 🌟 全新升級的大版面與乾淨UI風格的 待分派專案 Modal -->
     <div id="panel-pending" class="modal-mask"> 
-        <div class="float-panel" style="background: #FAFAFA;"> 
-            <div class="panel-header-area !bg-[#FAFAFA] border-b border-gray-200 pb-4"> 
-                <div class="flex justify-between items-center"> 
-                    <h3 class="font-black text-2xl flex items-center gap-2"><i class="fas fa-user-clock text-indigo-600"></i> 待分派專案</h3> 
+        <div class="float-panel" style="max-width: 800px; background: #F8F9FC; height: 85vh;"> 
+            <div class="panel-header-area !bg-transparent border-b border-gray-200 pb-5"> 
+                <div class="flex justify-between items-center px-2"> 
+                    <h3 class="font-black text-3xl flex items-center gap-3"><i class="fas fa-inbox text-indigo-600"></i> 待分派專案</h3> 
                     <span onclick="closeModal('panel-pending')" class="cursor-pointer text-gray-400 hover:text-black text-2xl transition"><i class="fas fa-times"></i></span> 
                 </div> 
             </div> 
-            <div id="pending-list" class="panel-scroll-area pt-6 relative"> 
+            <div id="pending-list" class="panel-scroll-area pt-6 relative px-4"> 
                 <div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div> 
             </div> 
         </div> 
@@ -1418,6 +1418,28 @@
 
     function processDataUpdate(res, isCache) { 
         DATA = res;  
+        
+        // 🌟 自動修正：將 8 月 1 日以前的專案強制轉為「已完成」
+        if (DATA && DATA.projects) {
+            let changed = false;
+            DATA.projects.forEach(p => {
+                let dateStr = p.end || p.start || "";
+                if (dateStr && p.status !== '已完成' && p.status !== '已結案') {
+                    let finalDate = dateStr.includes('to') ? dateStr.split('to')[1].trim() : (dateStr.includes('~') ? dateStr.split('~')[1].trim() : dateStr);
+                    try {
+                        let d = new Date(finalDate);
+                        if (!isNaN(d.getTime()) && d < new Date('2026-08-01T00:00:00')) {
+                            p.status = '已完成';
+                            changed = true;
+                        }
+                    } catch(e){}
+                }
+            });
+            if (changed && !isCache) {
+                localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
+            }
+        }
+
         renderDynamicOptions();  
         renderClientDatalist(); 
         loadMemos();  
@@ -2299,7 +2321,8 @@ function confirmSaveQuote() {
             document.getElementById('kb-search-results').classList.add('hidden');  
         } 
 
-        const tasks = DATA.projects.filter(p => p.producer === producer); 
+        // 🌟 讓「一起」製作的專案，也能同時出現在兩人的個人看板上
+        const tasks = DATA.projects.filter(p => p.producer === producer || p.producer === '一起'); 
         const role = localStorage.getItem('JAYRAN_ROLE'); 
 
         const getTableRows = (filteredTasks) => { 
@@ -2513,7 +2536,7 @@ function confirmSaveQuote() {
         el.innerHTML = ''; 
          
         let events = [];  
-        const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter); 
+        const tasks = (calendarFilter === 'all') ? DATA.projects : DATA.projects.filter(p => p.producer === calendarFilter || p.producer === '一起'); 
          
         tasks.forEach(p => { 
             if (p.status === '已完成' || p.status === '已結案') { return; } 
@@ -2573,7 +2596,8 @@ function confirmSaveQuote() {
         const monthStart = new Date(curYear, curMonth, 1); const monthEnd = new Date(curYear, curMonth + 1, 0, 23, 59, 59); 
         const todayDay = now.getDate(); const isCurrentMonth = (now.getMonth() === curMonth && now.getFullYear() === curYear); 
 
-        let tasks = DATA.projects.filter(p => p.producer === who && p.start && p.end); 
+        // 🌟 甘特圖也會支援一起製作的專案顯示
+        let tasks = DATA.projects.filter(p => (p.producer === who || p.producer === '一起') && p.start && p.end); 
         tasks = tasks.filter(p => { const pStart = new Date(p.start); const pEnd = new Date(p.end); return pStart <= monthEnd && pEnd >= monthStart; }).sort((a, b) => (new Date(a.start).getTime() || 0) - (new Date(b.start).getTime() || 0)); 
 
         if (tasks.length === 0) { container.innerHTML = '<div class="p-12 text-center text-gray-400 font-bold bg-white rounded-xl h-full flex items-center justify-center">本月無排程</div>'; return; } 
@@ -2761,7 +2785,7 @@ function confirmSaveQuote() {
     function confirmSendReview() { const h = document.getElementById('input-hours').value; if(!h) return showToast("請輸入工時", "error"); closeModal('modal-hours'); doUpdate(document.getElementById('hours-cat').value, document.getElementById('hours-zone').value, document.getElementById('hours-id').value, '客戶審核', h); } 
     function togglePanel(type) { document.getElementById('panel-' + type).style.display = 'flex'; if (type === 'memo') loadMemos(); if (type === 'link') loadLinks(); if (type === 'pending') loadPending(); } 
 
-    // 🌟 重新設計的待分派專案 (時間軸風格)
+    // 🌟 全新升級的大版面與乾淨UI風格的 待分派專案
     function loadPending() { 
         let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定'); 
         const container = document.getElementById('pending-list'); 
@@ -2775,57 +2799,62 @@ function confirmSaveQuote() {
         } 
         
         if (pendingList.length === 0) { 
-            container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl mx-4 mt-4">🎉 目前沒有待分派項目</div>'; 
+            container.innerHTML = '<div class="text-center text-gray-400 text-base py-12 font-bold border-2 border-dashed border-gray-200 rounded-2xl mx-4 mt-4 bg-white shadow-sm">🎉 目前沒有任何待分派的專案</div>'; 
             return; 
         } 
         
-        let html = '<div class="relative pl-6 border-l-2 border-indigo-100 ml-6 mr-4 mt-2">'; 
+        let html = '<div class="relative pl-8 border-l-[3px] border-indigo-100 ml-8 mr-6 mt-4 pb-10">'; 
         pendingList.forEach((p, idx) => { 
             html += ` 
-            <div id="p-item-${idx}" class="relative mb-6"> 
-                <div class="absolute -left-[31px] top-4 w-4 h-4 rounded-full bg-white border-[4px] border-indigo-500"></div>
+            <div id="p-item-${idx}" class="relative mb-8"> 
+                <div class="absolute -left-[43px] top-5 w-5 h-5 rounded-full bg-white border-[5px] border-indigo-500 shadow-sm"></div>
                 
-                <div id="p-display-${idx}" class="bg-white rounded-2xl p-5 shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-gray-100 transition hover:shadow-[0_8px_25px_rgba(0,0,0,0.06)] hover:border-indigo-100"> 
-                    <div class="flex justify-between items-start mb-4">
+                <div id="p-display-${idx}" class="bg-white rounded-[20px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 transition hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:border-indigo-100"> 
+                    <div class="flex justify-between items-start mb-5">
                         <div>
-                            <div class="text-xs font-bold text-gray-400 mb-1">${p.client}</div>
-                            <div class="text-lg font-black text-gray-800">${p.id} ${p.name}</div>
+                            <div class="text-sm font-bold text-gray-400 mb-1.5 flex items-center gap-2"><i class="fas fa-building text-gray-300"></i> ${p.client}</div>
+                            <div class="text-2xl font-black text-gray-800 tracking-wide">${p.id} <span class="text-gray-600">${p.name}</span></div>
                         </div>
-                        <div class="flex gap-3 text-lg">
-                            <i class="fas fa-pen text-gray-300 hover:text-indigo-500 cursor-pointer transition" onclick="enablePendingEdit(${idx})"></i>
-                            <i class="fas fa-trash-alt text-gray-300 hover:text-red-500 cursor-pointer transition" onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')"></i>
+                        <div class="flex gap-4 text-xl">
+                            <button onclick="enablePendingEdit(${idx})" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition"><i class="fas fa-pen"></i></button>
+                            <button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </div>
                     
-                    <div class="mt-4 pt-4 border-t border-gray-50 flex gap-2 items-center">
-                        <select id="p-assign-maker-${idx}" class="text-sm p-2.5 rounded-xl bg-gray-50 border border-gray-100 font-bold flex-1 text-gray-700 outline-none focus:border-indigo-300 transition">
-                            <option value="">選擇製作人...</option>
-                            <option>魏敏軒</option>
-                            <option>邱仁杰</option>
-                        </select>
-                        <input id="p-assign-date-${idx}" class="text-sm p-2.5 rounded-xl bg-gray-50 border border-gray-100 w-28 text-center font-bold text-gray-600 outline-none focus:border-indigo-300 transition" placeholder="補填日期" autocomplete="off">
-                        <button onclick="confirmAssign('${p.category}', '${p.zone}', '${p.id}', ${idx})" class="bg-black text-white text-sm px-5 py-2.5 rounded-xl font-bold shadow-md hover:bg-gray-800 transition">確認</button>
+                    <div class="mt-5 pt-5 border-t border-gray-50 flex flex-col sm:flex-row gap-4 items-center justify-between bg-gray-50/50 -mx-6 -mb-6 px-6 py-5 rounded-b-[20px]">
+                        <div class="flex-1 flex items-center w-full">
+                            <div class="relative w-48">
+                                <i class="fas fa-calendar-alt absolute left-4 top-3 text-gray-400"></i>
+                                <input id="p-assign-date-${idx}" class="text-sm py-2.5 pl-10 pr-3 rounded-xl bg-white border border-gray-200 w-full font-bold text-gray-600 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition shadow-sm cursor-pointer" placeholder="點擊選擇日期" autocomplete="off" readonly>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button onclick="confirmAssignQuick('${p.category}', '${p.zone}', '${p.id}', ${idx}, '魏敏軒')" class="flex-1 sm:flex-none bg-indigo-50 text-indigo-600 px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-600 hover:text-white shadow-sm transition border border-indigo-100 hover:border-transparent">指派給 魏</button>
+                            <button onclick="confirmAssignQuick('${p.category}', '${p.zone}', '${p.id}', ${idx}, '邱仁杰')" class="flex-1 sm:flex-none bg-teal-50 text-teal-600 px-6 py-2.5 rounded-xl font-bold hover:bg-teal-600 hover:text-white shadow-sm transition border border-teal-100 hover:border-transparent">指派給 邱</button>
+                            <button onclick="confirmAssignQuick('${p.category}', '${p.zone}', '${p.id}', ${idx}, '一起')" class="flex-1 sm:flex-none bg-white text-gray-700 px-6 py-2.5 rounded-xl font-bold hover:bg-gray-800 hover:text-white shadow-sm transition border border-gray-200 hover:border-transparent">一起製作</button>
+                        </div>
                     </div>
                 </div> 
 
-                <div id="p-edit-${idx}" class="hidden bg-white rounded-2xl p-5 shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-indigo-200"> 
+                <div id="p-edit-${idx}" class="hidden bg-white rounded-[20px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-indigo-200"> 
                     <input type="hidden" id="pe-origin-id-${idx}" value="${p.id}"><input type="hidden" id="pe-origin-zone-${idx}" value="${p.zone}"><input type="hidden" id="pe-cat-${idx}" value="${p.category}"><input type="hidden" id="pe-type-${idx}" value="${p.type}"><input type="hidden" id="pe-note-${idx}" value="${p.note}"><input type="hidden" id="pe-tag-${idx}" value="${p.tag}"> 
                      
-                    <div class="flex gap-2 mb-3"> 
-                        <input id="pe-id-${idx}" value="${p.id}" class="text-sm p-2.5 bg-gray-50 border border-gray-100 rounded-xl w-24 font-bold text-center font-mono uppercase focus:border-indigo-300 outline-none" placeholder="編號"> 
-                        <input id="pe-client-${idx}" value="${p.client}" class="text-sm p-2.5 bg-gray-50 border border-gray-100 rounded-xl flex-1 font-bold focus:border-indigo-300 outline-none" placeholder="客戶名稱"> 
-                        <div class="cursor-pointer text-gray-400 hover:text-gray-800 text-lg p-2" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></div> 
+                    <div class="flex gap-3 mb-4"> 
+                        <input id="pe-id-${idx}" value="${p.id}" class="text-sm p-3 bg-gray-50 border border-gray-200 rounded-xl w-32 font-bold text-center font-mono uppercase focus:border-indigo-400 focus:bg-white outline-none transition" placeholder="編號"> 
+                        <input id="pe-client-${idx}" value="${p.client}" class="text-sm p-3 bg-gray-50 border border-gray-200 rounded-xl flex-1 font-bold focus:border-indigo-400 focus:bg-white outline-none transition" placeholder="客戶名稱"> 
+                        <button class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-800 hover:bg-gray-200 transition" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></button> 
                     </div> 
-                    <input id="pe-name-${idx}" value="${p.name}" class="w-full text-sm p-2.5 bg-gray-50 border border-gray-100 rounded-xl mb-4 font-bold focus:border-indigo-300 outline-none" placeholder="專案名稱"> 
+                    <input id="pe-name-${idx}" value="${p.name}" class="w-full text-base p-3 bg-gray-50 border border-gray-200 rounded-xl mb-5 font-bold focus:border-indigo-400 focus:bg-white outline-none transition" placeholder="專案名稱"> 
                     
-                    <div class="mt-4 pt-4 border-t border-gray-50 flex gap-2">
-                        <select id="pe-producer-${idx}" class="text-sm p-2.5 rounded-xl bg-gray-50 border border-gray-100 font-bold flex-1 text-gray-700 outline-none focus:border-indigo-300 transition">
+                    <div class="mt-5 pt-5 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
+                        <select id="pe-producer-${idx}" class="text-sm p-3 rounded-xl bg-white border border-gray-200 font-bold flex-1 text-gray-700 outline-none focus:border-indigo-400 transition cursor-pointer">
                             <option value="尚未暫定">尚未暫定</option>
                             <option>魏敏軒</option>
                             <option>邱仁杰</option>
+                            <option>一起</option>
                         </select>
-                        <input id="pe-date-${idx}" class="text-sm p-2.5 rounded-xl bg-gray-50 border border-gray-100 w-28 text-center font-bold text-gray-600 outline-none focus:border-indigo-300 transition" placeholder="日期" autocomplete="off">
-                        <button onclick="savePendingEdit(${idx})" class="bg-indigo-600 text-white text-sm px-5 py-2.5 rounded-xl font-bold shadow-md hover:bg-indigo-700 transition">保存</button>
+                        <input id="pe-date-${idx}" class="text-sm p-3 rounded-xl bg-white border border-gray-200 w-full sm:w-40 text-center font-bold text-gray-600 outline-none focus:border-indigo-400 transition cursor-pointer" placeholder="重新選擇日期" autocomplete="off" readonly>
+                        <button onclick="savePendingEdit(${idx})" class="w-full sm:w-auto bg-indigo-600 text-white text-sm px-8 py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700 transition">保存變更</button>
                     </div> 
                 </div> 
             </div>`; 
@@ -2843,6 +2872,34 @@ function confirmSaveQuote() {
     function enablePendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.add('hidden'); document.getElementById(`p-edit-${idx}`).classList.remove('hidden'); } 
     function cancelPendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.remove('hidden'); document.getElementById(`p-edit-${idx}`).classList.add('hidden'); } 
      
+    // 🌟 新的三顆按鈕快速指派邏輯
+    function confirmAssignQuick(cat, zone, id, idx, maker) {
+        const date = document.getElementById(`p-assign-date-${idx}`).value; 
+        if(!date) return showToast("請先點選左側選擇日期", "error"); 
+        
+        const dates = date.split(' to '); 
+        const startDate = dates[0]; 
+        const endDate = dates[1] || dates[0]; 
+        const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(id) && String(x.zone) === String(zone)); 
+        
+        if (targetIdx !== -1) { 
+            DATA.projects[targetIdx].producer = maker; 
+            DATA.projects[targetIdx].start = startDate; 
+            DATA.projects[targetIdx].end = endDate; 
+            let newStatus = '尚未進行'; 
+            try { 
+                let d = new Date(startDate); 
+                let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0); 
+                if (d <= today) newStatus = '製作中'; 
+            } catch(e) {} 
+            DATA.projects[targetIdx].status = newStatus; 
+            localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); 
+            processDataUpdate(DATA, true); 
+            showToast("專案分派成功！"); 
+        } 
+        callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {}); 
+    }
+
     function savePendingEdit(idx) { 
         const dateVal = document.getElementById(`pe-date-${idx}`).value; const dates = dateVal.split(' to ');  
         const rawId = document.getElementById(`pe-id-${idx}`).value.trim().toUpperCase(); 
@@ -2860,17 +2917,6 @@ function confirmSaveQuote() {
         callAPI('updateProject', { payload: p, originId: originId, originZone: originZone }, (res) => { if (res === "OK") { callAPI('initAllData', {}, (data) => { localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(data)); processDataUpdate(data, false); }); } else { showToast("保存失敗：" + res, "error"); document.getElementById('loader').style.display = 'none'; } }); 
     } 
      
-    function confirmAssign(cat, zone, id, idx) { 
-        const maker = document.getElementById(`p-assign-maker-${idx}`).value; const date = document.getElementById(`p-assign-date-${idx}`).value; if(!maker || !date) return showToast("請選擇製作人與日期", "error"); 
-        const dates = date.split(' to '); const startDate = dates[0]; const endDate = dates[1] || dates[0]; const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(id) && String(x.zone) === String(zone)); 
-        if (targetIdx !== -1) { 
-            DATA.projects[targetIdx].producer = maker; DATA.projects[targetIdx].start = startDate; DATA.projects[targetIdx].end = endDate; let newStatus = '尚未進行'; 
-            try { let d = new Date(startDate); let today = new Date(); d.setHours(0,0,0,0); today.setHours(0,0,0,0); if (d <= today) newStatus = '製作中'; } catch(e) {} 
-            DATA.projects[targetIdx].status = newStatus; localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA)); processDataUpdate(DATA, true); showToast("專案分派成功"); 
-        } 
-        callAPI('assignProject', { cat:cat, zone:zone, id:id, maker:maker, date:date }, (res) => {}); 
-    } 
-
     function loadMemos() { callAPI('getMemos', {}, (list) => { const container = document.getElementById('memo-list'); const badge = document.getElementById('memo-badge'); if(list.length > 0) { badge.style.display = 'flex'; badge.innerText = list.length; } else { badge.style.display = 'none'; } if(list.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待辦事項</div>'; return; } let html = ''; list.forEach(m => { const colorClass = (m.owner === '邱仁杰') ? 'chiu' : ''; const mStr = encodeURIComponent(JSON.stringify(m)); html += `<div class="memo-item ${colorClass}"><div class="memo-content">${m.content}</div><div class="memo-meta"><span><i class="fas fa-user-circle"></i> ${m.owner}</span><span><i class="far fa-clock"></i> ${m.date}</span></div><div class="memo-actions text-lg"><i onclick="editMemoMode(JSON.parse(decodeURIComponent('${mStr}')))" class="memo-icon fas fa-pen"></i><i onclick="finishMemo(${m.idx}, this)" class="memo-icon far fa-check-circle text-green-500" title="完成"></i><i onclick="deleteMemo(${m.idx}, this)" class="memo-icon fas fa-trash-alt memo-del" title="刪除"></i></div></div>`; }); container.innerHTML = html; }); } 
     function deleteMemo(idx, el) { if(!confirm("確定刪除此便利貼嗎？")) return; el.parentElement.parentElement.style.opacity = '0.5'; callAPI('deleteMemo', { idx:idx }, (res) => { showToast("已刪除待辦"); loadMemos(); }); } 
     function editMemoMode(m) { editingMemoIdx = m.idx; document.getElementById('m-content').value = m.content; document.getElementById('m-owner').value = m.owner; if(m.date) fpMemo.setDate(m.date); const btn = document.getElementById('btn-memo-add'); btn.innerText = "更新貼文"; btn.classList.add('bg-blue-600'); btn.onclick = updateMemoItem; } 

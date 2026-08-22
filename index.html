@@ -130,7 +130,7 @@
     /* --- 行事曆 (一頁滿版 + 藥丸風格) --- */ 
     #p-calendar { display: flex !important; flex-direction: column; overflow: hidden; padding: 10px 20px 20px 20px; height: 100vh; box-sizing: border-box; }
     #p-calendar.hidden { display: none !important; }
-    #calendar-container { flex-grow: 1; display: flex; flex-direction: column; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); } 
+    #calendar-container { flex-grow: 1; display: flex; flex-direction: column; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow-y: auto; overflow-x: hidden; border: 1px solid rgba(0,0,0,0.05); } 
     #calendar { flex-grow: 1; min-height: 0; height: 100%; } 
     .fc-theme-standard td, .fc-theme-standard th { border-color: #F3F4F6 !important; } 
     .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; } 
@@ -543,7 +543,7 @@
                     </select> 
                 </div>  
                 <div> 
-                    <label class="text-xs text-gray-500 font-bold">完工日</label> 
+                    <label class="text-xs text-gray-500 font-bold">日期範圍</label> 
                     <input id="ep-date" class="clean-input text-center text-xs border border-gray-200" autocomplete="off"> 
                 </div> 
             </div> 
@@ -1148,7 +1148,7 @@
     document.addEventListener('DOMContentLoaded', function() { 
         fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
         fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-        fpEdit = flatpickr("#ep-date", { mode: "single", dateFormat: "Y-m-d", disableMobile: "true" });  
+        fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });  
         fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });  
         flatpickr("#finish-date", { dateFormat: "Y-m-d", disableMobile: "true" }); 
         flatpickr("#q-date", { dateFormat: "Y-m-d", disableMobile: "true" }); 
@@ -2536,6 +2536,14 @@ function confirmSaveQuote() {
         container.classList.remove('hidden');  
     } 
 
+    // 🌟 依製作人區分顏色，一眼看出這是誰的案子(跟看板/待分派的配色一致)
+    function getProducerColor(producer) {
+        if (producer === '魏敏軒') return '#0A84FF';
+        if (producer === '邱仁杰') return '#00D26A';
+        if (producer === '一起') return '#8E24C9';
+        return '#8E8E93';
+    }
+
     function renderCalendar() { 
         const el = document.getElementById('calendar');  
         if (calendar) { calendar.destroy(); calendar = null; } 
@@ -2550,7 +2558,7 @@ function confirmSaveQuote() {
                 try { 
                     let startD = new Date(p.start); let endD = new Date(p.end); 
                     if (!isNaN(startD.getTime()) && !isNaN(endD.getTime())) { 
-                        let color = '#8E8E93'; if (p.status === '製作中') color = '#007AFF'; else if (p.status.includes('審')) color = '#FF9500'; 
+                        let color = getProducerColor(p.producer); 
                         let nextDay = new Date(endD.getTime() + 86400000);  
                         const endDateStr = getLocalDateString(nextDay); const startDateStr = getLocalDateString(startD); 
                         events.push({ title: `${p.name} (${p.producer})`, start: startDateStr, end: endDateStr, backgroundColor: color, borderColor: color, extendedProps: { id: p.id, zone: p.zone } }); 
@@ -2574,9 +2582,9 @@ function confirmSaveQuote() {
 
         calendar = new FullCalendar.Calendar(el, {  
             initialView: 'dayGridMonth', locale: 'zh-tw', 
-            height: '100%', 
-            expandRows: true, 
-            dayMaxEvents: true,  
+            height: 'auto', 
+            expandRows: false, 
+            dayMaxEvents: false,  
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },  
             buttonText: { today: '今天', month: '月', week: '週' }, events: events,  
             eventClick: function(info) {  
@@ -2683,14 +2691,14 @@ function confirmSaveQuote() {
 
         document.getElementById('ep-name').value = p.name;  
         document.getElementById('ep-hours').value = p.hours || 0;  
-        if (p.end || p.start) { fpEdit.setDate(p.end || p.start); } else { fpEdit.clear(); } 
+        if (p.start && p.end) { fpEdit.setDate([p.start, p.end]); } else { fpEdit.clear(); } 
         document.getElementById('ep-note').value = p.note;  
         document.getElementById('ep-urgent').checked = (p.tag === 'Urgent'); 
         document.getElementById('modal-edit-project').style.display = 'flex'; 
     } 
 
     function confirmEditProject() { 
-        const finishDate = document.getElementById('ep-date').value.trim(); 
+        const dateVal = document.getElementById('ep-date').value; const dates = dateVal.split(' to '); 
         const originId = document.getElementById('ep-origin-id').value; const originZone = document.getElementById('ep-origin-zone').value; 
         const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone)); 
         let inheritedStatus = '尚未進行'; if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; } 
@@ -2713,7 +2721,7 @@ function confirmSaveQuote() {
             producer: document.getElementById('ep-producer').value,  
             type: document.getElementById('ep-type').value,  
             hours: document.getElementById('ep-hours').value,  
-            start: finishDate, end: finishDate,  
+            start: dates[0] || "", end: dates[1] || dates[0] || "",  
             note: document.getElementById('ep-note').value,  
             tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',  
             status: inheritedStatus, link: ""  

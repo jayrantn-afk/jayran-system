@@ -380,7 +380,7 @@
 
     <!-- 🌟 全新升級的大版面與乾淨UI風格的 待分派專案 Modal -->
     <div id="panel-pending" class="modal-mask"> 
-        <div class="float-panel" style="max-width: 800px; background: #F8F9FC; height: 85vh;"> 
+        <div class="float-panel" style="max-width: 1100px; width: 92%; background: #F8F9FC; height: 85vh;"> 
             <div class="panel-header-area !bg-transparent border-b border-gray-200 pb-5"> 
                 <div class="flex justify-between items-center px-2"> 
                     <h3 class="font-black text-3xl flex items-center gap-3"><i class="fas fa-inbox text-indigo-600"></i> 待分派專案</h3> 
@@ -535,10 +535,14 @@
             <div class="grid grid-cols-2 gap-3 mb-4">  
                 <div> 
                     <label class="text-xs text-gray-500 font-bold">類型</label> 
-                    <select id="ep-type" class="clean-select border border-gray-200"></select> 
+                    <select id="ep-type" class="clean-select border border-gray-200">
+                        <option value="影片">影片</option>
+                        <option value="圖片">圖片</option>
+                        <option value="動畫">動畫</option>
+                    </select> 
                 </div>  
                 <div> 
-                    <label class="text-xs text-gray-500 font-bold">日期範圍</label> 
+                    <label class="text-xs text-gray-500 font-bold">完工日</label> 
                     <input id="ep-date" class="clean-input text-center text-xs border border-gray-200" autocomplete="off"> 
                 </div> 
             </div> 
@@ -944,10 +948,11 @@
                     </div> 
                     <div> 
                         <label class="block text-xs font-bold text-gray-500 mb-1">類型</label> 
-                        <div class="flex gap-1"> 
-                            <select id="i-type" class="clean-select"></select> 
-                            <div onclick="openSettings('Type')" class="icon-btn btn-gray w-10 h-[46px]" title="管理類型"><i class="fas fa-cog"></i></div> 
-                        </div> 
+                        <select id="i-type" class="clean-select">
+                            <option value="影片">影片</option>
+                            <option value="圖片">圖片</option>
+                            <option value="動畫">動畫</option>
+                        </select> 
                     </div> 
                 </div> 
                  
@@ -1142,7 +1147,7 @@
     document.addEventListener('DOMContentLoaded', function() { 
         fp = flatpickr("#i-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
         fpMemo = flatpickr("#m-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
-        fpEdit = flatpickr("#ep-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });  
+        fpEdit = flatpickr("#ep-date", { mode: "single", dateFormat: "Y-m-d", disableMobile: "true" });  
         fpLeave = flatpickr("#leave-date", { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" });  
         flatpickr("#finish-date", { dateFormat: "Y-m-d", disableMobile: "true" }); 
         flatpickr("#q-date", { dateFormat: "Y-m-d", disableMobile: "true" }); 
@@ -2187,7 +2192,7 @@ function confirmSaveQuote() {
             if (forceDefault && list.includes(forceDefault)) { el.value = forceDefault; }  
             else if (list.includes(currentVal)) { el.value = currentVal; }  
         };  
-        fillSelect('i-type', types); fillSelect('i-producer', producers, '尚未暫定'); fillSelect('ep-type', types); fillSelect('ep-producer', producers);  
+        fillSelect('i-producer', producers, '尚未暫定'); fillSelect('ep-producer', producers);  
     } 
 
     function checkProducer() {  
@@ -2666,22 +2671,25 @@ function confirmSaveQuote() {
         document.getElementById('ep-id').value = p.id; 
         document.getElementById('ep-client').value = p.client;  
          
-        const types = (p.category === 'video') ? DATA.config.videoTypes : DATA.config.imageTypes;  
         const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers; 
-        const prodSel = document.getElementById('ep-producer'); prodSel.innerHTML = ''; producers.forEach(x => prodSel.add(new Option(x, x))); 
-        const typeSel = document.getElementById('ep-type'); typeSel.innerHTML = ''; types.forEach(x => typeSel.add(new Option(x, x))); 
+        const prodSel = document.getElementById('ep-producer'); prodSel.innerHTML = ''; 
+        // 🌟 修正：如果這位製作人不在原本的清單裡(例如「一起」)，先補進選項，確保一定選得到、顯示得出來
+        let producerList = [...(producers || [])];
+        if (p.producer && !producerList.includes(p.producer)) producerList.unshift(p.producer);
+        producerList.forEach(x => prodSel.add(new Option(x, x))); 
+        const typeSel = document.getElementById('ep-type'); 
         setTimeout(() => { prodSel.value = p.producer; typeSel.value = p.type; }, 50); 
 
         document.getElementById('ep-name').value = p.name;  
         document.getElementById('ep-hours').value = p.hours || 0;  
-        if (p.start && p.end) { fpEdit.setDate([p.start, p.end]); } else { fpEdit.clear(); } 
+        if (p.end || p.start) { fpEdit.setDate(p.end || p.start); } else { fpEdit.clear(); } 
         document.getElementById('ep-note').value = p.note;  
         document.getElementById('ep-urgent').checked = (p.tag === 'Urgent'); 
         document.getElementById('modal-edit-project').style.display = 'flex'; 
     } 
 
     function confirmEditProject() { 
-        const dateVal = document.getElementById('ep-date').value; const dates = dateVal.split(' to '); 
+        const finishDate = document.getElementById('ep-date').value.trim(); 
         const originId = document.getElementById('ep-origin-id').value; const originZone = document.getElementById('ep-origin-zone').value; 
         const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone)); 
         let inheritedStatus = '尚未進行'; if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; } 
@@ -2704,7 +2712,7 @@ function confirmSaveQuote() {
             producer: document.getElementById('ep-producer').value,  
             type: document.getElementById('ep-type').value,  
             hours: document.getElementById('ep-hours').value,  
-            start: dates[0] || "", end: dates[1] || dates[0] || "",  
+            start: finishDate, end: finishDate,  
             note: document.getElementById('ep-note').value,  
             tag: document.getElementById('ep-urgent').checked ? 'Urgent' : '',  
             status: inheritedStatus, link: ""  
@@ -2803,36 +2811,31 @@ function confirmSaveQuote() {
             return; 
         } 
         
-        let html = '<div class="relative pl-8 border-l-[3px] border-indigo-100 ml-8 mr-6 mt-4 pb-10">'; 
+        let html = '<div class="flex flex-col gap-3 mt-2">'; 
         pendingList.forEach((p, idx) => { 
             html += ` 
-            <div id="p-item-${idx}" class="relative mb-8"> 
-                <div class="absolute -left-[43px] top-5 w-5 h-5 rounded-full bg-white border-[5px] border-indigo-500 shadow-sm"></div>
-                
-                <div id="p-display-${idx}" class="bg-white rounded-[20px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 transition hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:border-indigo-100"> 
-                    <div class="flex justify-between items-start mb-5">
-                        <div>
-                            <div class="text-sm font-bold text-gray-400 mb-1.5 flex items-center gap-2"><i class="fas fa-building text-gray-300"></i> ${p.client}</div>
-                            <div class="text-2xl font-black text-gray-800 tracking-wide">${p.id} <span class="text-gray-600">${p.name}</span></div>
-                        </div>
-                        <div class="flex gap-4 text-xl">
-                            <button onclick="enablePendingEdit(${idx})" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition"><i class="fas fa-pen"></i></button>
-                            <button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition"><i class="fas fa-trash-alt"></i></button>
-                        </div>
+            <div id="p-item-${idx}"> 
+                <div id="p-display-${idx}" class="bg-white rounded-2xl px-5 py-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 transition hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:border-indigo-100 flex items-center gap-4"> 
+                    <div class="w-11 h-11 rounded-xl ${p.category === 'image' ? 'bg-emerald-50 text-emerald-500' : 'bg-indigo-50 text-indigo-500'} flex items-center justify-center text-lg shrink-0">
+                        <i class="fas ${p.category === 'image' ? 'fa-image' : 'fa-video'}"></i>
                     </div>
-                    
-                    <div class="mt-5 pt-5 border-t border-gray-50 flex flex-col sm:flex-row gap-4 items-center justify-between bg-gray-50/50 -mx-6 -mb-6 px-6 py-5 rounded-b-[20px]">
-                        <div class="flex-1 flex items-center w-full">
-                            <div class="relative w-48">
-                                <i class="fas fa-calendar-alt absolute left-4 top-3 text-gray-400"></i>
-                                <input id="p-assign-date-${idx}" class="text-sm py-2.5 pl-10 pr-3 rounded-xl bg-white border border-gray-200 w-full font-bold text-gray-600 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition shadow-sm cursor-pointer" placeholder="點擊選擇日期" autocomplete="off" readonly>
-                            </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold text-gray-400 mb-0.5 truncate">${p.client}</div>
+                        <div class="text-base font-black text-gray-800 truncate">${p.id} <span class="text-gray-600 font-bold">${p.name}</span></div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <div class="flex flex-col items-center gap-0.5">
+                            <button type="button" onclick="document.getElementById('p-assign-date-${idx}')._flatpickr.open()" id="p-date-btn-${idx}" class="w-10 h-10 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 hover:text-indigo-600 hover:border-indigo-300 transition" title="選擇日期"><i class="fas fa-calendar-alt text-sm"></i></button>
+                            <span id="p-date-label-${idx}" class="text-[9px] font-bold text-gray-400 leading-none">日期</span>
+                            <input id="p-assign-date-${idx}" class="hidden" autocomplete="off" readonly>
                         </div>
-                        <div class="flex gap-2 w-full sm:w-auto">
-                            <button onclick="confirmAssignQuick('${p.category}', '${p.zone}', '${p.id}', ${idx}, '魏敏軒')" class="flex-1 sm:flex-none bg-indigo-50 text-indigo-600 px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-600 hover:text-white shadow-sm transition border border-indigo-100 hover:border-transparent">指派給 魏</button>
-                            <button onclick="confirmAssignQuick('${p.category}', '${p.zone}', '${p.id}', ${idx}, '邱仁杰')" class="flex-1 sm:flex-none bg-teal-50 text-teal-600 px-6 py-2.5 rounded-xl font-bold hover:bg-teal-600 hover:text-white shadow-sm transition border border-teal-100 hover:border-transparent">指派給 邱</button>
-                            <button onclick="confirmAssignQuick('${p.category}', '${p.zone}', '${p.id}', ${idx}, '一起')" class="flex-1 sm:flex-none bg-white text-gray-700 px-6 py-2.5 rounded-xl font-bold hover:bg-gray-800 hover:text-white shadow-sm transition border border-gray-200 hover:border-transparent">一起製作</button>
-                        </div>
+                        <div class="w-px h-8 bg-gray-100 mx-1"></div>
+                        <button onclick="confirmAssignQuick('${p.category}', '${p.zone}', '${p.id}', ${idx}, '邱仁杰')" class="w-10 h-10 rounded-full bg-teal-50 text-teal-600 font-black text-sm flex items-center justify-center hover:bg-teal-600 hover:text-white transition border border-teal-100 hover:border-transparent" title="指派給邱仁杰">杰</button>
+                        <button onclick="confirmAssignQuick('${p.category}', '${p.zone}', '${p.id}', ${idx}, '魏敏軒')" class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 font-black text-sm flex items-center justify-center hover:bg-indigo-600 hover:text-white transition border border-indigo-100 hover:border-transparent" title="指派給魏敏軒">魏</button>
+                        <button onclick="confirmAssignQuick('${p.category}', '${p.zone}', '${p.id}', ${idx}, '一起')" class="w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-gray-800 hover:text-white transition border border-gray-200 hover:border-transparent" title="一起製作"><i class="fas fa-user-friends text-sm"></i></button>
+                        <div class="w-px h-8 bg-gray-100 mx-1"></div>
+                        <button onclick="enablePendingEdit(${idx})" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition" title="編輯"><i class="fas fa-pen text-sm"></i></button>
+                        <button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition" title="刪除"><i class="fas fa-trash-alt text-sm"></i></button>
                     </div>
                 </div> 
 
@@ -2863,7 +2866,16 @@ function confirmSaveQuote() {
         container.innerHTML = html; 
         setTimeout(() => { 
             pendingList.forEach((p, idx) => { 
-                flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+                flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true",
+                    onChange: function(selectedDates, dateStr) {
+                        const label = document.getElementById(`p-date-label-${idx}`);
+                        const btn = document.getElementById(`p-date-btn-${idx}`);
+                        if (dateStr) {
+                            if (label) label.innerText = dateStr.replace(' to ', '~');
+                            if (btn) { btn.classList.add('text-indigo-600','border-indigo-300'); btn.classList.remove('text-gray-400','border-gray-200'); }
+                        }
+                    }
+                }); 
                 flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
             }); 
         }, 50); 

@@ -126,24 +126,26 @@
     .gan-btn { background: #E5E7EB; color: #1F2937; transition: all 0.2s; } 
     .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); } 
 
-    /* --- 行事曆 --- */ 
-    #calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); overflow: hidden; } 
-    .fc-day-sat .fc-daygrid-day-frame, .fc-day-sun .fc-daygrid-day-frame { background-color: rgba(108,92,231,0.03); } 
-    #calendar { width: 100%; min-height: 460px; } 
-    .fc-theme-standard td, .fc-theme-standard th { border: none !important; border-bottom: 1px solid #f5f5f7 !important; } 
+    /* --- 行事曆 (一頁滿版 + 藥丸風格) --- */ 
+    #p-calendar { display: flex !important; flex-direction: column; overflow: hidden; padding: 10px 20px 20px 20px; height: 100vh; box-sizing: border-box; }
+    #p-calendar.hidden { display: none !important; }
+    #calendar-container { flex-grow: 1; display: flex; flex-direction: column; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); } 
+    #calendar { flex-grow: 1; min-height: 0; height: 100%; } 
+    .fc-theme-standard td, .fc-theme-standard th { border-color: #F3F4F6 !important; } 
     .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; } 
     .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; } 
     .fc-day-today { background-color: transparent !important; } 
-    .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 8px; } 
+    .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 12px; } 
     .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; } 
-    .fc-event { border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; cursor: pointer; margin-bottom: 2px !important; border-radius: 4px !important; } 
-    .fc-event-main { padding: 4px 6px; font-weight: bold; font-size: 11px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } 
+    .fc-event { border-radius: 20px !important; padding: 3px 6px !important; border: none !important; margin: 2px 4px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important; cursor: pointer; } 
+    .fc-event-main { font-weight: 700; font-size: 11px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; } 
     .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; } 
-    .fc-button { background-color: #E5E7EB !important; color: #1F2937 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; } 
-    .fc-button:hover { background-color: #d1d5db !important; } 
+    .fc-button { background-color: #F3F4F6 !important; color: #374151 !important; border: none !important; border-radius: 10px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; box-shadow: none !important; } 
+    .fc-button:hover { background-color: #E5E7EB !important; } 
     .fc-button-active { background-color: #1D1D1F !important; color: white !important; } 
-    .cal-filter-btn { padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #E5E7EB; color: #666; } 
-    .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); } 
+    .cal-filter-btn { padding: 8px 16px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; background: #F3F4F6; color: #6B7280; border: border: 1px solid transparent; } 
+    .cal-filter-btn.active { background: #1D1D1F; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); } 
+    .fc-day-sat .fc-daygrid-day-frame, .fc-day-sun .fc-daygrid-day-frame { background-color: #F8FAFC; }
 
     /* --- 浮動按鈕與彈窗 --- */ 
     .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 990; } 
@@ -165,12 +167,11 @@
     .hidden { display: none !important; } 
 
     /* --- 內部組件樣式 --- */ 
-    .memo-item, .pending-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; } 
-    .memo-item:hover, .pending-item:hover { transform: translateX(3px); } 
+    .memo-item { background: #FFF9C4; padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative; border-left: 6px solid #FFD700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s; } 
+    .memo-item:hover { transform: translateX(3px); } 
     .memo-item.chiu { background: #E3F2FD; border-left-color: #2196F3; }  
-    .pending-item { background: #f3f4f6; border-left: 6px solid #9CA3AF; } 
-    .memo-content, .pending-name { font-weight: 800; color: #333; margin-bottom: 8px; font-size: 20px; line-height: 1.4; } 
-    .memo-meta, .pending-meta { font-size: 14px; color: #666; display: flex; justify-content: space-between; align-items: center; font-weight: 500; } 
+    .memo-content { font-weight: 800; color: #333; margin-bottom: 8px; font-size: 20px; line-height: 1.4; } 
+    .memo-meta { font-size: 14px; color: #666; display: flex; justify-content: space-between; align-items: center; font-weight: 500; } 
     .memo-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; } 
     .memo-icon { font-size: 16px; color: #aaa; cursor: pointer; padding: 2px; } 
     .memo-icon:hover { color: #555; } 
@@ -377,15 +378,16 @@
         </div> 
     </div> 
 
+    <!-- 🌟 新版時間軸 待分派專案 Modal -->
     <div id="panel-pending" class="modal-mask"> 
-        <div class="float-panel"> 
-            <div class="panel-header-area"> 
-                <div class="flex justify-between items-center mb-6"> 
-                    <h3 class="font-black text-2xl">👤 待分派專案</h3> 
-                    <span onclick="closeModal('panel-pending')" class="cursor-pointer text-gray-400 hover:text-black text-2xl"><i class="fas fa-times"></i></span> 
+        <div class="float-panel" style="background: #FAFAFA;"> 
+            <div class="panel-header-area !bg-[#FAFAFA] border-b border-gray-200 pb-4"> 
+                <div class="flex justify-between items-center"> 
+                    <h3 class="font-black text-2xl flex items-center gap-2"><i class="fas fa-user-clock text-indigo-600"></i> 待分派專案</h3> 
+                    <span onclick="closeModal('panel-pending')" class="cursor-pointer text-gray-400 hover:text-black text-2xl transition"><i class="fas fa-times"></i></span> 
                 </div> 
             </div> 
-            <div id="pending-list" class="panel-scroll-area"> 
+            <div id="pending-list" class="panel-scroll-area pt-6 relative"> 
                 <div class="text-center text-gray-400 text-sm py-4">目前沒有待分派項目</div> 
             </div> 
         </div> 
@@ -504,7 +506,6 @@
         </div> 
     </div> 
 
-    <!-- 🌟 編輯專案 Modal --> 
     <div id="modal-edit-project" class="modal-mask"> 
         <div class="modal-body w-[450px]"> 
             <h3 class="text-2xl font-black mb-6">編輯專案內容</h3> 
@@ -889,23 +890,19 @@
         <!-- 🌟 新增專案 --> 
         <div class="max-w-5xl mx-auto"> 
             <div class="quick-tiles"> 
-                <!-- 1. 新增：待分派專案 -->
                 <div class="quick-tile qt-purple admin-only" style="position: relative;" onclick="togglePanel('pending')"> 
                     <div class="qt-icon"><i class="fas fa-user-clock"></i></div> 
                     <div class="qt-label">待分派專案</div> 
                     <span id="pending-badge" class="badge">0</span>
                 </div> 
-                <!-- 2. 看板任務 -->
                 <div class="quick-tile qt-blue" onclick="switchTab('wei')"> 
                     <div class="qt-icon"><i class="fas fa-columns"></i></div> 
                     <div class="qt-label">看板任務</div> 
                 </div> 
-                <!-- 3. 甘特圖排程 -->
                 <div class="quick-tile qt-pink" onclick="switchTab('gan')"> 
                     <div class="qt-icon"><i class="fas fa-chart-bar"></i></div> 
                     <div class="qt-label">甘特圖排程</div> 
                 </div> 
-                <!-- 4. 建立報價單 -->
                 <div class="quick-tile qt-green" onclick="switchTab('quote')"> 
                     <div class="qt-icon"><i class="fas fa-file-invoice-dollar"></i></div> 
                     <div class="qt-label">建立報價單</div> 
@@ -1075,21 +1072,23 @@
         </div> 
     </div> 
 
-    <div id="p-calendar" class="hidden page-scroll-container fade-in"> 
-        <div class="max-w-full flex flex-col"> 
-            <div class="flex flex-wrap gap-2 justify-between items-center mb-3 px-2 shrink-0"> 
-                <h2 class="text-2xl font-black">行事曆</h2> 
+    <div id="p-calendar" class="hidden fade-in"> 
+        <div class="max-w-full flex flex-col h-full"> 
+            <div class="flex flex-wrap gap-2 justify-between items-center mb-4 px-2 shrink-0"> 
+                <div class="flex items-center gap-4">
+                    <h2 class="text-3xl font-black border-l-8 border-indigo-600 pl-4">行事曆</h2> 
+                    <div class="flex items-center gap-3 text-xs font-bold text-gray-500 bg-gray-50 px-4 py-2 rounded-full border border-gray-200"> 
+                        <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#007AFF"></span>製作中</span> 
+                        <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#FF9500"></span>審核中</span> 
+                        <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#7C3AED"></span>請假</span> 
+                    </div>
+                </div>
                 <div class="flex gap-2 flex-wrap"> 
                     <button id="btn-cal-all" onclick="filterCalendar('all')" class="cal-filter-btn active">全部</button> 
                     <button id="btn-cal-wei" onclick="filterCalendar('魏敏軒')" class="cal-filter-btn">魏敏軒</button> 
                     <button id="btn-cal-chiu" onclick="filterCalendar('邱仁杰')" class="cal-filter-btn">邱仁杰</button> 
-                    <button onclick="openLeaveModal()" class="admin-only bg-black text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition hover:scale-105"><i class="fas fa-coffee mr-1"></i> 請假</button> 
+                    <button onclick="openLeaveModal()" class="admin-only bg-black text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition hover:scale-105"><i class="fas fa-coffee mr-1"></i> 申請請假</button> 
                 </div> 
-            </div> 
-            <div class="flex items-center gap-4 mb-3 px-2 flex-wrap text-xs font-bold text-gray-500"> 
-                <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#007AFF"></span>製作中</span> 
-                <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#FF9500"></span>審核中</span> 
-                <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#7C3AED"></span>請假</span> 
             </div> 
             <div id="calendar-container"> 
                 <div id="calendar"></div> 
@@ -2545,7 +2544,10 @@ function confirmSaveQuote() {
         }); 
 
         calendar = new FullCalendar.Calendar(el, {  
-            initialView: 'dayGridMonth', locale: 'zh-tw', aspectRatio: 1.65, dayMaxEvents: 4,  
+            initialView: 'dayGridMonth', locale: 'zh-tw', 
+            height: '100%', 
+            expandRows: true, 
+            dayMaxEvents: true,  
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },  
             buttonText: { today: '今天', month: '月', week: '週' }, events: events,  
             eventClick: function(info) {  
@@ -2759,36 +2761,83 @@ function confirmSaveQuote() {
     function confirmSendReview() { const h = document.getElementById('input-hours').value; if(!h) return showToast("請輸入工時", "error"); closeModal('modal-hours'); doUpdate(document.getElementById('hours-cat').value, document.getElementById('hours-zone').value, document.getElementById('hours-id').value, '客戶審核', h); } 
     function togglePanel(type) { document.getElementById('panel-' + type).style.display = 'flex'; if (type === 'memo') loadMemos(); if (type === 'link') loadLinks(); if (type === 'pending') loadPending(); } 
 
+    // 🌟 重新設計的待分派專案 (時間軸風格)
     function loadPending() { 
-        let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定'); const container = document.getElementById('pending-list'); const badge = document.getElementById('pending-badge'); 
-        if (pendingList.length > 0) { badge.style.display = 'flex'; badge.innerText = pendingList.length; } else { badge.style.display = 'none'; } 
-        if (pendingList.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl">🎉 目前沒有待分派項目</div>'; return; } 
-        let html = ''; 
+        let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定'); 
+        const container = document.getElementById('pending-list'); 
+        const badge = document.getElementById('pending-badge'); 
+        
+        if (pendingList.length > 0) { 
+            badge.style.display = 'flex'; 
+            badge.innerText = pendingList.length; 
+        } else { 
+            badge.style.display = 'none'; 
+        } 
+        
+        if (pendingList.length === 0) { 
+            container.innerHTML = '<div class="text-center text-gray-400 text-sm py-8 font-bold border-2 border-dashed border-gray-200 rounded-xl mx-4 mt-4">🎉 目前沒有待分派項目</div>'; 
+            return; 
+        } 
+        
+        let html = '<div class="relative pl-6 border-l-2 border-indigo-100 ml-6 mr-4 mt-2">'; 
         pendingList.forEach((p, idx) => { 
             html += ` 
-            <div id="p-item-${idx}" class="pending-item"> 
-                <div id="p-display-${idx}"> 
-                    <div class="pending-name">${p.id} ${p.name}</div><div class="pending-meta text-xs text-gray-500 mb-4">${p.client}</div> 
-                    <div class="absolute top-3 right-3 text-gray-400 hover:text-black cursor-pointer flex gap-3 text-lg"><i class="fas fa-pen" onclick='enablePendingEdit(${idx})'></i><i class="fas fa-trash-alt text-red-300 hover:text-red-600 cursor-pointer" onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')"></i></div> 
-                    <div class="flex gap-2"><select id="p-assign-maker-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1"><option value="">選擇製作人...</option><option>魏敏軒</option><option>邱仁杰</option></select><input id="p-assign-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="補填日期" autocomplete="off"><button onclick="confirmAssign('${p.category}', '${p.zone}', '${p.id}', ${idx})" class="bg-black text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-gray-800">確認</button></div> 
+            <div id="p-item-${idx}" class="relative mb-6"> 
+                <div class="absolute -left-[31px] top-4 w-4 h-4 rounded-full bg-white border-[4px] border-indigo-500"></div>
+                
+                <div id="p-display-${idx}" class="bg-white rounded-2xl p-5 shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-gray-100 transition hover:shadow-[0_8px_25px_rgba(0,0,0,0.06)] hover:border-indigo-100"> 
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="text-xs font-bold text-gray-400 mb-1">${p.client}</div>
+                            <div class="text-lg font-black text-gray-800">${p.id} ${p.name}</div>
+                        </div>
+                        <div class="flex gap-3 text-lg">
+                            <i class="fas fa-pen text-gray-300 hover:text-indigo-500 cursor-pointer transition" onclick="enablePendingEdit(${idx})"></i>
+                            <i class="fas fa-trash-alt text-gray-300 hover:text-red-500 cursor-pointer transition" onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-50 flex gap-2 items-center">
+                        <select id="p-assign-maker-${idx}" class="text-sm p-2.5 rounded-xl bg-gray-50 border border-gray-100 font-bold flex-1 text-gray-700 outline-none focus:border-indigo-300 transition">
+                            <option value="">選擇製作人...</option>
+                            <option>魏敏軒</option>
+                            <option>邱仁杰</option>
+                        </select>
+                        <input id="p-assign-date-${idx}" class="text-sm p-2.5 rounded-xl bg-gray-50 border border-gray-100 w-28 text-center font-bold text-gray-600 outline-none focus:border-indigo-300 transition" placeholder="補填日期" autocomplete="off">
+                        <button onclick="confirmAssign('${p.category}', '${p.zone}', '${p.id}', ${idx})" class="bg-black text-white text-sm px-5 py-2.5 rounded-xl font-bold shadow-md hover:bg-gray-800 transition">確認</button>
+                    </div>
                 </div> 
-                <div id="p-edit-${idx}" class="hidden"> 
+
+                <div id="p-edit-${idx}" class="hidden bg-white rounded-2xl p-5 shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-indigo-200"> 
                     <input type="hidden" id="pe-origin-id-${idx}" value="${p.id}"><input type="hidden" id="pe-origin-zone-${idx}" value="${p.zone}"><input type="hidden" id="pe-cat-${idx}" value="${p.category}"><input type="hidden" id="pe-type-${idx}" value="${p.type}"><input type="hidden" id="pe-note-${idx}" value="${p.note}"><input type="hidden" id="pe-tag-${idx}" value="${p.tag}"> 
                      
-                    <div class="flex gap-2 mb-2"> 
-                        <input id="pe-id-${idx}" value="${p.id}" class="text-base p-2 border border-gray-200 rounded-lg w-32 font-bold text-center font-mono uppercase" placeholder="完整編號"> 
-                        <div class="flex-1"></div> 
-                        <div class="cursor-pointer text-gray-400 hover:text-red-500 text-xl pt-1" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></div> 
+                    <div class="flex gap-2 mb-3"> 
+                        <input id="pe-id-${idx}" value="${p.id}" class="text-sm p-2.5 bg-gray-50 border border-gray-100 rounded-xl w-24 font-bold text-center font-mono uppercase focus:border-indigo-300 outline-none" placeholder="編號"> 
+                        <input id="pe-client-${idx}" value="${p.client}" class="text-sm p-2.5 bg-gray-50 border border-gray-100 rounded-xl flex-1 font-bold focus:border-indigo-300 outline-none" placeholder="客戶名稱"> 
+                        <div class="cursor-pointer text-gray-400 hover:text-gray-800 text-lg p-2" onclick="cancelPendingEdit(${idx})"><i class="fas fa-times"></i></div> 
                     </div> 
-
-                    <input id="pe-name-${idx}" value="${p.name}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-2 font-bold" placeholder="專案名稱"> 
-                    <input id="pe-client-${idx}" value="${p.client}" class="w-full text-base p-2 border border-gray-200 rounded-lg mb-3" placeholder="客戶名稱"> 
-                    <div class="flex gap-2"><select id="pe-producer-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 font-bold flex-1"><option value="尚未暫定">尚未暫定</option><option>魏敏軒</option><option>邱仁杰</option></select><input id="pe-date-${idx}" class="text-base p-2 rounded-lg bg-white border border-gray-200 w-32 text-center" placeholder="日期" autocomplete="off"><button onclick="savePendingEdit(${idx})" class="bg-blue-600 text-white text-base px-4 py-2 rounded-lg font-bold shadow-md hover:bg-blue-800">保存</button></div> 
+                    <input id="pe-name-${idx}" value="${p.name}" class="w-full text-sm p-2.5 bg-gray-50 border border-gray-100 rounded-xl mb-4 font-bold focus:border-indigo-300 outline-none" placeholder="專案名稱"> 
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-50 flex gap-2">
+                        <select id="pe-producer-${idx}" class="text-sm p-2.5 rounded-xl bg-gray-50 border border-gray-100 font-bold flex-1 text-gray-700 outline-none focus:border-indigo-300 transition">
+                            <option value="尚未暫定">尚未暫定</option>
+                            <option>魏敏軒</option>
+                            <option>邱仁杰</option>
+                        </select>
+                        <input id="pe-date-${idx}" class="text-sm p-2.5 rounded-xl bg-gray-50 border border-gray-100 w-28 text-center font-bold text-gray-600 outline-none focus:border-indigo-300 transition" placeholder="日期" autocomplete="off">
+                        <button onclick="savePendingEdit(${idx})" class="bg-indigo-600 text-white text-sm px-5 py-2.5 rounded-xl font-bold shadow-md hover:bg-indigo-700 transition">保存</button>
+                    </div> 
                 </div> 
             </div>`; 
         }); 
+        html += '</div>';
         container.innerHTML = html; 
-        setTimeout(() => { pendingList.forEach((p, idx) => { flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); }); }, 50); 
+        setTimeout(() => { 
+            pendingList.forEach((p, idx) => { 
+                flatpickr(`#p-assign-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+                flatpickr(`#pe-date-${idx}`, { mode: "range", dateFormat: "Y-m-d", disableMobile: "true" }); 
+            }); 
+        }, 50); 
     } 
 
     function enablePendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.add('hidden'); document.getElementById(`p-edit-${idx}`).classList.remove('hidden'); } 

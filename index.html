@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V.03</title>
+<title>杰冉影像工作室 | V0.5</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -404,7 +404,8 @@
                 <div class="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner"> 
                     <div class="flex gap-2 mb-3"> 
                         <input id="l-folder" list="folder-options" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="資料夾 (可選)"> 
-                        <datalist id="folder-options"></datalist> 
+                        <datalist id="folder-options"></datalist>
+                        <datalist id="client-list-data"></datalist> 
                         <input id="l-name" class="clean-input font-bold flex-1 border border-gray-200 bg-white" placeholder="連結名稱"> 
                     </div> 
                     <input id="l-url" class="w-full clean-input text-base font-bold mb-4 border border-gray-200 bg-white" placeholder="貼上完整網址 (https://...)"> 
@@ -770,7 +771,7 @@
     <aside class="sidebar"> 
         <div class="sidebar-brand"> 
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
-            <span class="sidebar-brand-name">杰冉影像工作室 | V.01</span> 
+            <span class="sidebar-brand-name">杰冉影像工作室 | V0.5</span> 
         </div> 
         <nav class="sidebar-nav"> 
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
@@ -911,7 +912,7 @@
                             <div class="text-xs font-bold text-gray-400 mb-1">待指派任務</div> 
                             <div class="text-3xl font-black text-gray-800" id="ov-pending-count">0</div> 
                         </div> 
-                        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center text-xl"><i class="fas fa-user-clock"></i></div> 
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center text-xl relative"><i class="fas fa-user-clock"></i><span id="pending-badge" class="badge">0</span></div> 
                     </div> 
                 </div> 
                 <div class="clean-card cursor-pointer hover:shadow-lg transition" onclick="switchTab('wei')"> 

@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V0.5</title>
+<title>杰冉影像工作室 | V0.6</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -75,6 +75,12 @@
     .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; transition: 0.15s; } 
     .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(108,92,231,0.10); } 
     .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; } 
+
+    /* 🌟 手動新增：完整編號的淺色自動建議(依客戶歷史編號推算下一個) */
+    .id-ghost { position: absolute; inset: 0; background: #F5F5F7; border-radius: 8px; display: flex; align-items: center; padding-left: 12px; pointer-events: none; font-weight: 700; font-size: 15px; white-space: pre; overflow: hidden; z-index: 1; }
+    .id-ghost .ghost-typed { visibility: hidden; }
+    .id-ghost .ghost-suggest { color: #B9B9C2; }
+    #i-id.id-input { position: relative; z-index: 2; background: transparent !important; }
     .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; } 
     .type-btn.active { background: #1D1D1F; color: white; } 
     .icon-btn { width: 44px; height: 44px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; transition: 0.2s; } 
@@ -771,7 +777,7 @@
     <aside class="sidebar"> 
         <div class="sidebar-brand"> 
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
-            <span class="sidebar-brand-name">杰冉影像工作室 | V0.5</span> 
+            <span class="sidebar-brand-name">杰冉影像工作室 | V0.6</span> 
         </div> 
         <nav class="sidebar-nav"> 
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
@@ -974,20 +980,28 @@
             </div> 
             <div class="panel-scroll-area"> 
                 <div class="type-switch"> 
-                    <div onclick="setProjectType('video')" id="btn-type-video" class="type-btn active">🎬 剪輯專案</div> 
-                    <div onclick="setProjectType('image')" id="btn-type-image" class="type-btn">🎨 圖文專案</div> 
+                    <div onclick="setProjectType('video')" id="btn-type-video" class="type-btn active">🎬 影片</div> 
+                    <div onclick="setProjectType('image')" id="btn-type-image" class="type-btn">🎨 圖片</div> 
+                    <div onclick="setProjectType('animation')" id="btn-type-animation" class="type-btn">✨ 動畫</div> 
                 </div> 
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"> 
                     <div> 
-                        <label class="block text-xs font-bold text-gray-500 mb-1">完整編號 (如：A001)</label> 
-                        <input id="i-id" class="clean-input font-mono font-bold uppercase" placeholder="例如：A001"> 
-                    </div> 
-                    <div> 
                         <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱</label> 
                         <div class="flex gap-2"> 
-                            <input id="i-client" class="clean-input font-bold bg-white text-black flex-grow" list="client-list-data" placeholder="輸入或選擇客戶"> 
+                            <div onclick="openClientPickerModal()" class="clean-input font-bold bg-white text-black flex-grow cursor-pointer flex items-center justify-between select-none"> 
+                                <span id="i-client-label" class="text-gray-400">點擊選擇客戶</span> 
+                                <i class="fas fa-chevron-down text-gray-300 text-xs"></i> 
+                            </div> 
+                            <input type="hidden" id="i-client"> 
                             <div onclick="openHistoryByClient()" class="icon-btn btn-gray" title="預覽此客戶歷史專案"><i class="fas fa-eye"></i></div> 
+                        </div> 
+                    </div> 
+                    <div> 
+                        <label class="block text-xs font-bold text-gray-500 mb-1">完整編號 (如：A001)</label> 
+                        <div style="position:relative;"> 
+                            <div class="id-ghost" id="i-id-ghost"></div> 
+                            <input id="i-id" class="clean-input font-mono font-bold id-input" placeholder="請先選擇客戶" autocomplete="off" onkeydown="handleIdKeydownPM(event)"> 
                         </div> 
                     </div> 
                 </div> 
@@ -1030,6 +1044,19 @@
                 </div> 
                 <button onclick="saveProject()" id="btn-create" class="w-full bg-black text-white py-4 rounded-lg font-bold text-lg shadow-xl hover:shadow-2xl transition hover:bg-gray-800">建立並同步</button> 
             </div> 
+        </div> 
+    </div> 
+
+    <div id="modal-pick-client" class="modal-mask"> 
+        <div class="modal-body w-[420px]"> 
+            <h3 class="text-xl font-black mb-4">選擇客戶</h3> 
+            <input id="client-picker-search" oninput="filterClientPicker(this.value)" class="clean-input mb-4 border border-gray-200" placeholder="搜尋客戶名稱..." autocomplete="off"> 
+            <div id="client-picker-list" class="max-h-60 overflow-y-auto flex flex-col gap-1 mb-4 border-t border-b border-gray-100 py-2"></div> 
+            <div class="flex gap-2"> 
+                <input id="client-picker-new" class="clean-input border border-gray-200 flex-grow" placeholder="或直接輸入新客戶名稱"> 
+                <button onclick="confirmNewClientFromPicker()" class="bg-black text-white px-4 rounded-lg font-bold shrink-0">使用</button> 
+            </div> 
+            <button onclick="closeModal('modal-pick-client')" class="w-full bg-gray-200 py-3 rounded-lg font-bold mt-4">取消</button> 
         </div> 
     </div> 
 
@@ -1214,12 +1241,16 @@
         flatpickr("#q-date", { dateFormat: "Y-m-d", disableMobile: "true" }); 
         flatpickr("#q-valid-date", { dateFormat: "Y-m-d", disableMobile: "true" }); 
          
-        // 強制轉大寫 
+        // 依類型決定編號大小寫(圖片用小寫、影片/動畫用大寫)，並即時更新淺色建議 
         document.getElementById('i-id').addEventListener('input', function(e) { 
-            e.target.value = e.target.value.toUpperCase(); 
+            const wantLower = (curCat === 'image'); 
+            e.target.value = wantLower ? e.target.value.toLowerCase() : e.target.value.toUpperCase(); 
+            updateIdGhostPM(); 
         }); 
         document.getElementById('ep-id').addEventListener('input', function(e) { 
-            e.target.value = e.target.value.toUpperCase(); 
+            const typeSel = document.getElementById('ep-type'); 
+            const wantLower = (typeSel && typeSel.value === '圖片'); 
+            e.target.value = wantLower ? e.target.value.toLowerCase() : e.target.value.toUpperCase(); 
         }); 
     }); 
     document.addEventListener('keydown', function(event) { 
@@ -2215,35 +2246,131 @@ function confirmSaveQuote() {
     // 🌟 總覽頁的「手動新增專案」按鈕，開啟彈窗並準備好下拉選單
     function openManualAddModal() {
         renderDynamicOptions();
-        renderClientDatalist();
+        document.getElementById('i-client').value = '';
+        document.getElementById('i-client-label').innerText = '點擊選擇客戶';
+        document.getElementById('i-client-label').classList.add('text-gray-400');
+        document.getElementById('i-client-label').classList.remove('text-black');
+        updateIdGhostPM();
         document.getElementById('modal-manual-add').style.display = 'flex';
     }
 
+    // 🌟 客戶選擇彈窗：夥伴通常只知道客戶、不知道代號，選客戶後右邊編號會自動建議
+    function openClientPickerModal() {
+        const clients = [...new Set((DATA.projects || []).map(p => p.client).filter(c => c))].sort((a, b) => String(a).localeCompare(String(b), 'zh-Hant'));
+        const listEl = document.getElementById('client-picker-list');
+        if (clients.length === 0) {
+            listEl.innerHTML = '<div class="text-center text-gray-400 py-6 text-sm">目前沒有歷史客戶，可以直接在下面新增</div>';
+        } else {
+            listEl.innerHTML = clients.map(c => `<div class="setting-item cursor-pointer hover:bg-gray-50 rounded-lg px-2" onclick="selectClientFromPicker('${String(c).replace(/'/g, "\\'")}')">${c}</div>`).join('');
+        }
+        document.getElementById('client-picker-search').value = '';
+        document.getElementById('client-picker-new').value = '';
+        document.getElementById('modal-pick-client').style.display = 'flex';
+        setTimeout(() => document.getElementById('client-picker-search').focus(), 100);
+    }
+
+    function filterClientPicker(val) {
+        const q = val.trim().toLowerCase();
+        document.querySelectorAll('#client-picker-list .setting-item').forEach(el => {
+            el.style.display = el.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+        });
+    }
+
+    function selectClientFromPicker(clientName) {
+        document.getElementById('i-client').value = clientName;
+        const label = document.getElementById('i-client-label');
+        label.innerText = clientName;
+        label.classList.remove('text-gray-400');
+        label.classList.add('text-black');
+        closeModal('modal-pick-client');
+        updateIdGhostPM();
+    }
+
+    function confirmNewClientFromPicker() {
+        const val = document.getElementById('client-picker-new').value.trim();
+        if (!val) return showToast('請輸入新客戶名稱', 'error');
+        selectClientFromPicker(val);
+    }
+
+    // 🌟 依客戶歷史找出最常用的代號字首(不分大小寫)
+    function findClientPrefix(client) {
+        if (!client || !DATA || !DATA.projects) return null;
+        let counts = {};
+        DATA.projects.forEach(p => {
+            if (p.client !== client) return;
+            const m = String(p.zone || '').match(/^([A-Za-z]+)_/);
+            if (m) counts[m[1]] = (counts[m[1]] || 0) + 1;
+        });
+        const keys = Object.keys(counts);
+        if (keys.length === 0) return null;
+        keys.sort((a, b) => counts[b] - counts[a]);
+        return keys[0];
+    }
+
+    function escapeHtmlPM(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    // 🌟 編號欄位淺色自動建議：選好客戶 + 類型後，自動抓這個客戶上次編到哪號，淺灰顯示在你打的字後面
+    function updateIdGhostPM() {
+        const ghostEl = document.getElementById('i-id-ghost');
+        const idInput = document.getElementById('i-id');
+        if (!ghostEl || !idInput) return;
+        const client = document.getElementById('i-client').value.trim();
+        if (!client) { ghostEl.innerHTML = ''; idInput.placeholder = '請先選擇客戶'; idInput.dataset.suggestion = ''; return; }
+
+        const rawPrefix = findClientPrefix(client);
+        const wantLower = (curCat === 'image');
+        if (!rawPrefix) {
+            ghostEl.innerHTML = ''; idInput.dataset.suggestion = '';
+            idInput.placeholder = wantLower ? '例如：a001' : '例如：A001';
+            return;
+        }
+        const prefix = wantLower ? rawPrefix.toLowerCase() : rawPrefix.toUpperCase();
+
+        let maxNum = 0, pad = 3;
+        (DATA.projects || []).forEach(p => {
+            const idStr = String(p.id || '');
+            if (!idStr.startsWith(prefix)) return;
+            const rest = idStr.slice(prefix.length);
+            const m = rest.match(/^(\d+)/);
+            if (!m) return;
+            const num = parseInt(m[1], 10);
+            if (num >= maxNum) { maxNum = num; pad = m[1].length; }
+        });
+
+        if (maxNum === 0) { ghostEl.innerHTML = ''; idInput.dataset.suggestion = ''; idInput.placeholder = `例如：${prefix}001`; return; }
+        const suggestion = prefix + String(maxNum + 1).padStart(pad, '0');
+        const typed = idInput.value || '';
+        if (suggestion.length <= typed.length || suggestion.toUpperCase().indexOf(typed.toUpperCase()) !== 0) {
+            ghostEl.innerHTML = ''; idInput.dataset.suggestion = ''; return;
+        }
+        const remainder = suggestion.slice(typed.length);
+        ghostEl.innerHTML = `<span class="ghost-typed">${escapeHtmlPM(typed)}</span><span class="ghost-suggest">${escapeHtmlPM(remainder)}</span>`;
+        idInput.dataset.suggestion = suggestion;
+    }
+
+    function handleIdKeydownPM(e) {
+        if (e.key === 'Enter') {
+            const input = document.getElementById('i-id');
+            const suggestion = input.dataset.suggestion;
+            if (suggestion) {
+                e.preventDefault();
+                input.value = suggestion;
+                document.getElementById('i-id-ghost').innerHTML = '';
+            }
+        }
+    }
+
     function setProjectType(type) {  
-        curCat = type;  
+        // type: 'video' | 'image' | 'animation'。動畫跟影片都算 video 分類(大寫代號)，圖片算 image 分類(小寫代號)
+        curCat = (type === 'image') ? 'image' : 'video';
         document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));  
         document.getElementById('btn-type-' + type).classList.add('active');  
-        document.getElementById('i-name').placeholder = (type === 'video') ? "輸入影片標題" : "輸入圖文標題";  
-        document.getElementById('lbl-name').innerText = (type === 'video') ? "影片名稱" : "圖文名稱";  
-         
-        // 計算推薦編號 
-        let maxNum = 0; 
-        if (DATA && DATA.projects) { 
-            DATA.projects.forEach(p => { 
-                if (p.category === type && p.id) { 
-                    const match = String(p.id).match(/\d+$/); 
-                    if (match) { 
-                        const num = parseInt(match[0], 10); 
-                        if (num > maxNum) maxNum = num; 
-                    } 
-                } 
-            }); 
-        } 
-        if (maxNum > 0) { 
-            document.getElementById('i-id').placeholder = `最後編號: ${String(maxNum).padStart(3, '0')}`; 
-        } else { 
-            document.getElementById('i-id').placeholder = `例如：A001`; 
-        } 
+        const typeLabelMap = { video: '影片', image: '圖片', animation: '動畫' };
+        const typeSel = document.getElementById('i-type');
+        if (typeSel) typeSel.value = typeLabelMap[type] || '影片';
+        document.getElementById('i-name').placeholder = (type === 'image') ? "輸入圖文標題" : "輸入標題";  
+        document.getElementById('lbl-name').innerText = (type === 'image') ? "圖文名稱" : "專案名稱";  
+        updateIdGhostPM();
         renderDynamicOptions();  
     } 
      
@@ -2271,7 +2398,9 @@ function confirmSaveQuote() {
     } 
 
     function saveProject() { 
-        let idRaw = document.getElementById('i-id').value.trim().toUpperCase(); 
+        const wantLower = (curCat === 'image'); 
+        let idRaw = document.getElementById('i-id').value.trim(); 
+        idRaw = wantLower ? idRaw.toLowerCase() : idRaw.toUpperCase(); 
         let client = document.getElementById('i-client').value.trim(); 
         const name = document.getElementById('i-name').value.trim(); 
         const producer = document.getElementById('i-producer').value; 
@@ -2280,16 +2409,16 @@ function confirmSaveQuote() {
         const dateStr = document.getElementById('i-date').value; 
         const note = document.getElementById('i-note').value; 
 
+        if (!client) return showToast("請選擇客戶名稱", "error"); 
         if (!idRaw) return showToast("請輸入完整編號", "error"); 
-        if (!client) return showToast("請輸入客戶名稱", "error"); 
         if (!name) return showToast("請輸入專案名稱", "error"); 
 
-        let prefixMatch = idRaw.match(/^[A-Z]+/); 
+        let prefixMatch = idRaw.match(/^[A-Za-z]+/); 
         let prefix = prefixMatch ? prefixMatch[0] : 'Z'; 
         const zone = `${prefix}_${client}`; 
 
-        // 防呆檢查：該客戶底下是否已經有這個編號 
-        if (DATA.projects && DATA.projects.some(p => p.zone === zone && String(p.id).toUpperCase() === String(idRaw).toUpperCase())) { 
+        // 防呆檢查：該客戶底下是否已經有這個編號(區分大小寫，因為大小寫分別代表不同類型) 
+        if (DATA.projects && DATA.projects.some(p => p.zone === zone && String(p.id) === String(idRaw))) { 
             return showToast(`編號 ${idRaw} 已經存在於此客戶的專案中，請更換！`, "error"); 
         } 
 
@@ -2899,17 +3028,19 @@ function confirmSaveQuote() {
         const targetIdx = DATA.projects.findIndex(x => String(x.id) === String(originId) && String(x.zone) === String(originZone)); 
         let inheritedStatus = '尚未進行'; if (targetIdx !== -1) { inheritedStatus = DATA.projects[targetIdx].status; } 
 
-        let idRaw = document.getElementById('ep-id').value.trim().toUpperCase(); 
+        const epWantLower = (document.getElementById('ep-type').value === '圖片'); 
+        let idRaw = document.getElementById('ep-id').value.trim(); 
+        idRaw = epWantLower ? idRaw.toLowerCase() : idRaw.toUpperCase(); 
         let client = document.getElementById('ep-client').value.trim(); 
         if(!idRaw) return showToast("請輸入完整編號", "error"); 
         if(!client) return showToast("請輸入客戶名稱", "error"); 
 
-        let prefixMatch = idRaw.match(/^[A-Z]+/); 
+        let prefixMatch = idRaw.match(/^[A-Za-z]+/); 
         let prefix = prefixMatch ? prefixMatch[0] : 'Z'; 
         let newZone = `${prefix}_${client}`; 
 
         const p = {  
-            category: document.getElementById('ep-cat').value,  
+            category: epWantLower ? 'image' : 'video',  
             zone: newZone,  
             id: idRaw,  
             client: client,  

@@ -42,7 +42,7 @@
     .sidebar-user-greeting { font-size: 12px; font-weight: 700; color: var(--secondary); padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
     .sidebar-logout { display: flex; align-items: center; gap: 8px; justify-content: center; background: #F5F5F7; color: #6B7280; border: none; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.15s; } 
     .sidebar-logout:hover { background: #FEE2E2; color: #DC2626; } 
-    .main-content { flex-grow: 1; height: 100vh; overflow: hidden; display: flex; flex-direction: column; min-width: 0; } 
+    .main-content { flex-grow: 1; height: 100vh; overflow: hidden; display: flex; flex-direction: column; min-width: 0; position: relative; } 
 
     /* --- 快速前往磁磚 --- */ 
     .quick-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 16px 0 20px 0; } 
@@ -230,18 +230,12 @@
     .sidebar-logout { border-radius: 12px; }
 
     /* --- 頂部工具列 --- */
-    .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; padding: 18px 26px; flex-shrink:0; }
-    .topbar-greeting-label { font-size:11px; font-weight:800; color:#A5A5B8; text-transform:uppercase; letter-spacing:0.06em; }
-    .topbar-greeting-title { font-size:19px; font-weight:900; color:#1D1D1F; margin-top:1px; }
-    .topbar-right { display:flex; align-items:center; gap:12px; }
-    .topbar-search { display:flex; align-items:center; gap:9px; background:rgba(255,255,255,0.85); border:1px solid rgba(20,20,43,0.06); border-radius:14px; padding:9px 16px; min-width:220px; box-shadow:0 1px 2px rgba(17,17,34,0.03); }
-    .topbar-search input { border:none; background:transparent; outline:none; font-size:13.5px; font-weight:600; color:#1D1D1F; width:100%; }
-    .topbar-search input::placeholder { color:#B4B4C6; font-weight:500; }
-    .topbar-search i { color:#B4B4C6; font-size:13px; }
-    .topbar-icon-btn { position:relative; width:40px; height:40px; border-radius:13px; background:rgba(255,255,255,0.85); border:1px solid rgba(20,20,43,0.06); display:flex; align-items:center; justify-content:center; color:#6B6B7D; cursor:pointer; transition:0.15s; box-shadow:0 1px 2px rgba(17,17,34,0.03); }
+    /* --- 頂部通知（浮動，不佔版面高度，不會把任何頁面往下推） --- */
+    .topbar-float { position:absolute; top:14px; right:20px; z-index:1500; }
+    .topbar-icon-btn { position:relative; width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,0.92); border:1px solid rgba(20,20,43,0.06); display:flex; align-items:center; justify-content:center; color:#6B6B7D; cursor:pointer; transition:0.15s; box-shadow:0 4px 14px rgba(20,20,43,0.1); }
     .topbar-icon-btn:hover { background:#fff; color:#5B4FE0; transform: translateY(-1px); }
     .topbar-icon-dot { position:absolute; top:-4px; right:-4px; min-width:16px; height:16px; padding:0 4px; border-radius:50%; background:#FF3B30; border:2px solid #fff; color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; line-height:1; }
-    .notif-dropdown { position:absolute; top:60px; right:26px; width:320px; max-height:420px; background:#fff; border-radius:16px; box-shadow:0 20px 50px rgba(20,20,43,0.18); border:1px solid rgba(20,20,43,0.06); z-index:2000; overflow:hidden; display:flex; flex-direction:column; }
+    .notif-dropdown { position:absolute; top:46px; right:0; width:320px; max-height:420px; background:#fff; border-radius:16px; box-shadow:0 20px 50px rgba(20,20,43,0.18); border:1px solid rgba(20,20,43,0.06); z-index:2000; overflow:hidden; display:flex; flex-direction:column; }
     .notif-dropdown-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; font-size:13px; font-weight:800; color:#1D1D1F; border-bottom:1px solid rgba(20,20,43,0.06); }
     .notif-clear-btn { font-size:11px; font-weight:700; color:#9494A8; cursor:pointer; }
     .notif-clear-btn:hover { color:#5B4FE0; }
@@ -255,8 +249,6 @@
     .notif-text { font-size:12.5px; font-weight:700; color:#2E2E38; line-height:1.4; }
     .notif-time { font-size:10.5px; color:#B4B4C6; margin-top:2px; font-weight:600; }
     .notif-empty { padding:36px 16px; text-align:center; color:#B4B4C6; font-size:12.5px; font-weight:700; }
-    .topbar-avatar { width:40px; height:40px; border-radius:13px; background:linear-gradient(135deg,#6C5CE7,#00B4D8); display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; box-shadow:0 6px 16px rgba(108,92,231,0.35); }
-    @media (max-width: 768px) { .topbar-search { display:none; } .topbar { padding: 14px 16px; } }
 
     /* --- 首頁總覽卡片美化 --- */
     .clean-card { border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1px solid rgba(20,20,43,0.05); }
@@ -939,25 +931,23 @@
 
     <div class="main-content"> 
 
-    <div class="topbar" style="justify-content:flex-end;">
-        <div class="topbar-right">
-            <div class="topbar-icon-btn" id="notif-bell-btn" onclick="toggleNotifDropdown(event)" title="通知">
-                <i class="fas fa-bell"></i>
-                <span id="notif-badge" class="topbar-icon-dot hidden"></span>
+    <div class="topbar-float">
+        <div class="topbar-icon-btn" id="notif-bell-btn" onclick="toggleNotifDropdown(event)" title="通知">
+            <i class="fas fa-bell"></i>
+            <span id="notif-badge" class="topbar-icon-dot hidden"></span>
+        </div>
+        <div id="notif-dropdown" class="notif-dropdown hidden">
+            <div class="notif-dropdown-header">
+                <span>通知</span>
+                <span onclick="clearAllNotifs()" class="notif-clear-btn">全部清除</span>
             </div>
-            <div id="notif-dropdown" class="notif-dropdown hidden">
-                <div class="notif-dropdown-header">
-                    <span>通知</span>
-                    <span onclick="clearAllNotifs()" class="notif-clear-btn">全部清除</span>
-                </div>
-                <div id="notif-list" class="notif-list"></div>
-            </div>
+            <div id="notif-list" class="notif-list"></div>
         </div>
     </div>
 
     <div id="p-quote" class="hidden page-scroll-container fade-in"> 
         <div class="max-w-6xl mx-auto"> 
-            <div class="flex items-center justify-between mb-6"> 
+            <div class="flex items-center justify-between mb-6" style="padding-right:54px;"> 
                 <h2 class="text-3xl font-black border-l-8 border-amber-500 pl-4">📜 報價單管理中心</h2> 
                 <button onclick="openCreateQuote()" class="admin-only bg-black text-white px-5 py-2.5 rounded-xl font-bold shadow-lg hover:scale-105 transition"> 
                     <i class="fas fa-plus mr-1"></i> 建立新報價單 
@@ -1062,7 +1052,7 @@
     <div id="p-add" class="page-scroll-container fade-in" style="display:flex; flex-direction:column; overflow:hidden;"> 
         <!-- 🌟 總覽 --> 
         <div style="display:flex; flex-direction:column; flex:1; min-height:0; width:100%; max-width:1560px; margin:0 auto; padding: 0 8px; gap:12px;"> 
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2" style="flex-shrink:0;"> 
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2" style="flex-shrink:0; padding-right:54px;"> 
                 <div> 
                     <div class="text-xs font-bold text-gray-400">歡迎回來</div> 
                     <h2 class="text-xl font-black text-gray-800">杰冉影像工作室 總覽</h2> 
@@ -1220,7 +1210,7 @@
 
     <div id="p-kanban" class="hidden page-scroll-container fade-in"> 
         <div class="max-w-full mx-auto flex flex-col h-full"> 
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"> 
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8" style="padding-right:54px;"> 
                 <h2 id="kb-title" class="text-3xl font-black px-2 border-l-8 border-black pl-4"></h2> 
                 <div class="relative w-full md:w-80"> 
                     <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i> 
@@ -1300,7 +1290,7 @@
 
     <div id="p-gantt" class="hidden page-scroll-container fade-in"> 
         <div class="max-w-full flex flex-col"> 
-            <div class="flex gap-2 mb-3 px-2 items-center justify-between shrink-0 flex-wrap"> 
+            <div class="flex gap-2 mb-3 px-2 items-center justify-between shrink-0 flex-wrap" style="padding-right:54px;"> 
                 <h2 id="gan-title" class="text-2xl font-black">甘特圖</h2> 
                 <div class="flex gap-2"> 
                     <button id="btn-gan-wei" onclick="renderGantt('魏敏軒')" class="gan-btn px-4 py-2 rounded-lg font-bold">魏敏軒</button> 
@@ -1323,7 +1313,7 @@
 
     <div id="p-calendar" class="hidden fade-in"> 
         <div class="max-w-full flex flex-col h-full"> 
-            <div class="flex flex-wrap gap-2 justify-between items-center mb-4 px-2 shrink-0"> 
+            <div class="flex flex-wrap gap-2 justify-between items-center mb-4 px-2 shrink-0" style="padding-right:54px;"> 
                 <div class="flex items-center gap-4">
                     <h2 class="text-3xl font-black border-l-8 border-indigo-600 pl-4">行事曆</h2> 
                     <div class="flex items-center gap-3 text-xs font-bold text-gray-500 bg-gray-50 px-4 py-2 rounded-full border border-gray-200"> 

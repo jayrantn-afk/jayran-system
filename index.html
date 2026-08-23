@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V0.9</title>
+<title>杰冉影像工作室 | V1.0</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -94,6 +94,8 @@
         box-shadow: 0 30px 80px rgba(108,92,231,0.18), inset 0 1px 0 rgba(255,255,255,0.9) !important;
     }
     .glass-modal-panel .panel-header-area, .glass-modal-panel .panel-scroll-area { background: transparent !important; }
+    .glass-modal-panel .panel-scroll-area { scrollbar-width: none; -ms-overflow-style: none; }
+    .glass-modal-panel .panel-scroll-area::-webkit-scrollbar { display: none; width: 0; height: 0; }
     .glass-modal-panel h3, .glass-modal-panel label { color: #1D1D1F !important; }
     .glass-modal-panel .fa-times { color: rgba(29,29,31,0.4) !important; }
     .glass-modal-panel .fa-times:hover { color: #1D1D1F !important; }
@@ -821,7 +823,7 @@
     <aside class="sidebar"> 
         <div class="sidebar-brand"> 
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
-            <span class="sidebar-brand-name">杰冉影像工作室 | V0.9</span> 
+            <span class="sidebar-brand-name">杰冉影像工作室 | V1.0</span> 
         </div> 
         <nav class="sidebar-nav"> 
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
@@ -2376,10 +2378,13 @@ function confirmSaveQuote() {
         const suggestion = prefix + String(maxNum + 1).padStart(pad, '0');
         const typed = idInput.value || '';
         if (suggestion.length <= typed.length || suggestion.toUpperCase().indexOf(typed.toUpperCase()) !== 0) {
-            ghostEl.innerHTML = ''; idInput.dataset.suggestion = ''; return;
+            ghostEl.innerHTML = ''; idInput.dataset.suggestion = '';
+            if (!typed) idInput.placeholder = `例如：${prefix}001`;
+            return;
         }
         const remainder = suggestion.slice(typed.length);
         ghostEl.innerHTML = `<span class="ghost-typed">${escapeHtmlPM(typed)}</span><span class="ghost-suggest">${escapeHtmlPM(remainder)}</span>`;
+        idInput.placeholder = ''; // 有淺色建議顯示時，清空原生 placeholder，避免兩段文字疊在一起
         idInput.dataset.suggestion = suggestion;
     }
 

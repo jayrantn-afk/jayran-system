@@ -125,6 +125,14 @@
     .client-pill.active { background: linear-gradient(135deg, #6C5CE7, #00B4D8); color: #fff; border-color: transparent; box-shadow: 0 4px 16px rgba(108,92,231,0.4); }
     .client-pill.new-client-pill { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.4); color: #059669; }
     .client-pill.new-client-pill:hover { background: rgba(16,185,129,0.2); }
+    .client-pill.oneoff-client-pill { background: rgba(255,159,67,0.12); border: 1px dashed rgba(255,159,67,0.5); color: #C4670A; font-weight: 800; }
+    .client-pill.oneoff-client-pill:hover { background: rgba(255,159,67,0.22); }
+    .client-pill.oneoff-client-pill.active { background: linear-gradient(135deg, #FFB199, #FF8A3D); color: #fff; border-color: transparent; }
+    .fav-star-icon { font-size: 10px; color: rgba(0,0,0,0.15); margin-right: 5px; cursor: pointer; transition: 0.15s; }
+    .fav-star-icon:hover { color: #FFC24B; transform: scale(1.2); }
+    .fav-star-icon.is-fav { color: #FFC24B; }
+    .client-pill.active .fav-star-icon { color: rgba(255,255,255,0.6); }
+    .client-pill.active .fav-star-icon.is-fav { color: #fff; }
     .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; } 
     .type-btn.active { background: #1D1D1F; color: white; } 
     .icon-btn { width: 44px; height: 44px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; transition: 0.2s; } 
@@ -1229,8 +1237,12 @@
             </div> 
             <div class="panel-scroll-area" style="overflow: visible;"> 
                 <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱</label> 
+                <div id="client-pill-fav-wrap" class="mb-2"> 
+                    <div class="text-[10px] font-bold text-amber-500 mb-1 flex items-center gap-1"><i class="fas fa-star"></i> 常用客戶</div> 
+                    <div id="client-pill-favs" class="flex flex-wrap gap-2 items-center"></div> 
+                </div> 
                 <input id="client-pill-search" oninput="filterClientPills(this.value)" class="glass-input w-full mb-2" placeholder="搜尋客戶，或直接輸入新客戶名稱後按下方「使用新客戶」" autocomplete="off"> 
-                <div id="client-pill-grid" class="flex flex-wrap gap-2 items-center mb-1"></div> 
+                <div id="client-pill-grid" class="flex flex-wrap gap-2 items-center mb-1" style="max-height:120px; overflow-y:auto; align-content:flex-start;"></div> 
                 <div id="client-pill-newbtn" class="hidden mb-1"> 
                     <span onclick="useNewClientPill()" class="client-pill new-client-pill"><i class="fas fa-plus mr-1"></i> 使用新客戶：「<span id="client-pill-newname"></span>」</span> 
                 </div> 
@@ -2590,23 +2602,55 @@ function confirmSaveQuote() {
         document.getElementById('modal-manual-add').style.display = 'flex';
     }
 
-    // 🌟 客戶膠囊清單：直接嵌在表單裡，全部列出來一次點選，不用再開第二層彈窗
+    // 🌟 常用客戶（手動加入/移除，存在瀏覽器本機）
+    const FAV_CLIENTS_KEY = 'JAYRAN_FAV_CLIENTS';
+    function getFavClients() {
+        try { return JSON.parse(localStorage.getItem(FAV_CLIENTS_KEY)) || []; } catch(e) { return []; }
+    }
+    function saveFavClients(list) { localStorage.setItem(FAV_CLIENTS_KEY, JSON.stringify(list)); }
+    function isFavClient(name) { return getFavClients().includes(name); }
+    function toggleFavClient(name, e) {
+        if (e) e.stopPropagation();
+        let list = getFavClients();
+        if (list.includes(name)) list = list.filter(c => c !== name);
+        else list.push(name);
+        saveFavClients(list);
+        renderClientPills(document.getElementById('client-pill-search').value);
+    }
+
+    // 🌟 客戶膠囊清單：直接嵌在表單裡，全部列出來（可捲動瀏覽），不用再開第二層彈窗
+    // 過濾規則：代號主要為 Z/z（散客類）的客戶不列入一般清單，統一走「散客」那顆膠囊
     function renderClientPills(filterText) {
-        const clients = [...new Set((DATA.projects || []).map(p => p.client).filter(c => c))].sort((a, b) => String(a).localeCompare(String(b), 'zh-Hant'));
+        const allClients = [...new Set((DATA.projects || []).map(p => p.client).filter(c => c))];
+        const clients = allClients.filter(c => {
+            const prefix = findClientPrefixRaw(c);
+            return !(prefix && prefix.toUpperCase() === 'Z');
+        }).sort((a, b) => String(a).localeCompare(String(b), 'zh-Hant'));
         const q = (filterText || '').trim().toLowerCase();
-        const filtered = q ? clients.filter(c => String(c).toLowerCase().includes(q)) : clients.slice(0, 12);
+        const filtered = q ? clients.filter(c => String(c).toLowerCase().includes(q)) : clients;
         const gridEl = document.getElementById('client-pill-grid');
+        const favWrap = document.getElementById('client-pill-fav-wrap');
+        const favsEl = document.getElementById('client-pill-favs');
         const selected = document.getElementById('i-client').value;
-        if (filtered.length === 0) {
-            gridEl.innerHTML = '<div class="text-gray-400 text-sm py-2">找不到符合的客戶，可以直接使用新客戶</div>';
+        const favs = getFavClients();
+
+        const pillHtml = (c, isFav) => `<span class="client-pill ${c === selected ? 'active' : ''}" onclick="selectClientPill('${String(c).replace(/'/g, "\\'")}')"><i class="fas fa-star fav-star-icon ${isFav ? 'is-fav' : ''}" onclick="toggleFavClient('${String(c).replace(/'/g, "\\'")}', event)" title="${isFav ? '移除常用' : '加入常用'}"></i>${c}</span>`;
+
+        if (favs.length === 0) {
+            favWrap.classList.add('hidden');
         } else {
-            gridEl.innerHTML = filtered.map(c => `<span class="client-pill ${c === selected ? 'active' : ''}" onclick="selectClientPill('${String(c).replace(/'/g, "\\'")}')">${c}</span>`).join('');
-            if (!q && clients.length > 12) {
-                gridEl.innerHTML += `<span class="text-xs text-gray-400 font-bold self-center px-2">還有 ${clients.length - 12} 位，輸入搜尋即可找到</span>`;
-            }
+            favWrap.classList.remove('hidden');
+            favsEl.innerHTML = favs.map(c => pillHtml(c, true)).join('');
+        }
+
+        const oneOffPill = `<span class="client-pill oneoff-client-pill ${selected === '散客' ? 'active' : ''}" onclick="selectClientPill('散客')" title="一次性／不常合作的客戶，統一歸在同一個代號下"><i class="fas fa-dice mr-1"></i>散客（一次性客戶）</span>`;
+        if (filtered.length === 0) {
+            gridEl.innerHTML = oneOffPill + '<div class="text-gray-400 text-sm py-2 basis-full">找不到符合的客戶，可以直接使用新客戶</div>';
+        } else {
+            gridEl.innerHTML = (q ? '' : oneOffPill) + filtered.map(c => pillHtml(c, favs.includes(c))).join('');
         }
         const newBtn = document.getElementById('client-pill-newbtn');
-        if (q && !clients.some(c => String(c).toLowerCase() === q)) {
+        if (q && !allClients.some(c => String(c).toLowerCase() === q)) {
             document.getElementById('client-pill-newname').innerText = (filterText || '').trim();
             newBtn.classList.remove('hidden');
         } else {
@@ -2634,7 +2678,7 @@ function confirmSaveQuote() {
     }
 
     // 🌟 依客戶歷史找出最常用的代號字首(不分大小寫)
-    function findClientPrefix(client) {
+    function findClientPrefixRaw(client) {
         if (!client || !DATA || !DATA.projects) return null;
         let counts = {};
         DATA.projects.forEach(p => {
@@ -2646,6 +2690,12 @@ function confirmSaveQuote() {
         if (keys.length === 0) return null;
         keys.sort((a, b) => counts[b] - counts[a]);
         return keys[0];
+    }
+    // 「散客」固定用 Z/z，不論歷史紀錄；其餘客戶照歷史紀錄推算
+    function findClientPrefix(client) {
+        if (!client) return null;
+        if (client === '散客') return 'Z';
+        return findClientPrefixRaw(client);
     }
 
     function escapeHtmlPM(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }

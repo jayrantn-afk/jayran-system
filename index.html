@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V.02</title>
+<title>杰冉影像工作室 | V.03</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -773,7 +773,7 @@
             <span class="sidebar-brand-name">杰冉影像工作室 | V.01</span> 
         </div> 
         <nav class="sidebar-nav"> 
-            <div onclick="switchTab('add')" id="nav-add" class="nav-item active admin-only"><i class="fas fa-plus"></i><span>新增</span></div> 
+            <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
             <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user"></i><span>魏敏軒</span></div> 
             <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user"></i><span>邱仁杰</span></div> 
             <div onclick="switchTab('quote')" id="nav-quote" class="nav-item"><i class="fas fa-file-invoice-dollar"></i><span>報價單</span></div> 
@@ -892,34 +892,91 @@
     </div> 
 
     <div id="p-add" class="page-scroll-container fade-in"> 
-        <!-- 🌟 新增專案 --> 
-        <div class="max-w-5xl mx-auto"> 
-            <div class="quick-tiles"> 
-                <div class="quick-tile qt-purple admin-only" style="position: relative;" onclick="togglePanel('pending')"> 
-                    <div class="qt-icon"><i class="fas fa-user-clock"></i></div> 
-                    <div class="qt-label">待分派專案</div> 
-                    <span id="pending-badge" class="badge">0</span>
+        <!-- 🌟 總覽 --> 
+        <div class="max-w-6xl mx-auto"> 
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6"> 
+                <div> 
+                    <div class="text-xs font-bold text-gray-400 mb-1">歡迎回來</div> 
+                    <h2 class="text-2xl font-black text-gray-800">杰冉影像工作室 總覽</h2> 
                 </div> 
-                <div class="quick-tile qt-blue" onclick="switchTab('wei')"> 
-                    <div class="qt-icon"><i class="fas fa-columns"></i></div> 
-                    <div class="qt-label">看板任務</div> 
+                <button onclick="openManualAddModal()" class="admin-only bg-black text-white px-5 py-2.5 rounded-xl font-bold shadow-lg hover:scale-105 transition self-start md:self-auto"> 
+                    <i class="fas fa-plus mr-1"></i> 手動新增專案 
+                </button> 
+            </div> 
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"> 
+                <div class="clean-card cursor-pointer hover:shadow-lg transition" onclick="togglePanel('pending')"> 
+                    <div class="flex items-center justify-between"> 
+                        <div> 
+                            <div class="text-xs font-bold text-gray-400 mb-1">待指派任務</div> 
+                            <div class="text-3xl font-black text-gray-800" id="ov-pending-count">0</div> 
+                        </div> 
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center text-xl"><i class="fas fa-user-clock"></i></div> 
+                    </div> 
                 </div> 
-                <div class="quick-tile qt-pink" onclick="switchTab('gan')"> 
-                    <div class="qt-icon"><i class="fas fa-chart-bar"></i></div> 
-                    <div class="qt-label">甘特圖排程</div> 
+                <div class="clean-card cursor-pointer hover:shadow-lg transition" onclick="switchTab('wei')"> 
+                    <div class="flex items-center justify-between"> 
+                        <div> 
+                            <div class="text-xs font-bold text-gray-400 mb-1">看板進行中</div> 
+                            <div class="text-3xl font-black text-gray-800" id="ov-kanban-count">0</div> 
+                        </div> 
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl"><i class="fas fa-columns"></i></div> 
+                    </div> 
                 </div> 
-                <div class="quick-tile qt-green" onclick="switchTab('quote')"> 
-                    <div class="qt-icon"><i class="fas fa-file-invoice-dollar"></i></div> 
-                    <div class="qt-label">建立報價單</div> 
+                <div class="clean-card cursor-pointer hover:shadow-lg transition" onclick="switchTab('calendar')"> 
+                    <div class="flex items-center justify-between"> 
+                        <div> 
+                            <div class="text-xs font-bold text-gray-400 mb-1">本月排程案件</div> 
+                            <div class="text-3xl font-black text-gray-800" id="ov-month-count">0</div> 
+                        </div> 
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl"><i class="fas fa-calendar-alt"></i></div> 
+                    </div> 
                 </div> 
             </div> 
+
+            <div class="clean-card mb-6"> 
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-2"> 
+                    <h3 class="font-bold text-gray-700">📈 案量趨勢</h3> 
+                    <div class="flex gap-2"> 
+                        <button id="ov-mode-month" onclick="setOverviewChartMode('month')" class="gan-btn active px-4 py-1.5 rounded-lg text-xs font-bold">本年度月案量</button> 
+                        <button id="ov-mode-day" onclick="setOverviewChartMode('day')" class="gan-btn px-4 py-1.5 rounded-lg text-xs font-bold">本月每日案量</button> 
+                    </div> 
+                </div> 
+                <div class="relative w-full" style="height:260px;"><canvas id="overview-chart"></canvas></div> 
+            </div> 
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"> 
+                <div class="clean-card"> 
+                    <h3 class="font-bold text-gray-700 mb-3">⏰ 近期交件日</h3> 
+                    <div id="overview-upcoming-list" class="space-y-2 text-sm"></div> 
+                </div> 
+                <div class="clean-card"> 
+                    <h3 class="font-bold text-gray-700 mb-3">👥 團隊負載</h3> 
+                    <div id="overview-team-list" class="space-y-3"></div> 
+                </div> 
+            </div> 
+
             <div class="clean-card"> 
+                <h3 class="font-bold text-red-500 mb-3">🔥 急件清單</h3> 
+                <div id="overview-urgent-list" class="space-y-2 text-sm"></div> 
+            </div> 
+        </div> 
+    </div> 
+
+    <div id="modal-manual-add" class="modal-mask"> 
+        <div class="float-panel" style="max-width: 700px;"> 
+            <div class="panel-header-area"> 
+                <div class="flex justify-between items-center mb-4"> 
+                    <h3 class="text-xl font-black">手動新增專案</h3> 
+                    <span onclick="closeModal('modal-manual-add')" class="cursor-pointer text-gray-400 hover:text-black text-2xl"><i class="fas fa-times"></i></span> 
+                </div> 
+            </div> 
+            <div class="panel-scroll-area"> 
                 <div class="type-switch"> 
                     <div onclick="setProjectType('video')" id="btn-type-video" class="type-btn active">🎬 剪輯專案</div> 
                     <div onclick="setProjectType('image')" id="btn-type-image" class="type-btn">🎨 圖文專案</div> 
                 </div> 
 
-                <h2 class="text-xl font-bold mb-4">建立新專案</h2> 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"> 
                     <div> 
                         <label class="block text-xs font-bold text-gray-500 mb-1">完整編號 (如：A001)</label> 
@@ -1135,6 +1192,8 @@
     let editingMemoIdx = null; 
     let editingLinkIdx = null; 
     let dashboardCharts = {}; 
+    let overviewChart = null;
+    window.overviewChartMode = 'month';
     let sortableInstances = []; 
     let currentFilteredProjects = [];  
     let portalChart = null; 
@@ -1459,6 +1518,7 @@
         else if (curTab === 'dashboard') { renderDashboard(); } 
         else if (curTab === 'vip') { renderVIPArea(); } 
         else if (curTab === 'quote') { renderQuoteTable(); }  
+        else if (curTab === 'add') { renderOverview(); }
 
         if (!isCache) { 
             document.getElementById('loader').style.display = 'none'; 
@@ -1505,7 +1565,7 @@
         } 
 
         setTimeout(() => { 
-            if (tab === 'add') { renderDynamicOptions(); renderClientDatalist(); }  
+            if (tab === 'add') { renderOverview(); }  
             else if (tab === 'wei') { document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); renderKanban('魏敏軒'); }  
             else if (tab === 'chiu') { document.querySelectorAll('#kb-normal-view details').forEach(d => d.removeAttribute('open')); renderKanban('邱仁杰'); }  
             else if (tab === 'gan') { renderGantt(document.getElementById('btn-gan-wei').classList.contains('active') ? '魏敏軒' : '邱仁杰'); }  
@@ -2151,6 +2211,13 @@ function confirmSaveQuote() {
     // ========================================================= 
     // 🌟 專案建立與表單操作 (已更新為單一編號輸入) 
     // ========================================================= 
+    // 🌟 總覽頁的「手動新增專案」按鈕，開啟彈窗並準備好下拉選單
+    function openManualAddModal() {
+        renderDynamicOptions();
+        renderClientDatalist();
+        document.getElementById('modal-manual-add').style.display = 'flex';
+    }
+
     function setProjectType(type) {  
         curCat = type;  
         document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));  
@@ -2250,6 +2317,7 @@ function confirmSaveQuote() {
                 document.getElementById('i-note').value = '';  
                 document.getElementById('i-urgent').checked = false;  
                 fp.clear();  
+                closeModal('modal-manual-add'); 
                 showToast("專案已快速建立並同步！"); 
             } else if (res && res.duplicate) { 
                 showToast(res.msg, "error"); 
@@ -2433,6 +2501,133 @@ function confirmSaveQuote() {
         closeModal('modal-finish'); 
         doUpdate(cat, zone, id, '已完成', 0, endDate); 
     } 
+
+    // 🌟 總覽頁：切換月/日案量圖表模式
+    function setOverviewChartMode(mode) {
+        window.overviewChartMode = mode;
+        document.getElementById('ov-mode-month').classList.toggle('active', mode === 'month');
+        document.getElementById('ov-mode-day').classList.toggle('active', mode === 'day');
+        renderOverview();
+    }
+
+    // 🌟 總覽頁：統計卡片 + 案量趨勢圖 + 近期交件日 + 團隊負載 + 急件清單
+    function renderOverview() {
+        if (!DATA || !DATA.projects) return;
+        const projects = DATA.projects;
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const curYear = today.getFullYear(), curMonth = today.getMonth();
+
+        const pendingCount = projects.filter(p => p.producer === '尚未暫定').length;
+        const kanbanActiveCount = projects.filter(p => p.status === '製作中' || (p.status && p.status.indexOf('審') !== -1)).length;
+        const monthCount = projects.filter(p => {
+            let dateStr = p.end || p.start;
+            if (!dateStr) return false;
+            let d = new Date(dateStr);
+            if (isNaN(d.getTime())) return false;
+            return d.getFullYear() === curYear && d.getMonth() === curMonth;
+        }).length;
+
+        const pendingEl = document.getElementById('ov-pending-count');
+        const kanbanEl = document.getElementById('ov-kanban-count');
+        const monthEl = document.getElementById('ov-month-count');
+        if (pendingEl) pendingEl.innerText = pendingCount;
+        if (kanbanEl) kanbanEl.innerText = kanbanActiveCount;
+        if (monthEl) monthEl.innerText = monthCount;
+
+        let labels = [], chartData = [];
+        if (window.overviewChartMode === 'month') {
+            labels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+            chartData = new Array(12).fill(0);
+            projects.forEach(p => {
+                let dateStr = p.end || p.start;
+                if (!dateStr) return;
+                let d = new Date(dateStr);
+                if (isNaN(d.getTime()) || d.getFullYear() !== curYear) return;
+                chartData[d.getMonth()]++;
+            });
+        } else {
+            const daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
+            labels = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}日`);
+            chartData = new Array(daysInMonth).fill(0);
+            projects.forEach(p => {
+                let dateStr = p.end || p.start;
+                if (!dateStr) return;
+                let d = new Date(dateStr);
+                if (isNaN(d.getTime()) || d.getFullYear() !== curYear || d.getMonth() !== curMonth) return;
+                chartData[d.getDate() - 1]++;
+            });
+        }
+
+        const chartEl = document.getElementById('overview-chart');
+        if (chartEl) {
+            if (overviewChart) overviewChart.destroy();
+            overviewChart = new Chart(chartEl, {
+                type: 'line',
+                data: { labels: labels, datasets: [{
+                    label: '案量', data: chartData, borderColor: '#6C5CE7', backgroundColor: 'rgba(108,92,231,0.1)',
+                    fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: '#6C5CE7'
+                }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+        }
+
+        let upcoming = projects.filter(p => p.status !== '已完成' && p.status !== '已結案' && (p.end || p.start));
+        upcoming.forEach(p => { p._sortDate = new Date(p.end || p.start); });
+        upcoming = upcoming.filter(p => !isNaN(p._sortDate.getTime())).sort((a, b) => a._sortDate - b._sortDate).slice(0, 6);
+        const upcomingEl = document.getElementById('overview-upcoming-list');
+        if (upcomingEl) {
+            if (upcoming.length === 0) {
+                upcomingEl.innerHTML = '<div class="text-gray-400 text-sm py-2">目前沒有排程中的案件</div>';
+            } else {
+                upcomingEl.innerHTML = upcoming.map(p => {
+                    const isOverdue = p._sortDate < today;
+                    return `<div class="flex items-center justify-between border-b border-gray-50 pb-2 cursor-pointer hover:bg-gray-50 rounded px-1" onclick="openEditProjectById('${p.id}','${p.zone}')">
+                        <div class="min-w-0">
+                            <div class="font-bold text-gray-800 truncate">${p.name}</div>
+                            <div class="text-xs text-gray-400">${p.client} · ${p.producer}</div>
+                        </div>
+                        <div class="text-xs font-bold ${isOverdue ? 'text-red-500' : 'text-gray-500'} shrink-0 ml-2">${p.end || p.start}</div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        const weiActive = projects.filter(p => (p.producer === '魏敏軒' || p.producer === '一起') && p.status !== '已完成' && p.status !== '已結案').length;
+        const chiuActive = projects.filter(p => (p.producer === '邱仁杰' || p.producer === '一起') && p.status !== '已完成' && p.status !== '已結案').length;
+        const maxLoad = Math.max(weiActive, chiuActive, 1);
+        const teamEl = document.getElementById('overview-team-list');
+        if (teamEl) {
+            teamEl.innerHTML = `
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1"><span class="text-blue-600">魏敏軒</span><span class="text-gray-500">${weiActive} 件進行中</span></div>
+                    <div class="w-full bg-gray-100 rounded-full h-2.5"><div class="bg-blue-500 h-2.5 rounded-full" style="width:${(weiActive / maxLoad * 100)}%"></div></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1"><span class="text-emerald-600">邱仁杰</span><span class="text-gray-500">${chiuActive} 件進行中</span></div>
+                    <div class="w-full bg-gray-100 rounded-full h-2.5"><div class="bg-emerald-500 h-2.5 rounded-full" style="width:${(chiuActive / maxLoad * 100)}%"></div></div>
+                </div>
+            `;
+        }
+
+        const urgentList = projects.filter(p => p.tag === 'Urgent' && p.status !== '已完成' && p.status !== '已結案');
+        const urgentEl = document.getElementById('overview-urgent-list');
+        if (urgentEl) {
+            if (urgentList.length === 0) {
+                urgentEl.innerHTML = '<div class="text-gray-400 text-sm py-2">目前沒有急件</div>';
+            } else {
+                urgentEl.innerHTML = urgentList.map(p => `
+                    <div class="flex items-center justify-between border-b border-gray-50 pb-2 cursor-pointer hover:bg-gray-50 rounded px-1" onclick="openEditProjectById('${p.id}','${p.zone}')">
+                        <div class="font-bold text-gray-800">🔥 ${p.name}</div>
+                        <div class="text-xs text-gray-400">${p.client} · ${p.producer}</div>
+                    </div>
+                `).join('');
+            }
+        }
+    }
 
     function renderDashboard() { 
         if(!DATA.projects) return; 

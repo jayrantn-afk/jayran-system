@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V1.2</title>
+<title>杰冉影像工作室 | V1.3</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -829,7 +829,7 @@
     <aside class="sidebar"> 
         <div class="sidebar-brand"> 
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
-            <span class="sidebar-brand-name">杰冉影像工作室 | V1.2</span> 
+            <span class="sidebar-brand-name">杰冉影像工作室 | V1.3</span> 
         </div> 
         <nav class="sidebar-nav"> 
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
@@ -993,22 +993,24 @@
                 </div> 
             </div> 
 
-            <div class="clean-card ov-card mb-3"> 
-                <div class="flex items-center justify-between mb-2 flex-wrap gap-2"> 
-                    <h3 class="font-bold text-gray-700 text-sm">📈 案量趨勢</h3> 
-                    <div class="flex gap-2"> 
-                        <button id="ov-mode-month" onclick="setOverviewChartMode('month')" class="gan-btn active px-3 py-1 rounded-lg text-xs font-bold">本年度月案量</button> 
-                        <button id="ov-mode-day" onclick="setOverviewChartMode('day')" class="gan-btn px-3 py-1 rounded-lg text-xs font-bold">本月每日案量</button> 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 ov-fill-row">
+                <div class="clean-card ov-card md:col-span-2">
+                    <div class="flex items-center justify-between mb-2 flex-wrap gap-2"> 
+                        <h3 class="font-bold text-gray-700 text-sm">📈 案量趨勢</h3> 
+                        <div class="flex gap-2"> 
+                            <button id="ov-mode-month" onclick="setOverviewChartMode('month')" class="gan-btn active px-3 py-1 rounded-lg text-xs font-bold">本年度月案量</button> 
+                            <button id="ov-mode-day" onclick="setOverviewChartMode('day')" class="gan-btn px-3 py-1 rounded-lg text-xs font-bold">本月每日案量</button> 
+                        </div> 
                     </div> 
-                </div> 
-                <div class="relative w-full" style="height:130px;"><canvas id="overview-chart"></canvas></div> 
-            </div> 
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 ov-fill-row"> 
-                <div class="clean-card ov-card"> 
+                    <div class="relative w-full" style="height:100%; min-height:180px;"><canvas id="overview-chart"></canvas></div> 
+                </div>
+                <div class="clean-card ov-card">
                     <h3 class="font-bold text-gray-700 mb-2 text-sm">⏰ 近期交件日</h3> 
                     <div id="overview-upcoming-list" class="space-y-1 text-xs"></div> 
-                </div> 
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3"> 
                 <div class="clean-card ov-card"> 
                     <h3 class="font-bold text-gray-700 mb-2 text-sm">👥 團隊負載</h3> 
                     <div id="overview-team-list" class="space-y-2"></div> 

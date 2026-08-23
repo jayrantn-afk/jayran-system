@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V1.1</title>
+<title>杰冉影像工作室 | V1.2</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -73,7 +73,11 @@
     /* --- 卡片與表單 --- */ 
     .clean-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
     .ov-card { padding: 14px !important; margin-bottom: 0 !important; }
-    #p-add.page-scroll-container { padding-bottom: 20px; } 
+    #p-add.page-scroll-container { padding-bottom: 20px; display: flex; flex-direction: column; }
+    #p-add .ov-flex-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    #p-add .ov-fill-row { flex: 1; min-height: 0; }
+    #p-add .ov-fill-row .ov-card { height: 100%; display: flex; flex-direction: column; }
+    #p-add .ov-fill-row .ov-card > div:last-child { flex: 1; min-height: 0; overflow-y: auto; } 
     .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; transition: 0.15s; } 
     .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(108,92,231,0.10); } 
     .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; } 
@@ -825,7 +829,7 @@
     <aside class="sidebar"> 
         <div class="sidebar-brand"> 
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
-            <span class="sidebar-brand-name">杰冉影像工作室 | V1.1</span> 
+            <span class="sidebar-brand-name">杰冉影像工作室 | V1.2</span> 
         </div> 
         <nav class="sidebar-nav"> 
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
@@ -948,7 +952,7 @@
 
     <div id="p-add" class="page-scroll-container fade-in"> 
         <!-- 🌟 總覽 --> 
-        <div class="max-w-6xl mx-auto"> 
+        <div class="max-w-6xl mx-auto ov-flex-wrap"> 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3"> 
                 <div> 
                     <div class="text-xs font-bold text-gray-400">歡迎回來</div> 
@@ -1000,7 +1004,7 @@
                 <div class="relative w-full" style="height:130px;"><canvas id="overview-chart"></canvas></div> 
             </div> 
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3"> 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 ov-fill-row"> 
                 <div class="clean-card ov-card"> 
                     <h3 class="font-bold text-gray-700 mb-2 text-sm">⏰ 近期交件日</h3> 
                     <div id="overview-upcoming-list" class="space-y-1 text-xs"></div> 
@@ -2749,7 +2753,7 @@ function confirmSaveQuote() {
 
         let upcoming = projects.filter(p => p.status !== '已完成' && p.status !== '已結案' && (p.end || p.start));
         upcoming.forEach(p => { p._sortDate = new Date(p.end || p.start); });
-        upcoming = upcoming.filter(p => !isNaN(p._sortDate.getTime())).sort((a, b) => a._sortDate - b._sortDate).slice(0, 5);
+        upcoming = upcoming.filter(p => !isNaN(p._sortDate.getTime())).sort((a, b) => a._sortDate - b._sortDate).slice(0, 10);
         const upcomingEl = document.getElementById('overview-upcoming-list');
         if (upcomingEl) {
             if (upcoming.length === 0) {

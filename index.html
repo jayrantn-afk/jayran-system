@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V2.0</title>
+<title>杰冉影像工作室 | V1.9</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -196,18 +196,28 @@
     .gan-btn.active { background: #1D1D1F; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); } 
 
     /* --- 行事曆 (一頁滿版 + 藥丸風格) --- */ 
-    #p-calendar { display: flex !important; flex-direction: column; overflow: hidden; padding: 10px 20px 20px 20px; flex: 1 1 auto; min-height: 0; box-sizing: border-box; }
+    #p-calendar { display: flex !important; flex-direction: column; padding: 10px 20px 20px 20px; flex: 1 1 auto; min-height: 0; box-sizing: border-box; }
     #p-calendar.hidden { display: none !important; }
-    #calendar-container { flex-grow: 1; display: flex; flex-direction: column; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); } 
-    #calendar { flex-grow: 1; min-height: 0; height: 100%; overflow: hidden; } 
+    #calendar-container { flex-grow: 1; display: flex; flex-direction: column; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow-y: auto; overflow-x: hidden; border: 1px solid rgba(0,0,0,0.05); } 
+    #calendar { flex-grow: 1; min-height: 0; height: auto; }
     .fc-theme-standard td, .fc-theme-standard th { border-color: #F3F4F6 !important; } 
     .fc-col-header-cell-cushion { color: #888; font-weight: 700; padding: 10px 0 !important; } 
     .fc-daygrid-day-number { color: #333; font-weight: 700; padding: 8px !important; text-decoration: none !important; } 
     .fc-day-today { background-color: transparent !important; } 
     .fc-day-today .fc-daygrid-day-frame { box-shadow: inset 0 0 0 3px #1D1D1F !important; border-radius: 12px; } 
     .fc-day-today .fc-daygrid-day-number { color: #1D1D1F !important; background-color: transparent !important; font-weight: 900 !important; } 
-    .fc-event { border-radius: 20px !important; padding: 3px 6px !important; border: none !important; margin: 2px 4px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important; cursor: pointer; } 
-    .fc-event-main { font-weight: 700; font-size: 11px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; } 
+    .fc-daygrid-event-harness { margin-top: 3px !important; margin-left: 3px !important; margin-right: 3px !important; } 
+    .fc-event, .fc-daygrid-block-event, .fc-h-event, .fc-daygrid-event.fc-event-start, .fc-daygrid-event.fc-event-end { 
+        border-radius: 8px !important; 
+        padding: 1px 5px !important; 
+        border: none !important; 
+        box-shadow: 0 0 0 2.5px #fff, 0 1px 3px rgba(0,0,0,0.08) !important; 
+        cursor: pointer; 
+    } 
+    .fc-event-main { font-weight: 700; font-size: 10px; color: white !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; line-height: 1.6; } 
+    .fc-daygrid-day-events { min-height: 3em; } 
+    .fc-daygrid-more-link { display: block; margin: 2px 5px 0 5px !important; padding: 2px 8px !important; font-size: 10px !important; font-weight: 800 !important; color: #6B6B7D !important; background: rgba(20,20,43,0.06) !important; border-radius: 8px !important; text-align: center; text-decoration: none !important; transition: 0.15s; } 
+    .fc-daygrid-more-link:hover { background: rgba(108,92,231,0.12) !important; color: #5B4FE0 !important; }
     .fc-toolbar-title { font-weight: 900 !important; font-size: 1.5rem !important; } 
     .fc-button { background-color: #F3F4F6 !important; color: #374151 !important; border: none !important; border-radius: 10px !important; font-weight: bold !important; text-transform: capitalize; transition: 0.2s; box-shadow: none !important; } 
     .fc-button:hover { background-color: #E5E7EB !important; } 
@@ -3371,7 +3381,7 @@ function confirmSaveQuote() {
                         let color = getProducerColor(p.producer); 
                         let nextDay = new Date(endD.getTime() + 86400000);  
                         const endDateStr = getLocalDateString(nextDay); const startDateStr = getLocalDateString(startD); 
-                        events.push({ title: `${p.name} (${p.producer})`, start: startDateStr, end: endDateStr, backgroundColor: color, borderColor: color, extendedProps: { id: p.id, zone: p.zone } }); 
+                        events.push({ title: p.name, start: startDateStr, end: endDateStr, backgroundColor: color, borderColor: color, extendedProps: { id: p.id, zone: p.zone } }); 
                     } 
                 } catch (e) {} 
             } 
@@ -3392,9 +3402,10 @@ function confirmSaveQuote() {
 
         calendar = new FullCalendar.Calendar(el, {  
             initialView: 'dayGridMonth', locale: 'zh-tw', 
-            height: '100%', 
-            expandRows: true, 
-            dayMaxEvents: true,  
+            height: 'auto', 
+            expandRows: false, 
+            dayMaxEvents: false,  
+            eventDisplay: 'block', 
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' },  
             buttonText: { today: '今天', month: '月', week: '週' }, events: events,  
             eventClick: function(info) {  

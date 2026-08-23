@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V0.8</title>
+<title>杰冉影像工作室 | V0.9</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -211,6 +211,8 @@
     @keyframes popIn { from { transform: scale(0.95) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } } 
     .panel-header-area { padding: 25px 25px 0 25px; flex-shrink: 0; background: white; } 
     .panel-scroll-area { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; } 
+    .panel-footer-area { padding: 15px 25px 25px 25px; flex-shrink: 0; background: white; } 
+    .glass-modal-panel .panel-footer-area { background: transparent !important; } 
     .modal-body { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; margin: 20px; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); } 
      
     .hidden { display: none !important; } 
@@ -819,7 +821,7 @@
     <aside class="sidebar"> 
         <div class="sidebar-brand"> 
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
-            <span class="sidebar-brand-name">杰冉影像工作室 | V0.8</span> 
+            <span class="sidebar-brand-name">杰冉影像工作室 | V0.9</span> 
         </div> 
         <nav class="sidebar-nav"> 
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
@@ -1028,7 +1030,7 @@
             <div class="panel-scroll-area"> 
                 <label class="block text-xs font-bold text-gray-500 mb-2">客戶名稱</label> 
                 <input id="client-pill-search" oninput="filterClientPills(this.value)" class="glass-input w-full mb-3" placeholder="搜尋客戶，或直接輸入新客戶名稱後按下方「使用新客戶」" autocomplete="off"> 
-                <div id="client-pill-grid" class="flex flex-wrap gap-2 mb-2 max-h-28 overflow-y-auto pr-1"></div> 
+                <div id="client-pill-grid" class="flex flex-wrap gap-2 items-center mb-2"></div> 
                 <div id="client-pill-newbtn" class="hidden mb-3"> 
                     <span onclick="useNewClientPill()" class="client-pill new-client-pill"><i class="fas fa-plus mr-1"></i> 使用新客戶：「<span id="client-pill-newname"></span>」</span> 
                 </div> 
@@ -1076,10 +1078,12 @@
                     <label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label> 
                     <input id="i-date" class="glass-input w-full text-center" placeholder="點擊選擇" autocomplete="off" readonly> 
                 </div> 
-                <div class="mb-6"> 
+                <div class="mb-2"> 
                     <label class="block text-xs font-bold text-gray-500 mb-1">備註</label> 
                     <textarea id="i-note" class="glass-input w-full h-20"></textarea> 
                 </div> 
+            </div> 
+            <div class="panel-footer-area"> 
                 <button onclick="saveProject()" id="btn-create" class="w-full py-4 rounded-xl font-bold text-lg text-white glass-cta-btn">建立並同步</button> 
             </div> 
         </div> 
@@ -2284,13 +2288,16 @@ function confirmSaveQuote() {
     function renderClientPills(filterText) {
         const clients = [...new Set((DATA.projects || []).map(p => p.client).filter(c => c))].sort((a, b) => String(a).localeCompare(String(b), 'zh-Hant'));
         const q = (filterText || '').trim().toLowerCase();
-        const filtered = q ? clients.filter(c => String(c).toLowerCase().includes(q)) : clients;
+        const filtered = q ? clients.filter(c => String(c).toLowerCase().includes(q)) : clients.slice(0, 12);
         const gridEl = document.getElementById('client-pill-grid');
         const selected = document.getElementById('i-client').value;
         if (filtered.length === 0) {
-            gridEl.innerHTML = '<div class="text-white/30 text-sm py-2">找不到符合的客戶，可以直接使用新客戶</div>';
+            gridEl.innerHTML = '<div class="text-gray-400 text-sm py-2">找不到符合的客戶，可以直接使用新客戶</div>';
         } else {
             gridEl.innerHTML = filtered.map(c => `<span class="client-pill ${c === selected ? 'active' : ''}" onclick="selectClientPill('${String(c).replace(/'/g, "\\'")}')">${c}</span>`).join('');
+            if (!q && clients.length > 12) {
+                gridEl.innerHTML += `<span class="text-xs text-gray-400 font-bold self-center px-2">還有 ${clients.length - 12} 位，輸入搜尋即可找到</span>`;
+            }
         }
         const newBtn = document.getElementById('client-pill-newbtn');
         if (q && !clients.some(c => String(c).toLowerCase() === q)) {

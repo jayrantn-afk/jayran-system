@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V1.0</title>
+<title>杰冉影像工作室 | V1.1</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -71,7 +71,9 @@
     .page-scroll-container::-webkit-scrollbar-thumb, .gantt-wrapper::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 10px; } 
      
     /* --- 卡片與表單 --- */ 
-    .clean-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px; width: 100%; box-sizing: border-box; } 
+    .clean-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+    .ov-card { padding: 14px !important; margin-bottom: 0 !important; }
+    #p-add.page-scroll-container { padding-bottom: 20px; } 
     .clean-input, .clean-select { width: 100%; padding: 12px; background: #F5F5F7; border: 1px solid transparent; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; transition: 0.15s; } 
     .clean-input:focus, .clean-select:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(108,92,231,0.10); } 
     .type-switch { display: flex; margin-bottom: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #E5E5E5; } 
@@ -823,7 +825,7 @@
     <aside class="sidebar"> 
         <div class="sidebar-brand"> 
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
-            <span class="sidebar-brand-name">杰冉影像工作室 | V1.0</span> 
+            <span class="sidebar-brand-name">杰冉影像工作室 | V1.1</span> 
         </div> 
         <nav class="sidebar-nav"> 
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
@@ -947,77 +949,76 @@
     <div id="p-add" class="page-scroll-container fade-in"> 
         <!-- 🌟 總覽 --> 
         <div class="max-w-6xl mx-auto"> 
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6"> 
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3"> 
                 <div> 
-                    <div class="text-xs font-bold text-gray-400 mb-1">歡迎回來</div> 
-                    <h2 class="text-2xl font-black text-gray-800">杰冉影像工作室 總覽</h2> 
+                    <div class="text-xs font-bold text-gray-400">歡迎回來</div> 
+                    <h2 class="text-xl font-black text-gray-800">杰冉影像工作室 總覽</h2> 
                 </div> 
-                <button onclick="openManualAddModal()" class="admin-only bg-black text-white px-5 py-2.5 rounded-xl font-bold shadow-lg hover:scale-105 transition self-start md:self-auto"> 
+                <button onclick="openManualAddModal()" class="admin-only bg-black text-white px-4 py-2 rounded-xl font-bold shadow-lg hover:scale-105 transition self-start md:self-auto text-sm"> 
                     <i class="fas fa-plus mr-1"></i> 手動新增專案 
                 </button> 
             </div> 
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"> 
-                <div class="clean-card cursor-pointer hover:shadow-lg transition" onclick="togglePanel('pending')"> 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3"> 
+                <div class="clean-card ov-card cursor-pointer hover:shadow-lg transition" onclick="togglePanel('pending')"> 
                     <div class="flex items-center justify-between"> 
                         <div> 
                             <div class="text-xs font-bold text-gray-400 mb-1">待指派任務</div> 
-                            <div class="text-3xl font-black text-gray-800" id="ov-pending-count">0</div> 
+                            <div class="text-2xl font-black text-gray-800" id="ov-pending-count">0</div> 
                         </div> 
-                        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center text-xl relative"><i class="fas fa-user-clock"></i><span id="pending-badge" class="badge">0</span></div> 
+                        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center text-lg relative"><i class="fas fa-user-clock"></i><span id="pending-badge" class="badge">0</span></div> 
                     </div> 
                 </div> 
-                <div class="clean-card cursor-pointer hover:shadow-lg transition" onclick="switchTab('wei')"> 
+                <div class="clean-card ov-card cursor-pointer hover:shadow-lg transition" onclick="switchTab('wei')"> 
                     <div class="flex items-center justify-between"> 
                         <div> 
                             <div class="text-xs font-bold text-gray-400 mb-1">看板進行中</div> 
-                            <div class="text-3xl font-black text-gray-800" id="ov-kanban-count">0</div> 
+                            <div class="text-2xl font-black text-gray-800" id="ov-kanban-count">0</div> 
                         </div> 
-                        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl"><i class="fas fa-columns"></i></div> 
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg"><i class="fas fa-columns"></i></div> 
                     </div> 
                 </div> 
-                <div class="clean-card cursor-pointer hover:shadow-lg transition" onclick="switchTab('calendar')"> 
+                <div class="clean-card ov-card cursor-pointer hover:shadow-lg transition" onclick="switchTab('calendar')"> 
                     <div class="flex items-center justify-between"> 
                         <div> 
                             <div class="text-xs font-bold text-gray-400 mb-1">本月排程案件</div> 
-                            <div class="text-3xl font-black text-gray-800" id="ov-month-count">0</div> 
+                            <div class="text-2xl font-black text-gray-800" id="ov-month-count">0</div> 
                         </div> 
-                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl"><i class="fas fa-calendar-alt"></i></div> 
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-lg"><i class="fas fa-calendar-alt"></i></div> 
                     </div> 
                 </div> 
             </div> 
 
-            <div class="clean-card mb-6"> 
-                <div class="flex items-center justify-between mb-4 flex-wrap gap-2"> 
-                    <h3 class="font-bold text-gray-700">📈 案量趨勢</h3> 
+            <div class="clean-card ov-card mb-3"> 
+                <div class="flex items-center justify-between mb-2 flex-wrap gap-2"> 
+                    <h3 class="font-bold text-gray-700 text-sm">📈 案量趨勢</h3> 
                     <div class="flex gap-2"> 
-                        <button id="ov-mode-month" onclick="setOverviewChartMode('month')" class="gan-btn active px-4 py-1.5 rounded-lg text-xs font-bold">本年度月案量</button> 
-                        <button id="ov-mode-day" onclick="setOverviewChartMode('day')" class="gan-btn px-4 py-1.5 rounded-lg text-xs font-bold">本月每日案量</button> 
+                        <button id="ov-mode-month" onclick="setOverviewChartMode('month')" class="gan-btn active px-3 py-1 rounded-lg text-xs font-bold">本年度月案量</button> 
+                        <button id="ov-mode-day" onclick="setOverviewChartMode('day')" class="gan-btn px-3 py-1 rounded-lg text-xs font-bold">本月每日案量</button> 
                     </div> 
                 </div> 
-                <div class="relative w-full" style="height:260px;"><canvas id="overview-chart"></canvas></div> 
+                <div class="relative w-full" style="height:130px;"><canvas id="overview-chart"></canvas></div> 
             </div> 
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"> 
-                <div class="clean-card"> 
-                    <h3 class="font-bold text-gray-700 mb-3">⏰ 近期交件日</h3> 
-                    <div id="overview-upcoming-list" class="space-y-2 text-sm"></div> 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3"> 
+                <div class="clean-card ov-card"> 
+                    <h3 class="font-bold text-gray-700 mb-2 text-sm">⏰ 近期交件日</h3> 
+                    <div id="overview-upcoming-list" class="space-y-1 text-xs"></div> 
                 </div> 
-                <div class="clean-card"> 
-                    <h3 class="font-bold text-gray-700 mb-3">👥 團隊負載</h3> 
-                    <div id="overview-team-list" class="space-y-3"></div> 
+                <div class="clean-card ov-card"> 
+                    <h3 class="font-bold text-gray-700 mb-2 text-sm">👥 團隊負載</h3> 
+                    <div id="overview-team-list" class="space-y-2"></div> 
                 </div> 
-            </div> 
-
-            <div class="clean-card"> 
-                <h3 class="font-bold text-red-500 mb-3">🔥 急件清單</h3> 
-                <div id="overview-urgent-list" class="space-y-2 text-sm"></div> 
+                <div class="clean-card ov-card"> 
+                    <h3 class="font-bold text-red-500 mb-2 text-sm">🔥 急件清單</h3> 
+                    <div id="overview-urgent-list" class="space-y-1 text-xs"></div> 
+                </div> 
             </div> 
         </div> 
     </div> 
 
     <div id="modal-manual-add" class="modal-mask"> 
-        <div class="float-panel glass-modal-panel" style="max-width: 920px; width: 92%; height: 88vh; max-height: 88vh;"> 
+        <div class="float-panel glass-modal-panel" style="max-width: 920px; width: 92%; max-height: 94vh;"> 
             <div class="panel-header-area"> 
                 <div class="flex justify-between items-center mb-4"> 
                     <h3 class="text-xl font-black text-gray-800 flex items-center gap-2"><i class="fas fa-plus-circle text-indigo-400"></i> 手動新增專案</h3> 
@@ -1029,17 +1030,17 @@
                     <div onclick="setProjectType('animation')" id="btn-type-animation" class="type-btn glass-type-btn">✨ 動畫</div> 
                 </div> 
             </div> 
-            <div class="panel-scroll-area"> 
-                <label class="block text-xs font-bold text-gray-500 mb-2">客戶名稱</label> 
-                <input id="client-pill-search" oninput="filterClientPills(this.value)" class="glass-input w-full mb-3" placeholder="搜尋客戶，或直接輸入新客戶名稱後按下方「使用新客戶」" autocomplete="off"> 
-                <div id="client-pill-grid" class="flex flex-wrap gap-2 items-center mb-2"></div> 
-                <div id="client-pill-newbtn" class="hidden mb-3"> 
+            <div class="panel-scroll-area" style="overflow: visible;"> 
+                <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱</label> 
+                <input id="client-pill-search" oninput="filterClientPills(this.value)" class="glass-input w-full mb-2" placeholder="搜尋客戶，或直接輸入新客戶名稱後按下方「使用新客戶」" autocomplete="off"> 
+                <div id="client-pill-grid" class="flex flex-wrap gap-2 items-center mb-1"></div> 
+                <div id="client-pill-newbtn" class="hidden mb-1"> 
                     <span onclick="useNewClientPill()" class="client-pill new-client-pill"><i class="fas fa-plus mr-1"></i> 使用新客戶：「<span id="client-pill-newname"></span>」</span> 
                 </div> 
                 <input type="hidden" id="i-client"> 
-                <div class="text-xs font-bold text-emerald-600 mb-5 flex items-center gap-1" id="client-pill-selected-line"><i class="fas fa-check-circle"></i> 已選擇：<span id="client-pill-selected-name">尚未選擇</span></div> 
+                <div class="text-xs font-bold text-emerald-600 mb-3 flex items-center gap-1" id="client-pill-selected-line"><i class="fas fa-check-circle"></i> 已選擇：<span id="client-pill-selected-name">尚未選擇</span></div> 
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"> 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3"> 
                     <div> 
                         <label id="lbl-name" class="block text-xs font-bold text-gray-500 mb-1">專案名稱</label> 
                         <input id="i-name" class="glass-input w-full" placeholder="輸入標題"> 
@@ -1053,7 +1054,7 @@
                     </div> 
                 </div> 
                  
-                <div class="grid grid-cols-2 gap-4 mb-4"> 
+                <div class="grid grid-cols-2 gap-4 mb-3"> 
                     <div> 
                         <label class="block text-xs font-bold text-gray-500 mb-1">製作人</label> 
                         <div class="flex gap-1"> 
@@ -1071,22 +1072,23 @@
                     </div> 
                 </div> 
                  
-                <div class="mb-4 flex items-center gap-2"> 
-                    <input type="checkbox" id="i-urgent" class="w-5 h-5 text-red-500 rounded focus:ring-red-500 cursor-pointer transition"> 
-                    <label for="i-urgent" class="text-base font-bold text-red-400 cursor-pointer select-none">🔥 標記為急件</label> 
+                <div class="grid grid-cols-2 gap-4 mb-3 items-end"> 
+                    <div class="flex items-center gap-2 pb-3"> 
+                        <input type="checkbox" id="i-urgent" class="w-5 h-5 text-red-500 rounded focus:ring-red-500 cursor-pointer transition"> 
+                        <label for="i-urgent" class="text-sm font-bold text-red-400 cursor-pointer select-none">🔥 標記為急件</label> 
+                    </div> 
+                    <div> 
+                        <label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label> 
+                        <input id="i-date" class="glass-input w-full text-center" placeholder="點擊選擇" autocomplete="off" readonly> 
+                    </div> 
                 </div> 
-
-                <div class="mb-4"> 
-                    <label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label> 
-                    <input id="i-date" class="glass-input w-full text-center" placeholder="點擊選擇" autocomplete="off" readonly> 
-                </div> 
-                <div class="mb-2"> 
+                <div> 
                     <label class="block text-xs font-bold text-gray-500 mb-1">備註</label> 
-                    <textarea id="i-note" class="glass-input w-full h-20"></textarea> 
+                    <textarea id="i-note" class="glass-input w-full" rows="2"></textarea> 
                 </div> 
             </div> 
             <div class="panel-footer-area"> 
-                <button onclick="saveProject()" id="btn-create" class="w-full py-4 rounded-xl font-bold text-lg text-white glass-cta-btn">建立並同步</button> 
+                <button onclick="saveProject()" id="btn-create" class="w-full py-3 rounded-xl font-bold text-lg text-white glass-cta-btn">建立並同步</button> 
             </div> 
         </div> 
     </div> 
@@ -2747,7 +2749,7 @@ function confirmSaveQuote() {
 
         let upcoming = projects.filter(p => p.status !== '已完成' && p.status !== '已結案' && (p.end || p.start));
         upcoming.forEach(p => { p._sortDate = new Date(p.end || p.start); });
-        upcoming = upcoming.filter(p => !isNaN(p._sortDate.getTime())).sort((a, b) => a._sortDate - b._sortDate).slice(0, 6);
+        upcoming = upcoming.filter(p => !isNaN(p._sortDate.getTime())).sort((a, b) => a._sortDate - b._sortDate).slice(0, 5);
         const upcomingEl = document.getElementById('overview-upcoming-list');
         if (upcomingEl) {
             if (upcoming.length === 0) {

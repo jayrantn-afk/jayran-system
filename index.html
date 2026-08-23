@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V0.6</title>
+<title>杰冉影像工作室 | V0.7</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -81,6 +81,41 @@
     .id-ghost .ghost-typed { visibility: hidden; }
     .id-ghost .ghost-suggest { color: #B9B9C2; }
     #i-id.id-input { position: relative; z-index: 2; background: transparent !important; }
+
+    /* 🌟 手動新增彈窗：深色玻璃科技感 */
+    .glass-modal-panel {
+        background: linear-gradient(160deg, rgba(28,28,42,0.92), rgba(18,18,30,0.95)) !important;
+        backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+    }
+    .glass-modal-panel .panel-header-area, .glass-modal-panel .panel-scroll-area { background: transparent !important; }
+    .glass-type-switch { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); }
+    .glass-type-btn { background: transparent; color: rgba(255,255,255,0.5); }
+    .glass-type-btn.active { background: linear-gradient(135deg, #6C5CE7, #00D2FF); color: #fff; }
+    .glass-input, .glass-select {
+        background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff;
+        border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 600; transition: 0.2s; outline: none;
+    }
+    .glass-input::placeholder { color: rgba(255,255,255,0.3); }
+    .glass-input:focus, .glass-select:focus { border-color: #6C5CE7; box-shadow: 0 0 0 3px rgba(108,92,231,0.25); background: rgba(255,255,255,0.09); }
+    .glass-select option { background: #1c1c2a; color: #fff; }
+    .glass-icon-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); }
+    .glass-icon-btn:hover { background: rgba(255,255,255,0.12); }
+    .glass-id-ghost { background: rgba(255,255,255,0.06) !important; border-radius: 10px; color: #fff; }
+    .glass-id-ghost .ghost-suggest { color: rgba(255,255,255,0.32); }
+    .glass-cta-btn { background: linear-gradient(135deg, #6C5CE7, #00D2FF); box-shadow: 0 10px 30px rgba(108,92,231,0.4); transition: 0.2s; }
+    .glass-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(108,92,231,0.55); }
+
+    .client-pill {
+        display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 50px;
+        background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.75); font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .client-pill:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.25); }
+    .client-pill.active { background: linear-gradient(135deg, #6C5CE7, #00D2FF); color: #fff; border-color: transparent; box-shadow: 0 4px 16px rgba(108,92,231,0.45); }
+    .client-pill.new-client-pill { background: rgba(0,210,106,0.12); border-color: rgba(0,210,106,0.4); color: #34D399; }
+    .client-pill.new-client-pill:hover { background: rgba(0,210,106,0.2); }
     .type-btn { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: 700; color: #86868B; background: #FAFAFA; transition: 0.2s; } 
     .type-btn.active { background: #1D1D1F; color: white; } 
     .icon-btn { width: 44px; height: 44px; border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; transition: 0.2s; } 
@@ -777,7 +812,7 @@
     <aside class="sidebar"> 
         <div class="sidebar-brand"> 
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
-            <span class="sidebar-brand-name">杰冉影像工作室 | V0.6</span> 
+            <span class="sidebar-brand-name">杰冉影像工作室 | V0.7</span> 
         </div> 
         <nav class="sidebar-nav"> 
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
@@ -971,57 +1006,53 @@
     </div> 
 
     <div id="modal-manual-add" class="modal-mask"> 
-        <div class="float-panel" style="max-width: 700px;"> 
+        <div class="float-panel glass-modal-panel" style="max-width: 720px;"> 
             <div class="panel-header-area"> 
                 <div class="flex justify-between items-center mb-4"> 
-                    <h3 class="text-xl font-black">手動新增專案</h3> 
-                    <span onclick="closeModal('modal-manual-add')" class="cursor-pointer text-gray-400 hover:text-black text-2xl"><i class="fas fa-times"></i></span> 
+                    <h3 class="text-xl font-black text-white flex items-center gap-2"><i class="fas fa-plus-circle text-indigo-400"></i> 手動新增專案</h3> 
+                    <span onclick="closeModal('modal-manual-add')" class="cursor-pointer text-white/40 hover:text-white text-2xl"><i class="fas fa-times"></i></span> 
+                </div> 
+                <div class="type-switch glass-type-switch"> 
+                    <div onclick="setProjectType('video')" id="btn-type-video" class="type-btn glass-type-btn active">🎬 影片</div> 
+                    <div onclick="setProjectType('image')" id="btn-type-image" class="type-btn glass-type-btn">🎨 圖片</div> 
+                    <div onclick="setProjectType('animation')" id="btn-type-animation" class="type-btn glass-type-btn">✨ 動畫</div> 
                 </div> 
             </div> 
             <div class="panel-scroll-area"> 
-                <div class="type-switch"> 
-                    <div onclick="setProjectType('video')" id="btn-type-video" class="type-btn active">🎬 影片</div> 
-                    <div onclick="setProjectType('image')" id="btn-type-image" class="type-btn">🎨 圖片</div> 
-                    <div onclick="setProjectType('animation')" id="btn-type-animation" class="type-btn">✨ 動畫</div> 
+                <label class="block text-xs font-bold text-white/50 mb-2">客戶名稱</label> 
+                <input id="client-pill-search" oninput="filterClientPills(this.value)" class="glass-input w-full mb-3" placeholder="搜尋客戶，或直接輸入新客戶名稱後按下方「使用新客戶」" autocomplete="off"> 
+                <div id="client-pill-grid" class="flex flex-wrap gap-2 mb-2 max-h-28 overflow-y-auto pr-1"></div> 
+                <div id="client-pill-newbtn" class="hidden mb-3"> 
+                    <span onclick="useNewClientPill()" class="client-pill new-client-pill"><i class="fas fa-plus mr-1"></i> 使用新客戶：「<span id="client-pill-newname"></span>」</span> 
                 </div> 
+                <input type="hidden" id="i-client"> 
+                <div class="text-xs font-bold text-emerald-400 mb-5 flex items-center gap-1" id="client-pill-selected-line"><i class="fas fa-check-circle"></i> 已選擇：<span id="client-pill-selected-name">尚未選擇</span></div> 
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"> 
                     <div> 
-                        <label class="block text-xs font-bold text-gray-500 mb-1">客戶名稱</label> 
-                        <div class="flex gap-2"> 
-                            <div onclick="openClientPickerModal()" class="clean-input font-bold bg-white text-black flex-grow cursor-pointer flex items-center justify-between select-none"> 
-                                <span id="i-client-label" class="text-gray-400">點擊選擇客戶</span> 
-                                <i class="fas fa-chevron-down text-gray-300 text-xs"></i> 
-                            </div> 
-                            <input type="hidden" id="i-client"> 
-                            <div onclick="openHistoryByClient()" class="icon-btn btn-gray" title="預覽此客戶歷史專案"><i class="fas fa-eye"></i></div> 
-                        </div> 
+                        <label id="lbl-name" class="block text-xs font-bold text-white/50 mb-1">專案名稱</label> 
+                        <input id="i-name" class="glass-input w-full" placeholder="輸入標題"> 
                     </div> 
                     <div> 
-                        <label class="block text-xs font-bold text-gray-500 mb-1">完整編號 (如：A001)</label> 
+                        <label class="block text-xs font-bold text-white/50 mb-1">完整編號 (如：A001)</label> 
                         <div style="position:relative;"> 
-                            <div class="id-ghost" id="i-id-ghost"></div> 
-                            <input id="i-id" class="clean-input font-mono font-bold id-input" placeholder="請先選擇客戶" autocomplete="off" onkeydown="handleIdKeydownPM(event)"> 
+                            <div class="id-ghost glass-id-ghost" id="i-id-ghost"></div> 
+                            <input id="i-id" class="glass-input id-input w-full font-mono font-bold" placeholder="請先選擇客戶" autocomplete="off" onkeydown="handleIdKeydownPM(event)"> 
                         </div> 
                     </div> 
-                </div> 
-                 
-                <div class="mb-4"> 
-                    <label id="lbl-name" class="block text-xs font-bold text-gray-500 mb-1">專案名稱</label> 
-                    <input id="i-name" class="clean-input" placeholder="輸入標題"> 
                 </div> 
                  
                 <div class="grid grid-cols-2 gap-4 mb-4"> 
                     <div> 
-                        <label class="block text-xs font-bold text-gray-500 mb-1">製作人</label> 
+                        <label class="block text-xs font-bold text-white/50 mb-1">製作人</label> 
                         <div class="flex gap-1"> 
-                            <select id="i-producer" class="clean-select" onchange="checkProducer()"></select> 
-                            <div onclick="openSettings('Producer')" class="icon-btn btn-gray w-10 h-[46px]" title="管理製作人"><i class="fas fa-cog"></i></div> 
+                            <select id="i-producer" class="glass-select flex-grow" onchange="checkProducer()"></select> 
+                            <div onclick="openSettings('Producer')" class="icon-btn glass-icon-btn w-10 h-[46px]" title="管理製作人"><i class="fas fa-cog"></i></div> 
                         </div> 
                     </div> 
                     <div> 
-                        <label class="block text-xs font-bold text-gray-500 mb-1">類型</label> 
-                        <select id="i-type" class="clean-select">
+                        <label class="block text-xs font-bold text-white/50 mb-1">類型</label> 
+                        <select id="i-type" class="glass-select w-full">
                             <option value="影片">影片</option>
                             <option value="圖片">圖片</option>
                             <option value="動畫">動畫</option>
@@ -1030,33 +1061,20 @@
                 </div> 
                  
                 <div class="mb-4 flex items-center gap-2"> 
-                    <input type="checkbox" id="i-urgent" class="w-5 h-5 text-red-600 rounded focus:ring-red-500 cursor-pointer transition"> 
-                    <label for="i-urgent" class="text-base font-bold text-red-600 cursor-pointer select-none">🔥 標記為急件</label> 
+                    <input type="checkbox" id="i-urgent" class="w-5 h-5 text-red-500 rounded focus:ring-red-500 cursor-pointer transition"> 
+                    <label for="i-urgent" class="text-base font-bold text-red-400 cursor-pointer select-none">🔥 標記為急件</label> 
                 </div> 
 
                 <div class="mb-4"> 
-                    <label class="block text-xs font-bold text-gray-500 mb-1">日期範圍</label> 
-                    <input id="i-date" class="clean-input text-center" placeholder="點擊選擇" autocomplete="off" readonly> 
+                    <label class="block text-xs font-bold text-white/50 mb-1">日期範圍</label> 
+                    <input id="i-date" class="glass-input w-full text-center" placeholder="點擊選擇" autocomplete="off" readonly> 
                 </div> 
                 <div class="mb-6"> 
-                    <label class="block text-xs font-bold text-gray-500 mb-1">備註</label> 
-                    <textarea id="i-note" class="clean-input h-20"></textarea> 
+                    <label class="block text-xs font-bold text-white/50 mb-1">備註</label> 
+                    <textarea id="i-note" class="glass-input w-full h-20"></textarea> 
                 </div> 
-                <button onclick="saveProject()" id="btn-create" class="w-full bg-black text-white py-4 rounded-lg font-bold text-lg shadow-xl hover:shadow-2xl transition hover:bg-gray-800">建立並同步</button> 
+                <button onclick="saveProject()" id="btn-create" class="w-full py-4 rounded-xl font-bold text-lg text-white glass-cta-btn">建立並同步</button> 
             </div> 
-        </div> 
-    </div> 
-
-    <div id="modal-pick-client" class="modal-mask"> 
-        <div class="modal-body w-[420px]"> 
-            <h3 class="text-xl font-black mb-4">選擇客戶</h3> 
-            <input id="client-picker-search" oninput="filterClientPicker(this.value)" class="clean-input mb-4 border border-gray-200" placeholder="搜尋客戶名稱..." autocomplete="off"> 
-            <div id="client-picker-list" class="max-h-60 overflow-y-auto flex flex-col gap-1 mb-4 border-t border-b border-gray-100 py-2"></div> 
-            <div class="flex gap-2"> 
-                <input id="client-picker-new" class="clean-input border border-gray-200 flex-grow" placeholder="或直接輸入新客戶名稱"> 
-                <button onclick="confirmNewClientFromPicker()" class="bg-black text-white px-4 rounded-lg font-bold shrink-0">使用</button> 
-            </div> 
-            <button onclick="closeModal('modal-pick-client')" class="w-full bg-gray-200 py-3 rounded-lg font-bold mt-4">取消</button> 
         </div> 
     </div> 
 
@@ -2247,49 +2265,52 @@ function confirmSaveQuote() {
     function openManualAddModal() {
         renderDynamicOptions();
         document.getElementById('i-client').value = '';
-        document.getElementById('i-client-label').innerText = '點擊選擇客戶';
-        document.getElementById('i-client-label').classList.add('text-gray-400');
-        document.getElementById('i-client-label').classList.remove('text-black');
+        document.getElementById('client-pill-search').value = '';
+        document.getElementById('client-pill-newbtn').classList.add('hidden');
+        document.getElementById('client-pill-selected-name').innerText = '尚未選擇';
+        renderClientPills();
         updateIdGhostPM();
         document.getElementById('modal-manual-add').style.display = 'flex';
     }
 
-    // 🌟 客戶選擇彈窗：夥伴通常只知道客戶、不知道代號，選客戶後右邊編號會自動建議
-    function openClientPickerModal() {
+    // 🌟 客戶膠囊清單：直接嵌在表單裡，全部列出來一次點選，不用再開第二層彈窗
+    function renderClientPills(filterText) {
         const clients = [...new Set((DATA.projects || []).map(p => p.client).filter(c => c))].sort((a, b) => String(a).localeCompare(String(b), 'zh-Hant'));
-        const listEl = document.getElementById('client-picker-list');
-        if (clients.length === 0) {
-            listEl.innerHTML = '<div class="text-center text-gray-400 py-6 text-sm">目前沒有歷史客戶，可以直接在下面新增</div>';
+        const q = (filterText || '').trim().toLowerCase();
+        const filtered = q ? clients.filter(c => String(c).toLowerCase().includes(q)) : clients;
+        const gridEl = document.getElementById('client-pill-grid');
+        const selected = document.getElementById('i-client').value;
+        if (filtered.length === 0) {
+            gridEl.innerHTML = '<div class="text-white/30 text-sm py-2">找不到符合的客戶，可以直接使用新客戶</div>';
         } else {
-            listEl.innerHTML = clients.map(c => `<div class="setting-item cursor-pointer hover:bg-gray-50 rounded-lg px-2" onclick="selectClientFromPicker('${String(c).replace(/'/g, "\\'")}')">${c}</div>`).join('');
+            gridEl.innerHTML = filtered.map(c => `<span class="client-pill ${c === selected ? 'active' : ''}" onclick="selectClientPill('${String(c).replace(/'/g, "\\'")}')">${c}</span>`).join('');
         }
-        document.getElementById('client-picker-search').value = '';
-        document.getElementById('client-picker-new').value = '';
-        document.getElementById('modal-pick-client').style.display = 'flex';
-        setTimeout(() => document.getElementById('client-picker-search').focus(), 100);
+        const newBtn = document.getElementById('client-pill-newbtn');
+        if (q && !clients.some(c => String(c).toLowerCase() === q)) {
+            document.getElementById('client-pill-newname').innerText = (filterText || '').trim();
+            newBtn.classList.remove('hidden');
+        } else {
+            newBtn.classList.add('hidden');
+        }
     }
 
-    function filterClientPicker(val) {
-        const q = val.trim().toLowerCase();
-        document.querySelectorAll('#client-picker-list .setting-item').forEach(el => {
-            el.style.display = el.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
-        });
+    function filterClientPills(val) {
+        renderClientPills(val);
     }
 
-    function selectClientFromPicker(clientName) {
+    function selectClientPill(clientName) {
         document.getElementById('i-client').value = clientName;
-        const label = document.getElementById('i-client-label');
-        label.innerText = clientName;
-        label.classList.remove('text-gray-400');
-        label.classList.add('text-black');
-        closeModal('modal-pick-client');
+        document.getElementById('client-pill-selected-name').innerText = clientName;
+        document.getElementById('client-pill-search').value = '';
+        document.getElementById('client-pill-newbtn').classList.add('hidden');
+        renderClientPills();
         updateIdGhostPM();
     }
 
-    function confirmNewClientFromPicker() {
-        const val = document.getElementById('client-picker-new').value.trim();
-        if (!val) return showToast('請輸入新客戶名稱', 'error');
-        selectClientFromPicker(val);
+    function useNewClientPill() {
+        const val = document.getElementById('client-pill-search').value.trim();
+        if (!val) return;
+        selectClientPill(val);
     }
 
     // 🌟 依客戶歷史找出最常用的代號字首(不分大小寫)

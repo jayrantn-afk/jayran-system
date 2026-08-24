@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V2.3</title>
+<title>杰冉影像工作室 | V2.4</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -58,7 +58,7 @@
     @media (max-width: 900px) { .quick-tiles { grid-template-columns: repeat(2, 1fr); } } 
     @media (max-width: 768px) { 
         .sidebar { width: 68px; padding: 16px 8px; } 
-        .sidebar-brand-name, .sidebar-brand-sub, .sidebar-user-greeting, .sidebar-logout span, .sidebar-nav .nav-item span { display: none; } 
+        .sidebar-brand-name, .sidebar-brand-sub, .sidebar-user-greeting, .sidebar-logout span, .sidebar-nav .nav-item span, .sidebar-footer .nav-item span { display: none; } 
         .sidebar-nav .nav-item { justify-content: center; padding: 12px 0; } 
         .sidebar-logout { padding: 10px 0; } 
     } 
@@ -982,7 +982,7 @@
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
             <div style="min-width:0;">
                 <div class="sidebar-brand-name">杰冉影像工作室</div>
-                <div class="sidebar-brand-sub" style="font-size:10px; font-weight:800; color:#B4B4C6; letter-spacing:0.08em; margin-top:1px;">STUDIO V2.3</div>
+                <div class="sidebar-brand-sub" style="font-size:10px; font-weight:800; color:#B4B4C6; letter-spacing:0.08em; margin-top:1px;">STUDIO V2.4</div>
             </div>
         </div> 
         <nav class="sidebar-nav"> 
@@ -990,7 +990,6 @@
             <div onclick="switchTab('wei')" id="nav-wei" class="nav-item"><i class="fas fa-user"></i><span>魏敏軒</span></div> 
             <div onclick="switchTab('chiu')" id="nav-chiu" class="nav-item"><i class="fas fa-user"></i><span>邱仁杰</span></div> 
             <div onclick="switchTab('quote')" id="nav-quote" class="nav-item"><i class="fas fa-file-invoice-dollar"></i><span>報價單</span></div> 
-            <div onclick="window.open('https://jayrantn-afk.github.io/jayran-system/Invoice.html', '_blank')" id="nav-invoice" class="nav-item"><i class="fas fa-money-check-dollar"></i><span>請款單</span></div> 
             <div onclick="switchTab('gan')" id="nav-gan" class="nav-item"><i class="fas fa-chart-bar"></i><span>甘特圖</span></div> 
             <div onclick="switchTab('calendar')" id="nav-calendar" class="nav-item"><i class="fas fa-calendar-alt"></i><span>行事曆</span></div> 
             <div onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item"><i class="fas fa-chart-pie"></i><span>數據中心</span></div> 
@@ -999,6 +998,7 @@
         <div class="sidebar-footer"> 
             <div id="user-greeting" class="sidebar-user-greeting"></div> 
             <button onclick="logout()" class="sidebar-logout"><i class="fas fa-sign-out-alt"></i><span>登出</span></button> 
+            <div onclick="window.open('https://jayrantn-afk.github.io/jayran-system/Invoice.html', '_blank')" id="nav-invoice" class="nav-item" style="opacity:0.7;"><i class="fas fa-money-check-dollar"></i><span>請款單</span></div> 
         </div> 
     </aside> 
 

@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V2.2</title>
+<title>杰冉影像工作室 | V2.3</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -982,7 +982,7 @@
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
             <div style="min-width:0;">
                 <div class="sidebar-brand-name">杰冉影像工作室</div>
-                <div class="sidebar-brand-sub" style="font-size:10px; font-weight:800; color:#B4B4C6; letter-spacing:0.08em; margin-top:1px;">STUDIO V2.2</div>
+                <div class="sidebar-brand-sub" style="font-size:10px; font-weight:800; color:#B4B4C6; letter-spacing:0.08em; margin-top:1px;">STUDIO V2.3</div>
             </div>
         </div> 
         <nav class="sidebar-nav"> 
@@ -1883,6 +1883,7 @@
         if (DATA && DATA.projects) {
             let changed = false;
             let autoStartedList = [];
+            let autoCompletedList = [];
             DATA.projects.forEach(p => {
                 let dateStr = p.end || p.start || "";
                 if (dateStr && p.status !== '已完成' && p.status !== '已結案') {
@@ -1892,11 +1893,11 @@
                         if (!isNaN(d.getTime()) && d < new Date('2026-08-01T00:00:00')) {
                             p.status = '已完成';
                             changed = true;
+                            autoCompletedList.push(p);
                         }
                     } catch(e){}
                 }
 
-                // 🌟 自動開始：交件日期到了的「尚未進行」案件，自動轉成「製作中」，不用手動點開始
                 if (p.status === '尚未進行' && p.start) {
                     try {
                         let sd = new Date(p.start);
@@ -1915,6 +1916,7 @@
             if (changed && !isCache) {
                 localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
                 autoStartedList.forEach(p => callAPI('updateStatus', { cat: p.category, zone: p.zone, id: p.id, status: '製作中', hours: 0 }, () => {}));
+                autoCompletedList.forEach(p => callAPI('updateStatus', { cat: p.category, zone: p.zone, id: p.id, status: '已完成', hours: 0 }, () => {}));
             }
         }
 

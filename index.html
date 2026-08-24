@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V2.1</title>
+<title>杰冉影像工作室 | V2.2</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -982,7 +982,7 @@
             <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo"> 
             <div style="min-width:0;">
                 <div class="sidebar-brand-name">杰冉影像工作室</div>
-                <div class="sidebar-brand-sub" style="font-size:10px; font-weight:800; color:#B4B4C6; letter-spacing:0.08em; margin-top:1px;">STUDIO V2.1</div>
+                <div class="sidebar-brand-sub" style="font-size:10px; font-weight:800; color:#B4B4C6; letter-spacing:0.08em; margin-top:1px;">STUDIO V2.2</div>
             </div>
         </div> 
         <nav class="sidebar-nav"> 
@@ -1371,6 +1371,19 @@
             </div> 
 
             <div id="kb-normal-view"> 
+                <details class="mb-6 group" open> 
+                    <summary class="panel-title mb-3 px-2 cursor-pointer list-none outline-none select-none" style="font-size:15px; color:#A5A5B8;"> 
+                        <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90 text-gray-300 text-xs mr-1"></i> 
+                        <span class="panel-title-icon" style="width:30px; height:30px; font-size:13px; background:linear-gradient(135deg,#C7C9D9,#9494A8);"><i class="fas fa-hourglass-half"></i></span>尚未進行 
+                    </summary> 
+                    <div class="table-container"> 
+                        <table class="excel-table"> 
+                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th class="admin-only">操作</th></tr></thead> 
+                            <tbody id="kb-todo"></tbody> 
+                        </table> 
+                    </div> 
+                </details> 
+
                 <div class="mb-8"> 
                     <div class="panel-title mb-3 px-2" style="font-size:15px;"><span class="panel-title-icon" style="width:30px; height:30px; font-size:13px; background:linear-gradient(135deg,#5FB6FF,#3B82F6);"><i class="fas fa-fire"></i></span>製作中</div> 
                     <div class="table-container"> 
@@ -1390,19 +1403,6 @@
                         <table class="excel-table"> 
                             <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th class="admin-only">操作</th></tr></thead> 
                             <tbody id="kb-review"></tbody> 
-                        </table> 
-                    </div> 
-                </details> 
-                 
-                <details class="mb-6 group"> 
-                    <summary class="panel-title mb-3 px-2 cursor-pointer list-none outline-none select-none" style="font-size:15px; color:#A5A5B8;"> 
-                        <i class="fas fa-caret-right transition-transform duration-200 group-open:rotate-90 text-gray-300 text-xs mr-1"></i> 
-                        <span class="panel-title-icon" style="width:30px; height:30px; font-size:13px; background:linear-gradient(135deg,#C7C9D9,#9494A8);"><i class="fas fa-hourglass-half"></i></span>尚未進行 
-                    </summary> 
-                    <div class="table-container"> 
-                        <table class="excel-table"> 
-                            <thead><tr><th>ID</th><th>專案名稱</th><th>客戶</th><th>狀態</th><th>日期</th><th class="admin-only">操作</th></tr></thead> 
-                            <tbody id="kb-todo"></tbody> 
                         </table> 
                     </div> 
                 </details> 
@@ -1882,6 +1882,7 @@
         // 🌟 自動修正：將 8 月 1 日以前的專案強制轉為「已完成」
         if (DATA && DATA.projects) {
             let changed = false;
+            let autoStartedList = [];
             DATA.projects.forEach(p => {
                 let dateStr = p.end || p.start || "";
                 if (dateStr && p.status !== '已完成' && p.status !== '已結案') {
@@ -1894,9 +1895,26 @@
                         }
                     } catch(e){}
                 }
+
+                // 🌟 自動開始：交件日期到了的「尚未進行」案件，自動轉成「製作中」，不用手動點開始
+                if (p.status === '尚未進行' && p.start) {
+                    try {
+                        let sd = new Date(p.start);
+                        if (!isNaN(sd.getTime())) {
+                            sd.setHours(0,0,0,0);
+                            let today = new Date(); today.setHours(0,0,0,0);
+                            if (sd <= today) {
+                                p.status = '製作中';
+                                changed = true;
+                                autoStartedList.push(p);
+                            }
+                        }
+                    } catch(e){}
+                }
             });
             if (changed && !isCache) {
                 localStorage.setItem('JAYRAN_SYSTEM_DATA', JSON.stringify(DATA));
+                autoStartedList.forEach(p => callAPI('updateStatus', { cat: p.category, zone: p.zone, id: p.id, status: '製作中', hours: 0 }, () => {}));
             }
         }
 

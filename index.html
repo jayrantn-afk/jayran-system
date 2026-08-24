@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V1.9</title>
+<title>杰冉影像工作室 | V2.0</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -1086,9 +1086,12 @@
         <div class="max-w-5xl mx-auto"> 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6"> 
                 <h2 class="text-3xl font-black px-2 border-l-8 border-black pl-4">📊 營運數據中心</h2> 
-                <select id="db-month-filter" onchange="renderDashboard()" class="glass-select w-32 py-2 text-center font-bold cursor-pointer"> 
-                    <option value="all">年度總結</option><option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option><option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option><option value="9">9月</option><option value="10">10月</option><option value="11">11月</option><option value="12">12月</option> 
-                </select> 
+                <div class="flex gap-2 items-center"> 
+                    <button onclick="runDataHealthCheck()" class="glass-pill-btn pill-orange"><i class="fas fa-stethoscope"></i> 資料健康檢查</button> 
+                    <select id="db-month-filter" onchange="renderDashboard()" class="glass-select w-32 py-2 text-center font-bold cursor-pointer"> 
+                        <option value="all">年度總結</option><option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option><option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option><option value="9">9月</option><option value="10">10月</option><option value="11">11月</option><option value="12">12月</option> 
+                    </select> 
+                </div> 
             </div> 
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"> 
@@ -1232,6 +1235,28 @@
                     </div> 
                 </div> 
             </div> 
+        </div> 
+    </div> 
+
+    <div id="modal-health-check" class="modal-mask"> 
+        <div class="float-panel glass-modal-panel" style="max-width: 720px; width: 92%; max-height: 85vh;"> 
+            <div class="panel-header-area"> 
+                <div class="flex justify-between items-center mb-4"> 
+                    <h3 class="font-black text-2xl flex items-center gap-3"> 
+                        <span class="stat-icon" style="background:linear-gradient(135deg,#FFB199,#FF8A3D); width:42px; height:42px; font-size:17px;"><i class="fas fa-stethoscope"></i></span> 
+                        資料健康檢查 
+                    </h3> 
+                    <span onclick="closeModal('modal-health-check')" class="cursor-pointer text-2xl transition"><i class="fas fa-times"></i></span> 
+                </div> 
+                <p class="text-sm font-bold mb-2" style="color:rgba(29,29,31,0.55);">掃描目前管理表裡的所有專案，找出可能有問題（客戶名稱空白、專案名稱空白、或編號重複）的資料，方便你對照營收表找出數量對不上的那一筆。</p> 
+
+                <div class="mt-4 pt-4 border-t" style="border-color:rgba(0,0,0,0.06);"> 
+                    <label class="block text-xs font-bold mb-1" style="color:rgba(29,29,31,0.5);">🔍 真正對比營收表：把營收表現有的「編號」那一整欄複製貼上這裡（逗號、換行、空格都可以）</label> 
+                    <textarea id="revenue-ids-input" class="glass-input w-full text-sm" rows="3" placeholder="例如：a025, a026, z007, 0011, P003..."></textarea> 
+                    <button onclick="compareAgainstRevenueList()" class="w-full py-2.5 rounded-xl font-bold text-sm text-white glass-cta-btn mt-2">比對出「管理表有、營收表沒有」的案子</button> 
+                </div> 
+            </div> 
+            <div id="health-check-list" class="panel-scroll-area"></div> 
         </div> 
     </div> 
 
@@ -3192,6 +3217,86 @@ function confirmSaveQuote() {
                 `).join('');
             }
         }
+    }
+
+    function compareAgainstRevenueList() {
+        const raw = document.getElementById('revenue-ids-input').value;
+        const revenueIds = new Set(
+            raw.split(/[\s,，、\n]+/).map(s => s.trim().toLowerCase()).filter(s => s.length > 0)
+        );
+        if (revenueIds.size === 0) {
+            showToast('請先貼上營收表的編號清單', 'error');
+            return;
+        }
+
+        const projects = DATA.projects || [];
+        const orphans = projects.filter(p => p.id && !revenueIds.has(String(p.id).trim().toLowerCase()));
+
+        const listEl = document.getElementById('health-check-list');
+        if (orphans.length === 0) {
+            listEl.innerHTML = `<div class="text-center py-10"><div class="text-4xl mb-3">✅</div><div class="font-bold text-gray-600">管理表裡每一筆編號，都在你貼的營收表清單裡找得到，沒有多出來的案子。</div></div>`;
+        } else {
+            listEl.innerHTML = `<div class="text-xs font-bold mb-3" style="color:#FF3B30;">管理表共 ${projects.length} 筆，貼上的營收表清單有 ${revenueIds.size} 筆 —— 以下 ${orphans.length} 筆「管理表有，但營收表清單裡找不到」：</div>` +
+                orphans.map(p => `
+                    <div class="deadline-item bg-white border border-gray-100 shadow-sm mb-2" style="cursor:pointer;" onclick="closeModal('modal-health-check'); openEditProjectById('${p.id}','${p.zone}')">
+                        <div class="deadline-bar is-overdue"></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="font-bold text-gray-800 truncate text-sm">${p.name || '（專案名稱空白）'}</div>
+                            <div class="text-xs text-gray-400 mt-0.5">編號：${p.id} · 客戶：${p.client || '（空白）'} · 狀態：${p.status || '—'} · 日期：${p.start || ''} ~ ${p.end || ''}</div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-300 shrink-0"></i>
+                    </div>
+                `).join('');
+        }
+    }
+
+    function runDataHealthCheck() {
+        const projects = DATA.projects || [];
+        const issues = [];
+        const seenKeys = {};
+
+        projects.forEach(p => {
+            const reasons = [];
+            if (!p.client || String(p.client).trim() === '') reasons.push('客戶名稱空白');
+            if (!p.name || String(p.name).trim() === '') reasons.push('專案名稱空白');
+            if (!p.id || String(p.id).trim() === '') reasons.push('編號空白');
+
+            const key = `${p.id}__${p.zone}`;
+            if (seenKeys[key]) {
+                reasons.push('編號+分類重複（跟另一筆撞號）');
+                seenKeys[key].reasons.push('編號+分類重複（跟另一筆撞號）');
+            } else {
+                seenKeys[key] = { p, reasons };
+            }
+
+            if (reasons.length > 0) issues.push({ p, reasons });
+        });
+
+        // 去除重複帶入（重複撞號的兩筆都要各自顯示一次，但避免同一筆物件被 push 兩次）
+        const uniqueIssues = [];
+        const pushedRefs = new Set();
+        issues.forEach(item => {
+            if (!pushedRefs.has(item.p)) { uniqueIssues.push(item); pushedRefs.add(item.p); }
+        });
+
+        const listEl = document.getElementById('health-check-list');
+        if (uniqueIssues.length === 0) {
+            listEl.innerHTML = `<div class="text-center py-10"><div class="text-4xl mb-3">✅</div><div class="font-bold text-gray-600">沒有掃到任何缺欄位或編號重複的專案，目前共 ${projects.length} 筆資料。</div></div>`;
+        } else {
+            listEl.innerHTML = `<div class="text-xs font-bold mb-3" style="color:#FF8A3D;">共掃到 ${uniqueIssues.length} 筆可疑資料（管理表總計 ${projects.length} 筆）：</div>` +
+                uniqueIssues.map(item => `
+                    <div class="deadline-item bg-white border border-gray-100 shadow-sm mb-2" style="cursor:pointer;" onclick="closeModal('modal-health-check'); openEditProjectById('${item.p.id}','${item.p.zone}')">
+                        <div class="deadline-bar is-overdue"></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="font-bold text-gray-800 truncate text-sm">${item.p.name || '（專案名稱空白）'}</div>
+                            <div class="text-xs text-gray-400 mt-0.5">編號：${item.p.id || '（空白）'} · 客戶：${item.p.client || '（空白）'} · 分類：${item.p.zone || '（空白）'}</div>
+                            <div class="text-xs font-bold mt-1" style="color:#FF3B30;">⚠ ${item.reasons.join('、')}</div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-300 shrink-0"></i>
+                    </div>
+                `).join('');
+        }
+        document.getElementById('modal-health-check').style.display = 'flex';
     }
 
     function renderDashboard() { 

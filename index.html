@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V3.0</title>
+<title>杰冉影像工作室 | V3.1</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -2069,10 +2069,11 @@
             const m = String(p.zone || '').match(/^([A-Za-z])/);
             if (!m || !p.client) return;
             const letter = m[1];
+            if (letter === 'Z' || letter === 'z') return; // V3.1：Z/z 保留給「散客」，不要被自動偵測成任何特定客戶
             counts[letter] = counts[letter] || {};
             counts[letter][p.client] = (counts[letter][p.client] || 0) + 1;
         });
-        const result = {};
+        const result = { Z: '散客', z: '散客' };
         Object.keys(counts).forEach(letter => {
             const entries = Object.entries(counts[letter]).sort((a, b) => b[1] - a[1]);
             result[letter] = entries[0][0];
@@ -2089,10 +2090,11 @@
         const lower = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
         const buildRow = (letters) => letters.map(letter => {
-            const client = window.manualCodeMap[letter] || autoMap[letter] || '';
-            const isManual = !!window.manualCodeMap[letter];
+            const isReserved = (letter === 'Z' || letter === 'z');
+            const client = isReserved ? '散客' : (window.manualCodeMap[letter] || autoMap[letter] || '');
+            const isManual = !isReserved && !!window.manualCodeMap[letter];
             return `
-                <div onclick="editCodeMapping('${letter}')" class="rounded-xl p-2 text-center cursor-pointer border transition ${client ? (isManual ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100' : 'bg-gray-50 border-gray-200 hover:bg-gray-100') : 'bg-white border-dashed border-gray-200 hover:border-indigo-300'}" title="${client ? (isManual ? '手動設定：' + client : '自動偵測：' + client) : '點擊設定這個代號'}">
+                <div onclick="editCodeMapping('${letter}')" class="rounded-xl p-2 text-center border transition ${isReserved ? 'bg-amber-50 border-amber-200 cursor-not-allowed' : 'cursor-pointer'} ${!isReserved && client ? (isManual ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100' : 'bg-gray-50 border-gray-200 hover:bg-gray-100') : (!isReserved ? 'bg-white border-dashed border-gray-200 hover:border-indigo-300' : '')}" title="${isReserved ? 'Z/z 保留給散客，不能指定特定客戶' : (client ? (isManual ? '手動設定：' + client : '自動偵測：' + client) : '點擊設定這個代號')}">
                     <div class="font-black text-sm text-gray-800">${letter}</div>
                     <div class="text-[10px] font-bold ${client ? 'text-gray-600' : 'text-gray-300'} truncate mt-0.5">${client || '未設定'}</div>
                 </div>`;
@@ -2113,6 +2115,7 @@
     // V3.29：點一個字母，手動設定/修改這個代號對應的客戶；留空清除手動設定，改回自動偵測。
     // 存到 Firestore(jayran-pm/codeRegistry/map)，營收表那邊也連到同一個資料庫，開啟時會讀到最新設定
     function editCodeMapping(letter) {
+        if (letter === 'Z' || letter === 'z') { showToast('Z/z 是保留給「散客」用的，不能指定成特定客戶', 'error'); return; }
         const current = window.manualCodeMap[letter] || '';
         const val = prompt(`代號「${letter}」要對應哪個客戶？\n(留空白按確定 = 清除手動設定，改回自動偵測)`, current);
         if (val === null) return;

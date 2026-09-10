@@ -1,4 +1,4 @@
-<title>杰冉影像工作室 | V2.6</title>
+<title>杰冉影像工作室 | V2.8</title>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script> 
 
@@ -12,7 +12,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> 
  
 <link rel="icon" href="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn"> 
- 
 <style> 
     /* --- 基礎架構 --- */ 
     :root { 
@@ -517,7 +516,6 @@
         </div> 
     </div> 
 </div> 
-
 <div id="admin-view"> 
     <div id="login-overlay"> 
         <div class="login-glass-card"> 
@@ -714,7 +712,6 @@
             </div> 
         </div> 
     </div> 
-
     <div id="modal-edit-project" class="modal-mask"> 
         <div class="modal-body w-[450px]"> 
             <h3 class="text-2xl font-black mb-6">編輯專案內容</h3> 
@@ -892,7 +889,6 @@
             </div> 
         </div> 
     </div> 
-
     <div id="modal-quote-preview" class="modal-mask"> 
         <div class="absolute top-4 left-0 w-full flex justify-center gap-4 no-print z-50"> 
             <button onclick="downloadQuoteImage()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow-lg transition"><i class="fas fa-image mr-2"></i>下載為圖檔 (PNG)</button> 
@@ -977,8 +973,8 @@
 
     <aside class="sidebar"> 
         <div class="sidebar-brand" style="flex-direction:column; align-items:flex-start; gap:4px; cursor:pointer;" onclick="switchTab('add')" title="回首頁"> 
-            <img src="data:image/png;base64,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" alt="Logo" class="sidebar-brand-logo" style="width:110px; height:auto; border-radius:0; box-shadow:none;"> 
-            <div class="sidebar-brand-sub" style="font-size:10px; font-weight:800; color:#B4B4C6; letter-spacing:0.08em;">V2.6</div>
+            <img src="https://lh3.googleusercontent.com/d/1mIXVb8bfXJcZ__xPtUrB2TQw4xQ0Ppcn" alt="Logo" class="sidebar-brand-logo" style="width:110px; height:auto; border-radius:0; box-shadow:none;"> 
+            <div class="sidebar-brand-sub" style="font-size:10px; font-weight:800; color:#B4B4C6; letter-spacing:0.08em;">V2.7</div>
         </div> 
         <nav class="sidebar-nav"> 
             <div onclick="switchTab('add')" id="nav-add" class="nav-item active"><i class="fas fa-th-large"></i><span>總覽</span></div> 
@@ -1041,7 +1037,6 @@
             </div> 
         </div> 
     </div> 
-
     <div id="p-vip" class="hidden page-scroll-container fade-in"> 
         <div class="max-w-6xl mx-auto"> 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6 px-2" style="padding-right:54px;"> 
@@ -1054,6 +1049,14 @@
                     <input id="vip-search" oninput="filterVipClients(this.value)" type="text" placeholder="搜尋客戶名稱..." class="w-full bg-white border border-gray-200 rounded-xl py-2.5 pl-11 pr-4 text-sm font-bold focus:outline-none focus:border-blue-500 shadow-sm transition"> 
                 </div> 
             </div> 
+
+            <div class="clean-card mb-4">
+                <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                    <div class="font-black text-gray-800 flex items-center gap-2"><i class="fas fa-hashtag text-indigo-500"></i> 字母代號對照表</div>
+                    <div class="text-[11px] font-bold text-gray-400">灰底＝自動偵測 · 紫底＝手動設定 · 點擊任一格可修改</div>
+                </div>
+                <div id="code-registry-grid"></div>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"> 
                 <div class="stat-card text-center"> 
@@ -1076,7 +1079,6 @@
             <div id="vip-client-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div> 
         </div> 
     </div> 
-
     <div id="p-dashboard" class="hidden page-scroll-container fade-in"> 
         <div class="max-w-5xl mx-auto"> 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6"> 
@@ -1149,7 +1151,6 @@
             </div> 
         </div> 
     </div> 
-
     <div id="p-add" class="page-scroll-container fade-in" style="display:flex; flex-direction:column; overflow:hidden;"> 
         <!-- 🌟 總覽 --> 
         <div style="display:flex; flex-direction:column; flex:1; min-height:0; width:100%; max-width:1560px; margin:0 auto; padding: 0 8px; gap:12px;"> 
@@ -1236,7 +1237,6 @@
             </div> 
         </div> 
     </div> 
-
     <div id="modal-health-check" class="modal-mask"> 
         <div class="float-panel glass-modal-panel" style="max-width: 720px; width: 92%; max-height: 85vh;"> 
             <div class="panel-header-area"> 
@@ -1338,7 +1338,6 @@
             </div> 
         </div> 
     </div> 
-
     <div id="p-kanban" class="hidden page-scroll-container fade-in"> 
         <div class="max-w-full mx-auto flex flex-col h-full"> 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8" style="padding-right:54px;"> 
@@ -1470,7 +1469,6 @@
     </div> 
     </div> 
 </div> 
-
 <script> 
     // ========================================================= 
     // ★ 核心變數與 Firebase 設定 
@@ -1803,7 +1801,7 @@
 
         if (isLoggedIn()) {  
             document.getElementById('login-overlay').style.display = 'none';  
-            startApp();  
+            loadCodeRegistry(startApp); // V3.29：先讀代號對照表，再啟動系統
         } else {  
             document.getElementById('loader').style.display = 'none';  
         } 
@@ -1824,7 +1822,7 @@
                 localStorage.setItem(LOGIN_KEY, new Date().getTime()); 
                 localStorage.setItem('JAYRAN_ROLE', res.role); 
                 document.getElementById('login-overlay').style.opacity = '0'; 
-                setTimeout(() => { document.getElementById('login-overlay').style.display = 'none'; startApp(); }, 500); 
+                setTimeout(() => { document.getElementById('login-overlay').style.display = 'none'; loadCodeRegistry(startApp); }, 500); 
             } else { 
                 showToast(res.msg || "帳號或密碼錯誤！", "error");  
                 document.getElementById('login-pass').value = ''; 
@@ -1849,6 +1847,16 @@
         } 
         return true; 
     } 
+
+    // V3.29：字母代號對照表——讀取雲端手動設定過的對照表(codeRegistry/map)，
+    // 跟自動偵測的合併：手動設定過的字母以雲端為準，沒手動設定過的字母才用自動偵測結果
+    window.manualCodeMap = window.manualCodeMap || {};
+    function loadCodeRegistry(callback) {
+        db.collection('codeRegistry').doc('map').get().then(doc => {
+            window.manualCodeMap = (doc.exists ? doc.data() : {}) || {};
+            if (callback) callback();
+        }).catch(e => { console.error('讀取代號對照表失敗:', e); if (callback) callback(); });
+    }
 
     function startApp() { 
         const role = localStorage.getItem('JAYRAN_ROLE'); 
@@ -2051,7 +2059,71 @@
         }); 
         if (html === '') { html = '<div class="col-span-full text-center text-gray-400 py-8 font-bold">目前沒有客戶資料</div>'; } 
         grid.innerHTML = html; 
+        renderCodeGrid(); // V3.29：字母代號對照區
     } 
+
+    // V3.29：掃描現有專案，找出每個字母(區分大小寫)目前最常對應到哪個客戶
+    function buildAutoCodeMap() {
+        const counts = {};
+        (DATA.projects || []).forEach(p => {
+            const m = String(p.zone || '').match(/^([A-Za-z])/);
+            if (!m || !p.client) return;
+            const letter = m[1];
+            counts[letter] = counts[letter] || {};
+            counts[letter][p.client] = (counts[letter][p.client] || 0) + 1;
+        });
+        const result = {};
+        Object.keys(counts).forEach(letter => {
+            const entries = Object.entries(counts[letter]).sort((a, b) => b[1] - a[1]);
+            result[letter] = entries[0][0];
+        });
+        return result;
+    }
+
+    // V3.29：渲染大寫A-Z、小寫a-z兩排代號格子。灰底=自動偵測、紫底=手動設定
+    function renderCodeGrid() {
+        const gridEl = document.getElementById('code-registry-grid');
+        if (!gridEl) return;
+        const autoMap = buildAutoCodeMap();
+        const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        const lower = 'abcdefghijklmnopqrstuvwxyz'.split('');
+
+        const buildRow = (letters) => letters.map(letter => {
+            const client = window.manualCodeMap[letter] || autoMap[letter] || '';
+            const isManual = !!window.manualCodeMap[letter];
+            return `
+                <div onclick="editCodeMapping('${letter}')" class="rounded-xl p-2 text-center cursor-pointer border transition ${client ? (isManual ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100' : 'bg-gray-50 border-gray-200 hover:bg-gray-100') : 'bg-white border-dashed border-gray-200 hover:border-indigo-300'}" title="${client ? (isManual ? '手動設定：' + client : '自動偵測：' + client) : '點擊設定這個代號'}">
+                    <div class="font-black text-sm text-gray-800">${letter}</div>
+                    <div class="text-[10px] font-bold ${client ? 'text-gray-600' : 'text-gray-300'} truncate mt-0.5">${client || '未設定'}</div>
+                </div>`;
+        }).join('');
+
+        gridEl.innerHTML = `
+            <div class="mb-4">
+                <div class="text-xs font-bold text-gray-400 mb-2">大寫代號 A – Z</div>
+                <div class="grid grid-cols-6 md:grid-cols-13 gap-2">${buildRow(upper)}</div>
+            </div>
+            <div>
+                <div class="text-xs font-bold text-gray-400 mb-2">小寫代號 a – z</div>
+                <div class="grid grid-cols-6 md:grid-cols-13 gap-2">${buildRow(lower)}</div>
+            </div>
+        `;
+    }
+
+    // V3.29：點一個字母，手動設定/修改這個代號對應的客戶；留空清除手動設定，改回自動偵測。
+    // 存到 Firestore(jayran-pm/codeRegistry/map)，營收表那邊也連到同一個資料庫，開啟時會讀到最新設定
+    function editCodeMapping(letter) {
+        const current = window.manualCodeMap[letter] || '';
+        const val = prompt(`代號「${letter}」要對應哪個客戶？\n(留空白按確定 = 清除手動設定，改回自動偵測)`, current);
+        if (val === null) return;
+        const trimmed = val.trim();
+        if (trimmed) window.manualCodeMap[letter] = trimmed;
+        else delete window.manualCodeMap[letter];
+
+        db.collection('codeRegistry').doc('map').set(window.manualCodeMap)
+            .then(() => { showToast(`代號「${letter}」已更新，營收表打這個代號會自動帶出客戶`); renderCodeGrid(); })
+            .catch(e => { showToast('儲存失敗：' + e.message, 'error'); });
+    }
 
     function filterVipClients(value) { 
         const q = value.trim().toLowerCase(); 
@@ -2647,7 +2719,6 @@ function confirmSaveQuote() {
     // ========================================================= 
     // 🌟 專案建立與表單操作 (已更新為單一編號輸入) 
     // ========================================================= 
-    // 🌟 總覽頁的「手動新增專案」按鈕，開啟彈窗並準備好下拉選單
     function openManualAddModal() {
         renderDynamicOptions();
         document.getElementById('i-client').value = '';
@@ -2659,7 +2730,6 @@ function confirmSaveQuote() {
         document.getElementById('modal-manual-add').style.display = 'flex';
     }
 
-    // 🌟 常用客戶（手動加入/移除，存在瀏覽器本機）
     const FAV_CLIENTS_KEY = 'JAYRAN_FAV_CLIENTS';
     function getFavClients() {
         try { return JSON.parse(localStorage.getItem(FAV_CLIENTS_KEY)) || []; } catch(e) { return []; }
@@ -2675,8 +2745,6 @@ function confirmSaveQuote() {
         renderClientPills(document.getElementById('client-pill-search').value);
     }
 
-    // 🌟 客戶膠囊清單：直接嵌在表單裡，全部列出來（可捲動瀏覽），不用再開第二層彈窗
-    // 過濾規則：代號主要為 Z/z（散客類）的客戶不列入一般清單，統一走「散客」那顆膠囊
     function renderClientPills(filterText) {
         const allClients = [...new Set((DATA.projects || []).map(p => p.client).filter(c => c))];
         const clients = allClients.filter(c => {
@@ -2734,7 +2802,6 @@ function confirmSaveQuote() {
         selectClientPill(val);
     }
 
-    // 🌟 依客戶歷史找出最常用的代號字首(不分大小寫)
     function findClientPrefixRaw(client) {
         if (!client || !DATA || !DATA.projects) return null;
         let counts = {};
@@ -2748,7 +2815,6 @@ function confirmSaveQuote() {
         keys.sort((a, b) => counts[b] - counts[a]);
         return keys[0];
     }
-    // 「散客」固定用 Z/z，不論歷史紀錄；其餘客戶照歷史紀錄推算
     function findClientPrefix(client) {
         if (!client) return null;
         if (client === '散客') return 'Z';
@@ -2757,7 +2823,6 @@ function confirmSaveQuote() {
 
     function escapeHtmlPM(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-    // 🌟 編號欄位淺色自動建議：選好客戶 + 類型後，自動抓這個客戶上次編到哪號，淺灰顯示在你打的字後面
     function updateIdGhostPM() {
         const ghostEl = document.getElementById('i-id-ghost');
         const idInput = document.getElementById('i-id');
@@ -2795,7 +2860,7 @@ function confirmSaveQuote() {
         }
         const remainder = suggestion.slice(typed.length);
         ghostEl.innerHTML = `<span class="ghost-typed">${escapeHtmlPM(typed)}</span><span class="ghost-suggest">${escapeHtmlPM(remainder)}</span>`;
-        idInput.placeholder = ''; // 有淺色建議顯示時，清空原生 placeholder，避免兩段文字疊在一起
+        idInput.placeholder = '';
         idInput.dataset.suggestion = suggestion;
     }
 
@@ -2812,7 +2877,6 @@ function confirmSaveQuote() {
     }
 
     function setProjectType(type) {  
-        // type: 'video' | 'image' | 'animation'。動畫跟影片都算 video 分類(大寫代號)，圖片算 image 分類(小寫代號)
         curCat = (type === 'image') ? 'image' : 'video';
         document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));  
         document.getElementById('btn-type-' + type).classList.add('active');  
@@ -2868,7 +2932,6 @@ function confirmSaveQuote() {
         let prefix = prefixMatch ? prefixMatch[0] : 'Z'; 
         const zone = `${prefix}_${client}`; 
 
-        // 防呆檢查：該客戶底下是否已經有這個編號(區分大小寫，因為大小寫分別代表不同類型) 
         if (DATA.projects && DATA.projects.some(p => p.zone === zone && String(p.id) === String(idRaw))) { 
             return showToast(`編號 ${idRaw} 已經存在於此客戶的專案中，請更換！`, "error"); 
         } 
@@ -2958,15 +3021,12 @@ function confirmSaveQuote() {
                 <td class="font-bold text-center">${p.producer === '一起' ? '<span class="text-purple-600">一起</span>' : (p.producer === '魏敏軒' ? '<span class="text-indigo-600">魏</span>' : (p.producer === '邱仁杰' ? '<span class="text-teal-600">邱</span>' : '<span class="text-gray-400">未指派</span>'))}</td> 
                 <td><span class="status-badge ${badgeClass}">${p.status}</span></td> 
                 <td class="text-xs text-gray-500 font-mono whitespace-nowrap">${p.start} ~ ${p.end}</td> 
-                <td class="admin-only"><button onclick="openEditProjectById('${p.id}', '${p.zone}')" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-xs font-bold transition text-gray-700">編輯</button></td> 
+                <td class="admin-only whitespace-nowrap"><button onclick="openEditProjectById('${p.id}', '${p.zone}')" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-xs font-bold transition text-gray-700 mr-1">編輯</button><button onclick="deleteProject('${p.category}', '${p.zone}', '${p.id}')" class="bg-red-50 hover:bg-red-100 text-red-500 px-3 py-1 rounded text-xs font-bold transition">刪除</button></td> 
             </tr>`; 
         }); 
         tbody.innerHTML = html; 
     } 
 
-    // ========================================================= 
-    // 🌟 核心任務看板與狀態更新邏輯 
-    // ========================================================= 
     function renderKanban(producer, clearSearch = true) { 
         document.getElementById('kb-title').innerText = producer + " 任務看板"; 
         if (!DATA.projects) return; 
@@ -2977,7 +3037,6 @@ function confirmSaveQuote() {
             document.getElementById('kb-search-results').classList.add('hidden');  
         } 
 
-        // 🌟 讓「一起」製作的專案，也能同時出現在兩人的個人看板上
         const tasks = DATA.projects.filter(p => p.producer === producer || p.producer === '一起'); 
         const role = localStorage.getItem('JAYRAN_ROLE'); 
 
@@ -3086,7 +3145,6 @@ function confirmSaveQuote() {
         doUpdate(cat, zone, id, '已完成', 0, endDate); 
     } 
 
-    // 🌟 總覽頁：切換月/日案量圖表模式
     function setOverviewChartMode(mode) {
         window.overviewChartMode = mode;
         document.getElementById('ov-mode-month').classList.toggle('active', mode === 'month');
@@ -3094,7 +3152,6 @@ function confirmSaveQuote() {
         renderOverview();
     }
 
-    // 🌟 總覽頁：統計卡片 + 案量趨勢圖 + 近期交件日 + 團隊負載 + 急件清單
     function renderOverview() {
         if (!DATA || !DATA.projects) return;
         const projects = DATA.projects;
@@ -3164,8 +3221,6 @@ function confirmSaveQuote() {
                     }
                 }
             });
-            // 🌟 版面是用 flex 動態分配高度算出來的，圖表剛建立當下量到的高度可能還沒定案，
-            // 等瀏覽器畫完一次之後再強制重新量一次大小，避免圖表把自己撐爆
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => { if (overviewChart) overviewChart.resize(); });
             });
@@ -3291,7 +3346,6 @@ function confirmSaveQuote() {
             if (reasons.length > 0) issues.push({ p, reasons });
         });
 
-        // 去除重複帶入（重複撞號的兩筆都要各自顯示一次，但避免同一筆物件被 push 兩次）
         const uniqueIssues = [];
         const pushedRefs = new Set();
         issues.forEach(item => {
@@ -3371,7 +3425,6 @@ function confirmSaveQuote() {
             rateTextEl.innerText = rate + '%'; 
         } 
 
-        // 🌟 客戶排行榜 Top 5
         const clientRankEl = document.getElementById('db-client-rank'); 
         if (clientRankEl) { 
             const clientCounts = {}; 
@@ -3391,7 +3444,6 @@ function confirmSaveQuote() {
             } 
         } 
 
-        // 🌟 本年度月趨勢折線圖（以全部專案資料為準，不受月份篩選影響，方便對照全年脈絡）
         const trendEl = document.getElementById('db-trend-chart'); 
         if (trendEl) { 
             const curYear = new Date().getFullYear(); 
@@ -3482,7 +3534,6 @@ function confirmSaveQuote() {
         container.classList.remove('hidden');  
     } 
 
-    // 🌟 依製作人區分顏色，一眼看出這是誰的案子(跟看板/待分派的配色一致)
     function getProducerColor(producer) {
         if (producer === '魏敏軒') return '#0A84FF';
         if (producer === '邱仁杰') return '#00D26A';
@@ -3557,7 +3608,6 @@ function confirmSaveQuote() {
         const monthStart = new Date(curYear, curMonth, 1); const monthEnd = new Date(curYear, curMonth + 1, 0, 23, 59, 59); 
         const todayDay = now.getDate(); const isCurrentMonth = (now.getMonth() === curMonth && now.getFullYear() === curYear); 
 
-        // 🌟 甘特圖也會支援一起製作的專案顯示
         let tasks = DATA.projects.filter(p => (p.producer === who || p.producer === '一起') && p.start && p.end); 
         tasks = tasks.filter(p => { const pStart = new Date(p.start); const pEnd = new Date(p.end); return pStart <= monthEnd && pEnd >= monthStart; }).sort((a, b) => (new Date(a.start).getTime() || 0) - (new Date(b.start).getTime() || 0)); 
 
@@ -3629,7 +3679,6 @@ function confirmSaveQuote() {
          
         const producers = (p.category === 'video') ? DATA.config.videoProducers : DATA.config.imageProducers; 
         const prodSel = document.getElementById('ep-producer'); prodSel.innerHTML = ''; 
-        // 🌟 修正：如果這位製作人不在原本的清單裡(例如「一起」)，先補進選項，確保一定選得到、顯示得出來
         let producerList = [...(producers || [])];
         if (p.producer && !producerList.includes(p.producer)) producerList.unshift(p.producer);
         producerList.forEach(x => prodSel.add(new Option(x, x))); 
@@ -3751,7 +3800,6 @@ function confirmSaveQuote() {
     function confirmSendReview() { const h = document.getElementById('input-hours').value; if(!h) return showToast("請輸入工時", "error"); closeModal('modal-hours'); doUpdate(document.getElementById('hours-cat').value, document.getElementById('hours-zone').value, document.getElementById('hours-id').value, '客戶審核', h); } 
     function togglePanel(type) { document.getElementById('panel-' + type).style.display = 'flex'; if (type === 'memo') loadMemos(); if (type === 'link') loadLinks(); if (type === 'pending') loadPending(); } 
 
-    // 🌟 全新升級的大版面與乾淨UI風格的 待分派專案
     function loadPending() { 
         let pendingList = DATA.projects.filter(p => p.producer === '尚未暫定'); 
         const container = document.getElementById('pending-list'); 
@@ -3842,7 +3890,6 @@ function confirmSaveQuote() {
     function enablePendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.add('hidden'); document.getElementById(`p-edit-${idx}`).classList.remove('hidden'); } 
     function cancelPendingEdit(idx) { document.getElementById(`p-display-${idx}`).classList.remove('hidden'); document.getElementById(`p-edit-${idx}`).classList.add('hidden'); } 
      
-    // 🌟 新的三顆按鈕快速指派邏輯
     function confirmAssignQuick(cat, zone, id, idx, maker) {
         const date = document.getElementById(`p-assign-date-${idx}`).value; 
         if(!date) return showToast("請先點選左側選擇日期", "error"); 
